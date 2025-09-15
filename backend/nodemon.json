@@ -1,0 +1,13 @@
+{
+  "watch": ["**/*.ts", "../packages/**/*.ts"],
+  "ext": "ts,js,json",
+  "ignore": ["**/*.spec.ts", "**/*.test.ts", "node_modules/**/*", "dist/**/*", "db/*.db"],
+  "exec": "ts-node --transpile-only server.ts",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "delay": 1000,
+  "verbose": true,
+  "restartable": "rs",
+  "colours": true
+}

@@ -1,0 +1,46 @@
+import { createApp } from 'vue'
+import router from './router'
+import App from './App.vue'
+import './assets/styles/main.css'
+
+// Platform helper (stubbed for web/PWA; expand for native later)
+const isNative = () => false
+
+async function bootstrap() {
+  try {
+    const isDev = import.meta.env.VITE_KALITOSPACE_DEV_MODE === 'true'
+
+    // Info: Using localStorage for browser persistence
+    // eslint-disable-next-line no-console
+    console.info('Kalito Space web/PWA build ready.')
+
+    // Mount Kalito Space app
+    const app = createApp(App)
+
+    app.use(router)
+
+    app.mount('#app')
+
+    // Platform/dev info
+    // eslint-disable-next-line no-console
+    console.info(`Running on ${isNative() ? 'native platform' : 'web/PWA'}`)
+    if (isDev) {
+      // eslint-disable-next-line no-console
+      console.info('⚙️ Kalito Space is running in dev mode.')
+    }
+
+    // Expose dev flags for debugging
+    if (isDev) {
+      // Add Kalito environment info to window
+      Object.assign(window, {
+        __KALITOSPACE_ENV__: { isDev, isNative: isNative },
+      })
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to bootstrap Kalito Space:', error)
+  }
+}
+
+// Start the app
+bootstrap()
