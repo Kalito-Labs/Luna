@@ -20,6 +20,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/eslint-config-typescript": "^14.6.0",
+    "@vue/tsconfig": "^0.8.1",
     "@vueuse/core": "^13.6.0",
     "eslint-plugin-vue": "^10.3.0",
     "typescript": "^5.8.3",
