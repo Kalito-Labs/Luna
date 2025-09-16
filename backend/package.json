@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "KalitoSpace - Personal AI Conversational Interface",
   "main": "index.js",
   "scripts": {
     "dev": "ts-node -r tsconfig-paths/register server.ts",
