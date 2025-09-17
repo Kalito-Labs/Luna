@@ -45,10 +45,10 @@ function sseSend(res: Response, data: unknown) {
 /* ----------------------- Transient session helpers ---------------------- */
 
 /**
- * Ensure a transient session row exists (saved = 0).
- * This prevents orphan messages and lets the user save later.
+ * Ensure a persistent session row exists (saved = 1).
+ * Auto-save model: all sessions are immediately persistent and appear in sidebar.
  */
-function ensureTransientSession(sessionId: string, modelId?: string) {
+function ensurePersistentSession(sessionId: string, modelId?: string) {
   const now = new Date().toISOString()
   const existing = db
     .prepare(`SELECT id FROM sessions WHERE id = ?`)
@@ -57,8 +57,8 @@ function ensureTransientSession(sessionId: string, modelId?: string) {
   if (!existing) {
     db.prepare(
       `INSERT INTO sessions (id, name, model, recap, persona_id, created_at, updated_at, saved)
-       VALUES (?, ?, ?, NULL, NULL, ?, ?, 0)`
-    ).run(sessionId, null, modelId ?? null, now, now)
+       VALUES (?, ?, ?, NULL, NULL, ?, ?, 1)`
+    ).run(sessionId, 'New Chat', modelId ?? null, now, now)
   } else {
     db.prepare(`UPDATE sessions SET updated_at = ? WHERE id = ?`).run(now, sessionId)
   }
@@ -104,7 +104,7 @@ agentRouter.post(
 
     // Make sure a transient session row exists and bump updated_at
     try {
-      ensureTransientSession(usedSessionId, modelName)
+      ensurePersistentSession(usedSessionId, modelName)
     } catch (e) {
       logError('Failed to ensure transient session', e as Error, { sessionId: usedSessionId })
       return err(res, 500, 'INTERNAL', 'Failed to initialize session')

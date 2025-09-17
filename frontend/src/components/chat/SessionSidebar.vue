@@ -68,21 +68,14 @@
 
             <!-- Session Actions -->
             <div class="session-actions">
-              <template v-if="!isSessionActive">
-                <button class="btn-primary" @click="handleStartSession" :disabled="isSessionActive">
+              <div class="active-session-actions">
+                <button class="btn-primary" @click="handleStartSession">
                   🚀 Start New Session
                 </button>
-              </template>
-              <template v-else>
-                <div class="active-session-actions">
-                  <button class="btn-secondary" @click="saveCurrentSession">
-                    💾 Save Session
-                  </button>
-                  <button class="btn-danger" @click="$emit('reset-session')">
-                    🔄 Reset
-                  </button>
-                </div>
-              </template>
+                <button class="btn-secondary" @click="$emit('reset-session')" :disabled="!isSessionActive">
+                  🔄 Reset
+                </button>
+              </div>
             </div>
           </div>
 
@@ -99,7 +92,7 @@
               <div v-if="savedSessions.length === 0" class="no-sessions-message">
                 <div class="empty-icon">💭</div>
                 <p>No conversations yet</p>
-                <p class="hint">Start a conversation, then click “Save Session” to pin it here</p>
+                                <p class="hint">Start a conversation and it will automatically appear in your session history</p>
               </div>
               <div v-else class="sessions-list scrollbar-thin">
                 <div
@@ -152,7 +145,6 @@
         :loading="loading"
         :current-session-id="currentSessionId"
         @send-message="$emit('send-message', $event)"
-        @save-session="$emit('save-session')"
         @update:session-settings="$emit('update:session-settings', $event)"
         @create-pin="(content, messageId) => $emit('create-pin', content, messageId)"
         @start-session="$emit('start-session', $event)"
@@ -213,7 +205,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'send-message', text: string): void
-  (e: 'save-session'): void
   (e: 'update:session-settings', settings: any): void
   (e: 'start-session', settings: any): void
   (e: 'reset-session'): void
@@ -382,9 +373,7 @@ function handleStartSession() {
   emit('start-session', sessionData)
 }
 
-function saveCurrentSession() {
-  emit('save-session')
-}
+// saveCurrentSession removed - sessions are auto-saved in new model
 
 // Saved sessions helpers
 const savedSessions = computed(() => {

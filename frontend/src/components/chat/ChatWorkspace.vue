@@ -23,7 +23,6 @@
         :sessions="sessions"
         :current-session-id="currentSessionId"
         @send-message="sendMessage"
-        @save-session="handleSaveSession"
         @update:session-settings="updateSessionSettings"
         @start-session="startSession"
         @reset-session="resetSession"
@@ -56,7 +55,6 @@ import {
   sendMessageToAgentStream,
   fetchSessions,
   createSession,
-  saveSession,
   createSemanticPin,
 } from '../../core'
 import type { Message as SharedMessage } from '../../../../backend/types/messages'
@@ -187,7 +185,7 @@ const tokenUsage = ref<number>(0)
 const currentSessionId = ref<string | null>(null)
 const loading = ref(false)
 const sessions = ref<Session[]>([])           // <-- always an array
-const lastSaveTime = ref<number>(0)
+// lastSaveTime removed - no longer needed with auto-save model
 const models = ref<any[]>([]) // AI-Protocols: Always initialize as empty array
 
 // Dialog state for custom reset confirmations
@@ -529,21 +527,12 @@ async function resetSession() {
 async function handleResetConfirm() {
   showResetDialog.value = false
   
-  // User chose "Save" - Save current session and start new one
-  try {
-    await handleSaveSession()
-    // Add feedback message
-    chatMessages.value.push({
-      from: 'kalito',
-      text: '✅ Session saved successfully. Starting new session...',
-    })
-    performReset()
-  } catch (error) {
-    chatMessages.value.push({
-      from: 'kalito',
-      text: '❌ Failed to save session. Reset cancelled.',
-    })
-  }
+  // Sessions are auto-saved, so just start new session
+  chatMessages.value.push({
+    from: 'kalito',
+    text: '🔄 Starting new session...',
+  })
+  performReset()
 }
 
 function handleResetCancel() {
@@ -735,7 +724,7 @@ async function handleDeleteSession(sessionId: string) {
 
 async function handleLoadSession(session: any) {
   // Enhanced session loading with smart behavior based on current state
-  if (!session?.id || !session?.recap) {
+  if (!session?.id) {
     console.error('Invalid session data:', session)
     chatMessages.value.push({
       from: 'kalito',
@@ -909,184 +898,7 @@ async function handleLoadSession(session: any) {
 }
 
 // Enhanced save session - creates recap first, then saves
-async function handleSaveSession() {
-  if (!isSessionActive.value || !currentSessionId.value) {
-    // Add visual feedback to chat
-    chatMessages.value.push({
-      from: 'kalito',
-      text: '⚠️ No active session to save. Please start a session first.',
-    })
-    return
-  }
-
-  // Rate limiting: prevent save attempts within 5 seconds of last save
-  const now = Date.now()
-  const timeSinceLastSave = now - lastSaveTime.value
-  const minInterval = 5000 // 5 seconds
-
-  if (timeSinceLastSave < minInterval) {
-    const remainingTime = Math.ceil((minInterval - timeSinceLastSave) / 1000)
-    chatMessages.value.push({
-      from: 'kalito',
-      text: `⏳ Please wait ${remainingTime} seconds before saving again to avoid rate limits.`,
-    })
-    return
-  }
-
-  lastSaveTime.value = now
-
-  try {
-    // Add visual feedback to chat
-    chatMessages.value.push({
-      from: 'kalito',
-      text: '🔄 Saving session...',
-    })
-
-    // Check if we already have a recent recap (avoid unnecessary API calls)
-    const existingRecaps = chatMessages.value.filter(m => m.isRecap)
-    const recentRecap = existingRecaps.length > 0 ? existingRecaps[existingRecaps.length - 1] : null
-
-    let recapText = ''
-
-    if (recentRecap && recentRecap.text) {
-      // Use existing recap to avoid rate limits
-      recapText = recentRecap.text.replace(/^📝 \*\*Conversation Recap\*\*\n\n/, '')
-      chatMessages.value.push({
-        from: 'kalito',
-        text: '💡 Using existing recap to avoid rate limits.',
-      })
-    } else {
-      // Only create new recap if none exists
-      chatMessages.value.push({
-        from: 'kalito',
-        text: '🔄 Creating session title and recap...',
-      })
-
-      const lastMessages: Message[] = chatMessages.value
-        .filter(m => !m.isRecap)
-        .slice(-20)
-        .map(m => ({
-          role: m.from === 'user' ? 'user' as const : 'assistant' as const,
-          content: m.text,
-        }))
-
-      // Check if we're using a local model and adjust recap strategy
-      const currentModelType = getModelType(sessionSettings.value.model)
-      const isLocalModel = currentModelType === 'local'
-
-      if (isLocalModel) {
-        // For local models: Use a simpler, shorter approach to avoid token limits
-        console.log('🏠 Using local model recap strategy for better compatibility')
-        
-        const keyMessages = [
-          ...lastMessages.slice(0, 3),
-          ...lastMessages.slice(-3)
-        ].filter((msg, index, arr) =>
-          arr.findIndex(m => m.content === msg.content) === index
-        )
-
-        const shortRecapPrompt = 
-          'Summarize this chat in 1-2 sentences (topics discussed, key points):\n\n' +
-          keyMessages.map(m => `${m.role === 'user' ? 'User' : 'AI'}: ${m.content.substring(0, 100)}`).join('\n')
-
-        loading.value = true
-        const result = await sendMessageToAgent(
-          shortRecapPrompt,
-          '',
-          sessionSettings.value.model,
-          { ...sessionSettings.value, maxTokens: 150 },
-          sessionSettings.value.fileIds || [],
-          currentSessionId.value
-        )
-
-        if (result.reply && !result.reply.includes('�') && !result.reply.toLowerCase().includes('error')) {
-          recapText = result.reply
-          if (typeof result.tokenUsage === 'number' && result.tokenUsage > 0) {
-            tokenUsage.value += result.tokenUsage
-          }
-        } else {
-          const firstMessage = lastMessages.find(m => m.role === 'user')?.content || 'Chat'
-          recapText = `Chat about: ${firstMessage.substring(0, 60)}${firstMessage.length > 60 ? '...' : ''}`
-          
-          chatMessages.value.push({
-            from: 'kalito',
-            text: '📝 Generated simple summary (local model)',
-          })
-        }
-      } else {
-        // For cloud models: Use the full recap strategy
-        console.log('☁️ Using cloud model recap strategy with full context')
-        
-        // Intelligent truncation for long conversations
-        const truncatedMessages = intelligentMessageTruncation(lastMessages, 12000)
-
-        const recapPrompt =
-          'Create a concise recap of this conversation for session saving (short, factual summary of key topics and outcomes):\n\n' +
-          truncatedMessages.map(m => `${m.role === 'user' ? 'User' : 'Kalito'}: ${m.content}`).join('\n')
-
-        loading.value = true
-        const result = await sendMessageToAgent(
-          recapPrompt,
-          '',
-          sessionSettings.value.model,
-          sessionSettings.value,
-          sessionSettings.value.fileIds || [],
-          currentSessionId.value
-        )
-
-        if (result.reply && !result.reply.includes('😞') && !result.reply.toLowerCase().includes('error')) {
-          recapText = result.reply
-          if (typeof result.tokenUsage === 'number' && result.tokenUsage > 0) {
-            tokenUsage.value += result.tokenUsage
-          }
-        } else {
-          console.warn('AI recap generation failed, using fallback recap')
-          const conversationSummary = lastMessages
-            .slice(0, 3)
-            .map(m => m.content.substring(0, 50))
-            .join(', ')
-          recapText = `Conversation about: ${conversationSummary}...`
-          
-          chatMessages.value.push({
-            from: 'kalito',
-            text: '⚠️ AI recap generation failed, using simple summary instead.',
-          })
-        }
-      }
-    }
-
-    // Generate a descriptive title from the first few messages
-    const sessionTitle = generateSessionTitle(chatMessages.value)
-
-    // Now save the session with the recap and title
-    await saveSession(
-      currentSessionId.value,
-      recapText,
-      sessionSettings.value.model,
-      sessionSettings.value.persona,
-      sessionTitle
-    )
-
-    await loadSessions()
-
-    // Add success feedback to chat
-    const existingSession = sessions.value.find(s => s.id === currentSessionId.value)
-    const actionText = existingSession ? 'updated' : 'saved'
-
-    chatMessages.value.push({
-      from: 'kalito',
-      text: `✅ Session "${sessionTitle}" ${actionText} successfully! You can continue chatting or load this session later.`,
-    })
-  } catch (err: any) {
-    // Add error feedback to chat
-    chatMessages.value.push({
-      from: 'kalito',
-      text: `❌ Failed to save session: ${err?.message || String(err)}`,
-    })
-  } finally {
-    loading.value = false
-  }
-}
+// handleSaveSession removed - sessions are auto-saved in the new model
 
 // Update session settings
 function updateSessionSettings(newSettings: SessionSettings) {

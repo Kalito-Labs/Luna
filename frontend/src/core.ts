@@ -374,62 +374,23 @@ export function clearCurrentSessionFromLocal() {
 
 /**
  * createSession
- * Creates a session in memory only (no database entry until explicitly saved).
- * For temporary sessions, we generate a local ID without backend call.
+ * Creates a persistent session immediately saved to database (auto-save model).
+ * All sessions are persistent and appear in sidebar automatically.
  */
-export async function createSession(name: string = '', saveToDatabase: boolean = false) {
-  // If explicitly requesting database save, use the backend
-  if (saveToDatabase) {
-    try {
-      const response = await fetch('/api/agent/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
-      })
-      if (response.ok) {
-        return await response.json()
-      }
-    } catch {
-      // Fallback to local session
-    }
-  }
-
-  // Create temporary session (memory-only)
+export async function createSession(name: string = 'New Chat') {
+  // Generate session ID
   const uuid =
     typeof crypto !== 'undefined' && crypto.randomUUID
       ? crypto.randomUUID()
       : Date.now().toString() + Math.floor(Math.random() * 1000).toString()
 
+  // Return session object (will be persisted on first message via ensurePersistentSession)
   return {
     id: uuid,
-    name: name || 'New Chat',
+    name: name,
     created_at: new Date().toISOString(),
-    isTemporary: true, // Flag to indicate this is not in database
+    saved: 1, // Always saved in auto-save model
   }
-}
-
-/**
- * promoteTemporarySession
- * Converts a temporary session to a permanent one by creating database entry
- */
-export async function promoteTemporarySession(sessionId: string, name: string = 'New Chat') {
-  try {
-    const response = await fetch('/api/agent/session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
-    })
-    if (response.ok) {
-      const dbSession = await response.json()
-      // Return the new database session with the old session ID mapped
-      return { ...dbSession, oldId: sessionId }
-    }
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Failed to promote temporary session:', error)
-    throw new Error('Failed to create permanent session')
-  }
-  throw new Error('Failed to create permanent session')
 }
 
 /**
