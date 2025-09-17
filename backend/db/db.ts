@@ -5,3 +5,6 @@ import * as path from 'path'
 const dbFile = path.resolve(__dirname, __dirname.includes('dist') ? '../../../db/kalito.db' : 'kalito.db')
 
 export const db = new Database(dbFile)
+
+// Enable foreign key constraints
+db.pragma('foreign_keys = ON')

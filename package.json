@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "type": "module",
   "description": "KalitoSpace - Personal AI Conversational Interface",
-  "main": "index.js",
   "scripts": {
     "prepare": "husky",
     "lint": "eslint . --ext .ts,.vue",
