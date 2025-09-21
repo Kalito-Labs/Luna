@@ -19,10 +19,6 @@
           <span class="menu-icon">👤</span>
           Personas
         </button>
-        <button class="menu-item" @click="goToAbout">
-          <span class="menu-icon">ℹ️</span>
-          About
-        </button>
       </div>
     </transition>
   </div>
@@ -51,10 +47,6 @@ function goToPersonas() {
   router.push({ name: 'personas' })
 }
 
-function goToAbout() {
-  open.value = false
-  router.push({ name: 'about' })
-}
 function handleClickOutside(event: MouseEvent) {
   if (open.value && menuRef.value && !menuRef.value.contains(event.target as Node)) {
     open.value = false
