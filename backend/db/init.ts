@@ -1,17 +1,15 @@
 /// <reference types="node" />
-import Database from 'better-sqlite3'
 import * as path from 'path'
 import * as fs from 'fs'
+import { db } from './db' // Import the shared database connection
 
 const dbPath = path.resolve(__dirname, __dirname.includes('dist') ? '../../../db/kalito.db' : 'kalito.db')
 
 // Create DB file if it doesn't exist
 if (!fs.existsSync(dbPath)) {
   fs.writeFileSync(dbPath, '')
+  console.log(`Created new database file: ${dbPath}`)
 }
-
-const db = new Database(dbPath)
-db.pragma('foreign_keys = ON')
 
 // ---------------------------------------------------------------------
 // Core Tables
@@ -246,4 +244,3 @@ for (const persona of defaultPersonas) {
 // ---------------------------------------------------------------------
 
 console.log('✅ Database initialized at:', dbPath)
-export default db
