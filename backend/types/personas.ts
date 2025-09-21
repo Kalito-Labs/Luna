@@ -1,4 +1,4 @@
-// packages/shared/types/personas.ts
+// backend/types/personas.ts
 // Persona type definitions (uses shared API envelopes from ./api)
 
 import {

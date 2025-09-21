@@ -1,4 +1,4 @@
-// packages/shared/types/api.ts
+// backend/types/api.ts
 export const API_CONTRACT_VERSION = '1' as const;
 
 export type ApiErrorCode =

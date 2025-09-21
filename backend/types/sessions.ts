@@ -1,7 +1,4 @@
-/**
- * sessions.ts
- * Shared type contracts for session data between backend and frontend.
- */
+// backend/types/sessions.ts
 
 export interface Session {
   id: string

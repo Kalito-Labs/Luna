@@ -1,5 +1,4 @@
-// packages/shared/types/messages.ts
-
+// backend/types/messages.ts
 /**
  * Chat roles used in OpenAI-style message payloads.
  */

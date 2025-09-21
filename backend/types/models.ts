@@ -1,5 +1,4 @@
-// packages/shared/types/models.ts
-
+// backend/types/models.ts
 /**
  * LLM Adapter interface - defines the contract for all AI model adapters
  * Used by both backend model registry and frontend model management

@@ -1,4 +1,3 @@
-// packages/shared/types/agent.ts
 
 // import type { string } from '../constants/formats'
 

@@ -1,3 +1,4 @@
+// backend/types/memory.ts
 // Phase 2 Memory System Types
 // Date: August 24, 2025
 
