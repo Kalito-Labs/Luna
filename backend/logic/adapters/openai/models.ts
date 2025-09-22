@@ -22,10 +22,6 @@ export const OPENAI_MODELS: Record<string, OpenAIModelConfig> = {
       input: 0.80,   // $0.80 / 1M input tokens
       output: 3.20,  // $3.20 / 1M output tokens
     },
-    aliases: [
-      'gpt-4o-mini', // legacy
-      'gpt-5-mini',  // legacy
-    ],
   },
 
   // GPT-4.1 Nano - Fastest GPT-4.1 model
@@ -40,10 +36,6 @@ export const OPENAI_MODELS: Record<string, OpenAIModelConfig> = {
       input: 0.20,   // $0.20 / 1M input tokens
       output: 0.80,  // $0.80 / 1M output tokens
     },
-    aliases: [
-      'gpt-4o-nano', // legacy
-      'gpt-5-nano',  // legacy
-    ],
   },
 }
 

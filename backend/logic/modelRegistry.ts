@@ -32,14 +32,8 @@ function registerAdapter(adapter: LLMAdapter, aliases: string[] = []) {
 // ---------- Register all adapters + aliases ----------
 
 // OpenAI (primary implementations)
-registerAdapter(gpt41MiniAdapter, [
-  'gpt-4o-mini',  // legacy
-  'gpt-5-mini',   // legacy mapping
-])
-registerAdapter(gpt41NanoAdapter, [
-  'gpt-4o-nano',  // legacy
-  'gpt-5-nano',   // legacy mapping
-])
+registerAdapter(gpt41MiniAdapter)
+registerAdapter(gpt41NanoAdapter)
 
 // Non-OpenAI
 registerAdapter(claudeAdapter) // 'claude-3-5-sonnet' (assumed)

@@ -136,7 +136,7 @@
 import { ref, onMounted } from 'vue'
 import HamburgerMenu from '../HamburgerMenu.vue'
 import PersonaEditModal from './PersonaEditModal.vue'
-import type { Persona, PersonaCategory } from '../../../../backend/types/personas'
+import type { Persona, PersonaCategory, CreatePersonaRequest } from '../../../../backend/types/personas'
 import { usePersonaStore } from '../../composables/usePersonaStore'
 
 const personaStore = usePersonaStore()
@@ -178,6 +178,8 @@ type PersonaPayload = {
     repeatPenalty: number
   }>
 }
+
+
 
 // Functions
 async function retryConnection() {
@@ -225,17 +227,48 @@ function showNotification(type: 'success' | 'error', message: string) {
   }, 3000)
 }
 
+// Generate a unique ID for new personas
+function generatePersonaId(name: string): string {
+  // Create a clean ID based on the name, with timestamp for uniqueness
+  const cleanName = name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-')         // Replace spaces with hyphens
+    .replace(/-+/g, '-')          // Collapse multiple hyphens
+    .replace(/^-|-$/g, '')        // Remove leading/trailing hyphens
+  
+  const timestamp = Date.now().toString(36) // Base36 for shorter string
+  return `${cleanName}-${timestamp}`.substring(0, 50) // Ensure it fits the DB limit
+}
+
 // **FIXED**: consume payload and persist via store
 async function handlePersonaSave(payload: PersonaPayload) {
   submitting.value = true
   try {
     const isEdit = showEditModal.value && !!personaToEdit.value
     if (isEdit) {
-      // Update existing persona
-      await personaStore.updatePersona(personaToEdit.value!.id, payload)
+      // Update existing persona - clean up the payload
+      const updatePayload = {
+        name: payload.name,
+        prompt: payload.prompt,
+        description: payload.description?.trim() || undefined,
+        icon: payload.icon?.trim() || undefined,
+        category: payload.category,
+        settings: payload.settings
+      }
+      await personaStore.updatePersona(personaToEdit.value!.id, updatePayload)
     } else {
-      // Create new persona
-      await personaStore.createPersona(payload)
+      // Create new persona - add the missing ID field
+      const createPayload: CreatePersonaRequest = {
+        id: generatePersonaId(payload.name),
+        name: payload.name,
+        prompt: payload.prompt,
+        description: payload.description?.trim() || undefined,
+        icon: payload.icon?.trim() || undefined,
+        category: payload.category,
+        settings: payload.settings
+      }
+      await personaStore.createPersona(createPayload)
     }
 
     // Refresh list (or optimistically update if your store returns the entity)

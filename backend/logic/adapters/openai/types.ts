@@ -8,8 +8,6 @@ export type OpenAIModel =
   | 'gpt-4.1'
   | 'gpt-4.1-mini'
   | 'gpt-4.1-nano'
-  | 'gpt-4o'
-  | 'gpt-4o-mini'
   | string // Allow for future models
 
 export type APIMode = 'chat' | 'responses'

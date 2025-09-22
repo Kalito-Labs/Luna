@@ -242,7 +242,7 @@ export function selectOptimalModel(
   availableModels: ModelInfo[] = []
 ): string {
   // Default fallback model (if no models match or are available)
-  let fallbackModel = 'gpt-5-nano'
+  let fallbackModel = 'gpt-4.1-nano'
 
   // If no models are available, return the fallback
   if (!availableModels.length) {
@@ -256,8 +256,8 @@ export function selectOptimalModel(
   const modelPriorities: Record<PersonaCategory, string[]> = {
     // Cloud models prioritize powerful cloud-hosted models
     cloud: [
-      'gpt-5-mini',
-      'gpt-5-nano',
+      'gpt-4.1-mini',
+      'gpt-4.1-nano',
       'claude-3-opus',
       'claude-3-sonnet',
     ],
