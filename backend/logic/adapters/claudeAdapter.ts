@@ -14,10 +14,10 @@ console.log(
 )
 
 export const claudeAdapter: LLMAdapter = {
-  id: 'claude-3-5-sonnet',
-  name: 'Claude 3.5 Sonnet',
+  id: 'claude-sonnet-4',
+  name: 'Claude Sonnet 4',
   type: 'cloud',
-  contextWindow: 200000,
+  contextWindow: 200000, // Keeping same context window, may be larger in Claude 4
 
   /**
    * Classic non-streaming generation: returns full reply at once.
@@ -33,7 +33,7 @@ export const claudeAdapter: LLMAdapter = {
   }) {
     console.log('Claude generate called with:', {
       messagesCount: messages.length,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-20250514',
       settings,
     })
 
@@ -54,7 +54,7 @@ export const claudeAdapter: LLMAdapter = {
       }
 
       const completion = await anthropic.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: (settings.maxTokens as number) || 1024,
         temperature: (settings.temperature as number) || 0.7,
         system: systemMessage || undefined,
@@ -93,7 +93,7 @@ export const claudeAdapter: LLMAdapter = {
   }) {
     console.log('Claude generateStream called with:', {
       messagesCount: messages.length,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-20250514',
       settings,
     })
 
@@ -114,7 +114,7 @@ export const claudeAdapter: LLMAdapter = {
       }
 
       const stream = await anthropic.messages.stream({
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: (settings.maxTokens as number) || 1024,
         temperature: (settings.temperature as number) || 0.7,
         system: systemMessage || undefined,

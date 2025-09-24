@@ -36,7 +36,10 @@ registerAdapter(gpt41MiniAdapter)
 registerAdapter(gpt41NanoAdapter)
 
 // Non-OpenAI
-registerAdapter(claudeAdapter) // 'claude-3-5-sonnet' (assumed)
+registerAdapter(claudeAdapter, [
+  'claude-3-5-sonnet', // legacy alias for backward compatibility
+  'claude-sonnet',     // short alias
+]) // 'claude-sonnet-4'
 
 // Local models
 registerAdapter(qwen25Adapter, [

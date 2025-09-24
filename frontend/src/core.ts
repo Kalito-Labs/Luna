@@ -256,10 +256,9 @@ export function selectOptimalModel(
   const modelPriorities: Record<PersonaCategory, string[]> = {
     // Cloud models prioritize powerful cloud-hosted models
     cloud: [
+      'claude-sonnet-4',
       'gpt-4.1-mini',
       'gpt-4.1-nano',
-      'claude-3-opus',
-      'claude-3-sonnet',
     ],
 
     // Local models prioritize locally-hosted models
