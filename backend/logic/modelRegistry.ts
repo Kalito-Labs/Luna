@@ -50,7 +50,7 @@ registerAdapter(gpt5NanoAdapter, [
 
 // Non-OpenAI
 registerAdapter(claudeAdapter, [
-  'claude-3-5-sonnet', // legacy alias for backward compatibility
+  'claude-4-sonnet', // legacy alias for backward compatibility
   'claude-sonnet',     // short alias
 ]) // 'claude-sonnet-4'
 

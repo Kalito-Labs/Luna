@@ -170,6 +170,8 @@ async function generateWithResponsesAPI(
   // Use simple input format for Responses API
   const input = castMessages.map((msg: ChatCompletionMessageParam) => msg.content).join('\n\n')
 
+  console.log(`[${modelName}] Calling Responses API with input:`, input.substring(0, 100) + '...')
+
   const response = await client.responses.create({
     model: modelName,
     input,
@@ -179,9 +181,37 @@ async function generateWithResponsesAPI(
     }
   })
 
-  // Extract text from the response using the SDK's output_text property
-  const reply = response.output_text || ''
+  console.log(`[${modelName}] Responses API response:`, {
+    hasOutput: !!response.output,
+    outputLength: response.output?.length,
+    responseKeys: Object.keys(response),
+    fullResponse: JSON.stringify(response, null, 2).substring(0, 500) + '...',
+  })
+
+  // Extract text from the response output array
+  let reply = ''
+  if (response.output && response.output.length > 0) {
+    // Look for message type outputs which contain the actual text
+    for (const item of response.output) {
+      if (item.type === 'message' && 'content' in item && item.content) {
+        // Handle array of content items
+        if (Array.isArray(item.content)) {
+          for (const contentItem of item.content) {
+            if (contentItem.type === 'output_text' && 'output_text' in contentItem) {
+              reply += contentItem.output_text
+            }
+          }
+        } else if (typeof item.content === 'string') {
+          reply += item.content
+        }
+      }
+    }
+  }
   const usage = response.usage
+
+  if (!reply) {
+    console.warn(`[${modelName}] Empty response from Responses API:`, response)
+  }
 
   return {
     reply,
