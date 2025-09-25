@@ -2,11 +2,11 @@ import type { LLMAdapter } from '../modelRegistry'
 import { fetch } from 'undici'
 import { TextDecoder } from 'util'
 
-export const qwen25Adapter: LLMAdapter = {
-  id: 'qwen-2.5-3b',
-  name: 'Qwen 2.5 3B',
+export const tinyLlamaAdapter: LLMAdapter = {
+  id: 'tinyllama-1.1b',
+  name: 'TinyLlama 1.1B',
   type: 'local',
-  contextWindow: 32768,
+  contextWindow: 2048, // TinyLlama has 2K context window
 
   async generate(payload: {
     messages: { role: string; content: string }[]
@@ -21,12 +21,12 @@ export const qwen25Adapter: LLMAdapter = {
     if (settings.maxTokens !== undefined) options.num_predict = settings.maxTokens
     if (settings.topP !== undefined) options.top_p = settings.topP
     if (settings.repeatPenalty !== undefined) options.repeat_penalty = settings.repeatPenalty
-    if (Array.isArray(settings.stopSequences) && settings.stopSequences.length > 0) {
-      options.stop = settings.stopSequences
+    if (Array.isArray((settings as { stopSequences?: string[] }).stopSequences) && (settings as { stopSequences?: string[] }).stopSequences!.length > 0) {
+      options.stop = (settings as { stopSequences?: string[] }).stopSequences
     }
 
     const body = {
-      model: 'qwen2.5:3b',
+      model: 'tinyllama:latest',
       messages,              // ← includes system persona + history + current user
       stream: false,
       options: Object.keys(options).length ? options : undefined,
@@ -42,7 +42,7 @@ export const qwen25Adapter: LLMAdapter = {
       throw new Error(`Ollama error: ${resp.status} ${resp.statusText}`)
     }
 
-    // Non-streaming example:
+    // Non-streaming response example:
     // { "message": { "role":"assistant","content":"..." }, "done": true, ... }
     const data = (await resp.json()) as {
       message?: { content?: string }
@@ -52,7 +52,7 @@ export const qwen25Adapter: LLMAdapter = {
     const reply = data?.message?.content?.trim() ?? ''
     return {
       reply,
-      tokenUsage: null, // Ollama doesn’t provide reliable token counts
+      tokenUsage: null, // Ollama doesn't provide reliable token counts
     }
   },
 
@@ -69,12 +69,12 @@ export const qwen25Adapter: LLMAdapter = {
     if (settings.maxTokens !== undefined) options.num_predict = settings.maxTokens
     if (settings.topP !== undefined) options.top_p = settings.topP
     if (settings.repeatPenalty !== undefined) options.repeat_penalty = settings.repeatPenalty
-    if (Array.isArray(settings.stopSequences) && settings.stopSequences.length > 0) {
-      options.stop = settings.stopSequences
+    if (Array.isArray((settings as { stopSequences?: string[] }).stopSequences) && (settings as { stopSequences?: string[] }).stopSequences!.length > 0) {
+      options.stop = (settings as { stopSequences?: string[] }).stopSequences
     }
 
     const body = {
-      model: 'qwen2.5:3b',
+      model: 'tinyllama:latest',
       messages,              // ← includes system persona + history + current user
       stream: true,
       options: Object.keys(options).length ? options : undefined,
@@ -100,7 +100,7 @@ export const qwen25Adapter: LLMAdapter = {
         if (done) break
 
         const chunk = decoder.decode(value, { stream: true })
-        // Ollama streams JSON lines (JSONL), one object per line
+        // Ollama streams JSONL: one JSON object per line
         const lines = chunk.split('\n').filter(Boolean)
 
         for (const line of lines) {
@@ -127,7 +127,7 @@ export const qwen25Adapter: LLMAdapter = {
               return
             }
           } catch {
-            // Skip malformed/partial lines; can occur at chunk boundaries
+            // Skip malformed/partial lines (common at chunk boundaries)
           }
         }
       }

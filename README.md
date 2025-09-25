@@ -34,9 +34,7 @@ KalitoSpace is a sophisticated AI workspace that provides secure, transparent in
 - **Claude 3.5 Sonnet** - Latest Claude with enhanced capabilities (`claude-3-5-sonnet`)
 
 #### **Local Models**
-- **Qwen2.5** - Chinese-English bilingual model (`qwen2.5`)
-- **Qwen2.5 Coder** - Code-specialized variant (`qwen2.5-coder`)
-- **Mistral** - European open-source model (`mistral`)
+- **Qwen2.5 Coder** - Code-specialized variant with excellent programming and general conversation capabilities (`qwen2.5-coder`)
 
 ### Advanced AI Integration
 

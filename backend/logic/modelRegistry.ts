@@ -14,9 +14,8 @@ import {
   gpt5NanoAdapter
 } from './adapters/openai'
 import { claudeAdapter } from './adapters/claudeAdapter'
-import { qwen25Adapter } from './adapters/qwen25Adapter'
 import { qwen25CoderAdapter } from './adapters/qwen25CoderAdapter'
-import { mistralAdapter } from './adapters/mistralAdapter'
+import { tinyLlamaAdapter } from './adapters/tinyLlamaAdapter'
 
 // ---------- Registration helper ----------
 
@@ -55,15 +54,14 @@ registerAdapter(claudeAdapter, [
 ]) // 'claude-sonnet-4'
 
 // Local models
-registerAdapter(qwen25Adapter, [
-  'qwen25', // short alias
-])
 registerAdapter(qwen25CoderAdapter, [
   'qwen25-coder',
+  'qwen25', // short alias (now points to coder variant)
+  'qwen', // even shorter alias
 ])
-registerAdapter(mistralAdapter, [
-  'mistral', // short alias
-  'mistral-7b-instruct', // alternative name
+registerAdapter(tinyLlamaAdapter, [
+  'tinyllama',
+  'tiny',
 ])
 
 /**

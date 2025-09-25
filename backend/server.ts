@@ -74,6 +74,48 @@ app.get('/api/health', (req, res) => {
   })
 })
 
+// --- Model status endpoint ---
+app.get('/api/models/status', async (req, res) => {
+  try {
+    const { fetch } = await import('undici')
+    const ollamaUrl = process.env.OLLAMA_URL || 'http://localhost:11434'
+    
+    // Check if Ollama is running
+    const healthResponse = await fetch(`${ollamaUrl}/api/tags`, { method: 'GET' })
+      .catch(() => null)
+    
+    if (!healthResponse?.ok) {
+      return res.json({
+        ollama: { status: 'offline', message: 'Ollama service not accessible' },
+        models: [],
+      })
+    }
+    
+    // Get loaded models
+    const modelsResponse = await fetch(`${ollamaUrl}/api/ps`, { method: 'GET' })
+      .catch(() => null)
+    
+    let loadedModels: string[] = []
+    if (modelsResponse?.ok) {
+      const data = await modelsResponse.json() as { models?: Array<{ name: string }> }
+      loadedModels = data.models?.map(m => m.name) || []
+    }
+    
+    res.json({
+      ollama: { status: 'online', url: ollamaUrl },
+      models: {
+        loaded: loadedModels,
+        total: loadedModels.length,
+      },
+    })
+  } catch (error) {
+    res.status(500).json({
+      error: 'Failed to check model status',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    })
+  }
+})
+
 // --- Routers ---
 // Chat & inference (no persistence decisions here)
 app.use('/api/agent', agentRouter)
@@ -99,13 +141,42 @@ app.use(errorHandler)
 // --- Process-level error handlers ---
 setupGlobalErrorHandlers()
 
+// --- Model preloading ---
+import { preloadLocalModels, startModelWarming } from './logic/modelPreloader'
+
 // --- Start the server ---
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
   logger.info('Server started successfully', {
     service: 'kalito-backend',
     port: PORT,
     environment: nodeEnv,
   })
+
+  // Preload local models for instant responses
+  if (nodeEnv !== 'test') {
+    logger.info('🔄 Starting model preloading...')
+    try {
+      const preloadResult = await preloadLocalModels()
+      
+      if (preloadResult.success) {
+        logger.info('🎉 All local models preloaded successfully', {
+          loaded: preloadResult.loaded,
+          totalTime: preloadResult.totalTime,
+        })
+        
+        // Start model warming to keep them active
+        startModelWarming(4) // Warm every 4 minutes
+      } else {
+        logger.warn('⚠️  Some models failed to preload', {
+          loaded: preloadResult.loaded,
+          failed: preloadResult.failed,
+          totalTime: preloadResult.totalTime,
+        })
+      }
+    } catch (error) {
+      logger.error('❌ Model preloading failed:', error as Error)
+    }
+  }
 
   // Keep-alive heartbeat (helps some hosts keep process warm)
   const heartbeat = setInterval(() => {
