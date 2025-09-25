@@ -197,7 +197,13 @@ export async function* sendMessageToAgentStream(
         if (line.startsWith('data: ')) {
           try {
             const data = JSON.parse(line.slice(6))
-            yield data
+            
+            // Handle backend error response format
+            if (data.error && typeof data.error === 'object' && data.error.message) {
+              yield { error: data.error.message }
+            } else {
+              yield data
+            }
           } catch (err) {
             // eslint-disable-next-line no-console
             console.error('Failed to parse SSE data:', err)

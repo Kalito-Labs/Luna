@@ -7,8 +7,12 @@ import type {
   OpenAIAdapterOptions, 
   OpenAIUsage, 
   OpenAIGenerateResult,
-  OpenAIStreamChunk
+  OpenAIStreamChunk,
+  OpenAIAdapterSettings
 } from './types'
+
+
+
 
 /**
  * Default OpenAI client instance
@@ -75,15 +79,19 @@ async function generateWithChatAPI(
   const castMessages = messages as ChatCompletionMessageParam[]
   
   // Build OpenAI API parameters with additional settings
-  const completion = await client.chat.completions.create({
+  // GPT-5 models use max_completion_tokens instead of max_tokens
+  const tokenParam = modelName.startsWith('gpt-5') ? 'max_completion_tokens' : 'max_tokens'
+  const apiParams = {
     model: modelName,
     messages: castMessages,
-    max_tokens: maxTokens,
     temperature,
     top_p: settings?.topP as number | undefined,
     frequency_penalty: settings?.frequencyPenalty as number | undefined,
     presence_penalty: settings?.presencePenalty as number | undefined,
-  })
+    [tokenParam]: maxTokens,
+  }
+  
+  const completion = await client.chat.completions.create(apiParams)
   
   const reply = completion.choices[0]?.message?.content ?? ''
   const usage = completion.usage
@@ -146,7 +154,7 @@ async function* generateStreamWithChatAPI(
 }
 
 /**
- * Generate response using Responses API (if available and configured)
+ * Generate response using Responses API (for GPT-5 models)
  */
 async function generateWithResponsesAPI(
   client: OpenAI,
@@ -154,19 +162,27 @@ async function generateWithResponsesAPI(
   messages: { role: string; content: string }[],
   maxTokens: number,
   temperature: number,
-  pricing?: { input: number; output: number }
+  pricing?: { input: number; output: number },
+  settings?: OpenAIAdapterSettings
 ): Promise<OpenAIGenerateResult> {
-  // Responses API doesn't support temperature parameter
-  const response = await (client as unknown as { responses: { create: (_params: unknown) => Promise<{ output_text?: string; usage?: OpenAIUsage }> } }).responses.create({
+  const castMessages = messages as ChatCompletionMessageParam[]
+  
+  // Use simple input format for Responses API
+  const input = castMessages.map((msg: ChatCompletionMessageParam) => msg.content).join('\n\n')
+
+  const response = await client.responses.create({
     model: modelName,
-    input: messages,
+    input,
     max_output_tokens: maxTokens,
-    // Note: temperature not supported in Responses API
+    reasoning: {
+      effort: (settings as OpenAIAdapterSettings)?.reasoning_effort ?? 'medium'
+    }
   })
-  
-  const reply = response.output_text ?? ''
+
+  // Extract text from the response using the SDK's output_text property
+  const reply = response.output_text || ''
   const usage = response.usage
-  
+
   return {
     reply,
     tokenUsage: usage?.total_tokens,
@@ -175,7 +191,7 @@ async function generateWithResponsesAPI(
 }
 
 /**
- * Generate streaming response using Responses API (if available and configured)
+ * Generate streaming response using Responses API (for GPT-5 models)
  */
 async function* generateStreamWithResponsesAPI(
   client: OpenAI,
@@ -183,25 +199,38 @@ async function* generateStreamWithResponsesAPI(
   messages: { role: string; content: string }[],
   maxTokens: number,
   temperature: number,
-  pricing?: { input: number; output: number }
+  pricing?: { input: number; output: number },
+  settings?: OpenAIAdapterSettings
 ): AsyncGenerator<OpenAIStreamChunk> {
-  // Responses API doesn't support temperature parameter
-  const stream = await (client as unknown as { responses: { stream: (_params: unknown) => AsyncGenerator<{ type: string; delta?: string; response?: { usage?: OpenAIUsage } }> } }).responses.stream({
-    model: modelName,
-    input: messages,
-    max_output_tokens: maxTokens,
-    // Note: temperature not supported in Responses API
-  })
+  const castMessages = messages as ChatCompletionMessageParam[]
   
+  // Use simple input format for Responses API
+  const input = castMessages.map((msg: ChatCompletionMessageParam) => msg.content).join('\n\n')
+
+  const stream = await client.responses.create({
+    model: modelName,
+    input,
+    max_output_tokens: maxTokens,
+    reasoning: {
+      effort: (settings as OpenAIAdapterSettings)?.reasoning_effort ?? 'medium'
+    },
+    stream: true
+  })
+    
   let finalUsage: OpenAIUsage | undefined
   
-  for await (const event of stream) {
-    if (event.type === 'response.output_text.delta' && event.delta) {
-      yield { delta: event.delta }
+  for await (const chunk of stream) {
+    // Handle different types of stream events generically
+    if ('delta' in chunk && chunk.delta) {
+      const delta = String(chunk.delta)
+      if (delta) {
+        yield { delta }
+      }
     }
     
-    if (event.type === 'response.completed' && event.response?.usage) {
-      finalUsage = event.response.usage
+    // Handle response completion
+    if ('response' in chunk && chunk.response) {
+      finalUsage = (chunk.response as { usage?: OpenAIUsage }).usage
     }
   }
   
@@ -255,7 +284,8 @@ export function createOpenAIAdapter(options: OpenAIAdapterOptions): LLMAdapter {
             messages,
             maxTokens,
             temperature,
-            config.pricing
+            config.pricing,
+            settings as OpenAIAdapterSettings
           )
         } else {
           result = await generateWithChatAPI(
@@ -303,7 +333,8 @@ export function createOpenAIAdapter(options: OpenAIAdapterOptions): LLMAdapter {
             messages,
             maxTokens,
             temperature,
-            config.pricing
+            config.pricing,
+            settings as OpenAIAdapterSettings
           )) {
             yield {
               delta: chunk.delta,

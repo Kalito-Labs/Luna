@@ -23,12 +23,26 @@ export const gpt41NanoAdapter: LLMAdapter = createOpenAIAdapter({
   config: OPENAI_MODELS['gpt-4.1-nano'],
 })
 
+// GPT-5 Mini - Smaller GPT-5 model for faster responses
+export const gpt5MiniAdapter: LLMAdapter = createOpenAIAdapter({
+  id: 'gpt-5-mini',
+  config: OPENAI_MODELS['gpt-5-mini'],
+})
+
+// GPT-5 Nano - Fastest GPT-5 model for quick tasks
+export const gpt5NanoAdapter: LLMAdapter = createOpenAIAdapter({
+  id: 'gpt-5-nano',
+  config: OPENAI_MODELS['gpt-5-nano'],
+})
+
 /**
  * Collection of all factory-generated OpenAI adapters
  */
 export const openaiAdapters = {
   'gpt-4.1-mini': gpt41MiniAdapter,
   'gpt-4.1-nano': gpt41NanoAdapter,
+  'gpt-5-mini': gpt5MiniAdapter,
+  'gpt-5-nano': gpt5NanoAdapter,
 } as const
 
 /**

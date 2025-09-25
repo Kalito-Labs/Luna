@@ -7,7 +7,12 @@ export type { LLMAdapter }
 const modelRegistry: Record<string, LLMAdapter> = Object.create(null)
 
 // ---------- Adapters ----------
-import { gpt41MiniAdapter, gpt41NanoAdapter } from './adapters/openai'
+import { 
+  gpt41MiniAdapter, 
+  gpt41NanoAdapter,
+  gpt5MiniAdapter,
+  gpt5NanoAdapter
+} from './adapters/openai'
 import { claudeAdapter } from './adapters/claudeAdapter'
 import { qwen25Adapter } from './adapters/qwen25Adapter'
 import { qwen25CoderAdapter } from './adapters/qwen25CoderAdapter'
@@ -34,6 +39,14 @@ function registerAdapter(adapter: LLMAdapter, aliases: string[] = []) {
 // OpenAI (primary implementations)
 registerAdapter(gpt41MiniAdapter)
 registerAdapter(gpt41NanoAdapter)
+
+// GPT-5 models with Responses API
+registerAdapter(gpt5MiniAdapter, [
+  'gpt5-mini', // alternative format
+])
+registerAdapter(gpt5NanoAdapter, [
+  'gpt5-nano', // alternative format
+])
 
 // Non-OpenAI
 registerAdapter(claudeAdapter, [
@@ -79,8 +92,8 @@ export function listModelAdapters(): LLMAdapter[] {
 
   // Ensure stable, deterministic ordering in APIs/UI
   unique.sort((a, b) => {
-    const ta = (a as any).type || ''
-    const tb = (b as any).type || ''
+    const ta = a.type || ''
+    const tb = b.type || ''
     if (ta !== tb) return ta < tb ? -1 : 1
     if (a.name !== b.name) return a.name < b.name ? -1 : 1
     return a.id < b.id ? -1 : 1

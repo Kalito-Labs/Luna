@@ -30,6 +30,8 @@ export {
 export { 
   gpt41MiniAdapter, 
   gpt41NanoAdapter,
+  gpt5MiniAdapter,
+  gpt5NanoAdapter,
   openaiAdapters,
   getOpenAIAdapterIds
 } from './adapters'

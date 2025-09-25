@@ -37,6 +37,33 @@ export const OPENAI_MODELS: Record<string, OpenAIModelConfig> = {
       output: 0.80,  // $0.80 / 1M output tokens
     },
   },
+
+  // ---------------- GPT-5 family (Responses API) ----------------
+  'gpt-5-mini': {
+    model: 'gpt-5-mini',
+    name: 'GPT-5 Mini',
+    apiMode: 'responses',
+    contextWindow: 200000,
+    defaultMaxTokens: 4096,
+    defaultTemperature: 0.2,
+    pricing: {
+      input: 0.25,   // $0.25 / 1M input tokens
+      output: 2.0,   // $2.00 / 1M output tokens
+    },
+    aliases: ['gpt-5-fast'],
+  },
+  'gpt-5-nano': {
+    model: 'gpt-5-nano',
+    name: 'GPT-5 Nano',
+    apiMode: 'responses',
+    contextWindow: 200000,
+    defaultMaxTokens: 2048,
+    defaultTemperature: 0.2,
+    pricing: {
+      input: 0.05,   // $0.05 / 1M input tokens
+      output: 0.4,   // $0.40 / 1M output tokens
+    },
+  },
 }
 
 /**

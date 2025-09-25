@@ -8,7 +8,8 @@ export type OpenAIModel =
   | 'gpt-4.1'
   | 'gpt-4.1-mini'
   | 'gpt-4.1-nano'
-  | string // Allow for future models
+  | 'gpt-5-mini'
+  | 'gpt-5-nano'
 
 export type APIMode = 'chat' | 'responses'
 
@@ -67,4 +68,18 @@ export interface OpenAIStreamChunk {
   done?: boolean
   tokenUsage?: number
   estimatedCost?: number
+}
+
+export type ReasoningEffort = 'low' | 'medium' | 'high'
+
+export interface OpenAIAdapterSettings {
+  temperature?: number
+  topP?: number
+  maxTokens?: number
+  max_output_tokens?: number
+  // GPT-5 extras via Responses API:
+  reasoning_effort?: ReasoningEffort
+  verbosity?: 'brief' | 'full'
+  // Pass-through for future params
+  [key: string]: unknown
 }
