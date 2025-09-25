@@ -32,12 +32,6 @@ const MODELS_TO_PRELOAD: PreloadConfig[] = [
     maxRetries: 3,
     retryDelayMs: 2000,
   },
-  {
-    model: 'tinyllama:latest',
-    displayName: 'TinyLlama 1.1B',
-    maxRetries: 3,
-    retryDelayMs: 1000, // Faster retry for smaller model
-  },
 ]
 ```
 
@@ -73,7 +67,6 @@ const MODELS_TO_PRELOAD: PreloadConfig[] = [
 | Model | Size | Purpose | Preload Time |
 |-------|------|---------|-------------|
 | Qwen 2.5 Coder 3B | 1.9GB | Code generation, technical tasks | ~15-20s |
-| TinyLlama 1.1B | 637MB | Quick responses, casual chat | ~5-10s |
 
 ### Adding New Models
 
@@ -123,11 +116,6 @@ Response:
     "status": "ready",
     "preloadedAt": "2025-09-25T10:30:15.123Z",
     "lastChecked": "2025-09-25T10:35:20.456Z"
-  },
-  "tinyllama:latest": {
-    "status": "ready",
-    "preloadedAt": "2025-09-25T10:30:18.789Z",
-    "lastChecked": "2025-09-25T10:35:22.012Z"
   }
 }
 ```
@@ -271,7 +259,6 @@ async function customStartup() {
 - Status API endpoint
 
 ### v1.1.0 (September 2025)
-- Added TinyLlama support
 - Improved error handling
 - Performance optimizations
 - Enhanced documentation

@@ -34,12 +34,6 @@ const MODELS_TO_PRELOAD: PreloadConfig[] = [
     maxRetries: 3,
     retryDelayMs: 2000,
   },
-  {
-    model: 'tinyllama:latest',
-    displayName: 'TinyLlama 1.1B',
-    maxRetries: 3,
-    retryDelayMs: 1000, // Faster retry for smaller model
-  },
 ]
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_URL || 'http://localhost:11434'

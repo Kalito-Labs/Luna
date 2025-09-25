@@ -15,7 +15,6 @@ import {
 } from './adapters/openai'
 import { claudeAdapter } from './adapters/claudeAdapter'
 import { qwen25CoderAdapter } from './adapters/qwen25CoderAdapter'
-import { tinyLlamaAdapter } from './adapters/tinyLlamaAdapter'
 
 // ---------- Registration helper ----------
 
@@ -58,10 +57,6 @@ registerAdapter(qwen25CoderAdapter, [
   'qwen25-coder',
   'qwen25', // short alias (now points to coder variant)
   'qwen', // even shorter alias
-])
-registerAdapter(tinyLlamaAdapter, [
-  'tinyllama',
-  'tiny',
 ])
 
 /**
