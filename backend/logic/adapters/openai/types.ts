@@ -5,7 +5,6 @@
  */
 
 export type OpenAIModel = 
-  | 'gpt-4.1'
   | 'gpt-4.1-mini'
   | 'gpt-4.1-nano'
   | 'gpt-5-mini'
