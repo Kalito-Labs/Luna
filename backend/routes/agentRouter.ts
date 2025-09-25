@@ -303,7 +303,11 @@ agentRouter.post(
         setTimeout(async () => {
           try {
             if (memoryManager.needsSummarization(usedSessionId)) {
-              await memoryManager.autoSummarizeSession(usedSessionId)
+              const summary = await memoryManager.autoSummarizeSession(usedSessionId)
+              // Update session recap if we generated a new summary
+              if (summary) {
+                db.prepare(`UPDATE sessions SET recap = ? WHERE id = ?`).run(summary.summary, usedSessionId)
+              }
             }
           } catch (autoErr) {
             logError('Auto-summarization failed', autoErr as Error, { sessionId: usedSessionId })

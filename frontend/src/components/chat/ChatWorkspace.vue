@@ -54,8 +54,10 @@ import {
   sendMessageToAgent,
   sendMessageToAgentStream,
   fetchSessions,
+  fetchSessionMessages,
   createSession,
   createSemanticPin,
+  saveSession,
 } from '../../core'
 import type { Message as SharedMessage } from '../../../../backend/types/messages'
 
@@ -527,11 +529,39 @@ async function resetSession() {
 async function handleResetConfirm() {
   showResetDialog.value = false
   
-  // Sessions are auto-saved, so just start new session
-  chatMessages.value.push({
-    from: 'kalito',
-    text: '🔄 Starting new session...',
-  })
+  // User clicked "Save" - generate recap and save session before resetting
+  if (currentSessionId.value && isSessionActive.value) {
+    try {
+      chatMessages.value.push({
+        from: 'kalito',
+        text: '💾 Saving session and generating summary...',
+      })
+      
+      // Call the save API which will generate a recap automatically
+      await saveSession(
+        currentSessionId.value,
+        '', // Empty recap - API will generate one
+        sessionSettings.value.model || 'default',
+        sessionSettings.value.persona || 'default',
+        undefined // No custom name
+      )
+      
+      chatMessages.value.push({
+        from: 'kalito',
+        text: '✅ Session saved successfully! Starting new session...',
+      })
+      
+      // Refresh sessions list to show the saved session
+      await loadSessions()
+    } catch (error) {
+      console.error('Failed to save session:', error)
+      chatMessages.value.push({
+        from: 'kalito',
+        text: '⚠️ Failed to save session, but starting new session anyway...',
+      })
+    }
+  }
+  
   performReset()
 }
 
@@ -660,6 +690,22 @@ function generateSessionTitle(messages: ChatMessage[]): string {
   }
 
   return 'Chat Session'
+}
+
+/**
+ * Convert database messages to chat messages format
+ */
+function convertDBMessagesToChatMessages(dbMessages: any[]): ChatMessage[] {
+  if (!Array.isArray(dbMessages)) {
+    console.warn('Invalid dbMessages format:', dbMessages)
+    return []
+  }
+
+  return dbMessages.map(msg => ({
+    from: msg.role === 'user' ? 'user' : 'kalito',
+    text: msg.text || '',
+    isRecap: false,
+  }))
 }
 
 async function handleCreatePin(content: string, messageId?: string) {
