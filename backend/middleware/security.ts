@@ -74,7 +74,7 @@ const getHelmetOptions = () => ({
  */
 export const generalRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'development' ? 1000 : 500, // More lenient in development
   message: {
     error: 'Too Many Requests',
     message: 'Too many requests from this IP, please try again later',
@@ -90,7 +90,7 @@ export const generalRateLimit = rateLimit({
  */
 export const agentRateLimit = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 20, // Limit each IP to 20 AI requests per 10 minutes
+  max: process.env.NODE_ENV === 'development' ? 200 : 100, // More lenient in development
   message: {
     error: 'AI Rate Limit Exceeded',
     message: 'Too many AI requests, please slow down to ensure fair usage',

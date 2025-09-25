@@ -317,6 +317,16 @@ export async function fetchSessions() {
 }
 
 /**
+ * fetchSessionMessages
+ * Fetches messages for a specific session from the backend.
+ */
+export async function fetchSessionMessages(sessionId: string) {
+  const response = await fetch(`/api/sessions/${sessionId}/messages`)
+  if (!response.ok) throw new Error('Failed to fetch session messages')
+  return response.json()
+}
+
+/**
  * Local Session Storage Management
  * For preserving current session state across page refreshes without saving to database
  */

@@ -99,7 +99,10 @@
                   v-for="session in savedSessions"
                   :key="session.id"
                   class="session-item glass-panel-primary"
-                  :class="{ active: session.id === currentSessionId }"
+                  :class="{ 
+                    active: session.id === currentSessionId,
+                    'has-content': session.recap && session.recap.trim().length > 0 && !session.recap.includes('😞')
+                  }"
                 >
                   <div class="session-content" @click="$emit('select-session', session)">
                     <div class="session-header">
@@ -171,7 +174,7 @@ import { reactive, ref, watch, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import ChatPanel from './ChatPanel.vue'
 import ConfirmDialog from '../ConfirmDialog.vue'
-import { fetchAvailableModels } from '../../core'
+import { fetchAvailableModels, fetchSessionMessages } from '../../core'
 import { usePersonaStore } from '../../composables/usePersonaStore'
 
 const router = useRouter()
@@ -224,6 +227,59 @@ const models = ref<Model[]>([])
 const personaStore = usePersonaStore()
 const { personas } = personaStore
 
+// Cache for session messages to create better previews
+const sessionMessagesCache = ref<Map<string, any[]>>(new Map())
+
+// Function to create preview from first few messages
+async function createPreviewFromMessages(sessionId: string): Promise<string> {
+  try {
+    // Check cache first
+    if (sessionMessagesCache.value.has(sessionId)) {
+      const messages = sessionMessagesCache.value.get(sessionId)
+      return generatePreviewFromMessages(messages || [])
+    }
+
+    // Fetch messages if not cached
+    const response = await fetchSessionMessages(sessionId)
+    const messages = Array.isArray(response) ? response : (response.data || response.items || [])
+    
+    // Cache the messages
+    sessionMessagesCache.value.set(sessionId, messages)
+    
+    return generatePreviewFromMessages(messages)
+  } catch (error) {
+    console.warn('Failed to fetch messages for preview:', error)
+    return 'Unable to load preview'
+  }
+}
+
+// Generate preview text from message array
+function generatePreviewFromMessages(messages: any[]): string {
+  if (!messages || messages.length === 0) {
+    return 'Empty conversation'
+  }
+
+  // Find the first user message to get context
+  const userMessages = messages.filter(msg => msg.role === 'user' && msg.text && msg.text.trim())
+
+  if (userMessages.length === 0) {
+    return 'No user messages found'
+  }
+
+  const firstUserMsg = userMessages[0].text.trim()
+  
+  // Create preview based on first user message
+  if (firstUserMsg.length <= 100) {
+    return `Discussion about: ${firstUserMsg}`
+  } else {
+    // Find a good truncation point
+    const truncated = firstUserMsg.substring(0, 100)
+    const lastSpace = truncated.lastIndexOf(' ')
+    const breakPoint = lastSpace > 50 ? lastSpace : 100
+    return `Discussion about: ${firstUserMsg.substring(0, breakPoint)}...`
+  }
+}
+
 // Section expansion state
 const sectionExpanded = reactive({
   savedSessions: true,
@@ -256,7 +312,10 @@ onMounted(async () => {
     (!localSessionSettings.model || !models.value.find(m => m.id === localSessionSettings.model)) &&
     models.value.length > 0
   ) {
-    localSessionSettings.model = models.value[0].id
+    const firstModel = models.value[0]
+    if (firstModel) {
+      localSessionSettings.model = firstModel.id
+    }
   }
 
   // Ensure persona selection using fallback chain
@@ -377,7 +436,7 @@ function handleStartSession() {
 
 // Saved sessions helpers
 const savedSessions = computed(() => {
-  return sessionsArray.value
+  const sessions = sessionsArray.value
     // Only explicitly saved sessions OR legacy with recap
     .filter(s => (typeof s.saved === 'number' ? s.saved === 1 : !!(s.recap && s.recap.trim())))
     .slice()
@@ -386,6 +445,17 @@ const savedSessions = computed(() => {
       const bTime = new Date((b.updated_at || b.created_at) || '').getTime()
       return bTime - aTime
     })
+
+  // Load message previews for sessions without recaps (background operation)
+  sessions.forEach(session => {
+    if (session?.id && (!session.recap || session.recap.trim().length === 0) && !sessionMessagesCache.value.has(session.id)) {
+      createPreviewFromMessages(session.id).catch(() => {
+        // Silent fail - preview loading is optional
+      })
+    }
+  })
+
+  return sessions
 })
 
 function loadSession(session: Session) {
@@ -417,16 +487,108 @@ function handleDeleteCancel() {
 
 // UI text helpers
 function getSessionTitle(session: Session): string {
-  return session?.name || 'Untitled Chat'
+  // If there's a custom name, use it
+  if (session?.name && session.name.trim() && session.name !== 'New Chat') {
+    return session.name
+  }
+  
+  // Try to generate a title from cached messages first
+  if (session?.id && sessionMessagesCache.value.has(session.id)) {
+    const messages = sessionMessagesCache.value.get(session.id)
+    const userMessages = messages?.filter(msg => msg.role === 'user' && msg.text && msg.text.trim()) || []
+    
+    if (userMessages.length > 0) {
+      const firstUserMsg = userMessages[0].text.trim()
+      
+      // Extract key phrases or topics from the first message
+      const words = firstUserMsg.split(/\s+/)
+      if (words.length <= 8 && firstUserMsg.length <= 60) {
+        return firstUserMsg
+      } else if (words.length > 8) {
+        return words.slice(0, 8).join(' ') + '...'
+      } else {
+        return firstUserMsg.substring(0, 57) + '...'
+      }
+    }
+  }
+  
+  // Try to generate a title from the recap
+  if (session?.recap && session.recap.trim().length > 0) {
+    if (session.recap.includes('😞') || session.recap.toLowerCase().includes('sorry, i hit an error')) {
+      return 'Chat Session'
+    }
+    
+    // Extract first meaningful sentence or phrase as title
+    const recap = session.recap.trim()
+    const sentences = recap.split(/[.!?]+/)
+    const firstSentence = sentences[0]?.trim() || ''
+    
+    if (firstSentence.length > 5 && firstSentence.length <= 50) {
+      return firstSentence
+    } else if (firstSentence.length > 50) {
+      return firstSentence.substring(0, 47) + '...'
+    }
+  }
+  
+  // Fallback based on model and date
+  const modelName = session?.model ? session.model.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'AI'
+  const date = session?.created_at ? formatDate(session.created_at) : 'Recent'
+  return `${modelName} Chat • ${date}`
 }
+
 function getSessionPreview(session: Session): string {
   if (session?.recap && session.recap.trim().length > 0) {
     if (session.recap.includes('😞') || session.recap.toLowerCase().includes('sorry, i hit an error')) {
       return 'Session recap unavailable - please load to continue'
     }
-    return session.recap.substring(0, 80) + (session.recap.length > 80 ? '...' : '')
+    
+    const recap = session.recap.trim()
+    
+    // If recap is short enough, show it all
+    if (recap.length <= 120) {
+      return recap
+    }
+    
+    // For longer recaps, try to find a good breaking point
+    const truncated = recap.substring(0, 120)
+    const lastSpace = truncated.lastIndexOf(' ')
+    const lastPunctuation = Math.max(
+      truncated.lastIndexOf('.'),
+      truncated.lastIndexOf('!'),
+      truncated.lastIndexOf('?'),
+      truncated.lastIndexOf(',')
+    )
+    
+    // Use the best breaking point
+    const breakPoint = Math.max(lastSpace, lastPunctuation)
+    if (breakPoint > 80) {
+      return truncated.substring(0, breakPoint) + '...'
+    }
+    
+    return truncated + '...'
   }
-  return 'Saved conversation — click to load'
+  
+  // Try to load preview from messages if available
+  if (session?.id && sessionMessagesCache.value.has(session.id)) {
+    const messages = sessionMessagesCache.value.get(session.id)
+    const preview = generatePreviewFromMessages(messages || [])
+    if (preview !== 'Empty conversation' && preview !== 'No user messages found') {
+      return preview
+    }
+  }
+  
+  // Generate preview from session metadata if no recap
+  const parts = []
+  if (session?.model) {
+    const modelName = session.model.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    parts.push(`${modelName} conversation`)
+  }
+  if (session?.persona_id && session.persona_id !== 'default') {
+    const personaName = session.persona_id.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    parts.push(`using ${personaName} persona`)
+  }
+  
+  return parts.length > 0 ? parts.join(' ') : 'Saved conversation — click to load'
 }
 function formatDate(dateStr: string | undefined): string {
   if (!dateStr) return 'Unknown date'
@@ -904,6 +1066,14 @@ function formatDate(dateStr: string | undefined): string {
   background: linear-gradient(135deg, rgba(66, 165, 245, 0.12) 0%, rgba(66, 165, 245, 0.08) 100%);
   border-color: rgba(66, 165, 245, 0.4);
   box-shadow: 0 4px 16px rgba(66, 165, 245, 0.2);
+}
+
+.session-item.has-content {
+  border-left: 3px solid rgba(34, 197, 94, 0.6);
+}
+
+.session-item.has-content:hover {
+  border-left-color: rgba(34, 197, 94, 0.8);
 }
 
 .session-content {
