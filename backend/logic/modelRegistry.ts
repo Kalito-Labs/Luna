@@ -48,9 +48,11 @@ registerAdapter(gpt5NanoAdapter, [
 
 // Non-OpenAI
 registerAdapter(claudeAdapter, [
-  'claude-4-sonnet', // legacy alias for backward compatibility
-  'claude-sonnet',     // short alias
-]) // 'claude-sonnet-4'
+  'claude-opus-4.1', // exact match
+  'claude-opus',      // short alias
+  'claude-4-sonnet',  // legacy alias for backward compatibility
+  'claude-sonnet',    // legacy short alias
+]) // 'claude-opus-4.1'
 
 // Local models
 registerAdapter(qwen25CoderAdapter, [
