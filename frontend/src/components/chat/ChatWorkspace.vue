@@ -58,6 +58,7 @@ import {
   createSession,
   createSemanticPin,
   saveSession,
+  fetchAvailableModels,
 } from '../../core'
 import type { Message as SharedMessage } from '../../../../backend/types/messages'
 
