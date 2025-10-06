@@ -41,18 +41,3 @@ export function handleRouterError(
   logger.error(`Unhandled router error during ${operation}`, { error })
   handleCaughtError(res, error, { operation, ...(extraDetails || {}) })
 }
-
-/**
- * Small convenience helpers you can use in routers, if you like.
- */
-export function notFound(res: Response, what: string, details?: Record<string, unknown>) {
-  return err(res, 404, 'NOT_FOUND', `${what} not found`, details)
-}
-
-export function conflict(res: Response, message: string, details?: Record<string, unknown>) {
-  return err(res, 409, 'CONFLICT', message, details)
-}
-
-export function forbidden(res: Response, message: string, details?: Record<string, unknown>) {
-  return err(res, 403, 'FORBIDDEN', message, details)
-}

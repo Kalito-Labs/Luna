@@ -4,7 +4,8 @@ import { Router } from 'express'
 import { z } from 'zod'
 import { db } from '../db/db'
 import type { Persona } from '../types/personas'
-import { okList, okItem, okDeleted, err, handleCaughtError } from '../utils/apiContract'
+import { okList, okItem, err } from '../utils/apiContract'
+import { handleRouterError } from '../utils/routerHelpers'
 
 const router = Router()
 
@@ -90,15 +91,15 @@ router.get('/', (_req, res) => {
 
     const personas = raw.map(toPersonaWithSettings)
     return okList(res, personas)
-  } catch (e) {
-    return handleCaughtError(res, e)
+  } catch (error) {
+    return handleRouterError(res, error, 'list personas')
   }
 })
 
 // GET /api/personas/:id - Get a specific persona
 router.get('/:id', (req, res) => {
+  const { id } = req.params
   try {
-    const { id } = req.params
     const row = db.prepare(
       `
       SELECT id, name, prompt, description, icon, category, is_default,
@@ -113,8 +114,8 @@ router.get('/:id', (req, res) => {
     }
 
     return okItem(res, toPersonaWithSettings(row))
-  } catch (e) {
-    return handleCaughtError(res, e)
+  } catch (error) {
+    return handleRouterError(res, error, 'get persona', { id })
   }
 })
 
@@ -160,15 +161,15 @@ router.post('/', (req, res) => {
     ).get(validated.id)
 
     return okItem(res, toPersonaWithSettings(row), 201)
-  } catch (e) {
-    return handleCaughtError(res, e)
+  } catch (error) {
+    return handleRouterError(res, error, 'create persona')
   }
 })
 
 // PUT /api/personas/:id - Update an existing persona
 router.put('/:id', (req, res) => {
+  const { id } = req.params
   try {
-    const { id } = req.params
     const validated = updatePersonaSchema.parse(req.body)
 
     const existing = db.prepare('SELECT * FROM personas WHERE id = ?').get(id)
@@ -208,15 +209,15 @@ router.put('/:id', (req, res) => {
     ).get(id)
 
     return okItem(res, toPersonaWithSettings(row))
-  } catch (e) {
-    return handleCaughtError(res, e)
+  } catch (error) {
+    return handleRouterError(res, error, 'update persona', { id })
   }
 })
 
 // DELETE /api/personas/:id - Delete a persona (with safe reassignment)
 router.delete('/:id', (req, res) => {
+  const { id } = req.params
   try {
-    const { id } = req.params
 
     const persona = db.prepare(
       `SELECT id, category, is_default FROM personas WHERE id = ?`
@@ -257,8 +258,8 @@ router.delete('/:id', (req, res) => {
       db.prepare('ROLLBACK').run()
       throw inner
     }
-  } catch (e) {
-    return handleCaughtError(res, e)
+  } catch (error) {
+    return handleRouterError(res, error, 'delete persona', { id })
   }
 })
 

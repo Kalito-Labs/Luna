@@ -44,19 +44,3 @@ export const openaiAdapters = {
   'gpt-5-mini': gpt5MiniAdapter,
   'gpt-5-nano': gpt5NanoAdapter,
 } as const
-
-/**
- * Get all OpenAI adapter IDs (including aliases)
- */
-export function getOpenAIAdapterIds(): string[] {
-  const ids: string[] = []
-  
-  for (const [modelId, config] of Object.entries(OPENAI_MODELS)) {
-    ids.push(modelId)
-    if (config.aliases) {
-      ids.push(...config.aliases)
-    }
-  }
-  
-  return ids
-}

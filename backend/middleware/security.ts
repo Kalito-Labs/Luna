@@ -103,22 +103,6 @@ export const agentRateLimit = rateLimit({
 })
 
 /**
- * Auth endpoint rate limiting (prevent brute force)
- */
-export const authRateLimit = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 auth attempts per 15 minutes
-  message: {
-    error: 'Authentication Rate Limit',
-    message: 'Too many authentication attempts, please try again later',
-    retryAfter: 15 * 60,
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-  skipSuccessfulRequests: true, // Don't count successful auth
-})
-
-/**
  * Export configured middleware
  */
 export const corsMiddleware = cors(getCorsOptions())
@@ -156,24 +140,6 @@ export const securityLogger = (req: Request, _res: Response, next: NextFunction)
   }
 
   next()
-}
-
-/**
- * IP whitelist middleware (for admin endpoints)
- */
-export const ipWhitelist = (allowedIPs: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const clientIP = req.ip || req.connection.remoteAddress
-
-    if (!clientIP || !allowedIPs.includes(clientIP)) {
-      return res.status(403).json({
-        error: 'Forbidden',
-        message: 'Access denied from your IP address',
-      })
-    }
-
-    next()
-  }
 }
 
 /**

@@ -14,9 +14,11 @@ import {
   gpt5NanoAdapter
 } from './adapters/openai'
 import { claudeAdapter } from './adapters/claudeAdapter'
-import { qwen25CoderAdapter } from './adapters/qwen25CoderAdapter'
-import { phi3MiniAdapter } from './adapters/phi3MiniAdapter'
-import { neuralChatAdapter } from './adapters/neuralChatAdapter'
+import {
+  qwen25CoderAdapter,
+  phi3MiniAdapter,
+  neuralChatAdapter,
+} from './adapters/ollama'
 
 // ---------- Registration helper ----------
 
