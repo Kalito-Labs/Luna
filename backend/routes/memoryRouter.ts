@@ -7,6 +7,8 @@ import { MemoryManager } from '../logic/memoryManager'
 import { validateQuery, validateBody } from '../middleware/validation'
 import { z } from 'zod'
 import { db } from '../db/db'
+import { okItem } from '../utils/apiContract'
+import { handleRouterError } from '../utils/routerHelpers'
 
 const router = Router()
 const memoryManager = new MemoryManager()
@@ -38,8 +40,8 @@ const contextQuerySchema = z.object({
 router.get('/:sessionId/context', 
   validateQuery(contextQuerySchema),
   async (req, res) => {
+    const { sessionId } = req.params
     try {
-      const { sessionId } = req.params
       const { maxTokens } = req.query
       
       const context = await memoryManager.buildContext(
@@ -47,16 +49,9 @@ router.get('/:sessionId/context',
         maxTokens ? Number(maxTokens) : undefined
       )
       
-      res.json({
-        success: true,
-        data: context
-      })
+      return okItem(res, context)
     } catch (error) {
-      console.error('Memory context error:', error)
-      res.status(500).json({
-        success: false,
-        error: 'Failed to build memory context'
-      })
+      return handleRouterError(res, error, 'get memory context', { sessionId })
     }
   }
 )
@@ -71,16 +66,9 @@ router.post('/summaries',
     try {
       const summary = await memoryManager.createSummary(req.body)
       
-      res.status(201).json({
-        success: true,
-        data: summary
-      })
+      return okItem(res, summary, 201)
     } catch (error) {
-      console.error('Create summary error:', error)
-      res.status(500).json({
-        success: false,
-        error: 'Failed to create summary'
-      })
+      return handleRouterError(res, error, 'create summary')
     }
   }
 )
@@ -95,16 +83,9 @@ router.post('/pins',
     try {
       const pin = memoryManager.createSemanticPin(req.body)
       
-      res.status(201).json({
-        success: true,
-        data: pin
-      })
+      return okItem(res, pin, 201)
     } catch (error) {
-      console.error('Create pin error:', error)
-      res.status(500).json({
-        success: false,
-        error: 'Failed to create semantic pin'
-      })
+      return handleRouterError(res, error, 'create semantic pin')
     }
   }
 )
@@ -114,8 +95,8 @@ router.post('/pins',
  * Score all messages in a session for importance
  */
 router.post('/:sessionId/score-messages', async (req, res) => {
+  const { sessionId } = req.params
   try {
-    const { sessionId } = req.params
     
     // Get all messages for this session
     const messages = memoryManager['getRecentMessages'](sessionId, 1000) // Get up to 1000 messages
@@ -127,19 +108,12 @@ router.post('/:sessionId/score-messages', async (req, res) => {
       updatedCount++
     }
     
-    res.json({
-      success: true,
-      data: {
-        messagesScored: updatedCount,
-        sessionId
-      }
+    return okItem(res, {
+      messagesScored: updatedCount,
+      sessionId
     })
   } catch (error) {
-    console.error('Score messages error:', error)
-    res.status(500).json({
-      success: false,
-      error: 'Failed to score messages'
-    })
+    return handleRouterError(res, error, 'score messages', { sessionId })
   }
 })
 
@@ -148,8 +122,8 @@ router.post('/:sessionId/score-messages', async (req, res) => {
  * Get memory statistics for a session
  */
 router.get('/:sessionId/stats', async (req, res) => {
+  const { sessionId: _sessionId } = req.params
   try {
-    const { sessionId: _sessionId } = req.params
     
     // Get basic stats (this will need database queries)
     // Calculate actual stats for the session
@@ -193,16 +167,9 @@ router.get('/:sessionId/stats', async (req, res) => {
       averageImportanceScore: messageStats.avgImportance || 0
     }
     
-    res.json({
-      success: true,
-      data: stats
-    })
+    return okItem(res, stats)
   } catch (error) {
-    console.error('Memory stats error:', error)
-    res.status(500).json({
-      success: false,
-      error: 'Failed to get memory statistics'
-    })
+    return handleRouterError(res, error, 'get memory stats', { sessionId: _sessionId })
   }
 })
 
@@ -211,23 +178,16 @@ router.get('/:sessionId/stats', async (req, res) => {
  * Check if session needs summarization
  */
 router.get('/:sessionId/needs-summarization', async (req, res) => {
+  const { sessionId } = req.params
   try {
-    const { sessionId } = req.params
     const needsSummary = memoryManager.needsSummarization(sessionId)
     
-    res.json({
-      success: true,
-      data: {
-        needsSummarization: needsSummary,
-        sessionId
-      }
+    return okItem(res, {
+      needsSummarization: needsSummary,
+      sessionId
     })
   } catch (error) {
-    console.error('Check summarization error:', error)
-    res.status(500).json({
-      success: false,
-      error: 'Failed to check summarization status'
-    })
+    return handleRouterError(res, error, 'check summarization status', { sessionId })
   }
 })
 

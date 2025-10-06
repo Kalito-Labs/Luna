@@ -141,9 +141,6 @@ app.use(errorHandler)
 // --- Process-level error handlers ---
 setupGlobalErrorHandlers()
 
-// --- Model preloading ---
-// import { preloadLocalModels, startModelWarming } from './logic/modelPreloader'
-
 // --- Start the server ---
 const server = app.listen(PORT, async () => {
   logger.info('Server started successfully', {
@@ -151,33 +148,6 @@ const server = app.listen(PORT, async () => {
     port: PORT,
     environment: nodeEnv,
   })
-
-  // Preload local models for instant responses
-  // DISABLED: Causes high RAM usage and models aren't always needed
-  // if (nodeEnv !== 'test') {
-  //   logger.info('🔄 Starting model preloading...')
-  //   try {
-  //     const preloadResult = await preloadLocalModels()
-  //     
-  //     if (preloadResult.success) {
-  //       logger.info('🎉 All local models preloaded successfully', {
-  //         loaded: preloadResult.loaded,
-  //         totalTime: preloadResult.totalTime,
-  //       })
-  //       
-  //       // Start model warming to keep them active
-  //       startModelWarming(4) // Warm every 4 minutes
-  //     } else {
-  //       logger.warn('⚠️  Some models failed to preload', {
-  //         loaded: preloadResult.loaded,
-  //         failed: preloadResult.failed,
-  //         totalTime: preloadResult.totalTime,
-  //       })
-  //     }
-  //   } catch (error) {
-  //     logger.error('❌ Model preloading failed:', error as Error)
-  //   }
-  // }
 
   // Keep-alive heartbeat (helps some hosts keep process warm)
   const heartbeat = setInterval(() => {
