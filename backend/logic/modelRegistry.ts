@@ -15,6 +15,8 @@ import {
 } from './adapters/openai'
 import { claudeAdapter } from './adapters/claudeAdapter'
 import { qwen25CoderAdapter } from './adapters/qwen25CoderAdapter'
+import { phi3MiniAdapter } from './adapters/phi3MiniAdapter'
+import { neuralChatAdapter } from './adapters/neuralChatAdapter'
 
 // ---------- Registration helper ----------
 
@@ -59,6 +61,14 @@ registerAdapter(qwen25CoderAdapter, [
   'qwen25-coder',
   'qwen25', // short alias (now points to coder variant)
   'qwen', // even shorter alias
+])
+registerAdapter(phi3MiniAdapter, [
+  'phi3',      // short alias
+  'phi-3',     // alternative format
+])
+registerAdapter(neuralChatAdapter, [
+  'neural-chat',  // alternative format
+  'neuralchat',   // no hyphen version
 ])
 
 /**

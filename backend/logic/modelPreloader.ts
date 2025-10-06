@@ -34,6 +34,18 @@ const MODELS_TO_PRELOAD: PreloadConfig[] = [
     maxRetries: 3,
     retryDelayMs: 2000,
   },
+  {
+    model: 'phi3:mini',
+    displayName: 'Phi-3 Mini',
+    maxRetries: 3,
+    retryDelayMs: 1500, // Faster retry for smaller model
+  },
+  {
+    model: 'neural-chat:7b',
+    displayName: 'Neural Chat 7B',
+    maxRetries: 3,
+    retryDelayMs: 2500, // Slightly longer for larger model
+  },
 ]
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_URL || 'http://localhost:11434'
