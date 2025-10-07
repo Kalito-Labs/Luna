@@ -27,47 +27,19 @@
           </ul>
         </div>
       </div>
-      <div class="accent-bar"></div>
     </section>
-
-    <!-- Chat Component (if applicable) -->
-    <div v-if="showChat" class="chat-container">
-      <div class="chat-messages">
-        <div v-for="(msg, index) in chatMessages" :key="index" class="chat-message">
-          {{ msg }}
-        </div>
-      </div>
-      <textarea
-        v-model="currentMessage"
-        @keyup.enter.prevent="sendMessage"
-        class="chat-input"
-        placeholder="Type your message..."
-      ></textarea>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import homeBg from '@/assets/images/home-1.webp'
-
-const showChat = ref(false) // Control for chat visibility
-const chatMessages = ref([])
-const currentMessage = ref('')
 
 // Background style for the home view
 const homeBgStyle = computed(() => ({
   background: `#16161e url('${homeBg}') center center/cover no-repeat`,
 }))
-
-// Chat message handling
-function sendMessage() {
-  if (currentMessage.value.trim() !== '') {
-    chatMessages.value.push(currentMessage.value.trim())
-    currentMessage.value = ''
-  }
-}
 </script>
 
 <style scoped>
@@ -201,47 +173,160 @@ function sendMessage() {
   filter: none;
 }
 
-/* Accent bar under the intro block */
-.accent-bar {
-  width: 70%;
-  max-width: 700px;
-  height: 2px;
-  background: linear-gradient(90deg, #81e0fd 10%, #d1c3fc 65%, #8cf8d1 100%);
-  opacity: 0.26;
-  border-radius: 2px;
-  margin: 2.8em auto 0 auto;
+/* ================================================================ */
+/* Mobile Styles - Tablets (Portrait and Landscape)                */
+/* ================================================================ */
+@media (max-width: 1024px) {
+  .hamburger-fixed {
+    top: 24px;
+    left: 24px;
+  }
+
+  .main-title {
+    font-size: 2.3rem;
+    margin: 0.4em 0 0.5em 0;
+  }
+
+  .intro-block {
+    max-width: 90%;
+    padding: 2em 2.2em;
+    gap: 0.75em;
+    margin-top: 2rem;
+  }
+
+  .features-container {
+    padding: 1.1em;
+    max-width: 100%;
+  }
+
+  .feature-list li {
+    font-size: 1.08rem;
+    gap: 0.6em;
+  }
 }
 
-/* Chat Component Styles */
-.chat-container {
-  background: rgba(8, 10, 14, 0.85);
-  border: 1.5px solid rgba(66, 72, 110, 0.25);
-  border-radius: 0.75rem;
-  backdrop-filter: blur(10px) saturate(160%);
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-  max-height: 600px;
-  overflow-y: auto;
-  padding: 1rem;
+/* ================================================================ */
+/* Mobile Styles - Phones (Portrait)                               */
+/* ================================================================ */
+@media (max-width: 768px) {
+  .hamburger-fixed {
+    top: 20px;
+    left: 20px;
+  }
+
+  .main-title {
+    font-size: 2rem;
+    margin: 0.3em 0 0.4em 0;
+    letter-spacing: 0.03em;
+  }
+
+  .intro-block {
+    max-width: 95%;
+    padding: 1.8em 1.8em;
+    gap: 0.7em;
+    margin-bottom: 1.5em;
+  }
+
+  .intro-tagline {
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .features-container {
+    padding: 1em;
+    margin: 0.6em 0 1em 0;
+  }
+
+  .feature-list {
+    gap: 0.3em;
+  }
+
+  .feature-list li {
+    font-size: 1rem;
+    gap: 0.55em;
+    padding: 0.15em 0;
+  }
+
+  .emoji {
+    font-size: 0.95em;
+  }
 }
 
-/* Chat input styles */
-.chat-input {
-  background: rgba(12, 14, 18, 0.8);
-  border: 1.5px solid rgba(66, 72, 110, 0.3);
-  border-radius: 0.5rem;
-  color: #e4ecf7;
-  padding: 0.75rem 1rem;
-  font-family: 'IBM Plex Sans', Arial, sans-serif;
-  resize: vertical;
-  min-height: 3rem;
+/* ================================================================ */
+/* Mobile Styles - Small Phones (Portrait)                         */
+/* ================================================================ */
+@media (max-width: 480px) {
+  .hamburger-fixed {
+    top: 16px;
+    left: 16px;
+  }
+
+  .main-title {
+    font-size: 1.7rem;
+    margin: 0.3em 0 0.4em 0;
+  }
+
+  .intro-block {
+    max-width: 96%;
+    padding: 1.5em 1.4em;
+    gap: 0.65em;
+  margin-top: 2.5rem;
+    border-radius: 1em;
+  }
+
+  .intro-tagline {
+    font-size: 0.9rem;
+  }
+
+  .features-container {
+    padding: 0.9em;
+    margin: 0.5em 0 0.9em 0;
+    border-radius: 0.4em;
+  }
+
+  .feature-list {
+    gap: 0.25em;
+  }
+
+  .feature-list li {
+    font-size: 0.95rem;
+    gap: 0.5em;
+    padding: 0.18em 0;
+  }
+
+  .emoji {
+    font-size: 0.9em;
+    margin-top: 1px;
+  }
 }
 
-/* Focus styles for chat input */
-.chat-input:focus {
-  outline: none;
-  border-color: #81e0fd;
-  box-shadow: 0 0 0 2px rgba(129, 224, 253, 0.2);
+/* ================================================================ */
+/* Mobile Styles - Landscape Phones                                */
+/* ================================================================ */
+@media (max-width: 896px) and (max-height: 414px) and (orientation: landscape) {
+  .main-title {
+    font-size: 1.8rem;
+    margin: 0.2em 0 0.3em 0;
+  }
+
+  .intro-block {
+    max-width: 85%;
+    padding: 1.3em 1.6em;
+    gap: 0.6em;
+    margin-bottom: 1em;
+  }
+
+  .intro-tagline {
+    font-size: 0.9rem;
+  }
+
+  .features-container {
+    padding: 0.85em;
+    margin: 0.5em 0 0.8em 0;
+  }
+
+  .feature-list li {
+    font-size: 0.92rem;
+  }
 }
-
-
 </style>
