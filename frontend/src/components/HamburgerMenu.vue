@@ -19,6 +19,10 @@
           <span class="menu-icon">👤</span>
           Personas
         </button>
+        <button class="menu-item" @click="goToEldercare">
+          <span class="menu-icon">🏥</span>
+          Eldercare
+        </button>
       </div>
     </transition>
   </div>
@@ -45,6 +49,11 @@ function goToChat() {
 function goToPersonas() {
   open.value = false
   router.push({ name: 'personas' })
+}
+
+function goToEldercare() {
+  open.value = false
+  router.push({ name: 'eldercare' })
 }
 
 function handleClickOutside(event: MouseEvent) {

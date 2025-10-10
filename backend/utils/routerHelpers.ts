@@ -41,3 +41,10 @@ export function handleRouterError(
   logger.error(`Unhandled router error during ${operation}`, { error })
   handleCaughtError(res, error, { operation, ...(extraDetails || {}) })
 }
+
+/**
+ * Generate a unique ID for database records
+ */
+export function generateId(): string {
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
+}

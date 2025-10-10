@@ -10,20 +10,21 @@
       <h1 class="main-title">KalitoSpace</h1>
       <div class="intro-block">
         <div class="intro-tagline">
-          An offline-first AI ecosystem
-          <span class="faint">prioritizing privacy and transparency.</span>
+          A comprehensive eldercare platform powered by AI
+          <span class="faint">helping you care for your loved ones with confidence.</span>
         </div>
         <div class="features-container">
           <ul class="feature-list">
             <li>
-              <span class="emoji">🛡️</span> Modular AI models with transparent token and cost
-              tracking.
+              <span class="emoji">🏥</span> Complete health management with medications, appointments, and vitals tracking.
             </li>
             <li>
-              <span class="emoji">🔓</span> All data stored locally. No telemetry. No cloud/vendor
-              lock-in.
+              <span class="emoji">🤖</span> AI-powered insights and reminders to support your caregiving journey.
             </li>
-            <li><span class="emoji">💾</span> Purge, export, or migrate data any time.</li>
+            <li>
+              <span class="emoji">�</span> All family health data stored securely on your device - complete privacy guaranteed.
+            </li>
+            <li><span class="emoji">�</span> Designed by caregivers, for caregivers - because family comes first.</li>
           </ul>
         </div>
       </div>

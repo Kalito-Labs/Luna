@@ -22,6 +22,11 @@ import sessionRouter from './routes/sessionRouter'
 import personasRouter from './routes/personasRouter'
 import modelsRouter from './routes/modelsRouter'
 import memoryRouter from './routes/memoryRouter'
+import patientsRouter from './routes/patientsRouter'
+import providersRouter from './routes/providersRouter'
+import medicationsRouter from './routes/medicationsRouter'
+import { appointmentsRouter } from './routes/appointmentsRouter'
+import { vitalsRouter } from './routes/vitalsRouter'
 
 // Initialize / migrate DB (creates tables, columns, triggers, indexes, seeds personas, etc.)
 import './db/init'
@@ -131,6 +136,13 @@ app.use('/api/models', modelsRouter)
 
 // Memory system (context, pins, summaries)
 app.use('/api/memory', memoryRouter)
+
+// Eldercare management
+app.use('/api/patients', patientsRouter)
+app.use('/api/providers', providersRouter)
+app.use('/api/medications', medicationsRouter)
+app.use('/api/appointments', appointmentsRouter)
+app.use('/api/vitals', vitalsRouter)
 
 // --- 404 handler ---
 app.use(notFoundHandler)
