@@ -15,7 +15,7 @@
       <h2>Dashboard</h2>
       <div class="action-grid">
         <!-- Caregiver Profile -->
-        <button @click="showCaregiverProfile = true" class="action-btn caregiver-btn">
+        <button @click="openCaregiverProfile" class="action-btn caregiver-btn">
           <div class="btn-icon">👨‍⚕️</div>
           <div class="btn-content">
             <h3>My Caregiver Profile</h3>
@@ -216,7 +216,12 @@
     <!-- Caregiver Profile Modal -->
     <div v-if="showCaregiverProfile" class="modal-overlay" @click="closeCaregiverProfile">
       <div class="modal-content caregiver-modal-content" @click.stop>
-        <CaregiverProfile @close="closeCaregiverProfile" />
+        <CaregiverProfile 
+          :caregiver="caregiver"
+          :is-editing="!!caregiver"
+          @close="closeCaregiverProfile" 
+          @save="saveCaregiver"
+        />
       </div>
     </div>
 
@@ -257,6 +262,7 @@ interface Provider {
 
 const patients = ref<Patient[]>([])
 const providers = ref<Provider[]>([])
+const caregiver = ref<any>(null)
 
 const showPatientForm = ref(false)
 const showMedicationForm = ref(false)
@@ -555,6 +561,53 @@ function closePatientDetail() {
 
 function closeCaregiverProfile() {
   showCaregiverProfile.value = false
+}
+
+async function loadCaregiver() {
+  try {
+    const response = await fetch('/api/caregivers')
+    if (response.ok) {
+      const result = await response.json()
+      // Get the first (and should be only) caregiver profile
+      if (result.data && result.data.length > 0) {
+        caregiver.value = result.data[0]
+      }
+    }
+  } catch (error) {
+    console.error('Error loading caregiver:', error)
+  }
+}
+
+async function openCaregiverProfile() {
+  await loadCaregiver()
+  showCaregiverProfile.value = true
+}
+
+async function saveCaregiver(caregiverData: any) {
+  try {
+    const method = caregiver.value ? 'PUT' : 'POST'
+    const url = caregiver.value ? `/api/caregivers/${caregiver.value.id}` : '/api/caregivers'
+    
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(caregiverData)
+    })
+    
+    if (response.ok) {
+      await loadCaregiver() // Refresh the caregiver data
+      showMessage('Caregiver profile saved successfully!', 'success')
+      closeCaregiverProfile()
+    } else {
+      const errorData = await response.json()
+      showMessage(errorData.message || 'Failed to save caregiver profile', 'error')
+    }
+  } catch (error) {
+    console.error('Error saving caregiver:', error)
+    showMessage('Failed to save caregiver profile', 'error')
+  }
 }
 
 function showMessage(text: string, type: 'success' | 'error') {
