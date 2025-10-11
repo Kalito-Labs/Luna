@@ -6,14 +6,24 @@
     </div>
     
     <div class="dashboard-header">
-      <h1>Eldercare Management</h1>
-      <p class="subtitle">Manage health information for your family members</p>
+      <h1>Family Care Dashboard</h1>
+      <p class="subtitle">Your unified hub for managing family health and caregiving</p>
     </div>
     
-    <!-- Quick Actions -->
+    <!-- Quick Actions - Main Dashboard -->
     <div class="quick-actions">
-      <h2>Quick Actions</h2>
+      <h2>Dashboard</h2>
       <div class="action-grid">
+        <!-- Caregiver Profile -->
+        <button @click="showCaregiverProfile = true" class="action-btn caregiver-btn">
+          <div class="btn-icon">👨‍⚕️</div>
+          <div class="btn-content">
+            <h3>My Caregiver Profile</h3>
+            <p>Manage your professional info</p>
+          </div>
+        </button>
+        
+        <!-- Add Patient -->
         <button @click="showPatientForm = true" class="action-btn patient-btn">
           <div class="btn-icon">👤</div>
           <div class="btn-content">
@@ -22,62 +32,48 @@
           </div>
         </button>
         
-        <button @click="showMedicationForm = true" class="action-btn medication-btn" :disabled="patients.length === 0">
-          <div class="btn-icon">💊</div>
+        <!-- Saved Patients -->
+        <button @click="activeView = 'patients'" class="action-btn patients-btn" :class="{ active: activeView === 'patients' }">
+          <div class="btn-icon">�</div>
           <div class="btn-content">
-            <h3>Add Medication</h3>
+            <h3>Saved Patients</h3>
+            <p>View all family members</p>
+          </div>
+        </button>
+        
+        <!-- Medications -->
+        <button @click="activeView = 'medications'" class="action-btn medications-btn" :class="{ active: activeView === 'medications' }">
+          <div class="btn-icon">�</div>
+          <div class="btn-content">
+            <h3>Medications</h3>
             <p>Track medications & dosages</p>
           </div>
         </button>
         
-        <button @click="showVitalsForm = true" class="action-btn vitals-btn" :disabled="patients.length === 0">
-          <div class="btn-icon">📊</div>
+        <!-- Appointments -->
+        <button @click="activeView = 'appointments'" class="action-btn appointments-btn" :class="{ active: activeView === 'appointments' }">
+          <div class="btn-icon">📅</div>
           <div class="btn-content">
-            <h3>Record Vitals</h3>
-            <p>Blood pressure, weight, etc.</p>
+            <h3>Appointments</h3>
+            <p>Doctor visits & checkups</p>
           </div>
         </button>
         
-        <button @click="showAppointmentForm = true" class="action-btn appointment-btn" :disabled="patients.length === 0">
-          <div class="btn-icon">📅</div>
+        <!-- Vitals -->
+        <button @click="activeView = 'vitals'" class="action-btn vitals-btn" :class="{ active: activeView === 'vitals' }">
+          <div class="btn-icon">�</div>
           <div class="btn-content">
-            <h3>Schedule Appointment</h3>
-            <p>Doctor visits & checkups</p>
+            <h3>Vitals</h3>
+            <p>Blood pressure, weight, etc.</p>
           </div>
         </button>
       </div>
     </div>
 
-    <!-- Navigation Tabs - Always show -->
-    <div class="navigation-tabs">
-      <button 
-        @click="activeTab = 'patients'"
-        :class="['nav-tab', { active: activeTab === 'patients' }]"
-      >
-        👥 Patients
-      </button>
-      <button 
-        @click="activeTab = 'medications'"
-        :class="['nav-tab', { active: activeTab === 'medications' }]"
-      >
-        💊 Medications
-      </button>
-      <button 
-        @click="activeTab = 'appointments'"
-        :class="['nav-tab', { active: activeTab === 'appointments' }]"
-      >
-        📅 Appointments
-      </button>
-      <button 
-        @click="activeTab = 'vitals'"
-        :class="['nav-tab', { active: activeTab === 'vitals' }]"
-      >
-        📊 Vitals
-      </button>
-    </div>
+    <!-- Content Sections -->
 
     <!-- Patients Overview -->
-    <div v-if="activeTab === 'patients'" class="patients-overview">
+    <div v-if="activeView === 'patients'" class="patients-overview">
       <h2>Patients</h2>
       <div v-if="patients.length > 0" class="patients-grid">
         <div v-for="patient in patients" :key="patient.id" class="patient-card">
@@ -117,7 +113,7 @@
     </div>
 
     <!-- Medications Overview -->
-    <div v-if="activeTab === 'medications'" class="content-section">
+    <div v-if="activeView === 'medications'" class="content-section">
       <MedicationsList 
         :medications="allMedications"
         @add-medication="showMedicationForm = true"
@@ -127,7 +123,7 @@
     </div>
 
     <!-- Appointments Overview -->
-    <div v-if="activeTab === 'appointments'" class="content-section">
+    <div v-if="activeView === 'appointments'" class="content-section">
       <AppointmentsList 
         :appointments="allAppointments"
         @add-appointment="showAppointmentForm = true"
@@ -137,7 +133,7 @@
     </div>
 
     <!-- Vitals Overview -->
-    <div v-if="activeTab === 'vitals'" class="content-section">
+    <div v-if="activeView === 'vitals'" class="content-section">
       <VitalsList 
         :vitals="allVitals"
         @add-vitals="showVitalsForm = true"
@@ -217,6 +213,13 @@
       </div>
     </div>
 
+    <!-- Caregiver Profile Modal -->
+    <div v-if="showCaregiverProfile" class="modal-overlay" @click="closeCaregiverProfile">
+      <div class="modal-content caregiver-modal-content" @click.stop>
+        <CaregiverProfile @close="closeCaregiverProfile" />
+      </div>
+    </div>
+
     <!-- Success/Error Messages -->
     <div v-if="message" class="message" :class="messageType">
       {{ message }}
@@ -235,6 +238,7 @@ import PatientDetailModal from '../components/eldercare/PatientDetailModal.vue'
 import MedicationsList from '../components/eldercare/MedicationsList.vue'
 import AppointmentsList from '../components/eldercare/AppointmentsList.vue'
 import VitalsList from '../components/eldercare/VitalsList.vue'
+import CaregiverProfile from '../components/eldercare/CaregiverProfile.vue'
 
 interface Patient {
   id: string
@@ -259,8 +263,9 @@ const showMedicationForm = ref(false)
 const showVitalsForm = ref(false)
 const showAppointmentForm = ref(false)
 const showPatientDetail = ref(false)
+const showCaregiverProfile = ref(false)
 
-const activeTab = ref<'patients' | 'medications' | 'appointments' | 'vitals'>('patients')
+const activeView = ref<'patients' | 'medications' | 'appointments' | 'vitals'>('patients')
 
 const editingPatient = ref<Patient | null>(null)
 const selectedPatient = ref<Patient | null>(null)
@@ -548,6 +553,10 @@ function closePatientDetail() {
   patientVitals.value = []
 }
 
+function closeCaregiverProfile() {
+  showCaregiverProfile.value = false
+}
+
 function showMessage(text: string, type: 'success' | 'error') {
   message.value = text
   messageType.value = type
@@ -738,6 +747,21 @@ function showMessage(text: string, type: 'success' | 'error') {
   border-color: var(--accent-blue);
   transform: translateY(-2px);
   box-shadow: var(--shadow-soft);
+}
+
+.action-btn.active {
+  background: var(--accent-blue);
+  color: white;
+  border-color: var(--accent-blue);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.action-btn.active .btn-content h3 {
+  color: white;
+}
+
+.action-btn.active .btn-content p {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .action-btn:disabled {
@@ -1121,6 +1145,27 @@ function showMessage(text: string, type: 'success' | 'error') {
   width: 90vw;
   max-width: 1000px;
   height: 90vh;
+}
+
+.caregiver-modal-content {
+  width: 95vw;
+  max-width: 1200px;
+  height: 90vh;
+  padding: 0;
+}
+
+/* Responsive caregiver modal */
+@media (max-width: 1024px) {
+  .caregiver-modal-content {
+    width: 98vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .caregiver-modal-content {
+    width: 100vw;
+    height: 95vh;
+  }
 }
 
 .message {

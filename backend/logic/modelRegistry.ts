@@ -15,7 +15,6 @@ import {
 } from './adapters/openai'
 import { claudeAdapter } from './adapters/claudeAdapter'
 import {
-  qwen25CoderAdapter,
   phi3MiniAdapter,
   neuralChatAdapter,
 } from './adapters/ollama'
@@ -59,11 +58,6 @@ registerAdapter(claudeAdapter, [
 ]) // 'claude-opus-4.1'
 
 // Local models
-registerAdapter(qwen25CoderAdapter, [
-  'qwen25-coder',
-  'qwen25', // short alias (now points to coder variant)
-  'qwen', // even shorter alias
-])
 registerAdapter(phi3MiniAdapter, [
   'phi3',      // short alias
   'phi-3',     // alternative format

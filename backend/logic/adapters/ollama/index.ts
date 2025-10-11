@@ -10,7 +10,6 @@ export type { OllamaAdapterConfig } from './factory'
 
 // Pre-built adapter instances
 export {
-  qwen25CoderAdapter,
   phi3MiniAdapter,
   neuralChatAdapter,
   ollamaAdapters,

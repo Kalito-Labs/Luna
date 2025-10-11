@@ -20,6 +20,7 @@ export function migrateToEldercare(db: Database): void {
     createAppointmentsTable(db)
     createVitalsTable(db)
     createMedicationLogsTable(db)
+    createCaregiversTable(db)
     
     // 2. Extend existing tables
     extendSessionsTable(db)
@@ -201,6 +202,37 @@ function createMedicationLogsTable(db: Database): void {
   `)
 }
 
+function createCaregiversTable(db: Database): void {
+  console.log('  👨‍⚕️ Creating caregivers table...')
+  
+  db.exec(`
+    CREATE TABLE caregivers (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      date_of_birth TEXT,
+      email TEXT,
+      phone TEXT,
+      address TEXT,
+      relationship TEXT, -- 'family', 'professional', 'friend', etc.
+      specialties TEXT, -- JSON array of specialties
+      certifications TEXT, -- JSON array of certifications
+      availability_schedule TEXT, -- JSON object with schedule
+      emergency_contact_name TEXT,
+      emergency_contact_phone TEXT,
+      notes TEXT, -- Personal notes section
+      clock_in_time TEXT, -- Current shift start time
+      clock_out_time TEXT, -- Current shift end time
+      is_active INTEGER DEFAULT 1,
+      last_clock_in TEXT,
+      last_clock_out TEXT,
+      total_hours_worked REAL DEFAULT 0,
+      hourly_rate REAL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+}
+
 // =====================================
 // 2. EXTEND EXISTING TABLES
 // =====================================
@@ -260,6 +292,11 @@ function createElderCareIndexes(db: Database): void {
   db.exec(`CREATE INDEX IF NOT EXISTS idx_appointments_patient_date ON appointments(patient_id, appointment_date ASC)`)
   db.exec(`CREATE INDEX IF NOT EXISTS idx_vitals_patient_type_date ON vitals(patient_id, measurement_type, measured_at DESC)`)
   db.exec(`CREATE INDEX IF NOT EXISTS idx_medication_logs_patient_scheduled ON medication_logs(patient_id, scheduled_time DESC)`)
+  
+  // Caregiver-related indexes
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_caregivers_active ON caregivers(is_active, created_at DESC)`)
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_caregivers_relationship ON caregivers(relationship, is_active)`)
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_caregivers_clock_status ON caregivers(clock_in_time, clock_out_time)`)
   
   // Search and filtering indexes
   db.exec(`CREATE INDEX IF NOT EXISTS idx_medical_records_type_date ON medical_records(record_type, date_recorded DESC)`)

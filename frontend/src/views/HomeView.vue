@@ -10,21 +10,23 @@
       <h1 class="main-title">KalitoSpace</h1>
       <div class="intro-block">
         <div class="intro-tagline">
-          A comprehensive eldercare platform powered by AI
-          <span class="faint">helping you care for your loved ones with confidence.</span>
+          A private family hub  
+          <span class="faint">to keep Mom and Dad’s care organized, safe, and close at hand.</span>
         </div>
         <div class="features-container">
           <ul class="feature-list">
             <li>
-              <span class="emoji">🏥</span> Complete health management with medications, appointments, and vitals tracking.
+              <span class="emoji">🏥</span> Patient profiles with medical history, medications, and appointments.
             </li>
             <li>
-              <span class="emoji">🤖</span> AI-powered insights and reminders to support your caregiving journey.
+              <span class="emoji">📅</span> Daily reminders for meds, vitals, and upcoming doctor visits.
             </li>
             <li>
-              <span class="emoji">�</span> All family health data stored securely on your device - complete privacy guaranteed.
+              <span class="emoji">🤖</span> AI helpers that summarize notes, track health trends, and prepare questions for visits.
             </li>
-            <li><span class="emoji">�</span> Designed by caregivers, for caregivers - because family comes first.</li>
+            <li>
+              <span class="emoji">🔒</span> Everything stored locally, no tracking, just us.
+            </li>
           </ul>
         </div>
       </div>

@@ -9,16 +9,6 @@ import { createOllamaAdapter } from './factory'
 import type { LLMAdapter } from '../../modelRegistry'
 
 /**
- * Qwen 2.5 Coder 3B - Coding-focused model with 32K context
- */
-export const qwen25CoderAdapter: LLMAdapter = createOllamaAdapter({
-  id: 'qwen-2.5-coder-3b',
-  name: 'Qwen 2.5 Coder 3B',
-  model: 'qwen2.5-coder:3b',
-  contextWindow: 32768,
-})
-
-/**
  * Phi-3 Mini - Lightweight reasoning model with 4K context
  */
 export const phi3MiniAdapter: LLMAdapter = createOllamaAdapter({
@@ -42,7 +32,6 @@ export const neuralChatAdapter: LLMAdapter = createOllamaAdapter({
  * Collection of all Ollama adapters
  */
 export const ollamaAdapters = {
-  'qwen-2.5-coder-3b': qwen25CoderAdapter,
   'phi3-mini': phi3MiniAdapter,
   'neural-chat-7b': neuralChatAdapter,
 } as const

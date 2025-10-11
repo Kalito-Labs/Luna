@@ -15,13 +15,13 @@ import { TextDecoder } from 'util'
  * Configuration for an Ollama model adapter
  */
 export interface OllamaAdapterConfig {
-  /** Canonical adapter ID (e.g., 'qwen-2.5-coder-3b') */
+  /** Canonical adapter ID (e.g., 'phi3-mini') */
   id: string
   
-  /** Display name for UI (e.g., 'Qwen 2.5 Coder 3B') */
+  /** Display name for UI (e.g., 'Phi-3 Mini') */
   name: string
   
-  /** Ollama model identifier (e.g., 'qwen2.5-coder:3b') */
+  /** Ollama model identifier (e.g., 'phi3:mini') */
   model: string
   
   /** Context window size in tokens */

@@ -4,14 +4,19 @@
  */
 
 import { getModelAdapter } from './modelRegistry'
+import type { LLMAdapter } from './modelRegistry'
 import { db } from '../db/db'
 import { MemoryManager } from './memoryManager'
+import { EldercareContextService } from './eldercareContextService'
 import type { AgentRequest } from '../types/agent'
 import type { Persona as _Persona } from '../types/personas'
 import type { ConversationSummary, SemanticPin, MessageWithImportance } from '../types/memory'
 
 // Initialize MemoryManager for enhanced context building
 const memoryManager = new MemoryManager()
+
+// Initialize EldercareContextService for eldercare data integration
+const eldercareContextService = new EldercareContextService()
 
 type RunAgentParams = AgentRequest & {
   stream?: boolean // new: enable streaming mode
@@ -196,9 +201,11 @@ async function getConversationHistory(sessionId?: string, maxTokens: number = 30
 }
 
 /**
- * Builds the final system prompt by combining persona prompt, document context, and custom system prompt.
+ * Builds the final system prompt by combining persona prompt, document context, eldercare context, and custom system prompt.
  */
 function buildSystemPrompt(
+  adapter: LLMAdapter,
+  userInput: string,
   personaId?: string,
   customSystemPrompt?: string,
   fileIds: string[] = []
@@ -207,10 +214,13 @@ function buildSystemPrompt(
   const documentContext = getDocumentContext(fileIds)
   const customPrompt = customSystemPrompt?.trim() || ''
   
+  // Get eldercare context based on user query and model capabilities
+  const eldercareContext = eldercareContextService.generateContextualPrompt(adapter, userInput)
+  
   // Add stronger and more explicit instructions to focus on current query only
   const focusInstructions = "CRITICAL INSTRUCTION: You MUST address ONLY the user's CURRENT QUESTION. Previous conversation is provided SOLELY as background context. You MUST NOT: 1) Answer questions from previous exchanges, 2) Refer to previous topics unless explicitly asked, 3) Provide information not directly relevant to the current question. Treat the current question as if it were asked in isolation, while using context only to enhance your understanding of what the user is currently asking."
 
-  const parts = [personaPrompt, documentContext, customPrompt, focusInstructions].filter(Boolean)
+  const parts = [personaPrompt, documentContext, eldercareContext, customPrompt, focusInstructions].filter(Boolean)
   return parts.join('\n\n')
 }
 
@@ -236,7 +246,7 @@ export async function runAgent(
 
   // Build a clean system prompt without any special instructions
   // Let Ollama handle the conversation naturally
-  const finalSystemPrompt = buildSystemPrompt(personaId, systemPrompt, fileIds)
+  const finalSystemPrompt = buildSystemPrompt(adapter, input, personaId, systemPrompt, fileIds)
 
   // Build messages array with system prompt first
   const messages = []
@@ -274,7 +284,7 @@ export async function* runAgentStream(
   const mergedSettings = { ...personaSettings, ...settings }
     
   // Build the system prompt without special instructions
-  const finalSystemPrompt = buildSystemPrompt(personaId, systemPrompt, fileIds)
+  const finalSystemPrompt = buildSystemPrompt(adapter, input, personaId, systemPrompt, fileIds)
 
   const messages = []
   if (finalSystemPrompt && finalSystemPrompt.trim()) {
