@@ -278,7 +278,7 @@
 
       <!-- Form Actions -->
       <div class="form-actions">
-        <button type="button" @click="$emit('cancel')" class="btn btn-outline">
+        <button type="button" @click="closeForm" class="btn btn-outline">
           Cancel
         </button>
         <button type="submit" class="btn btn-primary" :disabled="saving">
