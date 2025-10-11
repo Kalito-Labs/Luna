@@ -282,7 +282,7 @@
           Cancel
         </button>
         <button type="submit" class="btn btn-primary" :disabled="saving">
-          {{ saving ? 'Saving...' : (isEditing ? 'Update Profile' : 'Create Profile') }}
+          {{ saving ? 'Saving...' : 'Save Profile' }}
         </button>
       </div>
     </form>
