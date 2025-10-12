@@ -92,15 +92,15 @@ const homeBgStyle = computed(() => ({
 /* General container styles */
 .homeview-root {
   min-height: 100vh;
-  min-width: 100vw;
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   background: var(--color-background);
   color: var(--color-text);
   margin: 0;
   padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Fixed hamburger placement */
@@ -115,9 +115,8 @@ const homeBgStyle = computed(() => ({
 .main-area {
   flex: 1;
   width: 100%;
-  height: 100%;
   margin: 0;
-  padding: 0;
+  padding: 0 20px 40px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;

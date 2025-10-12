@@ -269,9 +269,8 @@ export function selectOptimalModel(
 
     // Local models prioritize locally-hosted models
     local: [
+      'phi3-mini',        // Primary: Fast, efficient, medical knowledge
       'qwen-2.5-coder-3b',
-      'phi3-mini',
-      'neural-chat-7b',
       'llama-3.2-3b',
       'llama-3.1-8b',
     ],

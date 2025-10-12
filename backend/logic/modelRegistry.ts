@@ -16,7 +16,6 @@ import {
 import { claudeAdapter } from './adapters/claudeAdapter'
 import {
   phi3MiniAdapter,
-  neuralChatAdapter,
 } from './adapters/ollama'
 
 // ---------- Registration helper ----------
@@ -61,10 +60,6 @@ registerAdapter(claudeAdapter, [
 registerAdapter(phi3MiniAdapter, [
   'phi3',      // short alias
   'phi-3',     // alternative format
-])
-registerAdapter(neuralChatAdapter, [
-  'neural-chat',  // alternative format
-  'neuralchat',   // no hyphen version
 ])
 
 /**
