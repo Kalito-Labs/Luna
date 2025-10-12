@@ -28,9 +28,7 @@ export {
 
 // Pre-built adapter instances
 export { 
-  gpt41MiniAdapter, 
   gpt41NanoAdapter,
-  gpt5MiniAdapter,
   gpt5NanoAdapter,
   openaiAdapters
 } from './adapters'

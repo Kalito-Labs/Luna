@@ -5,9 +5,7 @@
  */
 
 export type OpenAIModel = 
-  | 'gpt-4.1-mini'
   | 'gpt-4.1-nano'
-  | 'gpt-5-mini'
   | 'gpt-5-nano'
 
 export type APIMode = 'chat' | 'responses'
