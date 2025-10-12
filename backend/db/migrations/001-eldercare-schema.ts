@@ -311,89 +311,15 @@ function createElderCareIndexes(db: Database): void {
 // 4. SEED DEFAULT ELDERCARE DATA
 // =====================================
 
-function seedElderCarePersonas(db: Database): void {
+function seedElderCarePersonas(_db: Database): void {
   console.log('  🌱 Seeding default eldercare personas...')
   
-  const personas = [
-    {
-      id: 'medical-documentation',
-      name: 'Medical Documentation Assistant',
-      prompt: 'You are a medical documentation specialist. Help create clear, organized summaries of patient information, doctor visits, and care plans. Always maintain medical accuracy and patient privacy.',
-      description: 'Specialized in creating medical summaries and documentation',
-      icon: '📋',
-      category: 'local',
-      eldercare_specialty: 'documentation',
-      patient_context: 1,
-      temperature: 0.3,
-      maxTokens: 1000,
-      is_default: 1
-    },
-    {
-      id: 'medication-manager',
-      name: 'Medication Manager',
-      prompt: 'You are a medication management assistant. Help track medications, identify potential interactions, create dosing schedules, and remind about medication adherence. Always prioritize patient safety.',
-      description: 'Focused on medication tracking and safety',
-      icon: '💊',
-      category: 'local',
-      eldercare_specialty: 'medication',
-      patient_context: 1,
-      temperature: 0.2,
-      maxTokens: 800,
-      is_default: 1
-    },
-    {
-      id: 'care-coordinator',
-      name: 'Care Coordinator',
-      prompt: 'You are a care coordination assistant. Help organize appointments, communicate with healthcare providers, manage care logistics, and ensure continuity of care.',
-      description: 'Specialized in care coordination and scheduling',
-      icon: '🗓️',
-      category: 'cloud',
-      eldercare_specialty: 'scheduling',
-      patient_context: 1,
-      temperature: 0.4,
-      maxTokens: 1200,
-      is_default: 1
-    },
-    {
-      id: 'emergency-assistant',
-      name: 'Emergency Information Assistant',
-      prompt: 'You are an emergency preparedness assistant. Provide quick access to critical medical information, emergency contacts, and important care instructions. Always prioritize accuracy and speed.',
-      description: 'Quick access to emergency medical information',
-      icon: '🚨',
-      category: 'local',
-      eldercare_specialty: 'emergency',
-      patient_context: 1,
-      temperature: 0.1,
-      maxTokens: 500,
-      is_default: 1
-    }
-  ]
+  // Note: Only default-cloud and default-local personas are used.
+  // These are seeded in backend/db/init.ts
+  // No additional eldercare-specific personas needed - the two main defaults
+  // already have comprehensive eldercare context via update-default-personas.ts
   
-  const insertPersona = db.prepare(`
-    INSERT OR REPLACE INTO personas (
-      id, name, prompt, description, icon, category,
-      eldercare_specialty, patient_context, temperature, maxTokens, is_default,
-      created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-  `)
-  
-  personas.forEach(persona => {
-    insertPersona.run(
-      persona.id,
-      persona.name,
-      persona.prompt,
-      persona.description,
-      persona.icon,
-      persona.category,
-      persona.eldercare_specialty,
-      persona.patient_context,
-      persona.temperature,
-      persona.maxTokens,
-      persona.is_default
-    )
-  })
-  
-  console.log(`    ✅ Added ${personas.length} eldercare personas`)
+  console.log(`    ✅ No additional eldercare personas needed (using main defaults)`)
 }
 
 // =====================================
