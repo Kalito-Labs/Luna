@@ -531,35 +531,48 @@ async function submitForm() {
 
 <style scoped>
 .caregiver-form {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  background: var(--bg-main);
+  border: var(--border);
+  border-radius: 12px;
+  max-width: 1000px;
+  width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-strong);
 }
 
 .form-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid var(--border);
+  padding: 24px;
+  border-bottom: var(--border);
+  background: var(--bg-panel);
 }
 
 .form-header h2 {
   margin: 0;
   color: var(--text-heading);
+  font-size: 1.75rem;
+  font-weight: 600;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 2rem;
   cursor: pointer;
   color: var(--text-muted);
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: all 0.2s;
-  line-height: 1;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 .close-btn:hover {
@@ -567,13 +580,10 @@ async function submitForm() {
   color: var(--text-heading);
 }
 
-.caregiver-form h2 {
-  color: var(--text-heading);
-  margin-bottom: 30px;
-  text-align: center;
-}
-
 .form-container {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -581,9 +591,16 @@ async function submitForm() {
 
 .form-section {
   background: var(--bg-glass);
+  backdrop-filter: var(--blur);
   border: var(--border);
   border-radius: 12px;
   padding: 24px;
+  transition: all 0.2s ease;
+}
+
+.form-section:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
 }
 
 .form-section h3 {
@@ -839,20 +856,24 @@ async function submitForm() {
 .btn-primary {
   background: var(--accent-blue);
   color: white;
+  box-shadow: var(--glow-blue);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--blue-600);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
   transform: translateY(-1px);
 }
 
 .btn-secondary {
   background: var(--text-muted);
   color: white;
+  box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #6b7280;
+  background: var(--gray-600);
+  box-shadow: 0 4px 8px rgba(107, 114, 128, 0.4);
   transform: translateY(-1px);
 }
 
@@ -860,22 +881,53 @@ async function submitForm() {
   background: transparent;
   color: var(--accent-blue);
   border: 2px solid var(--accent-blue);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
 }
 
 .btn-outline:hover:not(:disabled) {
   background: var(--accent-blue);
   color: white;
+  box-shadow: var(--glow-blue);
   transform: translateY(-1px);
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .caregiver-form {
-    padding: 16px;
+    width: 95vw;
+  }
+  
+  .form-container {
+    padding: 20px;
   }
   
   .form-section {
     padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .caregiver-form {
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .form-header {
+    padding: 20px;
+  }
+  
+  .form-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .form-container {
+    padding: 16px;
+  }
+  
+  .form-section {
+    padding: 16px;
   }
   
   .form-row {
@@ -903,7 +955,15 @@ async function submitForm() {
 }
 
 @media (max-width: 480px) {
-  .caregiver-form {
+  .form-header {
+    padding: 16px;
+  }
+  
+  .form-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .form-container {
     padding: 12px;
   }
   
@@ -913,6 +973,18 @@ async function submitForm() {
   
   .form-section h3 {
     font-size: 1.1rem;
+  }
+}
+
+/* Touch device improvements */
+@media (hover: none) and (pointer: coarse) {
+  .form-section:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .btn:hover {
+    transform: none !important;
   }
 }
 </style>

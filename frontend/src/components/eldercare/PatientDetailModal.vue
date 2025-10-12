@@ -185,7 +185,8 @@ function calculateAge(dateOfBirth: string): number {
 
 <style scoped>
 .patient-detail-modal {
-  background: white;
+  background: var(--bg-main);
+  border: var(--border);
   border-radius: 12px;
   max-width: 1000px;
   width: 90vw;
@@ -193,20 +194,23 @@ function calculateAge(dateOfBirth: string): number {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: var(--shadow-strong);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  padding: 24px;
+  border-bottom: var(--border);
+  background: var(--bg-panel);
 }
 
 .modal-header h2 {
   margin: 0;
-  color: #1f2937;
+  color: var(--text-heading);
+  font-size: 1.75rem;
+  font-weight: 600;
 }
 
 .close-btn {
@@ -214,113 +218,234 @@ function calculateAge(dateOfBirth: string): number {
   border: none;
   font-size: 2rem;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--text-muted);
   padding: 0;
   width: 2rem;
   height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 .close-btn:hover {
-  background: #e5e7eb;
-  color: #374151;
+  background: var(--bg-hover);
+  color: var(--text-heading);
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 24px;
   overflow-y: auto;
   flex: 1;
 }
 
 .patient-info-section {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #f8fafc;
-  border-radius: 8px;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: var(--bg-glass);
+  backdrop-filter: var(--blur);
+  border: var(--border);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.patient-info-section:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: var(--border);
 }
 
 .section-header h3 {
   margin: 0;
-  color: #1f2937;
+  color: var(--text-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 
 .info-item label {
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 0.25rem;
+  color: var(--text-muted);
   font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .info-item span {
-  color: #1f2937;
+  color: var(--text-main);
+  font-size: 1rem;
 }
 
 .notes-section {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: var(--border);
 }
 
 .notes-section label {
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 0.5rem;
+  color: var(--text-heading);
+  margin-bottom: 8px;
   display: block;
 }
 
 .notes-section p {
   margin: 0;
-  color: #1f2937;
-  line-height: 1.5;
+  color: var(--text-main);
+  line-height: 1.6;
 }
 
 .btn {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  border: 1px solid transparent;
+  border: none;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .btn-sm {
-  padding: 0.375rem 0.75rem;
+  padding: 8px 16px;
   font-size: 0.875rem;
 }
 
 .btn-outline {
   background: transparent;
-  color: #374151;
-  border-color: #d1d5db;
+  color: var(--accent-blue);
+  border: 2px solid var(--accent-blue);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
 }
 
-.btn-outline:hover {
-  background: #f9fafb;
+.btn-outline:hover:not(:disabled) {
+  background: var(--accent-blue);
+  color: white;
+  box-shadow: var(--glow-blue);
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .patient-detail-modal {
+    width: 95vw;
+  }
+  
+  .modal-body {
+    padding: 20px;
+  }
+  
+  .patient-info-section {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .patient-detail-modal {
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .modal-header {
+    padding: 20px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .modal-body {
+    padding: 16px;
+  }
+  
+  .patient-info-section {
+    padding: 16px;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-header {
+    padding: 16px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .modal-body {
+    padding: 12px;
+  }
+  
+  .patient-info-section {
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .info-item label {
+    font-size: 0.8rem;
+  }
+  
+  .info-item span {
+    font-size: 0.95rem;
+  }
+}
+
+/* Touch device improvements */
+@media (hover: none) and (pointer: coarse) {
+  .patient-info-section:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .btn:hover {
+    transform: none !important;
+  }
+  
+  .close-btn:hover {
+    background: var(--bg-hover);
+  }
 }
 </style>

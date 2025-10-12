@@ -96,126 +96,255 @@ function formatDate(dateString: string): string {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: var(--border);
 }
 
 .list-header h3 {
   margin: 0;
-  color: #1f2937;
+  color: var(--text-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .medications-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
 }
 
 .medication-card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s;
+  background: var(--bg-glass);
+  backdrop-filter: var(--blur);
+  border: var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.2s ease;
 }
 
 .medication-card:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent-blue);
 }
 
 .med-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: var(--border);
 }
 
 .med-header h4 {
   margin: 0;
-  color: #1f2937;
+  color: var(--text-heading);
   font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .dosage-badge {
-  background: #dbeafe;
-  color: #1d4ed8;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--accent-blue);
+  padding: 6px 12px;
+  border-radius: 16px;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
 }
 
 .med-details {
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .med-details p {
-  margin: 0.25rem 0;
-  font-size: 0.875rem;
-  color: #6b7280;
+  margin: 8px 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.med-details strong {
+  color: var(--text-heading);
+  margin-right: 8px;
+  min-width: 120px;
 }
 
 .med-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: var(--border);
+  flex-wrap: wrap;
 }
 
 .empty-state {
   text-align: center;
-  padding: 2rem;
-  color: #6b7280;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1.1rem;
 }
 
 .btn {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  border: 1px solid transparent;
+  border: none;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .btn-xs {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
+  padding: 8px 14px;
+  font-size: 0.8rem;
 }
 
 .btn-sm {
-  padding: 0.375rem 0.75rem;
+  padding: 10px 16px;
   font-size: 0.875rem;
 }
 
 .btn-primary {
-  background: #3b82f6;
+  background: var(--accent-blue);
   color: white;
+  box-shadow: var(--glow-blue);
 }
 
-.btn-primary:hover {
-  background: #2563eb;
+.btn-primary:hover:not(:disabled) {
+  background: var(--blue-600);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
 }
 
 .btn-outline {
   background: transparent;
-  color: #374151;
-  border-color: #d1d5db;
+  color: var(--accent-blue);
+  border: 2px solid var(--accent-blue);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
 }
 
-.btn-outline:hover {
-  background: #f9fafb;
+.btn-outline:hover:not(:disabled) {
+  background: var(--accent-blue);
+  color: white;
+  box-shadow: var(--glow-blue);
+  transform: translateY(-1px);
 }
 
 .btn-danger {
-  background: #ef4444;
+  background: var(--led-red);
   color: white;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
 }
 
-.btn-danger:hover {
+.btn-danger:hover:not(:disabled) {
   background: #dc2626;
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .medications-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .medications-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  
+  .medication-card {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .medications-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  
+  .medication-card {
+    padding: 16px;
+  }
+  
+  .list-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .med-actions {
+    gap: 8px;
+    justify-content: center;
+  }
+  
+  .med-details strong {
+    min-width: 100px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .medications-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .medication-card {
+    padding: 16px;
+  }
+  
+  .med-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .med-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .btn-xs,
+  .btn-sm {
+    width: 100%;
+  }
+}
+
+/* Touch device improvements */
+@media (hover: none) and (pointer: coarse) {
+  .medication-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .btn:hover {
+    transform: none !important;
+  }
 }
 </style>

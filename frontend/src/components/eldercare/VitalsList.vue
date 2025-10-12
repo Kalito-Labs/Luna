@@ -113,153 +113,292 @@ function formatDate(dateString: string): string {
 
 <style scoped>
 .vitals-list {
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
 }
 
 .list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: var(--border);
 }
 
 .list-header h3 {
   margin: 0;
-  color: #1f2937;
+  color: var(--text-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .vitals-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .vital-card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s;
+  background: var(--bg-glass);
+  backdrop-filter: var(--blur);
+  border: var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.2s ease;
 }
 
 .vital-card:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-strong);
 }
 
 .vital-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: var(--border);
 }
 
 .vital-header h4 {
   margin: 0;
-  color: #1f2937;
+  color: var(--text-heading);
   font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .date-badge {
-  background: #f3f4f6;
-  color: #374151;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-blue);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .vital-value {
   text-align: center;
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background: #f8fafc;
-  border-radius: 6px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: var(--bg-panel);
+  border-radius: 8px;
+  border: var(--border);
 }
 
 .value {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--accent-blue);
 }
 
 .unit {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-left: 0.25rem;
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-left: 6px;
+  font-weight: 500;
 }
 
 .vital-details {
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .vital-details p {
-  margin: 0.25rem 0;
-  font-size: 0.875rem;
-  color: #6b7280;
+  margin: 8px 0;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.vital-details strong {
+  color: var(--text-heading);
+  font-weight: 600;
 }
 
 .vital-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: var(--border);
 }
 
 .empty-state {
   text-align: center;
-  padding: 2rem;
-  color: #6b7280;
+  padding: 48px 24px;
+  color: var(--text-muted);
+  background: var(--bg-glass);
+  backdrop-filter: var(--blur);
+  border: var(--border);
+  border-radius: 12px;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1rem;
 }
 
 .btn {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  border: 1px solid transparent;
+  border: none;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .btn-xs {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
+  padding: 6px 12px;
+  font-size: 0.8rem;
 }
 
 .btn-sm {
-  padding: 0.375rem 0.75rem;
+  padding: 8px 16px;
   font-size: 0.875rem;
 }
 
 .btn-primary {
-  background: #3b82f6;
+  background: var(--accent-blue);
   color: white;
+  box-shadow: var(--glow-blue);
 }
 
-.btn-primary:hover {
-  background: #2563eb;
+.btn-primary:hover:not(:disabled) {
+  background: var(--blue-600);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
 }
 
 .btn-outline {
   background: transparent;
-  color: #374151;
-  border-color: #d1d5db;
+  color: var(--accent-blue);
+  border: 2px solid var(--accent-blue);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
 }
 
-.btn-outline:hover {
-  background: #f9fafb;
+.btn-outline:hover:not(:disabled) {
+  background: var(--accent-blue);
+  color: white;
+  box-shadow: var(--glow-blue);
+  transform: translateY(-1px);
 }
 
 .btn-danger {
-  background: #ef4444;
+  background: var(--led-red);
   color: white;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
 }
 
-.btn-danger:hover {
-  background: #dc2626;
+.btn-danger:hover:not(:disabled) {
+  background: var(--red-600);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .vitals-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  
+  .vital-card {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .list-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .list-header h3 {
+    font-size: 1.3rem;
+  }
+  
+  .vitals-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .vital-card {
+    padding: 16px;
+  }
+  
+  .vital-value {
+    padding: 12px;
+  }
+  
+  .value {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .vitals-list {
+    margin-bottom: 24px;
+  }
+  
+  .list-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+  
+  .list-header h3 {
+    font-size: 1.2rem;
+  }
+  
+  .vital-card {
+    padding: 16px;
+  }
+  
+  .vital-header h4 {
+    font-size: 1rem;
+  }
+  
+  .date-badge {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+  }
+  
+  .value {
+    font-size: 1.5rem;
+  }
+  
+  .vital-details p {
+    font-size: 0.85rem;
+  }
+  
+  .vital-actions {
+    flex-direction: column;
+  }
+  
+  .btn-xs {
+    width: 100%;
+  }
+}
+
+/* Touch device improvements */
+@media (hover: none) and (pointer: coarse) {
+  .vital-card:hover {
+    transform: none;
+  }
+  
+  .btn:hover {
+    transform: none !important;
+  }
 }
 </style>
