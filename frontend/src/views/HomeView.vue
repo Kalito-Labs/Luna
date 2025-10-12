@@ -8,26 +8,59 @@
     <!-- Main Content Area -->
     <section class="main-area">
       <h1 class="main-title">KalitoSpace</h1>
-      <div class="intro-block">
-        <div class="intro-tagline">
-          A private family hub  
-          <span class="faint">to keep Mom and Dad’s care organized, safe, and close at hand.</span>
+            <div class="intro-block">
+        <div class="intro-hero">
+          <h2 class="intro-headline">Caring for Your Parents, Made Simpler</h2>
+          <p class="intro-tagline">
+            A privacy-first platform that brings together everything you need to manage your parents' care—
+            medications, appointments, vitals, and AI assistance—all in one secure, local-first space.
+          </p>
         </div>
         <div class="features-container">
+          <h3 class="features-heading">Built for Family Caregivers</h3>
           <ul class="feature-list">
             <li>
-              <span class="emoji">🏥</span> Patient profiles with medical history, medications, and appointments.
+              <span class="emoji">🏥</span>
+              <div class="feature-content">
+                <strong>Complete Care Dashboard</strong>
+                <span class="feature-desc">Track medications, appointments, vitals, and caregiver schedules in one organized view.</span>
+              </div>
             </li>
             <li>
-              <span class="emoji">📅</span> Daily reminders for meds, vitals, and upcoming doctor visits.
+              <span class="emoji">🤖</span>
+              <div class="feature-content">
+                <strong>AI Care Assistant</strong>
+                <span class="feature-desc">Context-aware AI that understands your parents' care situation and helps you make informed decisions.</span>
+              </div>
             </li>
             <li>
-              <span class="emoji">🤖</span> AI helpers that summarize notes, track health trends, and prepare questions for visits.
+              <span class="emoji">📊</span>
+              <div class="feature-content">
+                <strong>Health Trend Monitoring</strong>
+                <span class="feature-desc">Visualize blood pressure, weight, and glucose patterns to spot changes early.</span>
+              </div>
             </li>
             <li>
-              <span class="emoji">🔒</span> Everything stored locally, no tracking, just us.
+              <span class="emoji">🔒</span>
+              <div class="feature-content">
+                <strong>Privacy You Can Trust</strong>
+                <span class="feature-desc">All data stored locally on your device. No cloud storage, no tracking, complete control.</span>
+              </div>
             </li>
           </ul>
+        </div>
+        <div class="cta-section">
+          <p class="cta-text">Ready to simplify your caregiving journey?</p>
+          <div class="cta-buttons">
+            <router-link to="/eldercare" class="btn btn-primary">
+              <span class="btn-icon">🏥</span>
+              Start Managing Care
+            </router-link>
+            <router-link to="/kalito" class="btn btn-secondary">
+              <span class="btn-icon">💬</span>
+              Talk to AI Assistant
+            </router-link>
+          </div>
         </div>
       </div>
     </section>
@@ -113,8 +146,8 @@ const homeBgStyle = computed(() => ({
   align-items: center;
   margin-bottom: 1.7em;
   width: 100%;
-  max-width: 780px;
-  gap: 0.85em;
+  max-width: 900px;
+  gap: 1.5em;
   background: rgba(12, 14, 18, 0.54);
   border-radius: 1.15em;
   box-shadow:
@@ -123,15 +156,43 @@ const homeBgStyle = computed(() => ({
   backdrop-filter: blur(10px) saturate(160%);
   -webkit-backdrop-filter: blur(10px) saturate(160%);
   border: 1.5px solid rgba(66, 72, 110, 0.18);
-  padding: 2.3em 2.6em;
+  padding: 2.8em 3em;
   transition: background 0.2s;
+}
+
+/* Intro hero section */
+.intro-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  width: 100%;
+}
+
+.intro-headline {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #d4e7fd;
+  margin: 0;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 12px rgba(16, 22, 45, 0.4);
+}
+
+.intro-tagline {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: #b8cfe8;
+  margin: 0;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Features container styles */
 .features-container {
   background: rgba(8, 10, 14, 0.75);
   border: 1.5px solid var(--color-border);
-  border-radius: 0.5em;
+  border-radius: 0.75em;
   box-shadow:
     0 1.5px 10px 0 #10132332,
     0 0 0 1px rgba(58, 65, 101, 0.2);
@@ -139,10 +200,17 @@ const homeBgStyle = computed(() => ({
   -webkit-backdrop-filter: blur(8px) saturate(140%);
   color: var(--color-text);
   font-family: var(--font-family);
-  padding: 1.2em;
-  margin: 0.7em 0 1.2em 0;
-  width: 98%;
-  max-width: 720px;
+  padding: 1.8em 2em;
+  width: 100%;
+}
+
+.features-heading {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #c5dbf5;
+  margin: 0 0 1.2em 0;
+  text-align: center;
+  letter-spacing: -0.01em;
 }
 
 /* Feature list styles */
@@ -152,28 +220,115 @@ const homeBgStyle = computed(() => ({
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.2em;
+  gap: 1.2em;
 }
 
 /* Feature list item styles */
 .feature-list li {
   color: #d2e7fc;
-  font-size: 1.12rem;
-  text-shadow: 0 1px 6px #1818302e;
+  font-size: 1rem;
   display: flex;
   align-items: flex-start;
-  gap: 0.66em;
-  padding: 0.12em 0;
+  gap: 1em;
+  padding: 0;
 }
 
 /* Emoji styles */
 .emoji {
-  font-size: 1em;
+  font-size: 1.8em;
   flex-shrink: 0;
-  opacity: 0.98;
+  opacity: 0.95;
   margin-top: 2px;
   color: #76f1d8;
   filter: none;
+}
+
+.feature-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  flex: 1;
+}
+
+.feature-content strong {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #e4ecf7;
+  display: block;
+}
+
+.feature-desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #9fb5d4;
+}
+
+/* CTA Section */
+.cta-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2em;
+  width: 100%;
+  padding-top: 0.5em;
+}
+
+.cta-text {
+  font-size: 1.1rem;
+  color: #c5dbf5;
+  margin: 0;
+  font-weight: 500;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1em;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.85em 1.8em;
+  border-radius: 0.6em;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+}
+
+.btn-icon {
+  font-size: 1.2em;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #5a7bc7 0%, #4c6bb8 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(90, 123, 199, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #6585d1 0%, #5777c4 100%);
+  box-shadow: 0 6px 20px rgba(90, 123, 199, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: rgba(42, 48, 72, 0.6);
+  color: #d4e7fd;
+  border-color: rgba(66, 72, 110, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.btn-secondary:hover {
+  background: rgba(50, 58, 86, 0.7);
+  border-color: rgba(90, 123, 199, 0.5);
+  transform: translateY(-2px);
 }
 
 /* ================================================================ */
@@ -192,19 +347,47 @@ const homeBgStyle = computed(() => ({
 
   .intro-block {
     max-width: 90%;
-    padding: 2em 2.2em;
-    gap: 0.75em;
+    padding: 2.4em 2.4em;
+    gap: 1.3em;
     margin-top: 2rem;
   }
 
+  .intro-headline {
+    font-size: 1.7rem;
+  }
+
+  .intro-tagline {
+    font-size: 1.05rem;
+  }
+
   .features-container {
-    padding: 1.1em;
-    max-width: 100%;
+    padding: 1.6em 1.8em;
+  }
+
+  .features-heading {
+    font-size: 1.2rem;
+  }
+
+  .feature-list {
+    gap: 1em;
   }
 
   .feature-list li {
-    font-size: 1.08rem;
-    gap: 0.6em;
+    gap: 0.9em;
+  }
+
+  .feature-content strong {
+    font-size: 1.05rem;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -225,33 +408,56 @@ const homeBgStyle = computed(() => ({
 
   .intro-block {
     max-width: 95%;
-    padding: 1.8em 1.8em;
-    gap: 0.7em;
+    padding: 2em 1.8em;
+    gap: 1.2em;
     margin-bottom: 1.5em;
   }
 
+  .intro-headline {
+    font-size: 1.5rem;
+  }
+
   .intro-tagline {
-    font-size: 0.95rem;
-    text-align: center;
+    font-size: 1rem;
+    line-height: 1.6;
   }
 
   .features-container {
-    padding: 1em;
-    margin: 0.6em 0 1em 0;
+    padding: 1.4em 1.6em;
+  }
+
+  .features-heading {
+    font-size: 1.15rem;
+    margin-bottom: 1em;
   }
 
   .feature-list {
-    gap: 0.3em;
+    gap: 0.9em;
   }
 
   .feature-list li {
-    font-size: 1rem;
-    gap: 0.55em;
-    padding: 0.15em 0;
+    gap: 0.8em;
   }
 
   .emoji {
-    font-size: 0.95em;
+    font-size: 1.6em;
+  }
+
+  .feature-content strong {
+    font-size: 1rem;
+  }
+
+  .feature-desc {
+    font-size: 0.9rem;
+  }
+
+  .cta-text {
+    font-size: 1rem;
+  }
+
+  .btn {
+    padding: 0.8em 1.5em;
+    font-size: 0.95rem;
   }
 }
 
@@ -271,35 +477,58 @@ const homeBgStyle = computed(() => ({
 
   .intro-block {
     max-width: 96%;
-    padding: 1.5em 1.4em;
-    gap: 0.65em;
-  margin-top: 2.5rem;
+    padding: 1.8em 1.4em;
+    gap: 1em;
+    margin-top: 2.5rem;
     border-radius: 1em;
   }
 
+  .intro-headline {
+    font-size: 1.3rem;
+  }
+
   .intro-tagline {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
   }
 
   .features-container {
-    padding: 0.9em;
-    margin: 0.5em 0 0.9em 0;
-    border-radius: 0.4em;
+    padding: 1.2em 1.4em;
+    border-radius: 0.6em;
+  }
+
+  .features-heading {
+    font-size: 1.05rem;
+    margin-bottom: 0.9em;
   }
 
   .feature-list {
-    gap: 0.25em;
+    gap: 0.8em;
   }
 
   .feature-list li {
-    font-size: 0.95rem;
-    gap: 0.5em;
-    padding: 0.18em 0;
+    gap: 0.7em;
   }
 
   .emoji {
-    font-size: 0.9em;
-    margin-top: 1px;
+    font-size: 1.5em;
+  }
+
+  .feature-content strong {
+    font-size: 0.95rem;
+  }
+
+  .feature-desc {
+    font-size: 0.85rem;
+  }
+
+  .cta-text {
+    font-size: 0.95rem;
+  }
+
+  .btn {
+    padding: 0.75em 1.3em;
+    font-size: 0.9rem;
   }
 }
 
@@ -314,9 +543,13 @@ const homeBgStyle = computed(() => ({
 
   .intro-block {
     max-width: 85%;
-    padding: 1.3em 1.6em;
-    gap: 0.6em;
+    padding: 1.5em 1.6em;
+    gap: 0.9em;
     margin-bottom: 1em;
+  }
+
+  .intro-headline {
+    font-size: 1.2rem;
   }
 
   .intro-tagline {
@@ -324,12 +557,32 @@ const homeBgStyle = computed(() => ({
   }
 
   .features-container {
-    padding: 0.85em;
-    margin: 0.5em 0 0.8em 0;
+    padding: 1.2em 1.4em;
   }
 
-  .feature-list li {
-    font-size: 0.92rem;
+  .features-heading {
+    font-size: 1rem;
+  }
+
+  .feature-list {
+    gap: 0.7em;
+  }
+
+  .feature-content strong {
+    font-size: 0.9rem;
+  }
+
+  .feature-desc {
+    font-size: 0.8rem;
+  }
+
+  .cta-section {
+    gap: 0.8em;
+  }
+
+  .btn {
+    padding: 0.7em 1.2em;
+    font-size: 0.85rem;
   }
 }
 </style>
