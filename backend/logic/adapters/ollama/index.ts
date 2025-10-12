@@ -11,7 +11,6 @@ export type { OllamaAdapterConfig } from './factory'
 // Pre-built adapter instances
 export {
   phi3MiniAdapter,
-  neuralChatAdapter,
   ollamaAdapters,
   getOllamaAdapterIds,
 } from './adapters'

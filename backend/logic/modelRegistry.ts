@@ -8,15 +8,12 @@ const modelRegistry: Record<string, LLMAdapter> = Object.create(null)
 
 // ---------- Adapters ----------
 import { 
-  gpt41MiniAdapter, 
   gpt41NanoAdapter,
-  gpt5MiniAdapter,
   gpt5NanoAdapter
 } from './adapters/openai'
 import { claudeAdapter } from './adapters/claudeAdapter'
 import {
   phi3MiniAdapter,
-  neuralChatAdapter,
 } from './adapters/ollama'
 
 // ---------- Registration helper ----------
@@ -37,16 +34,14 @@ function registerAdapter(adapter: LLMAdapter, aliases: string[] = []) {
 
 // ---------- Register all adapters + aliases ----------
 
-// OpenAI (primary implementations)
-registerAdapter(gpt41MiniAdapter)
-registerAdapter(gpt41NanoAdapter)
-
-// GPT-5 models with Responses API
-registerAdapter(gpt5MiniAdapter, [
-  'gpt5-mini', // alternative format
+// OpenAI nano models (optimized for speed and cost)
+registerAdapter(gpt41NanoAdapter, [
+  'gpt-4.1-nano', // exact match
+  'gpt-4-nano',   // short alias
 ])
 registerAdapter(gpt5NanoAdapter, [
-  'gpt5-nano', // alternative format
+  'gpt-5-nano',  // exact match
+  'gpt5-nano',   // alternative format
 ])
 
 // Non-OpenAI
@@ -61,10 +56,6 @@ registerAdapter(claudeAdapter, [
 registerAdapter(phi3MiniAdapter, [
   'phi3',      // short alias
   'phi-3',     // alternative format
-])
-registerAdapter(neuralChatAdapter, [
-  'neural-chat',  // alternative format
-  'neuralchat',   // no hyphen version
 ])
 
 /**

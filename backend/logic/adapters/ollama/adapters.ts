@@ -10,6 +10,7 @@ import type { LLMAdapter } from '../../modelRegistry'
 
 /**
  * Phi-3 Mini - Lightweight reasoning model with 4K context
+ * Primary local model for fast, factual eldercare queries
  */
 export const phi3MiniAdapter: LLMAdapter = createOllamaAdapter({
   id: 'phi3-mini',
@@ -19,21 +20,10 @@ export const phi3MiniAdapter: LLMAdapter = createOllamaAdapter({
 })
 
 /**
- * Neural Chat 7B - High-performance Mistral-based chatbot with 32K context
- */
-export const neuralChatAdapter: LLMAdapter = createOllamaAdapter({
-  id: 'neural-chat-7b',
-  name: 'Neural Chat 7B',
-  model: 'neural-chat:7b',
-  contextWindow: 32768,
-})
-
-/**
  * Collection of all Ollama adapters
  */
 export const ollamaAdapters = {
   'phi3-mini': phi3MiniAdapter,
-  'neural-chat-7b': neuralChatAdapter,
 } as const
 
 /**

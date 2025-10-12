@@ -6,25 +6,10 @@ import type { OpenAIModelConfig } from './types'
  * Central configuration for all OpenAI models
  *
  * This file is the definitive source of model configurations.
- * Includes aliases for backward compatibility and deprecation flags
- * to ensure clean migrations over time.
+ * Keeping only nano variants for optimal speed and cost efficiency.
  */
 export const OPENAI_MODELS: Record<string, OpenAIModelConfig> = {
-  // GPT-4.1 Mini - Latest GPT-4.1 model
-  'gpt-4.1-mini': {
-    model: 'gpt-4.1-mini',
-    name: 'GPT-4.1 Mini',
-    apiMode: 'chat',
-    contextWindow: 128000,
-    defaultMaxTokens: 1024,
-    defaultTemperature: 0.7,
-    pricing: {
-      input: 0.80,   // $0.80 / 1M input tokens
-      output: 3.20,  // $3.20 / 1M output tokens
-    },
-  },
-
-  // GPT-4.1 Nano - Fastest GPT-4.1 model
+  // GPT-4.1 Nano - Fastest GPT-4.1 model (Chat Completions API)
   'gpt-4.1-nano': {
     model: 'gpt-4.1-nano',
     name: 'GPT-4.1 Nano',
@@ -38,20 +23,7 @@ export const OPENAI_MODELS: Record<string, OpenAIModelConfig> = {
     },
   },
 
-  // ---------------- GPT-5 family (Responses API) ----------------
-  'gpt-5-mini': {
-    model: 'gpt-5-mini',
-    name: 'GPT-5 Mini',
-    apiMode: 'responses',
-    contextWindow: 200000,
-    defaultMaxTokens: 4096,
-    defaultTemperature: 0.2,
-    pricing: {
-      input: 0.25,   // $0.25 / 1M input tokens
-      output: 2.0,   // $2.00 / 1M output tokens
-    },
-    aliases: ['gpt-5-fast'],
-  },
+  // GPT-5 Nano - Fastest GPT-5 model (Responses API)
   'gpt-5-nano': {
     model: 'gpt-5-nano',
     name: 'GPT-5 Nano',
