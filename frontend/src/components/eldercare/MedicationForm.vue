@@ -20,7 +20,44 @@
         </div>
       </div>
 
-      <!-- Medication Details -->
+      <!-- Prescription Details -->
+      <div class="form-section">
+        <h3>Prescription Details</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prescribing_doctor">Prescribing Doctor</label>
+            <input 
+              id="prescribing_doctor"
+              v-model="form.prescribing_doctor" 
+              type="text" 
+              placeholder="Dr. Smith"
+            />
+          </div>
+          
+          <div class="form-group">
+            <label for="pharmacy">Pharmacy</label>
+            <input 
+              id="pharmacy"
+              v-model="form.pharmacy" 
+              type="text" 
+              placeholder="CVS Pharmacy"
+            />
+          </div>
+          
+          <div class="form-group">
+            <label for="rx_number">Rx Number</label>
+            <input 
+              id="rx_number"
+              v-model="form.rx_number" 
+              type="text" 
+              placeholder="e.g., RX123456"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Medication Information -->
       <div class="form-section">
         <h3>Medication Information</h3>
         
@@ -36,18 +73,6 @@
             />
           </div>
           
-          <div class="form-group">
-            <label for="generic_name">Generic Name</label>
-            <input 
-              id="generic_name"
-              v-model="form.generic_name" 
-              type="text" 
-              placeholder="e.g., ACE inhibitor"
-            />
-          </div>
-        </div>
-        
-        <div class="form-row">
           <div class="form-group">
             <label for="dosage">Dosage *</label>
             <input 
@@ -84,65 +109,6 @@
               <option value="eye_drops">Eye drops</option>
               <option value="nasal">Nasal</option>
             </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Prescription Details -->
-      <div class="form-section">
-        <h3>Prescription Details</h3>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="prescribing_doctor">Prescribing Doctor</label>
-            <input 
-              id="prescribing_doctor"
-              v-model="form.prescribing_doctor" 
-              type="text" 
-              placeholder="Dr. Smith"
-            />
-          </div>
-          
-          <div class="form-group">
-            <label for="pharmacy">Pharmacy</label>
-            <input 
-              id="pharmacy"
-              v-model="form.pharmacy" 
-              type="text" 
-              placeholder="CVS Pharmacy"
-            />
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="start_date">Start Date *</label>
-            <input 
-              id="start_date"
-              v-model="form.start_date" 
-              type="date" 
-              required
-            />
-          </div>
-          
-          <div class="form-group">
-            <label for="end_date">End Date</label>
-            <input 
-              id="end_date"
-              v-model="form.end_date" 
-              type="date"
-            />
-          </div>
-          
-          <div class="form-group">
-            <label for="refills_remaining">Refills Remaining</label>
-            <input 
-              id="refills_remaining"
-              v-model.number="form.refills_remaining" 
-              type="number" 
-              min="0"
-              placeholder="0"
-            />
           </div>
         </div>
       </div>
@@ -189,15 +155,12 @@ import { ref, onMounted } from 'vue'
 interface MedicationForm {
   patient_id: string
   name: string
-  generic_name: string
   dosage: string
   frequency: string
   route: string
   prescribing_doctor: string
   pharmacy: string
-  start_date: string
-  end_date: string
-  refills_remaining: number | null
+  rx_number: string
   side_effects: string
   notes: string
 }
@@ -222,15 +185,12 @@ const isSubmitting = ref(false)
 const form = ref<MedicationForm>({
   patient_id: '',
   name: '',
-  generic_name: '',
   dosage: '',
   frequency: '',
   route: '',
   prescribing_doctor: '',
   pharmacy: '',
-  start_date: '',
-  end_date: '',
-  refills_remaining: null,
+  rx_number: '',
   side_effects: '',
   notes: ''
 })
