@@ -98,16 +98,34 @@
       <div class="form-section">
         <h3>Medical Information</h3>
         
-        <div class="form-row">
-          <div class="form-group">
-            <label for="primary_doctor">Primary Doctor</label>
-            <input 
-              id="primary_doctor"
-              v-model="form.primary_doctor" 
-              type="text" 
-              placeholder="Dr. Smith"
-            />
-          </div>
+        <div class="form-group">
+          <label for="primary_doctor">Primary Doctor</label>
+          <input 
+            id="primary_doctor"
+            v-model="form.primary_doctor" 
+            type="text" 
+            placeholder="Dr. Smith"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="doctor_address">Address</label>
+          <textarea 
+            id="doctor_address"
+            v-model="form.doctor_address" 
+            rows="2"
+            placeholder="Doctor's office address"
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="doctor_phone">Phone Number</label>
+          <input 
+            id="doctor_phone"
+            v-model="form.doctor_phone" 
+            type="tel" 
+            placeholder="(555) 123-4567"
+          />
         </div>
         
         <div class="form-row">
@@ -171,6 +189,8 @@ interface PatientForm {
   emergency_contact_name: string
   emergency_contact_phone: string
   primary_doctor: string
+  doctor_address: string
+  doctor_phone: string
   insurance_provider: string
   insurance_id: string
   notes: string
@@ -201,6 +221,8 @@ const form = ref<PatientForm>({
   emergency_contact_name: '',
   emergency_contact_phone: '',
   primary_doctor: '',
+  doctor_address: '',
+  doctor_phone: '',
   insurance_provider: '',
   insurance_id: '',
   notes: ''

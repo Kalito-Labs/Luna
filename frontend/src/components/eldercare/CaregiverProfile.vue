@@ -82,111 +82,6 @@
         </div>
       </div>
 
-      <!-- Professional Information -->
-      <div class="form-section">
-        <h3>Professional Information</h3>
-        
-        <div class="form-group">
-          <label for="specialties">Specialties</label>
-          <div class="tags-input">
-            <div class="tags">
-              <span 
-                v-for="(specialty, index) in form.specialties" 
-                :key="index" 
-                class="tag"
-              >
-                {{ specialty }}
-                <button type="button" @click="removeSpecialty(index)" class="tag-remove">×</button>
-              </span>
-            </div>
-            <input 
-              v-model="newSpecialty"
-              @keydown.enter.prevent="addSpecialty"
-              @keydown.comma.prevent="addSpecialty"
-              placeholder="Type a specialty and press Enter"
-              class="tag-input"
-            />
-          </div>
-          <small class="help-text">e.g., Dementia Care, Physical Therapy, Medication Management</small>
-        </div>
-        
-        <div class="form-group">
-          <label for="certifications">Certifications</label>
-          <div class="tags-input">
-            <div class="tags">
-              <span 
-                v-for="(cert, index) in form.certifications" 
-                :key="index" 
-                class="tag"
-              >
-                {{ cert }}
-                <button type="button" @click="removeCertification(index)" class="tag-remove">×</button>
-              </span>
-            </div>
-            <input 
-              v-model="newCertification"
-              @keydown.enter.prevent="addCertification"
-              @keydown.comma.prevent="addCertification"
-              placeholder="Type a certification and press Enter"
-              class="tag-input"
-            />
-          </div>
-          <small class="help-text">e.g., CNA, RN, CPR Certified, First Aid</small>
-        </div>
-        
-        <div class="form-group">
-          <label for="hourly_rate">Hourly Rate ($)</label>
-          <input 
-            id="hourly_rate"
-            v-model.number="form.hourly_rate" 
-            type="number" 
-            min="0" 
-            step="0.01"
-            placeholder="25.00"
-          />
-        </div>
-      </div>
-
-      <!-- Availability Schedule -->
-      <div class="form-section">
-        <h3>Availability Schedule</h3>
-        <p class="section-description">Set your typical availability for each day of the week</p>
-        
-        <div class="schedule-grid">
-          <div 
-            v-for="day in daysOfWeek" 
-            :key="day.key" 
-            class="schedule-day"
-          >
-            <div class="day-header">
-              <label class="day-label">{{ day.label }}</label>
-              <input 
-                v-model="form.availability_schedule[day.key].available"
-                type="checkbox" 
-                class="availability-checkbox"
-              />
-            </div>
-            
-            <div 
-              v-if="form.availability_schedule[day.key].available" 
-              class="time-inputs"
-            >
-              <input 
-                v-model="form.availability_schedule[day.key].start"
-                type="time" 
-                class="time-input"
-              />
-              <span class="time-separator">to</span>
-              <input 
-                v-model="form.availability_schedule[day.key].end"
-                type="time" 
-                class="time-input"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Emergency Contact -->
       <div class="form-section">
         <h3>Emergency Contact</h3>
@@ -351,24 +246,6 @@ const emit = defineEmits<{
 const saving = ref(false)
 const clockingIn = ref(false)
 const clockingOut = ref(false)
-const newSpecialty = ref('')
-const newCertification = ref('')
-
-const daysOfWeek = [
-  { key: 'monday' as keyof CaregiverSchedule, label: 'Monday' },
-  { key: 'tuesday' as keyof CaregiverSchedule, label: 'Tuesday' },
-  { key: 'wednesday' as keyof CaregiverSchedule, label: 'Wednesday' },
-  { key: 'thursday' as keyof CaregiverSchedule, label: 'Thursday' },
-  { key: 'friday' as keyof CaregiverSchedule, label: 'Friday' },
-  { key: 'saturday' as keyof CaregiverSchedule, label: 'Saturday' },
-  { key: 'sunday' as keyof CaregiverSchedule, label: 'Sunday' }
-]
-
-const defaultScheduleDay = (): CaregiverScheduleDay => ({
-  start: '09:00',
-  end: '17:00',
-  available: false
-})
 
 const form = reactive({
   name: '',
@@ -377,21 +254,9 @@ const form = reactive({
   phone: '',
   address: '',
   relationship: '',
-  specialties: [] as string[],
-  certifications: [] as string[],
-  availability_schedule: {
-    monday: defaultScheduleDay(),
-    tuesday: defaultScheduleDay(),
-    wednesday: defaultScheduleDay(),
-    thursday: defaultScheduleDay(),
-    friday: defaultScheduleDay(),
-    saturday: defaultScheduleDay(),
-    sunday: defaultScheduleDay()
-  } as CaregiverSchedule,
   emergency_contact_name: '',
   emergency_contact_phone: '',
-  notes: '',
-  hourly_rate: undefined as number | undefined
+  notes: ''
 })
 
 const clockedIn = computed(() => {
@@ -407,38 +272,12 @@ onMounted(() => {
       phone: props.caregiver.phone || '',
       address: props.caregiver.address || '',
       relationship: props.caregiver.relationship || '',
-      specialties: [...props.caregiver.specialties],
-      certifications: [...props.caregiver.certifications],
-      availability_schedule: { ...props.caregiver.availability_schedule },
       emergency_contact_name: props.caregiver.emergency_contact_name || '',
       emergency_contact_phone: props.caregiver.emergency_contact_phone || '',
-      notes: props.caregiver.notes || '',
-      hourly_rate: props.caregiver.hourly_rate
+      notes: props.caregiver.notes || ''
     })
   }
 })
-
-function addSpecialty() {
-  if (newSpecialty.value.trim() && !form.specialties.includes(newSpecialty.value.trim())) {
-    form.specialties.push(newSpecialty.value.trim())
-    newSpecialty.value = ''
-  }
-}
-
-function removeSpecialty(index: number) {
-  form.specialties.splice(index, 1)
-}
-
-function addCertification() {
-  if (newCertification.value.trim() && !form.certifications.includes(newCertification.value.trim())) {
-    form.certifications.push(newCertification.value.trim())
-    newCertification.value = ''
-  }
-}
-
-function removeCertification(index: number) {
-  form.certifications.splice(index, 1)
-}
 
 async function clockIn() {
   if (!props.caregiver?.id) return
@@ -511,13 +350,9 @@ async function submitForm() {
       phone: form.phone || undefined,
       address: form.address || undefined,
       relationship: form.relationship || undefined,
-      specialties: form.specialties,
-      certifications: form.certifications,
-      availability_schedule: form.availability_schedule,
       emergency_contact_name: form.emergency_contact_name || undefined,
       emergency_contact_phone: form.emergency_contact_phone || undefined,
-      notes: form.notes || undefined,
-      hourly_rate: form.hourly_rate
+      notes: form.notes || undefined
     }
     
     emit('save', caregiverData)
@@ -653,118 +488,6 @@ async function submitForm() {
   outline: none;
   border-color: var(--accent-blue);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.help-text {
-  display: block;
-  margin-top: 6px;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-}
-
-/* Tags Input */
-.tags-input {
-  border: var(--border);
-  border-radius: 8px;
-  padding: 8px;
-  background: var(--bg-main);
-  min-height: 50px;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--accent-blue);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 16px;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-.tag-remove {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-size: 1.2rem;
-  line-height: 1;
-  padding: 0;
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tag-remove:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-}
-
-.tag-input {
-  border: none;
-  outline: none;
-  background: transparent;
-  color: var(--text-main);
-  flex: 1;
-  min-width: 150px;
-  padding: 4px;
-}
-
-/* Schedule Grid */
-.schedule-grid {
-  display: grid;
-  gap: 16px;
-}
-
-.schedule-day {
-  background: var(--bg-panel);
-  border: var(--border);
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.day-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.day-label {
-  font-weight: 600;
-  color: var(--text-heading);
-  margin: 0;
-}
-
-.availability-checkbox {
-  width: auto;
-  margin: 0;
-}
-
-.time-inputs {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.time-input {
-  flex: 1;
-  max-width: 120px;
-}
-
-.time-separator {
-  color: var(--text-muted);
-  font-weight: 500;
 }
 
 /* Status Card */
@@ -942,15 +665,6 @@ async function submitForm() {
   
   .form-actions {
     flex-direction: column;
-  }
-  
-  .time-inputs {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .time-input {
-    max-width: none;
   }
 }
 

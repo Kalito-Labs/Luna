@@ -20,43 +20,6 @@
         </div>
       </div>
 
-      <!-- Prescription Details -->
-      <div class="form-section">
-        <h3>Prescription Details</h3>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="prescribing_doctor">Prescribing Doctor</label>
-            <input 
-              id="prescribing_doctor"
-              v-model="form.prescribing_doctor" 
-              type="text" 
-              placeholder="Dr. Smith"
-            />
-          </div>
-          
-          <div class="form-group">
-            <label for="pharmacy">Pharmacy</label>
-            <input 
-              id="pharmacy"
-              v-model="form.pharmacy" 
-              type="text" 
-              placeholder="CVS Pharmacy"
-            />
-          </div>
-          
-          <div class="form-group">
-            <label for="rx_number">Rx Number</label>
-            <input 
-              id="rx_number"
-              v-model="form.rx_number" 
-              type="text" 
-              placeholder="e.g., RX123456"
-            />
-          </div>
-        </div>
-      </div>
-
       <!-- Medication Information -->
       <div class="form-section">
         <h3>Medication Information</h3>
@@ -113,7 +76,44 @@
         </div>
       </div>
 
-      <!-- Additional Information -->
+      <!-- Prescription Details -->
+      <div class="form-section">
+        <h3>Prescription Details</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prescribing_doctor">Prescribing Doctor</label>
+            <input 
+              id="prescribing_doctor"
+              v-model="form.prescribing_doctor" 
+              type="text" 
+              placeholder="Dr. Smith"
+            />
+          </div>
+          
+          <div class="form-group">
+            <label for="pharmacy">Pharmacy</label>
+            <input 
+              id="pharmacy"
+              v-model="form.pharmacy" 
+              type="text" 
+              placeholder="CVS Pharmacy"
+            />
+          </div>
+          
+          <div class="form-group">
+            <label for="rx_number">Rx Number</label>
+            <input 
+              id="rx_number"
+              v-model="form.rx_number" 
+              type="text" 
+              placeholder="e.g., RX123456"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Known Side Effects -->
       <div class="form-section">
         <div class="form-group">
           <label for="side_effects">Known Side Effects</label>
@@ -124,7 +124,10 @@
             placeholder="List any known side effects..."
           ></textarea>
         </div>
-        
+      </div>
+
+      <!-- Additional Notes -->
+      <div class="form-section">
         <div class="form-group">
           <label for="notes">Additional Notes</label>
           <textarea 
