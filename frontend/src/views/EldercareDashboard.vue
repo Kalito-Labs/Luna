@@ -739,15 +739,19 @@ function showMessage(text: string, type: 'success' | 'error') {
 </script>
 
 <style scoped>
+/* ================================================================ */
+/* BASE LAYOUT - Desktop First, Fluid Responsive                   */
+/* ================================================================ */
+
 .eldercare-dashboard {
-  max-width: 1600px; /* Wider for laptop use */
-  width: 1500px;
+  max-width: 1600px;
+  width: 100%;
   margin: 0 auto;
-  padding: 24px;
+  padding: 32px;
   min-height: 100vh;
-  overflow-x: auto; /* Handle horizontal overflow */
   background: var(--bg-main);
   color: var(--text-main);
+  box-sizing: border-box;
 }
 
 /* Fixed hamburger placement */
@@ -755,22 +759,97 @@ function showMessage(text: string, type: 'success' | 'error') {
   position: fixed;
   top: 32px;
   left: 32px;
-  z-index: 2001;
+  z-index: 100; /* Below modals (1000+) but above regular content */
 }
 
-/* Responsive Design */
-@media (max-width: 1280px) {
+/* ================================================================ */
+/* LARGE DESKTOP (1600px+)                                         */
+/* ================================================================ */
+@media (min-width: 1600px) {
   .eldercare-dashboard {
-    max-width: 1200px;
+    padding: 40px;
+  }
+}
+
+/* ================================================================ */
+/* DESKTOP (1280px - 1599px)                                       */
+/* ================================================================ */
+@media (max-width: 1599px) {
+  .eldercare-dashboard {
+    max-width: 1400px;
+    padding: 28px;
+  }
+}
+
+@media (max-width: 1439px) {
+  .eldercare-dashboard {
+    max-width: 1280px;
+    padding: 24px;
+  }
+}
+
+/* ================================================================ */
+/* LAPTOP (1024px - 1279px)                                        */
+/* ================================================================ */
+@media (max-width: 1279px) {
+  .eldercare-dashboard {
+    max-width: 100%;
+    padding: 24px;
+  }
+}
+
+/* ================================================================ */
+/* IPAD PRO & LARGE TABLETS (834px - 1023px)                       */
+/* ================================================================ */
+@media (max-width: 1023px) {
+  .eldercare-dashboard {
+    padding: 20px 24px;
+  }
+  
+  .hamburger-fixed {
+    top: 24px;
+    left: 24px;
+  }
+}
+
+/* ================================================================ */
+/* IPAD & TABLETS LANDSCAPE (768px - 833px)                        */
+/* ================================================================ */
+@media (max-width: 833px) {
+  .eldercare-dashboard {
     padding: 20px;
   }
 }
 
-@media (max-width: 768px) {
+/* ================================================================ */
+/* IPAD MINI & TABLETS PORTRAIT (600px - 767px)                    */
+/* ================================================================ */
+@media (max-width: 767px) {
   .eldercare-dashboard {
-    max-width: 100%;
     padding: 16px;
-    margin: 0;
+  }
+  
+  .hamburger-fixed {
+    top: 20px;
+    left: 20px;
+  }
+}
+
+/* ================================================================ */
+/* LARGE PHONES & SMALL TABLETS (480px - 599px)                    */
+/* ================================================================ */
+@media (max-width: 599px) {
+  .eldercare-dashboard {
+    padding: 16px 12px;
+  }
+}
+
+/* ================================================================ */
+/* PHONES (375px - 479px)                                          */
+/* ================================================================ */
+@media (max-width: 479px) {
+  .eldercare-dashboard {
+    padding: 12px;
   }
   
   .hamburger-fixed {
@@ -779,9 +858,12 @@ function showMessage(text: string, type: 'success' | 'error') {
   }
 }
 
-@media (max-width: 480px) {
+/* ================================================================ */
+/* SMALL PHONES (320px - 374px)                                    */
+/* ================================================================ */
+@media (max-width: 374px) {
   .eldercare-dashboard {
-    padding: 12px;
+    padding: 10px 8px;
   }
   
   .hamburger-fixed {
@@ -790,98 +872,238 @@ function showMessage(text: string, type: 'success' | 'error') {
   }
 }
 
+/* ================================================================ */
+/* DASHBOARD HEADER                                                 */
+/* ================================================================ */
+
 .dashboard-header {
   text-align: center;
-  margin-bottom: 40px;
-  padding-bottom: 1rem;
+  margin-bottom: 48px;
+  padding-bottom: 1.5rem;
   border-bottom: var(--border);
 }
 
 .dashboard-header h1 {
   color: var(--text-heading);
-  margin: 0 0 8px 0;
+  margin: 0 0 12px 0;
   font-size: 2.5rem;
   font-weight: 600;
-}
-
-/* Responsive header */
-@media (max-width: 768px) {
-  .dashboard-header h1 {
-    font-size: 2rem;
-  }
-  
-  .dashboard-header {
-    margin-bottom: 30px;
-  }
-}
-
-@media (max-width: 480px) {
-  .dashboard-header h1 {
-    font-size: 1.75rem;
-  }
-  
-  .dashboard-header {
-    margin-bottom: 24px;
-  }
+  letter-spacing: -0.01em;
 }
 
 .subtitle {
   color: var(--text-muted);
   font-size: 1.1rem;
   margin: 0;
+  line-height: 1.5;
 }
 
+/* IPAD PRO & LARGE TABLETS */
+@media (max-width: 1023px) {
+  .dashboard-header {
+    margin-bottom: 40px;
+    padding-bottom: 1.25rem;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 2.25rem;
+  }
+  
+  .subtitle {
+    font-size: 1.05rem;
+  }
+}
+
+/* IPAD & TABLETS */
+@media (max-width: 833px) {
+  .dashboard-header {
+    margin-bottom: 36px;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 2.1rem;
+  }
+}
+
+/* IPAD MINI & SMALL TABLETS */
+@media (max-width: 767px) {
+  .dashboard-header {
+    margin-bottom: 32px;
+    padding-bottom: 1rem;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+}
+
+/* LARGE PHONES */
+@media (max-width: 599px) {
+  .dashboard-header {
+    margin-bottom: 28px;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 1.85rem;
+  }
+  
+  .subtitle {
+    font-size: 0.95rem;
+  }
+}
+
+/* PHONES */
+@media (max-width: 479px) {
+  .dashboard-header {
+    margin-bottom: 24px;
+    padding-bottom: 0.875rem;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 8px;
+  }
+  
+  .subtitle {
+    font-size: 0.9rem;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .dashboard-header h1 {
+    font-size: 1.6rem;
+  }
+  
+  .subtitle {
+    font-size: 0.85rem;
+  }
+}
+
+/* ================================================================ */
+/* QUICK ACTIONS SECTION                                            */
+/* ================================================================ */
+
 .quick-actions {
-  margin-bottom: 40px;
+  margin-bottom: 48px;
 }
 
 .quick-actions h2 {
   color: var(--text-heading);
-  margin: 0 0 20px 0;
+  margin: 0 0 24px 0;
+  font-size: 1.75rem;
   font-weight: 600;
-}
-
-/* Responsive quick actions */
-@media (max-width: 768px) {
-  .quick-actions {
-    margin-bottom: 30px;
-  }
-  
-  .quick-actions h2 {
-    font-size: 1.5rem;
-    margin: 0 0 16px 0;
-  }
 }
 
 .action-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-  overflow-x: auto;
-  padding-bottom: 8px;
 }
 
-/* Responsive action grid */
-@media (max-width: 1024px) {
+/* DESKTOP - 2 columns */
+@media (max-width: 1279px) {
   .action-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
 }
 
-@media (max-width: 768px) {
+/* IPAD PRO & LARGE TABLETS - 2 columns */
+@media (max-width: 1023px) {
+  .quick-actions {
+    margin-bottom: 40px;
+  }
+  
+  .quick-actions h2 {
+    font-size: 1.65rem;
+    margin-bottom: 20px;
+  }
+  
   .action-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* IPAD & TABLETS LANDSCAPE - 2 columns, smaller */
+@media (max-width: 833px) {
+  .quick-actions {
+    margin-bottom: 36px;
+  }
+  
+  .quick-actions h2 {
+    font-size: 1.5rem;
+  }
+  
+  .action-grid {
     gap: 16px;
   }
 }
 
-@media (max-width: 480px) {
+/* IPAD MINI & TABLETS PORTRAIT - still 2 columns */
+@media (max-width: 767px) {
+  .quick-actions {
+    margin-bottom: 32px;
+  }
+  
+  .quick-actions h2 {
+    font-size: 1.4rem;
+    margin-bottom: 18px;
+  }
+}
+
+/* LARGE PHONES - single column */
+@media (max-width: 599px) {
+  .quick-actions {
+    margin-bottom: 28px;
+  }
+  
+  .quick-actions h2 {
+    font-size: 1.35rem;
+    margin-bottom: 16px;
+  }
+  
   .action-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+/* PHONES - single column, tighter spacing */
+@media (max-width: 479px) {
+  .quick-actions {
+    margin-bottom: 24px;
+  }
+  
+  .quick-actions h2 {
+    font-size: 1.3rem;
+    margin-bottom: 14px;
+  }
+  
+  .action-grid {
     gap: 12px;
   }
 }
+
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .quick-actions h2 {
+    font-size: 1.2rem;
+  }
+  
+  .action-grid {
+    gap: 10px;
+  }
+}
+
+/* ================================================================ */
+/* ACTION BUTTONS                                                   */
+/* ================================================================ */
 
 .action-btn {
   display: flex;
@@ -895,25 +1117,60 @@ function showMessage(text: string, type: 'success' | 'error') {
   transition: all 0.2s ease;
   text-align: left;
   min-height: 120px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* Responsive action buttons */
-@media (max-width: 768px) {
+/* IPAD PRO & LARGE TABLETS */
+@media (max-width: 1023px) {
   .action-btn {
     padding: 20px;
+    min-height: 110px;
+  }
+}
+
+/* IPAD & TABLETS */
+@media (max-width: 833px) {
+  .action-btn {
+    padding: 18px;
     min-height: 100px;
   }
 }
 
-@media (max-width: 480px) {
+/* IPAD MINI & SMALL TABLETS */
+@media (max-width: 767px) {
   .action-btn {
     padding: 16px;
-    min-height: 80px;
-    flex-direction: column;
-    text-align: center;
+    min-height: 95px;
   }
 }
 
+/* LARGE PHONES - full width, adjusted height */
+@media (max-width: 599px) {
+  .action-btn {
+    padding: 16px 18px;
+    min-height: 90px;
+  }
+}
+
+/* PHONES */
+@media (max-width: 479px) {
+  .action-btn {
+    padding: 14px 16px;
+    min-height: 85px;
+    border-radius: 10px;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .action-btn {
+    padding: 12px 14px;
+    min-height: 80px;
+  }
+}
+
+/* Action button states */
 .action-btn:hover:not(:disabled) {
   border-color: var(--accent-blue);
   transform: translateY(-2px);
@@ -940,35 +1197,88 @@ function showMessage(text: string, type: 'success' | 'error') {
   cursor: not-allowed;
 }
 
+/* ================================================================ */
+/* BUTTON ICON & CONTENT                                            */
+/* ================================================================ */
+
 .btn-icon {
   font-size: 2.5rem;
-  margin-right: 16px;
+  margin-right: 18px;
+  flex-shrink: 0;
 }
 
-/* Responsive icon */
-@media (max-width: 480px) {
-  .btn-icon {
-    font-size: 2rem;
-    margin-right: 0;
-    margin-bottom: 8px;
-  }
+.btn-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .btn-content h3 {
-  margin: 0 0 4px 0;
+  margin: 0 0 6px 0;
   color: var(--text-heading);
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
+  line-height: 1.3;
 }
 
 .btn-content p {
   margin: 0;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
-/* Responsive button content */
-@media (max-width: 480px) {
+/* IPAD PRO & LARGE TABLETS */
+@media (max-width: 1023px) {
+  .btn-icon {
+    font-size: 2.3rem;
+    margin-right: 16px;
+  }
+  
+  .btn-content h3 {
+    font-size: 1.1rem;
+  }
+  
+  .btn-content p {
+    font-size: 0.9rem;
+  }
+}
+
+/* IPAD & TABLETS */
+@media (max-width: 833px) {
+  .btn-icon {
+    font-size: 2.2rem;
+    margin-right: 14px;
+  }
+  
+  .btn-content h3 {
+    font-size: 1.05rem;
+  }
+}
+
+/* IPAD MINI & SMALL TABLETS */
+@media (max-width: 767px) {
+  .btn-icon {
+    font-size: 2.1rem;
+    margin-right: 14px;
+  }
+  
+  .btn-content h3 {
+    font-size: 1.05rem;
+    margin-bottom: 5px;
+  }
+  
+  .btn-content p {
+    font-size: 0.875rem;
+  }
+}
+
+/* LARGE PHONES */
+@media (max-width: 599px) {
+  .btn-icon {
+    font-size: 2rem;
+    margin-right: 12px;
+  }
+  
   .btn-content h3 {
     font-size: 1rem;
   }
@@ -978,32 +1288,103 @@ function showMessage(text: string, type: 'success' | 'error') {
   }
 }
 
-/* Navigation Tabs */
+/* PHONES */
+@media (max-width: 479px) {
+  .btn-icon {
+    font-size: 1.9rem;
+    margin-right: 12px;
+  }
+  
+  .btn-content h3 {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+  
+  .btn-content p {
+    font-size: 0.8rem;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .btn-icon {
+    font-size: 1.8rem;
+    margin-right: 10px;
+  }
+  
+  .btn-content h3 {
+    font-size: 0.9rem;
+  }
+  
+  .btn-content p {
+    font-size: 0.75rem;
+  }
+}
+
+/* ================================================================ */
+/* NAVIGATION TABS                                                  */
+/* ================================================================ */
+
 .navigation-tabs {
   display: flex;
   gap: 4px;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
   border-bottom: var(--border);
   padding-bottom: 0;
   overflow-x: auto;
   scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Responsive navigation tabs */
-@media (max-width: 768px) {
+/* IPAD PRO & LARGE TABLETS */
+@media (max-width: 1023px) {
   .navigation-tabs {
-    gap: 2px;
+    margin-bottom: 28px;
+  }
+}
+
+/* IPAD & TABLETS */
+@media (max-width: 833px) {
+  .navigation-tabs {
+    gap: 3px;
     margin-bottom: 24px;
   }
 }
 
-@media (max-width: 480px) {
+/* IPAD MINI & SMALL TABLETS */
+@media (max-width: 767px) {
+  .navigation-tabs {
+    gap: 2px;
+    margin-bottom: 22px;
+  }
+}
+
+/* LARGE PHONES */
+@media (max-width: 599px) {
+  .navigation-tabs {
+    margin-bottom: 20px;
+  }
+}
+
+/* PHONES */
+@media (max-width: 479px) {
   .navigation-tabs {
     gap: 1px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     padding: 0 4px;
   }
 }
+
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .navigation-tabs {
+    margin-bottom: 16px;
+  }
+}
+
+/* ================================================================ */
+/* NAVIGATION TAB BUTTONS                                           */
+/* ================================================================ */
 
 .nav-tab {
   padding: 12px 20px;
@@ -1018,34 +1399,71 @@ function showMessage(text: string, type: 'success' | 'error') {
   font-size: 0.95rem;
   white-space: nowrap;
   flex-shrink: 0;
+  min-height: 44px; /* Touch-friendly minimum */
 }
 
-/* Responsive nav tabs */
-@media (max-width: 768px) {
+/* IPAD PRO & LARGE TABLETS */
+@media (max-width: 1023px) {
+  .nav-tab {
+    padding: 11px 18px;
+    font-size: 0.93rem;
+  }
+}
+
+/* IPAD & TABLETS */
+@media (max-width: 833px) {
   .nav-tab {
     padding: 10px 16px;
     font-size: 0.9rem;
   }
 }
 
-@media (max-width: 480px) {
+/* IPAD MINI & SMALL TABLETS */
+@media (max-width: 767px) {
+  .nav-tab {
+    padding: 10px 14px;
+    font-size: 0.88rem;
+  }
+}
+
+/* LARGE PHONES */
+@media (max-width: 599px) {
+  .nav-tab {
+    padding: 9px 12px;
+    font-size: 0.86rem;
+  }
+}
+
+/* PHONES */
+@media (max-width: 479px) {
   .nav-tab {
     padding: 8px 12px;
     font-size: 0.85rem;
   }
 }
 
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .nav-tab {
+    padding: 8px 10px;
+    font-size: 0.82rem;
+  }
+}
+
+/* Tab Hover State */
 .nav-tab:hover {
   background: var(--bg-panel);
   color: var(--text-main);
 }
 
+/* Active Tab State */
 .nav-tab.active {
   background: var(--accent-blue);
   color: white;
   box-shadow: var(--glow-blue);
 }
 
+/* Active Tab Indicator Line */
 .nav-tab.active::after {
   content: '';
   position: absolute;
@@ -1056,18 +1474,61 @@ function showMessage(text: string, type: 'success' | 'error') {
   background: var(--accent-blue);
 }
 
-/* Content Sections */
+/* ================================================================ */
+/* CONTENT SECTIONS                                                 */
+/* ================================================================ */
+
 .content-section {
   margin-bottom: 40px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Responsive content sections */
-@media (max-width: 768px) {
+/* IPAD PRO & LARGE TABLETS */
+@media (max-width: 1023px) {
   .content-section {
-    margin-bottom: 30px;
+    margin-bottom: 36px;
   }
 }
+
+/* IPAD & TABLETS */
+@media (max-width: 833px) {
+  .content-section {
+    margin-bottom: 32px;
+  }
+}
+
+/* IPAD MINI & SMALL TABLETS */
+@media (max-width: 767px) {
+  .content-section {
+    margin-bottom: 28px;
+  }
+}
+
+/* LARGE PHONES */
+@media (max-width: 599px) {
+  .content-section {
+    margin-bottom: 24px;
+  }
+}
+
+/* PHONES */
+@media (max-width: 479px) {
+  .content-section {
+    margin-bottom: 20px;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .content-section {
+    margin-bottom: 18px;
+  }
+}
+
+/* ================================================================ */
+/* PATIENTS OVERVIEW SECTION                                        */
+/* ================================================================ */
 
 .patients-overview {
   margin-bottom: 40px;
@@ -1075,50 +1536,163 @@ function showMessage(text: string, type: 'success' | 'error') {
 
 .patients-overview h2 {
   color: var(--text-heading);
-  margin: 0 0 20px 0;
+  margin: 0 0 24px 0;
   font-weight: 600;
+  font-size: 1.75rem;
 }
 
-/* Responsive patients overview */
-@media (max-width: 768px) {
+/* IPAD PRO & LARGE TABLETS */
+@media (max-width: 1023px) {
   .patients-overview {
-    margin-bottom: 30px;
+    margin-bottom: 36px;
   }
   
   .patients-overview h2 {
-    font-size: 1.5rem;
+    font-size: 1.65rem;
+    margin: 0 0 22px 0;
+  }
+}
+
+/* IPAD & TABLETS */
+@media (max-width: 833px) {
+  .patients-overview {
+    margin-bottom: 32px;
+  }
+  
+  .patients-overview h2 {
+    font-size: 1.55rem;
+    margin: 0 0 20px 0;
+  }
+}
+
+/* IPAD MINI & SMALL TABLETS */
+@media (max-width: 767px) {
+  .patients-overview {
+    margin-bottom: 28px;
+  }
+  
+  .patients-overview h2 {
+    font-size: 1.45rem;
+    margin: 0 0 18px 0;
+  }
+}
+
+/* LARGE PHONES */
+@media (max-width: 599px) {
+  .patients-overview {
+    margin-bottom: 24px;
+  }
+  
+  .patients-overview h2 {
+    font-size: 1.35rem;
     margin: 0 0 16px 0;
   }
 }
+
+/* PHONES */
+@media (max-width: 479px) {
+  .patients-overview {
+    margin-bottom: 20px;
+  }
+  
+  .patients-overview h2 {
+    font-size: 1.25rem;
+    margin: 0 0 14px 0;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .patients-overview h2 {
+    font-size: 1.15rem;
+    margin: 0 0 12px 0;
+  }
+}
+
+/* ================================================================ */
+/* PATIENTS GRID                                                    */
+/* ================================================================ */
 
 .patients-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 24px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Responsive patients grid */
-@media (max-width: 1200px) {
+/* LARGE DESKTOP & ABOVE */
+@media (min-width: 1600px) {
+  .patients-grid {
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 28px;
+  }
+}
+
+/* DESKTOP */
+@media (max-width: 1599px) and (min-width: 1280px) {
+  .patients-grid {
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 22px;
+  }
+}
+
+/* LAPTOP */
+@media (max-width: 1279px) and (min-width: 1024px) {
   .patients-grid {
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
   }
 }
 
-@media (max-width: 768px) {
+/* IPAD PRO & LARGE TABLETS */
+@media (max-width: 1023px) {
+  .patients-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px;
+  }
+}
+
+/* IPAD & TABLETS */
+@media (max-width: 833px) {
   .patients-grid {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 16px;
   }
 }
 
-@media (max-width: 480px) {
+/* IPAD MINI & SMALL TABLETS */
+@media (max-width: 767px) {
   .patients-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+/* LARGE PHONES */
+@media (max-width: 599px) {
+  .patients-grid {
     gap: 12px;
   }
 }
+
+/* PHONES */
+@media (max-width: 479px) {
+  .patients-grid {
+    gap: 10px;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .patients-grid {
+    gap: 8px;
+  }
+}
+
+/* ================================================================ */
+/* PATIENT CARDS                                                    */
+/* ================================================================ */
 
 .patient-card {
   background: var(--bg-glass);
@@ -1127,26 +1701,68 @@ function showMessage(text: string, type: 'success' | 'error') {
   border-radius: 12px;
   padding: 24px;
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
-/* Responsive patient cards */
-@media (max-width: 768px) {
+/* IPAD PRO & LARGE TABLETS */
+@media (max-width: 1023px) {
+  .patient-card {
+    padding: 22px;
+  }
+}
+
+/* IPAD & TABLETS */
+@media (max-width: 833px) {
   .patient-card {
     padding: 20px;
   }
 }
 
-@media (max-width: 480px) {
+/* IPAD MINI & SMALL TABLETS */
+@media (max-width: 767px) {
+  .patient-card {
+    padding: 18px;
+  }
+}
+
+/* LARGE PHONES */
+@media (max-width: 599px) {
   .patient-card {
     padding: 16px;
   }
 }
 
+/* PHONES */
+@media (max-width: 479px) {
+  .patient-card {
+    padding: 14px;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .patient-card {
+    padding: 12px;
+  }
+}
+
+/* Patient Card Hover State */
 .patient-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-soft);
   border-color: var(--accent-blue);
 }
+
+/* Mobile: Reduce hover effect for touch devices */
+@media (max-width: 767px) {
+  .patient-card:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* ================================================================ */
+/* PATIENT CARD HEADER                                              */
+/* ================================================================ */
 
 .patient-header {
   display: flex;
@@ -1155,8 +1771,20 @@ function showMessage(text: string, type: 'success' | 'error') {
   margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: var(--border);
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
+/* PHONES & BELOW */
+@media (max-width: 479px) {
+  .patient-header {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    gap: 6px;
+  }
+}
+
+/* Patient Name Heading */
 .patient-header h3 {
   margin: 0;
   color: var(--text-heading);
@@ -1164,6 +1792,28 @@ function showMessage(text: string, type: 'success' | 'error') {
   font-weight: 600;
 }
 
+/* IPAD & TABLETS */
+@media (max-width: 833px) {
+  .patient-header h3 {
+    font-size: 1.15rem;
+  }
+}
+
+/* PHONES */
+@media (max-width: 479px) {
+  .patient-header h3 {
+    font-size: 1.1rem;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .patient-header h3 {
+    font-size: 1.05rem;
+  }
+}
+
+/* Relationship Badge */
 .relationship-badge {
   background: var(--accent-blue);
   color: white;
@@ -1174,6 +1824,23 @@ function showMessage(text: string, type: 'success' | 'error') {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   box-shadow: var(--glow-blue);
+  white-space: nowrap;
+}
+
+/* PHONES */
+@media (max-width: 479px) {
+  .relationship-badge {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 374px) {
+  .relationship-badge {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+  }
 }
 
 .patient-info {

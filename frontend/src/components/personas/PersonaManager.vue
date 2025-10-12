@@ -331,7 +331,7 @@ onMounted(async () => {
   position: fixed;
   top: 32px;
   left: 32px;
-  z-index: 2001;
+  z-index: 100; /* Below modals (1000+) but above regular content */
 }
 
 .header {
