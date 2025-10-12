@@ -153,76 +153,77 @@
     </div>
 
     <!-- Modals -->
+    <!-- Patient Form Modal -->
     <div v-if="showPatientForm" class="modal-overlay" @click="closePatientForm">
-      <div class="modal-content" @click.stop>
-        <PatientForm 
-          :patient="editingPatient"
-          :is-editing="!!editingPatient"
-          @save="savePatient"
-          @cancel="closePatientForm"
-        />
-      </div>
+      <PatientForm 
+        :patient="editingPatient"
+        :is-editing="!!editingPatient"
+        @save="savePatient"
+        @cancel="closePatientForm"
+        @click.stop
+      />
+    </div>    <div v-if="showMedicationForm" class="modal-overlay" @click="closeMedicationForm">
+      <MedicationForm 
+        :medication="editingMedication"
+        :is-editing="!!editingMedication"
+        :patients="patients"
+        @save="saveMedication"
+        @cancel="closeMedicationForm"
+        @click.stop
+      />
     </div>
     
-    <div v-if="showMedicationForm" class="modal-overlay" @click="closeMedicationForm">
-      <div class="modal-content" @click.stop>
-        <MedicationForm 
-          :patients="patients"
-          @save="saveMedication"
-          @cancel="closeMedicationForm"
-        />
-      </div>
-    </div>
-    
+    <!-- Vitals Form Modal -->
     <div v-if="showVitalsForm" class="modal-overlay" @click="closeVitalsForm">
-      <div class="modal-content" @click.stop>
-        <VitalsForm 
-          :patients="patients"
-          @save="saveVitals"
-          @cancel="closeVitalsForm"
-        />
-      </div>
-    </div>
-    
+      <VitalsForm 
+        :patients="patients"
+        @save="saveVitals"
+        @cancel="closeVitalsForm"
+        @click.stop
+      />
+    </div>        <!-- Appointment Form Modal -->
     <div v-if="showAppointmentForm" class="modal-overlay" @click="closeAppointmentForm">
-      <div class="modal-content" @click.stop>
-        <AppointmentForm 
-          :patients="patients"
-          :providers="providers"
-          @save="saveAppointment"
-          @cancel="closeAppointmentForm"
-        />
-      </div>
+      <AppointmentForm 
+        :patients="patients"
+        :providers="providers"
+        @save="saveAppointment"
+        @cancel="closeAppointmentForm"
+        @click.stop
+      />
     </div>
 
     <!-- Patient Detail Modal -->
     <div v-if="showPatientDetail" class="modal-overlay" @click="closePatientDetail">
-      <div class="modal-content patient-detail-content" @click.stop>
-        <PatientDetailModal 
-          v-if="selectedPatient"
-          :patient="selectedPatient"
-          :medications="patientMedications"
-          :appointments="patientAppointments"
-          :vitals="patientVitals"
-          @close="closePatientDetail"
-          @edit-patient="editPatient"
-          @add-medication="() => { showPatientDetail = false; showMedicationForm = true }"
-          @add-appointment="() => { showPatientDetail = false; showAppointmentForm = true }"
-          @add-vitals="() => { showPatientDetail = false; showVitalsForm = true }"
-        />
-      </div>
+      <PatientDetailModal 
+        v-if="selectedPatient"
+        :patient="selectedPatient"
+        :medications="patientMedications"
+        :appointments="patientAppointments"
+        :vitals="patientVitals"
+        @close="closePatientDetail"
+        @edit-patient="editPatient"
+        @add-medication="() => { showPatientDetail = false; showMedicationForm = true }"
+        @edit-medication="editMedication"
+        @delete-medication="deleteMedication"
+        @add-appointment="() => { showPatientDetail = false; showAppointmentForm = true }"
+        @edit-appointment="editAppointment"
+        @delete-appointment="deleteAppointment"
+        @add-vitals="() => { showPatientDetail = false; showVitalsForm = true }"
+        @edit-vital="editVital"
+        @delete-vital="deleteVital"
+        @click.stop
+      />
     </div>
 
     <!-- Caregiver Profile Modal -->
     <div v-if="showCaregiverProfile" class="modal-overlay" @click="closeCaregiverProfile">
-      <div class="modal-content caregiver-modal-content" @click.stop>
-        <CaregiverProfile 
-          :caregiver="caregiver"
-          :is-editing="!!caregiver"
-          @close="closeCaregiverProfile" 
-          @save="saveCaregiver"
-        />
-      </div>
+      <CaregiverProfile 
+        :caregiver="caregiver"
+        :is-editing="!!caregiver"
+        @close="closeCaregiverProfile" 
+        @save="saveCaregiver"
+        @click.stop
+      />
     </div>
 
     <!-- Success/Error Messages -->
@@ -274,6 +275,7 @@ const showCaregiverProfile = ref(false)
 const activeView = ref<'patients' | 'medications' | 'appointments' | 'vitals'>('patients')
 
 const editingPatient = ref<Patient | null>(null)
+const editingMedication = ref<any | null>(null)
 const selectedPatient = ref<Patient | null>(null)
 const patientMedications = ref<any[]>([])
 const patientAppointments = ref<any[]>([])
@@ -470,8 +472,11 @@ async function savePatient(patientData: any) {
 
 async function saveMedication(medicationData: any) {
   try {
-    const response = await fetch('/api/medications', {
-      method: 'POST',
+    const url = editingMedication.value ? `/api/medications/${editingMedication.value.id}` : '/api/medications'
+    const method = editingMedication.value ? 'PUT' : 'POST'
+    
+    const response = await fetch(url, {
+      method,
       headers: {
         'Content-Type': 'application/json'
       },
@@ -480,7 +485,14 @@ async function saveMedication(medicationData: any) {
     
     if (response.ok) {
       closeMedicationForm()
-      showMessage('Medication added successfully!', 'success')
+      showMessage(
+        editingMedication.value ? 'Medication updated successfully!' : 'Medication added successfully!',
+        'success'
+      )
+      // Reload patient data if we're viewing a patient detail
+      if (selectedPatient.value) {
+        await loadPatientData(selectedPatient.value.id)
+      }
     } else {
       throw new Error('Failed to save medication')
     }
@@ -539,8 +551,44 @@ function closePatientForm() {
   editingPatient.value = null
 }
 
+function editMedication(medication: any) {
+  editingMedication.value = medication
+  showMedicationForm.value = true
+}
+
 function closeMedicationForm() {
   showMedicationForm.value = false
+  editingMedication.value = null
+}
+
+async function deleteMedication(medication: any) {
+  if (!confirm(`Are you sure you want to delete ${medication.name}?`)) {
+    return
+  }
+  
+  try {
+    const response = await fetch(`/api/medications/${medication.id}`, {
+      method: 'DELETE'
+    })
+    
+    if (response.ok) {
+      showMessage('Medication deleted successfully!', 'success')
+      
+      // Reload appropriate data based on context
+      if (selectedPatient.value) {
+        // If viewing patient detail, reload patient data
+        await loadPatientData(selectedPatient.value.id)
+      } else if (activeView.value === 'medications') {
+        // If viewing medications tab, reload all medications
+        await loadAllMedications()
+      }
+    } else {
+      throw new Error('Failed to delete medication')
+    }
+  } catch (error) {
+    console.error('Error deleting medication:', error)
+    showMessage('Failed to delete medication. Please try again.', 'error')
+  }
 }
 
 function closeVitalsForm() {
@@ -549,6 +597,76 @@ function closeVitalsForm() {
 
 function closeAppointmentForm() {
   showAppointmentForm.value = false
+}
+
+async function editAppointment(_appointment: any) {
+  // TODO: Implement edit appointment
+  showMessage('Edit appointment functionality coming soon!', 'success')
+}
+
+async function deleteAppointment(appointment: any) {
+  if (!confirm('Are you sure you want to delete this appointment?')) {
+    return
+  }
+  
+  try {
+    const response = await fetch(`/api/appointments/${appointment.id}`, {
+      method: 'DELETE'
+    })
+    
+    if (response.ok) {
+      showMessage('Appointment deleted successfully!', 'success')
+      
+      // Reload appropriate data based on context
+      if (selectedPatient.value) {
+        // If viewing patient detail, reload patient data
+        await loadPatientData(selectedPatient.value.id)
+      } else if (activeView.value === 'appointments') {
+        // If viewing appointments tab, reload all appointments
+        await loadAllAppointments()
+      }
+    } else {
+      throw new Error('Failed to delete appointment')
+    }
+  } catch (error) {
+    console.error('Error deleting appointment:', error)
+    showMessage('Failed to delete appointment. Please try again.', 'error')
+  }
+}
+
+async function editVital(_vital: any) {
+  // TODO: Implement edit vital
+  showMessage('Edit vital functionality coming soon!', 'success')
+}
+
+async function deleteVital(vital: any) {
+  if (!confirm('Are you sure you want to delete this vital record?')) {
+    return
+  }
+  
+  try {
+    const response = await fetch(`/api/vitals/${vital.id}`, {
+      method: 'DELETE'
+    })
+    
+    if (response.ok) {
+      showMessage('Vital record deleted successfully!', 'success')
+      
+      // Reload appropriate data based on context
+      if (selectedPatient.value) {
+        // If viewing patient detail, reload patient data
+        await loadPatientData(selectedPatient.value.id)
+      } else if (activeView.value === 'vitals') {
+        // If viewing vitals tab, reload all vitals
+        await loadAllVitals()
+      }
+    } else {
+      throw new Error('Failed to delete vital')
+    }
+  } catch (error) {
+    console.error('Error deleting vital:', error)
+    showMessage('Failed to delete vital. Please try again.', 'error')
+  }
 }
 
 function closePatientDetail() {
@@ -1166,7 +1284,7 @@ function showMessage(text: string, type: 'success' | 'error') {
   width: 70vw;
   max-width: 95vw;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
   box-shadow: var(--shadow-strong);
 }
 
@@ -1191,33 +1309,6 @@ function showMessage(text: string, type: 'success' | 'error') {
     max-height: 100vh;
     border-radius: 0;
     margin: 0;
-  }
-}
-
-.patient-detail-content {
-  width: 90vw;
-  max-width: 1000px;
-  height: 90vh;
-}
-
-.caregiver-modal-content {
-  width: 95vw;
-  max-width: 1200px;
-  height: 90vh;
-  padding: 0;
-}
-
-/* Responsive caregiver modal */
-@media (max-width: 1024px) {
-  .caregiver-modal-content {
-    width: 98vw;
-  }
-}
-
-@media (max-width: 768px) {
-  .caregiver-modal-content {
-    width: 100vw;
-    height: 95vh;
   }
 }
 

@@ -1,6 +1,9 @@
 <template>
   <div class="appointment-form">
-    <h2>{{ isEditing ? 'Edit Appointment' : 'Schedule New Appointment' }}</h2>
+    <div class="modal-header">
+      <h2>{{ isEditing ? 'Edit Appointment' : 'Schedule New Appointment' }}</h2>
+      <button type="button" @click="$emit('cancel')" class="close-btn">&times;</button>
+    </div>
     
     <form @submit.prevent="submitForm" class="form-container">
       <!-- Patient Selection -->
@@ -220,106 +223,278 @@ async function submitForm() {
 
 <style scoped>
 .appointment-form {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  background: var(--bg-main);
+  border: var(--border);
+  border-radius: 12px;
+  max-width: 1000px;
+  width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-strong);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: var(--border);
+  background: var(--bg-panel);
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--text-heading);
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-heading);
 }
 
 .form-container {
-  background: #fff;
-  border-radius: 8px;
   padding: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  flex: 1;
 }
 
 .form-section {
-  margin-bottom: 32px;
+  background: var(--bg-glass);
+  backdrop-filter: var(--blur);
+  border: var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: all 0.2s ease;
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+.form-section:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
 }
 
 .form-section h3 {
-  margin: 0 0 16px 0;
-  color: #2d3748;
-  border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 8px;
+  margin: 0 0 20px 0;
+  color: var(--text-heading);
+  border-bottom: var(--border);
+  padding-bottom: 12px;
+  font-weight: 600;
+  font-size: 1.25rem;
 }
 
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 4px;
-  font-weight: 500;
-  color: #4a5568;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-heading);
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 12px;
+  border: var(--border);
+  border-radius: 8px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
 }
 
 .form-group input[type="checkbox"] {
   width: auto;
+  cursor: pointer;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--accent-blue);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .form-actions {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   justify-content: flex-end;
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid #e2e8f0;
+  padding-top: 20px;
+  border-top: var(--border);
 }
 
 .btn {
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
   border: none;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
 }
 
-.btn-primary {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #2563eb;
-}
-
-.btn-primary:disabled {
-  background: #9ca3af;
+.btn:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-.btn-secondary {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
+.btn-primary {
+  background: var(--accent-blue);
+  color: white;
+  box-shadow: var(--glow-blue);
 }
 
-.btn-secondary:hover {
-  background: #e5e7eb;
+.btn-primary:hover:not(:disabled) {
+  background: var(--blue-600);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--accent-blue);
+  border: 2px solid var(--accent-blue);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--accent-blue);
+  color: white;
+  box-shadow: var(--glow-blue);
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .appointment-form {
+    width: 95vw;
+  }
+  
+  .form-container {
+    padding: 20px;
+  }
+  
+  .form-section {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .appointment-form {
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .modal-header {
+    padding: 20px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .form-container {
+    padding: 16px;
+  }
+  
+  .form-section {
+    padding: 16px;
+  }
+  
+  .form-section h3 {
+    font-size: 1.1rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-header {
+    padding: 16px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .form-container {
+    padding: 12px;
+  }
+  
+  .form-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .form-section h3 {
+    font-size: 1rem;
+  }
+}
+
+/* Touch device improvements */
+@media (hover: none) and (pointer: coarse) {
+  .form-section:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .btn:hover {
+    transform: none !important;
+  }
 }
 </style>
