@@ -32,6 +32,16 @@
               v-model="form.name" 
               type="text" 
               required 
+              placeholder="e.g., Zestril"
+            />
+          </div>
+          
+          <div class="form-group">
+            <label for="generic_name">Generic Name</label>
+            <input 
+              id="generic_name"
+              v-model="form.generic_name" 
+              type="text" 
               placeholder="e.g., Lisinopril"
             />
           </div>
@@ -158,6 +168,7 @@ import { ref, onMounted } from 'vue'
 interface MedicationForm {
   patient_id: string
   name: string
+  generic_name: string
   dosage: string
   frequency: string
   route: string
@@ -188,6 +199,7 @@ const isSubmitting = ref(false)
 const form = ref<MedicationForm>({
   patient_id: '',
   name: '',
+  generic_name: '',
   dosage: '',
   frequency: '',
   route: '',

@@ -10,19 +10,13 @@ import type { LLMAdapter } from '../../modelRegistry'
  * These adapters are created using the factory pattern to eliminate
  * code duplication and provide consistent behavior across all OpenAI models.
  * 
- * Keeping only nano variants for optimal speed and cost efficiency.
+ * Using only GPT-4.1 Nano - works perfectly with eldercare database context.
  */
 
-// GPT-4.1 Nano - Fastest GPT-4.1 model
+// GPT-4.1 Nano - Fastest GPT-4.1 model with excellent context understanding
 export const gpt41NanoAdapter: LLMAdapter = createOpenAIAdapter({
   id: 'gpt-4.1-nano',
   config: OPENAI_MODELS['gpt-4.1-nano'],
-})
-
-// GPT-5 Nano - Fastest GPT-5 model for quick tasks
-export const gpt5NanoAdapter: LLMAdapter = createOpenAIAdapter({
-  id: 'gpt-5-nano',
-  config: OPENAI_MODELS['gpt-5-nano'],
 })
 
 /**
@@ -30,5 +24,4 @@ export const gpt5NanoAdapter: LLMAdapter = createOpenAIAdapter({
  */
 export const openaiAdapters = {
   'gpt-4.1-nano': gpt41NanoAdapter,
-  'gpt-5-nano': gpt5NanoAdapter,
 } as const

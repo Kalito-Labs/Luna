@@ -14,8 +14,7 @@ export type {
   OpenAIModelConfig, 
   OpenAIUsage,
   OpenAIGenerateResult,
-  OpenAIStreamChunk,
-  APIMode 
+  OpenAIStreamChunk
 } from './types'
 
 // Model configurations
@@ -29,6 +28,5 @@ export {
 // Pre-built adapter instances
 export { 
   gpt41NanoAdapter,
-  gpt5NanoAdapter,
   openaiAdapters
 } from './adapters'

@@ -102,9 +102,7 @@ function createMedicationsTable(db: Database): void {
       route TEXT, -- 'oral', 'topical', 'injection', etc.
       prescribing_doctor TEXT,
       pharmacy TEXT,
-      start_date TEXT NOT NULL,
-      end_date TEXT,
-      refills_remaining INTEGER,
+      rx_number TEXT, -- Prescription number
       side_effects TEXT,
       notes TEXT,
       active INTEGER DEFAULT 1,

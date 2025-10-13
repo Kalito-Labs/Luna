@@ -19,15 +19,21 @@
         </div>
         
         <div class="med-details">
+          <p v-if="medication.generic_name">
+            <strong>Generic:</strong> {{ medication.generic_name }}
+          </p>
           <p><strong>Frequency:</strong> {{ formatFrequency(medication.frequency) }}</p>
+          <p v-if="medication.route">
+            <strong>Route:</strong> {{ formatRoute(medication.route) }}
+          </p>
           <p v-if="medication.prescribing_doctor">
             <strong>Prescribed by:</strong> {{ medication.prescribing_doctor }}
           </p>
-          <p v-if="medication.start_date">
-            <strong>Started:</strong> {{ formatDate(medication.start_date) }}
+          <p v-if="medication.pharmacy">
+            <strong>Pharmacy:</strong> {{ medication.pharmacy }}
           </p>
-          <p v-if="medication.refills_remaining !== null">
-            <strong>Refills:</strong> {{ medication.refills_remaining }}
+          <p v-if="medication.rx_number">
+            <strong>Rx Number:</strong> {{ medication.rx_number }}
           </p>
         </div>
         
@@ -48,11 +54,15 @@
 interface Medication {
   id: string
   name: string
+  generic_name?: string
   dosage: string
   frequency: string
+  route?: string
   prescribing_doctor?: string
-  start_date?: string
-  refills_remaining?: number
+  pharmacy?: string
+  rx_number?: string
+  side_effects?: string
+  notes?: string
 }
 
 interface Props {
@@ -80,10 +90,16 @@ function formatFrequency(frequency: string): string {
   return frequencies[frequency] || frequency
 }
 
-function formatDate(dateString: string): string {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return date.toLocaleDateString()
+function formatRoute(route: string): string {
+  const routes: Record<string, string> = {
+    'oral': 'Oral',
+    'topical': 'Topical',
+    'injection': 'Injection',
+    'inhaled': 'Inhaled',
+    'eye_drops': 'Eye drops',
+    'nasal': 'Nasal'
+  }
+  return routes[route] || route
 }
 </script>
 

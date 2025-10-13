@@ -28,10 +28,10 @@ export interface MedicationContext {
   genericName?: string
   dosage: string
   frequency: string
+  route?: string
   prescribingDoctor?: string
-  startDate: string
-  endDate?: string
-  refillsRemaining?: number
+  pharmacy?: string
+  rxNumber?: string
   sideEffects?: string
   notes?: string
 }
@@ -168,8 +168,8 @@ export class EldercareContextService {
   private getMedications(patientId?: string, includePrivateData: boolean = true): MedicationContext[] {
     try {
       let query = `
-        SELECT id, patient_id, name, generic_name, dosage, frequency, 
-               prescribing_doctor, start_date, end_date, refills_remaining, 
+        SELECT id, patient_id, name, generic_name, dosage, frequency, route,
+               prescribing_doctor, pharmacy, rx_number,
                side_effects, notes
         FROM medications 
         WHERE active = 1
@@ -181,7 +181,7 @@ export class EldercareContextService {
         params.push(patientId)
       }
       
-      query += ` ORDER BY start_date DESC LIMIT 50`
+      query += ` ORDER BY created_at DESC LIMIT 50`
 
       const rows = db.prepare(query).all(...params) as Array<{
         id: string
@@ -190,10 +190,10 @@ export class EldercareContextService {
         generic_name: string | null
         dosage: string
         frequency: string
+        route: string | null
         prescribing_doctor: string | null
-        start_date: string
-        end_date: string | null
-        refills_remaining: number | null
+        pharmacy: string | null
+        rx_number: string | null
         side_effects: string | null
         notes: string | null
       }>
@@ -205,14 +205,14 @@ export class EldercareContextService {
           genericName: row.generic_name || undefined,
           dosage: row.dosage,
           frequency: row.frequency,
-          startDate: row.start_date,
-          endDate: row.end_date || undefined,
-          refillsRemaining: row.refills_remaining || undefined,
+          route: row.route || undefined,
         }
 
         // Include sensitive data only for local models
         if (includePrivateData) {
           context.prescribingDoctor = row.prescribing_doctor || undefined
+          context.pharmacy = row.pharmacy || undefined
+          context.rxNumber = row.rx_number || undefined
           context.sideEffects = row.side_effects || undefined
           context.notes = row.notes || undefined
         }
