@@ -103,7 +103,6 @@ export const envSchema = z.object({
     .refine(val => val > 0 && val < 65536, 'Port must be between 1 and 65535'),
   DB_PATH: z.string().optional().default('./db/kalito.db'),
   OPENAI_API_KEY: z.string().optional(),
-  ANTHROPIC_API_KEY: z.string().optional(),
   // Add more environment variables as needed
 })
 

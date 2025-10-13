@@ -92,7 +92,6 @@ export class EldercareContextService {
    */
   private readonly TRUSTED_CLOUD_MODELS = [
     'gpt-4.1-nano',
-    'claude-opus-4.1',
   ]
 
   /**
