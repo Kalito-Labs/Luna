@@ -87,10 +87,12 @@ export class EldercareContextService {
   private readonly MAX_RECENT_DAYS = 30
 
   /**
-   * Trusted cloud models that get full eldercare data access
-   * These are your controlled API keys, data stays within your application
+   * Trusted models that get full eldercare data access
+   * Includes both:
+   * - Local models (type === 'local') - data never leaves your machine
+   * - Trusted cloud models (in this array) - your controlled API keys
    */
-  private readonly TRUSTED_CLOUD_MODELS = [
+  private readonly TRUSTED_MODELS = [
     'gpt-4.1-nano',
   ]
 
@@ -99,14 +101,14 @@ export class EldercareContextService {
    * Local models and trusted cloud models get complete data access
    * All eldercare data stays within your application - no public sharing
    */
-  private isLocalModel(adapter: LLMAdapter): boolean {
-    // Local models always get full access
+  private isTrustedModel(adapter: LLMAdapter): boolean {
+    // Local models always get full access (data never leaves your machine)
     if (adapter.type === 'local') {
       return true
     }
     
     // Trusted cloud models (your controlled API keys) get full access
-    if (this.TRUSTED_CLOUD_MODELS.includes(adapter.id)) {
+    if (this.TRUSTED_MODELS.includes(adapter.id)) {
       return true
     }
     
@@ -541,7 +543,7 @@ export class EldercareContextService {
    * @returns Complete eldercare context for AI
    */
   public getEldercareContext(adapter: LLMAdapter, patientId?: string): EldercareContext {
-    const includePrivateData = this.isLocalModel(adapter)
+    const includePrivateData = this.isTrustedModel(adapter)
 
     const patients = this.getPatients(includePrivateData)
     const medications = this.getMedications(patientId, includePrivateData)
@@ -664,7 +666,7 @@ export class EldercareContextService {
     contextPrompt += "- Maintain a compassionate, family-focused tone\n"
     
     // Only show privacy note for untrusted cloud models (not your controlled APIs)
-    if (!this.isLocalModel(adapter)) {
+    if (!this.isTrustedModel(adapter)) {
       contextPrompt += "- Note: Limited eldercare data provided (untrusted cloud model)\n"
     }
 
