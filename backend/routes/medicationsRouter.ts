@@ -19,9 +19,7 @@ const createMedicationSchema = z.object({
   route: z.string().optional(),
   prescribing_doctor: z.string().optional(),
   pharmacy: z.string().optional(),
-  start_date: z.string().min(1),
-  end_date: z.string().optional(),
-  refills_remaining: z.number().int().min(0).optional(),
+  rx_number: z.string().optional(),
   side_effects: z.string().optional(),
   notes: z.string().optional(),
 })
@@ -48,7 +46,7 @@ router.get('/', async (req, res) => {
       params.push(patient_id as string)
     }
     
-    query += ` ORDER BY m.start_date DESC`
+    query += ` ORDER BY m.created_at DESC`
     
     const medications = db.prepare(query).all(...params)
     okList(res, medications)
@@ -99,9 +97,9 @@ router.post('/', async (req, res) => {
     const insertMedication = db.prepare(`
       INSERT INTO medications (
         id, patient_id, name, generic_name, dosage, frequency, route,
-        prescribing_doctor, pharmacy, start_date, end_date, refills_remaining,
+        prescribing_doctor, pharmacy, rx_number,
         side_effects, notes, active, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
     `)
 
     insertMedication.run(
@@ -114,9 +112,7 @@ router.post('/', async (req, res) => {
       validatedData.route || null,
       validatedData.prescribing_doctor || null,
       validatedData.pharmacy || null,
-      validatedData.start_date,
-      validatedData.end_date || null,
-      validatedData.refills_remaining || null,
+      validatedData.rx_number || null,
       validatedData.side_effects || null,
       validatedData.notes || null,
       now,

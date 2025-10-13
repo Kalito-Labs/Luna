@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
       SELECT v.*, p.name as patient_name 
       FROM vitals v
       LEFT JOIN patients p ON v.patient_id = p.id
-      WHERE v.active = 1
+      WHERE 1=1
     `
     const params: string[] = []
     
@@ -66,7 +66,7 @@ router.get('/:id', async (req, res) => {
       SELECT v.*, p.name as patient_name 
       FROM vitals v
       LEFT JOIN patients p ON v.patient_id = p.id
-      WHERE v.id = ? AND v.active = 1
+      WHERE v.id = ?
     `).get(id)
 
     if (!vital) {

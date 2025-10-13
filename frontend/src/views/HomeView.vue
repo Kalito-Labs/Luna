@@ -10,15 +10,12 @@
       <h1 class="main-title">KalitoSpace</h1>
             <div class="intro-block">
         <div class="intro-hero">
-          <h2 class="intro-headline">Caring for Your Parents, Made Simpler</h2>
-          <p class="intro-tagline">
-            A privacy-first platform that brings together everything you need to manage your parents' care—
-            medications, appointments, vitals, and AI assistance—all in one secure, local-first space.
-          </p>
+          <h2 class="intro-headline">Caregiving made Simple</h2>
         </div>
+
         <div class="features-container">
-          <h3 class="features-heading">Built for Family Caregivers</h3>
           <ul class="feature-list">
+
             <li>
               <span class="emoji">🏥</span>
               <div class="feature-content">
@@ -26,13 +23,7 @@
                 <span class="feature-desc">Track medications, appointments, vitals, and caregiver schedules in one organized view.</span>
               </div>
             </li>
-            <li>
-              <span class="emoji">🤖</span>
-              <div class="feature-content">
-                <strong>AI Care Assistant</strong>
-                <span class="feature-desc">Context-aware AI that understands your parents' care situation and helps you make informed decisions.</span>
-              </div>
-            </li>
+
             <li>
               <span class="emoji">📊</span>
               <div class="feature-content">
@@ -40,17 +31,26 @@
                 <span class="feature-desc">Visualize blood pressure, weight, and glucose patterns to spot changes early.</span>
               </div>
             </li>
+
+            <li>
+              <span class="emoji">🤖</span>
+              <div class="feature-content">
+                <strong>AI Care Assistant</strong>
+                <span class="feature-desc">Context-aware AI that understands and helps you make informed decisions.</span>
+              </div>
+            </li>
+
             <li>
               <span class="emoji">🔒</span>
               <div class="feature-content">
                 <strong>Privacy You Can Trust</strong>
-                <span class="feature-desc">All data stored locally on your device. No cloud storage, no tracking, complete control.</span>
+                <span class="feature-desc">All data stored locally. No cloud storage, No tracking.</span>
               </div>
             </li>
           </ul>
         </div>
         <div class="cta-section">
-          <p class="cta-text">Ready to simplify your caregiving journey?</p>
+          <p class="cta-text">Ready to Start?</p>
           <div class="cta-buttons">
             <router-link to="/eldercare" class="btn btn-primary">
               <span class="btn-icon">🏥</span>
@@ -92,15 +92,15 @@ const homeBgStyle = computed(() => ({
 /* General container styles */
 .homeview-root {
   min-height: 100vh;
+  min-width: 100vw;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: var(--color-background);
   color: var(--color-text);
   margin: 0;
   padding: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 /* Fixed hamburger placement */
@@ -115,8 +115,9 @@ const homeBgStyle = computed(() => ({
 .main-area {
   flex: 1;
   width: 100%;
+  height: 100%;
   margin: 0;
-  padding: 0 20px 40px 20px;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;

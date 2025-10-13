@@ -30,7 +30,6 @@
             <option value="temperature">Temperature</option>
             <option value="heart_rate">Heart Rate</option>
             <option value="blood_sugar">Blood Sugar</option>
-            <option value="oxygen_saturation">Oxygen Saturation</option>
           </select>
         </div>
       </div>
@@ -216,8 +215,7 @@ function getValueLabel(): string {
     weight: 'Weight',
     temperature: 'Temperature',
     heart_rate: 'Heart Rate',
-    blood_sugar: 'Blood Sugar Level',
-    oxygen_saturation: 'Oxygen Saturation'
+    blood_sugar: 'Blood Sugar Level'
   }
   return labels[form.value.measurement_type] || 'Value'
 }
@@ -227,8 +225,7 @@ function getValuePlaceholder(): string {
     weight: '150',
     temperature: '98.6',
     heart_rate: '72',
-    blood_sugar: '100',
-    oxygen_saturation: '98'
+    blood_sugar: '100'
   }
   return placeholders[form.value.measurement_type] || ''
 }
@@ -238,8 +235,7 @@ function getUnitsForType(): string[] {
     weight: ['lbs', 'kg'],
     temperature: ['°F', '°C'],
     heart_rate: ['bpm'],
-    blood_sugar: ['mg/dL', 'mmol/L'],
-    oxygen_saturation: ['%']
+    blood_sugar: ['mg/dL', 'mmol/L']
   }
   return units[form.value.measurement_type] || ['']
 }
@@ -249,8 +245,7 @@ function getDefaultUnit(): string {
     weight: 'lbs',
     temperature: '°F',
     heart_rate: 'bpm',
-    blood_sugar: 'mg/dL',
-    oxygen_saturation: '%'
+    blood_sugar: 'mg/dL'
   }
   return defaults[form.value.measurement_type] || ''
 }

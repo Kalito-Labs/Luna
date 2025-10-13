@@ -38,7 +38,7 @@ router.get('/', async (req, res) => {
       FROM appointments a
       LEFT JOIN patients p ON a.patient_id = p.id
       LEFT JOIN healthcare_providers hp ON a.provider_id = hp.id
-      WHERE a.active = 1
+      WHERE 1=1
     `
     const params: string[] = []
     
@@ -68,7 +68,7 @@ router.get('/:id', async (req, res) => {
       FROM appointments a
       LEFT JOIN patients p ON a.patient_id = p.id
       LEFT JOIN healthcare_providers hp ON a.provider_id = hp.id
-      WHERE a.id = ? AND a.active = 1
+      WHERE a.id = ?
     `).get(id)
 
     if (!appointment) {

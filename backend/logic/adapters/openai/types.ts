@@ -6,17 +6,12 @@
 
 export type OpenAIModel = 
   | 'gpt-4.1-nano'
-  | 'gpt-5-nano'
-
-export type APIMode = 'chat' | 'responses'
 
 export interface OpenAIModelConfig {
   /** The OpenAI model identifier */
   model: OpenAIModel
   /** Display name for the model */
   name: string
-  /** API mode to use (chat completions vs responses) */
-  apiMode: APIMode
   /** Context window size in tokens */
   contextWindow: number
   /** Default max tokens for responses */
@@ -74,9 +69,6 @@ export interface OpenAIAdapterSettings {
   topP?: number
   maxTokens?: number
   max_output_tokens?: number
-  // GPT-5 extras via Responses API:
-  reasoning_effort?: ReasoningEffort
-  verbosity?: 'brief' | 'full'
   // Pass-through for future params
   [key: string]: unknown
 }

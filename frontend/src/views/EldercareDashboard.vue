@@ -749,6 +749,9 @@ function showMessage(text: string, type: 'success' | 'error') {
   margin: 0 auto;
   padding: 32px;
   min-height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: var(--bg-main);
   color: var(--text-main);
   box-sizing: border-box;
@@ -1481,6 +1484,8 @@ function showMessage(text: string, type: 'success' | 'error') {
 .content-section {
   margin-bottom: 40px;
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 280px); /* Allow scrolling with enough space for header */
   -webkit-overflow-scrolling: touch;
 }
 

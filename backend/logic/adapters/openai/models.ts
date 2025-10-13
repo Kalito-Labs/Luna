@@ -6,34 +6,19 @@ import type { OpenAIModelConfig } from './types'
  * Central configuration for all OpenAI models
  *
  * This file is the definitive source of model configurations.
- * Keeping only nano variants for optimal speed and cost efficiency.
+ * Keeping only GPT-4.1 Nano for optimal performance with eldercare context.
  */
 export const OPENAI_MODELS: Record<string, OpenAIModelConfig> = {
-  // GPT-4.1 Nano - Fastest GPT-4.1 model (Chat Completions API)
+  // GPT-4.1 Nano - Fastest GPT-4.1 model with excellent context understanding
   'gpt-4.1-nano': {
     model: 'gpt-4.1-nano',
     name: 'GPT-4.1 Nano',
-    apiMode: 'chat',
     contextWindow: 128000,
     defaultMaxTokens: 1024,
     defaultTemperature: 0.7,
     pricing: {
       input: 0.20,   // $0.20 / 1M input tokens
       output: 0.80,  // $0.80 / 1M output tokens
-    },
-  },
-
-  // GPT-5 Nano - Fastest GPT-5 model (Responses API)
-  'gpt-5-nano': {
-    model: 'gpt-5-nano',
-    name: 'GPT-5 Nano',
-    apiMode: 'responses',
-    contextWindow: 200000,
-    defaultMaxTokens: 2048,
-    defaultTemperature: 0.2,
-    pricing: {
-      input: 0.05,   // $0.05 / 1M input tokens
-      output: 0.4,   // $0.40 / 1M output tokens
     },
   },
 }

@@ -9,7 +9,6 @@ const modelRegistry: Record<string, LLMAdapter> = Object.create(null)
 // ---------- Adapters ----------
 import { 
   gpt41NanoAdapter,
-  gpt5NanoAdapter
 } from './adapters/openai'
 import { claudeAdapter } from './adapters/claudeAdapter'
 import {
@@ -34,14 +33,10 @@ function registerAdapter(adapter: LLMAdapter, aliases: string[] = []) {
 
 // ---------- Register all adapters + aliases ----------
 
-// OpenAI nano models (optimized for speed and cost)
+// OpenAI - GPT-4.1 Nano (excellent context understanding for eldercare)
 registerAdapter(gpt41NanoAdapter, [
   'gpt-4.1-nano', // exact match
   'gpt-4-nano',   // short alias
-])
-registerAdapter(gpt5NanoAdapter, [
-  'gpt-5-nano',  // exact match
-  'gpt5-nano',   // alternative format
 ])
 
 // Non-OpenAI
