@@ -10,7 +10,6 @@ const modelRegistry: Record<string, LLMAdapter> = Object.create(null)
 import { 
   gpt41NanoAdapter,
 } from './adapters/openai'
-import { claudeAdapter } from './adapters/claudeAdapter'
 import {
   phi3MiniAdapter,
 } from './adapters/ollama'
@@ -33,21 +32,13 @@ function registerAdapter(adapter: LLMAdapter, aliases: string[] = []) {
 
 // ---------- Register all adapters + aliases ----------
 
-// OpenAI - GPT-4.1 Nano (excellent context understanding for eldercare)
+// Cloud model - GPT-4.1 Nano (sole cloud model, excellent context understanding)
 registerAdapter(gpt41NanoAdapter, [
   'gpt-4.1-nano', // exact match
   'gpt-4-nano',   // short alias
 ])
 
-// Non-OpenAI
-registerAdapter(claudeAdapter, [
-  'claude-opus-4.1', // exact match
-  'claude-opus',      // short alias
-  'claude-4-sonnet',  // legacy alias for backward compatibility
-  'claude-sonnet',    // legacy short alias
-]) // 'claude-opus-4.1'
-
-// Local models
+// Local model - Phi3 Mini (fast local inference)
 registerAdapter(phi3MiniAdapter, [
   'phi3',      // short alias
   'phi-3',     // alternative format

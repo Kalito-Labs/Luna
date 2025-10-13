@@ -260,10 +260,8 @@ export function selectOptimalModel(
 
   // Priority lists for each category
   const modelPriorities: Record<PersonaCategory, string[]> = {
-    // Cloud models prioritize powerful cloud-hosted models
+    // Cloud models - GPT-4.1 Nano is the sole cloud model
     cloud: [
-      'claude-opus-4.1',
-      'gpt-4.1-mini',
       'gpt-4.1-nano',
     ],
 

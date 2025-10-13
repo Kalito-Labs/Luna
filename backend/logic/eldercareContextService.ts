@@ -5,7 +5,8 @@
  * Enables AI models to reference patient data, medications, appointments, and vitals.
  * 
  * Security: Read-only operations only. AI cannot modify eldercare data.
- * Privacy: Local models get full context, cloud models get filtered data.
+ * Privacy: Trusted models (local + your controlled cloud APIs) get full context.
+ *          Unknown cloud models get filtered data for privacy protection.
  */
 
 import { db } from '../db/db'
@@ -86,10 +87,31 @@ export class EldercareContextService {
   private readonly MAX_RECENT_DAYS = 30
 
   /**
-   * Check if a model is local (gets full context) or cloud (gets filtered context)
+   * Trusted cloud models that get full eldercare data access
+   * These are your controlled API keys, data stays within your application
+   */
+  private readonly TRUSTED_CLOUD_MODELS = [
+    'gpt-4.1-nano',
+  ]
+
+  /**
+   * Check if a model should get full eldercare context access
+   * Local models and trusted cloud models get complete data access
+   * All eldercare data stays within your application - no public sharing
    */
   private isLocalModel(adapter: LLMAdapter): boolean {
-    return adapter.type === 'local'
+    // Local models always get full access
+    if (adapter.type === 'local') {
+      return true
+    }
+    
+    // Trusted cloud models (your controlled API keys) get full access
+    if (this.TRUSTED_CLOUD_MODELS.includes(adapter.id)) {
+      return true
+    }
+    
+    // Unknown cloud models get filtered access
+    return false
   }
 
   /**
@@ -641,8 +663,9 @@ export class EldercareContextService {
     contextPrompt += "- Focus on practical caregiving support and information organization\n"
     contextPrompt += "- Maintain a compassionate, family-focused tone\n"
     
+    // Only show privacy note for untrusted cloud models (not your controlled APIs)
     if (!this.isLocalModel(adapter)) {
-      contextPrompt += "- Note: Some sensitive details are omitted for privacy in cloud processing\n"
+      contextPrompt += "- Note: Limited eldercare data provided (untrusted cloud model)\n"
     }
 
     return contextPrompt
