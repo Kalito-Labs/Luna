@@ -86,7 +86,7 @@
 <script setup lang="ts">
 import MedicationsList from './MedicationsList.vue'
 import AppointmentsList from './AppointmentsList.vue'
-import VitalsList from './VitalsList.vue'
+
 
 interface Patient {
   id: string

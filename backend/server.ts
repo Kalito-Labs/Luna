@@ -26,7 +26,6 @@ import patientsRouter from './routes/patientsRouter'
 import providersRouter from './routes/providersRouter'
 import medicationsRouter from './routes/medicationsRouter'
 import { appointmentsRouter } from './routes/appointmentsRouter'
-import { vitalsRouter } from './routes/vitalsRouter'
 import caregiversRouter from './routes/caregiversRouter'
 
 // Initialize / migrate DB (creates tables, columns, triggers, indexes, seeds personas, etc.)
@@ -143,7 +142,6 @@ app.use('/api/patients', patientsRouter)
 app.use('/api/providers', providersRouter)
 app.use('/api/medications', medicationsRouter)
 app.use('/api/appointments', appointmentsRouter)
-app.use('/api/vitals', vitalsRouter)
 app.use('/api/caregivers', caregiversRouter)
 
 // --- 404 handler ---

@@ -57,16 +57,7 @@
             <h3>Appointments</h3>
             <p>Doctor visits & checkups</p>
           </div>
-        </button>
-        
-        <!-- Vitals -->
-        <button @click="activeView = 'vitals'" class="action-btn vitals-btn" :class="{ active: activeView === 'vitals' }">
-          <div class="btn-icon">�</div>
-          <div class="btn-content">
-            <h3>Vitals</h3>
-            <p>Blood pressure, weight, etc.</p>
-          </div>
-        </button>
+        </button>\
       </div>
     </div>
 
@@ -132,15 +123,7 @@
       />
     </div>
 
-    <!-- Vitals Overview -->
-    <div v-if="activeView === 'vitals'" class="content-section">
-      <VitalsList 
-        :vitals="allVitals"
-        @add-vitals="showVitalsForm = true"
-        @edit-vital="editVital"
-        @delete-vital="deleteVital"
-      />
-    </div>
+    <!-- Vitals Overview removed -->
 
     <!-- Empty State -->
     <div v-if="patients.length === 0" class="empty-state">
@@ -173,15 +156,7 @@
       />
     </div>
     
-    <!-- Vitals Form Modal -->
-    <div v-if="showVitalsForm" class="modal-overlay" @click="closeVitalsForm">
-      <VitalsForm 
-        :patients="patients"
-        @save="saveVitals"
-        @cancel="closeVitalsForm"
-        @click.stop
-      />
-    </div>        <!-- Appointment Form Modal -->
+    <!-- Appointment Form Modal -->
     <div v-if="showAppointmentForm" class="modal-overlay" @click="closeAppointmentForm">
       <AppointmentForm 
         :patients="patients"
@@ -194,25 +169,21 @@
 
     <!-- Patient Detail Modal -->
     <div v-if="showPatientDetail" class="modal-overlay" @click="closePatientDetail">
-      <PatientDetailModal 
-        v-if="selectedPatient"
-        :patient="selectedPatient"
-        :medications="patientMedications"
-        :appointments="patientAppointments"
-        :vitals="patientVitals"
-        @close="closePatientDetail"
-        @edit-patient="editPatient"
-        @add-medication="() => { showPatientDetail = false; showMedicationForm = true }"
-        @edit-medication="editMedication"
-        @delete-medication="deleteMedication"
-        @add-appointment="() => { showPatientDetail = false; showAppointmentForm = true }"
-        @edit-appointment="editAppointment"
-        @delete-appointment="deleteAppointment"
-        @add-vitals="() => { showPatientDetail = false; showVitalsForm = true }"
-        @edit-vital="editVital"
-        @delete-vital="deleteVital"
-        @click.stop
-      />
+  <PatientDetailModal 
+    v-if="selectedPatient"
+    :patient="selectedPatient"
+  :medications="patientMedications"
+  :appointments="patientAppointments"
+    @close="closePatientDetail"
+    @edit-patient="editPatient"
+    @add-medication="() => { showPatientDetail = false; showMedicationForm = true }"
+    @edit-medication="editMedication"
+    @delete-medication="deleteMedication"
+    @add-appointment="() => { showPatientDetail = false; showAppointmentForm = true }"
+    @edit-appointment="editAppointment"
+    @delete-appointment="deleteAppointment"
+    @click.stop
+  />
     </div>
 
     <!-- Caregiver Profile Modal -->
@@ -238,12 +209,12 @@ import { ref, onMounted } from 'vue'
 import HamburgerMenu from '../components/HamburgerMenu.vue'
 import PatientForm from '../components/eldercare/PatientForm.vue'
 import MedicationForm from '../components/eldercare/MedicationForm.vue'
-import VitalsForm from '../components/eldercare/VitalsForm.vue'
+// VitalsForm import removed
 import AppointmentForm from '../components/eldercare/AppointmentForm.vue'
 import PatientDetailModal from '../components/eldercare/PatientDetailModal.vue'
 import MedicationsList from '../components/eldercare/MedicationsList.vue'
 import AppointmentsList from '../components/eldercare/AppointmentsList.vue'
-import VitalsList from '../components/eldercare/VitalsList.vue'
+// VitalsList import removed
 import CaregiverProfile from '../components/eldercare/CaregiverProfile.vue'
 
 interface Patient {
@@ -267,24 +238,24 @@ const caregiver = ref<any>(null)
 
 const showPatientForm = ref(false)
 const showMedicationForm = ref(false)
-const showVitalsForm = ref(false)
+// showVitalsForm removed
 const showAppointmentForm = ref(false)
 const showPatientDetail = ref(false)
 const showCaregiverProfile = ref(false)
 
-const activeView = ref<'patients' | 'medications' | 'appointments' | 'vitals'>('patients')
+const activeView = ref<'patients' | 'medications' | 'appointments'>('patients')
 
 const editingPatient = ref<Patient | null>(null)
 const editingMedication = ref<any | null>(null)
 const selectedPatient = ref<Patient | null>(null)
 const patientMedications = ref<any[]>([])
 const patientAppointments = ref<any[]>([])
-const patientVitals = ref<any[]>([])
+// patientVitals removed
 
 // Global data for all tabs
 const allMedications = ref<any[]>([])
 const allAppointments = ref<any[]>([])
-const allVitals = ref<any[]>([])
+// allVitals removed
 
 const message = ref('')
 const messageType = ref<'success' | 'error'>('success')
@@ -294,7 +265,6 @@ onMounted(async () => {
   await loadProviders()
   await loadAllMedications()
   await loadAllAppointments()
-  await loadAllVitals()
 })
 
 async function loadPatients() {
@@ -346,17 +316,7 @@ async function loadAllAppointments() {
   }
 }
 
-async function loadAllVitals() {
-  try {
-    const response = await fetch('/api/vitals')
-    if (response.ok) {
-      const result = await response.json()
-      allVitals.value = result.data || []
-    }
-  } catch (error) {
-    console.error('Failed to load vitals:', error)
-  }
-}
+// loadAllVitals removed
 
 function formatRelationship(relationship?: string): string {
   if (!relationship) return ''
@@ -411,11 +371,10 @@ async function viewPatientDetails(patient: Patient) {
 
 async function loadPatientData(patientId: string) {
   try {
-    // Load patient's medications, appointments, and vitals
-    const [medicationsRes, appointmentsRes, vitalsRes] = await Promise.all([
+    // Load patient's medications and appointments only
+    const [medicationsRes, appointmentsRes] = await Promise.all([
       fetch(`/api/medications?patient_id=${patientId}`),
-      fetch(`/api/appointments?patient_id=${patientId}`),
-      fetch(`/api/vitals?patient_id=${patientId}`)
+      fetch(`/api/appointments?patient_id=${patientId}`)
     ])
 
     if (medicationsRes.ok) {
@@ -427,17 +386,11 @@ async function loadPatientData(patientId: string) {
       const data = await appointmentsRes.json()
       patientAppointments.value = data.data || []
     }
-    
-    if (vitalsRes.ok) {
-      const data = await vitalsRes.json()
-      patientVitals.value = data.data || []
-    }
   } catch (error) {
     console.error('Failed to load patient data:', error)
     // Set empty arrays as fallback
     patientMedications.value = []
     patientAppointments.value = []
-    patientVitals.value = []
   }
 }
 
@@ -502,27 +455,7 @@ async function saveMedication(medicationData: any) {
   }
 }
 
-async function saveVitals(vitalsData: any) {
-  try {
-    const response = await fetch('/api/vitals', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(vitalsData)
-    })
-    
-    if (response.ok) {
-      closeVitalsForm()
-      showMessage('Vital signs recorded successfully!', 'success')
-    } else {
-      throw new Error('Failed to save vitals')
-    }
-  } catch (error) {
-    console.error('Error saving vitals:', error)
-    showMessage('Failed to save vital signs. Please try again.', 'error')
-  }
-}
+// saveVitals function removed
 
 async function saveAppointment(appointmentData: any) {
   try {
@@ -591,9 +524,7 @@ async function deleteMedication(medication: any) {
   }
 }
 
-function closeVitalsForm() {
-  showVitalsForm.value = false
-}
+// closeVitalsForm removed
 
 function closeAppointmentForm() {
   showAppointmentForm.value = false
@@ -634,47 +565,14 @@ async function deleteAppointment(appointment: any) {
   }
 }
 
-async function editVital(_vital: any) {
-  // TODO: Implement edit vital
-  showMessage('Edit vital functionality coming soon!', 'success')
-}
-
-async function deleteVital(vital: any) {
-  if (!confirm('Are you sure you want to delete this vital record?')) {
-    return
-  }
-  
-  try {
-    const response = await fetch(`/api/vitals/${vital.id}`, {
-      method: 'DELETE'
-    })
-    
-    if (response.ok) {
-      showMessage('Vital record deleted successfully!', 'success')
-      
-      // Reload appropriate data based on context
-      if (selectedPatient.value) {
-        // If viewing patient detail, reload patient data
-        await loadPatientData(selectedPatient.value.id)
-      } else if (activeView.value === 'vitals') {
-        // If viewing vitals tab, reload all vitals
-        await loadAllVitals()
-      }
-    } else {
-      throw new Error('Failed to delete vital')
-    }
-  } catch (error) {
-    console.error('Error deleting vital:', error)
-    showMessage('Failed to delete vital. Please try again.', 'error')
-  }
-}
+// editVital and deleteVital removed
 
 function closePatientDetail() {
   showPatientDetail.value = false
   selectedPatient.value = null
   patientMedications.value = []
   patientAppointments.value = []
-  patientVitals.value = []
+    // patientVitals assignment removed
 }
 
 function closeCaregiverProfile() {

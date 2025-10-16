@@ -13,15 +13,15 @@ const router = Router()
 const createMedicationSchema = z.object({
   patient_id: z.string().min(1),
   name: z.string().min(1).max(200),
-  generic_name: z.string().optional(),
+  generic_name: z.string().nullable().optional(),
   dosage: z.string().min(1).max(100),
   frequency: z.string().min(1),
-  route: z.string().optional(),
-  prescribing_doctor: z.string().optional(),
-  pharmacy: z.string().optional(),
-  rx_number: z.string().optional(),
-  side_effects: z.string().optional(),
-  notes: z.string().optional(),
+  route: z.string().nullable().optional(),
+  prescribing_doctor: z.string().nullable().optional(),
+  pharmacy: z.string().nullable().optional(),
+  rx_number: z.string().nullable().optional(),
+  side_effects: z.string().nullable().optional(),
+  notes: z.string().nullable().optional(),
 })
 
 const updateMedicationSchema = createMedicationSchema.partial().omit({ patient_id: true })
