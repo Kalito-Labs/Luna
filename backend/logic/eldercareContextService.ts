@@ -16,9 +16,12 @@ export interface ProviderContext {
   id: string
   name: string
   specialty?: string
+  practiceName?: string
   phone?: string
+  email?: string
   address?: string
   notes?: string
+  preferred?: boolean
 }
 
 export interface PatientContext {
@@ -27,9 +30,15 @@ export interface PatientContext {
   relationship?: string
   age?: number
   gender?: string
+  phone?: string
+  emergencyContactName?: string
+  emergencyContactPhone?: string
   primaryDoctor?: string
   primaryDoctorProvider?: ProviderContext
-  emergencyContact?: string
+  doctorAddress?: string
+  doctorPhone?: string
+  insuranceProvider?: string
+  insuranceId?: string
   notes?: string
 }
 
@@ -60,6 +69,8 @@ export interface AppointmentContext {
   provider?: ProviderContext
   preparationNotes?: string
   notes?: string
+  outcomeSummary?: string
+  followUpRequired?: boolean
 }
 
 
@@ -94,7 +105,7 @@ export class EldercareContextService {
   private getProviders(): ProviderContext[] {
     try {
       const query = `
-        SELECT id, name, specialty, phone, address, notes
+        SELECT id, name, specialty, practice_name, phone, email, address, notes, preferred
         FROM healthcare_providers
         ORDER BY name ASC
       `
@@ -102,17 +113,23 @@ export class EldercareContextService {
         id: string
         name: string
         specialty: string | null
+        practice_name: string | null
         phone: string | null
+        email: string | null
         address: string | null
         notes: string | null
+        preferred: number
       }>
       return rows.map(row => ({
         id: row.id,
         name: row.name,
         specialty: row.specialty || undefined,
+        practiceName: row.practice_name || undefined,
         phone: row.phone || undefined,
+        email: row.email || undefined,
         address: row.address || undefined,
         notes: row.notes || undefined,
+        preferred: row.preferred === 1,
       }))
     } catch (error) {
       console.error('Error fetching providers for context:', error)
@@ -179,7 +196,9 @@ export class EldercareContextService {
     try {
       const query = `
         SELECT id, name, date_of_birth, relationship, gender, 
-               primary_doctor, emergency_contact_name, notes
+               phone, emergency_contact_name, emergency_contact_phone,
+               primary_doctor, doctor_address, doctor_phone,
+               insurance_provider, insurance_id, notes
         FROM patients 
         WHERE active = 1 
         ORDER BY name ASC
@@ -190,8 +209,14 @@ export class EldercareContextService {
         date_of_birth: string | null
         relationship: string | null
         gender: string | null
-        primary_doctor: string | null
+        phone: string | null
         emergency_contact_name: string | null
+        emergency_contact_phone: string | null
+        primary_doctor: string | null
+        doctor_address: string | null
+        doctor_phone: string | null
+        insurance_provider: string | null
+        insurance_id: string | null
         notes: string | null
       }>
 
@@ -209,8 +234,14 @@ export class EldercareContextService {
 
         // Include sensitive data only for local models
         if (includePrivateData) {
+          context.phone = row.phone || undefined
+          context.emergencyContactName = row.emergency_contact_name || undefined
+          context.emergencyContactPhone = row.emergency_contact_phone || undefined
           context.primaryDoctor = row.primary_doctor || undefined
-          context.emergencyContact = row.emergency_contact_name || undefined
+          context.doctorAddress = row.doctor_address || undefined
+          context.doctorPhone = row.doctor_phone || undefined
+          context.insuranceProvider = row.insurance_provider || undefined
+          context.insuranceId = row.insurance_id || undefined
           context.notes = row.notes || undefined
 
           // Link primaryDoctorProvider if match found
@@ -323,8 +354,12 @@ export class EldercareContextService {
 
       let query = `
         SELECT a.id, a.patient_id, a.appointment_date, a.appointment_time, 
-               a.appointment_type, a.location, a.status, a.provider_id, a.preparation_notes, a.notes,
-               p.id as provider_id, p.name as provider_name, p.specialty as provider_specialty, p.phone as provider_phone, p.address as provider_address, p.notes as provider_notes
+               a.appointment_type, a.location, a.status, a.provider_id, 
+               a.preparation_notes, a.notes, a.outcome_summary, a.follow_up_required,
+               p.id as provider_id, p.name as provider_name, p.specialty as provider_specialty, 
+               p.practice_name as provider_practice_name, p.phone as provider_phone, 
+               p.email as provider_email, p.address as provider_address, 
+               p.notes as provider_notes, p.preferred as provider_preferred
         FROM appointments a
         LEFT JOIN healthcare_providers p ON a.provider_id = p.id
         WHERE a.appointment_date >= ?
@@ -349,11 +384,16 @@ export class EldercareContextService {
         provider_id: string | null
         preparation_notes: string | null
         notes: string | null
+        outcome_summary: string | null
+        follow_up_required: number
         provider_name: string | null
         provider_specialty: string | null
+        provider_practice_name: string | null
         provider_phone: string | null
+        provider_email: string | null
         provider_address: string | null
         provider_notes: string | null
+        provider_preferred: number
       }>
 
       return rows.map(row => {
@@ -372,9 +412,12 @@ export class EldercareContextService {
             id: row.provider_id,
             name: row.provider_name || '',
             specialty: row.provider_specialty || undefined,
+            practiceName: row.provider_practice_name || undefined,
             phone: row.provider_phone || undefined,
+            email: row.provider_email || undefined,
             address: row.provider_address || undefined,
             notes: row.provider_notes || undefined,
+            preferred: row.provider_preferred === 1,
           }
         }
 
@@ -383,6 +426,8 @@ export class EldercareContextService {
           context.location = row.location || undefined
           context.preparationNotes = row.preparation_notes || undefined
           context.notes = row.notes || undefined
+          context.outcomeSummary = row.outcome_summary || undefined
+          context.followUpRequired = row.follow_up_required === 1
         }
 
         return context
@@ -479,6 +524,20 @@ export class EldercareContextService {
         if (patient.relationship) summary += ` (${patient.relationship})`;
         if (patient.age) summary += `, age ${patient.age}`;
         if (patient.gender) summary += `, ${patient.gender}`;
+        if (patient.phone) summary += `\n  Phone: ${patient.phone}`;
+        if (patient.primaryDoctor) {
+          summary += `\n  Primary Doctor: ${patient.primaryDoctor}`;
+          if (patient.doctorPhone) summary += ` (${patient.doctorPhone})`;
+          if (patient.doctorAddress) summary += `\n  Doctor Address: ${patient.doctorAddress}`;
+        }
+        if (patient.emergencyContactName) {
+          summary += `\n  Emergency Contact: ${patient.emergencyContactName}`;
+          if (patient.emergencyContactPhone) summary += ` (${patient.emergencyContactPhone})`;
+        }
+        if (patient.insuranceProvider) {
+          summary += `\n  Insurance: ${patient.insuranceProvider}`;
+          if (patient.insuranceId) summary += ` (ID: ${patient.insuranceId})`;
+        }
         summary += '\n';
       });
       summary += '\n';
@@ -486,11 +545,16 @@ export class EldercareContextService {
     // Active medications summary
     if (context.medications.length > 0) {
       summary += `### Active Medications (${context.medications.length})\n`;
-      const medicationsByPatient = context.medications.reduce((acc: string[], med: MedicationContext) => {
-        acc.push(`- ${med.name} ${med.dosage} (${med.frequency})`);
-        return acc;
-      }, []);
-      summary += medicationsByPatient.slice(0, 10).join('\n') + '\n\n';
+      context.medications.slice(0, 10).forEach((med: MedicationContext) => {
+        summary += `- ${med.name}`;
+        if (med.genericName) summary += ` (${med.genericName})`;
+        summary += ` ${med.dosage} - ${med.frequency}`;
+        if (med.prescribingDoctor) summary += `\n  Prescribed by: ${med.prescribingDoctor}`;
+        if (med.pharmacy) summary += `\n  Pharmacy: ${med.pharmacy}`;
+        if (med.rxNumber) summary += ` (Rx: ${med.rxNumber})`;
+        summary += '\n';
+      });
+      summary += '\n';
     }
     // Upcoming appointments
     const upcomingAppointments = context.recentAppointments.filter((apt: AppointmentContext) =>
@@ -502,13 +566,33 @@ export class EldercareContextService {
         summary += `- ${apt.appointmentDate}`;
         if (apt.appointmentTime) summary += ` at ${apt.appointmentTime}`;
         if (apt.appointmentType) summary += ` (${apt.appointmentType})`;
+        if (apt.provider) {
+          summary += `\n  Provider: ${apt.provider.name}`;
+          if (apt.provider.specialty) summary += ` (${apt.provider.specialty})`;
+          if (apt.provider.phone) summary += `\n  Phone: ${apt.provider.phone}`;
+          if (apt.location) summary += `\n  Location: ${apt.location}`;
+        }
+        summary += '\n';
+      });
+      summary += '\n';
+    }
+    // Healthcare providers summary
+    if (context.providers.length > 0) {
+      summary += `### Healthcare Providers (${context.providers.length})\n`;
+      context.providers.slice(0, 10).forEach((provider: ProviderContext) => {
+        summary += `- **${provider.name}**`;
+        if (provider.specialty) summary += ` (${provider.specialty})`;
+        if (provider.practiceName) summary += `\n  Practice: ${provider.practiceName}`;
+        if (provider.phone) summary += `\n  Phone: ${provider.phone}`;
+        if (provider.address) summary += `\n  Address: ${provider.address}`;
+        if (provider.email) summary += `\n  Email: ${provider.email}`;
         summary += '\n';
       });
       summary += '\n';
     }
     // Active caregivers summary
     if (context.caregivers.length > 0) {
-      summary += `\n### Active Caregivers (${context.caregivers.length})\n`;
+      summary += `### Active Caregivers (${context.caregivers.length})\n`;
       context.caregivers.forEach((caregiver: CaregiverContext) => {
         summary += `- **${caregiver.name}**`;
         if (caregiver.relationship) summary += ` (${caregiver.relationship})`;
