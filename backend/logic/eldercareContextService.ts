@@ -12,6 +12,15 @@
 import { db } from '../db/db'
 import type { LLMAdapter } from './modelRegistry'
 
+export interface ProviderContext {
+  id: string
+  name: string
+  specialty?: string
+  phone?: string
+  address?: string
+  notes?: string
+}
+
 export interface PatientContext {
   id: string
   name: string
@@ -19,6 +28,7 @@ export interface PatientContext {
   age?: number
   gender?: string
   primaryDoctor?: string
+  primaryDoctorProvider?: ProviderContext
   emergencyContact?: string
   notes?: string
 }
@@ -31,7 +41,9 @@ export interface MedicationContext {
   frequency: string
   route?: string
   prescribingDoctor?: string
+  prescribingDoctorProvider?: ProviderContext
   pharmacy?: string
+  pharmacyProvider?: ProviderContext
   rxNumber?: string
   sideEffects?: string
   notes?: string
@@ -44,22 +56,12 @@ export interface AppointmentContext {
   appointmentType?: string
   location?: string
   status: string
+  providerId?: string
+  provider?: ProviderContext
   preparationNotes?: string
   notes?: string
 }
 
-export interface VitalContext {
-  id: string
-  measurementType: string
-  systolic?: number
-  diastolic?: number
-  value?: number
-  unit?: string
-  measuredAt: string
-  measuredBy?: string
-  location?: string
-  notes?: string
-}
 
 export interface CaregiverContext {
   id: string
@@ -74,17 +76,49 @@ export interface CaregiverContext {
   notes?: string
 }
 
-export interface EldercareContext {
-  patients: PatientContext[]
-  medications: MedicationContext[]
-  recentAppointments: AppointmentContext[]
-  recentVitals: VitalContext[]
-  caregivers: CaregiverContext[]
-  summary: string
-}
+
+export type EldercareContext = {
+  patients: PatientContext[];
+  medications: MedicationContext[];
+  recentAppointments: AppointmentContext[];
+  caregivers: CaregiverContext[];
+  providers: ProviderContext[];
+  summary: string;
+};
 
 export class EldercareContextService {
   private readonly MAX_RECENT_DAYS = 30
+  /**
+   * Get all healthcare providers
+   */
+  private getProviders(): ProviderContext[] {
+    try {
+      const query = `
+        SELECT id, name, specialty, phone, address, notes
+        FROM healthcare_providers
+        ORDER BY name ASC
+      `
+      const rows = db.prepare(query).all() as Array<{
+        id: string
+        name: string
+        specialty: string | null
+        phone: string | null
+        address: string | null
+        notes: string | null
+      }>
+      return rows.map(row => ({
+        id: row.id,
+        name: row.name,
+        specialty: row.specialty || undefined,
+        phone: row.phone || undefined,
+        address: row.address || undefined,
+        notes: row.notes || undefined,
+      }))
+    } catch (error) {
+      console.error('Error fetching providers for context:', error)
+      return []
+    }
+  }
 
   /**
    * Trusted models that get full eldercare data access
@@ -150,7 +184,6 @@ export class EldercareContextService {
         WHERE active = 1 
         ORDER BY name ASC
       `
-      
       const rows = db.prepare(query).all() as Array<{
         id: string
         name: string
@@ -161,6 +194,9 @@ export class EldercareContextService {
         emergency_contact_name: string | null
         notes: string | null
       }>
+
+      // Get all providers for lookup
+      const providers = this.getProviders()
 
       return rows.map(row => {
         const context: PatientContext = {
@@ -176,6 +212,15 @@ export class EldercareContextService {
           context.primaryDoctor = row.primary_doctor || undefined
           context.emergencyContact = row.emergency_contact_name || undefined
           context.notes = row.notes || undefined
+
+          // Link primaryDoctorProvider if match found
+          if (row.primary_doctor && typeof row.primary_doctor === 'string') {
+            const doctorName = row.primary_doctor ? row.primary_doctor.toLowerCase() : ''
+            const providerMatch = providers.find(p => p.name && p.name.toLowerCase() === doctorName)
+            if (providerMatch) {
+              context.primaryDoctorProvider = providerMatch
+            }
+          }
         }
 
         return context
@@ -198,13 +243,11 @@ export class EldercareContextService {
         FROM medications 
         WHERE active = 1
       `
-      
       const params: (string | number)[] = []
       if (patientId) {
         query += ` AND patient_id = ?`
         params.push(patientId)
       }
-      
       query += ` ORDER BY created_at DESC LIMIT 50`
 
       const rows = db.prepare(query).all(...params) as Array<{
@@ -221,6 +264,9 @@ export class EldercareContextService {
         side_effects: string | null
         notes: string | null
       }>
+
+      // Get all providers for lookup
+      const providers = this.getProviders()
 
       return rows.map(row => {
         const context: MedicationContext = {
@@ -239,6 +285,23 @@ export class EldercareContextService {
           context.rxNumber = row.rx_number || undefined
           context.sideEffects = row.side_effects || undefined
           context.notes = row.notes || undefined
+
+          // Link prescribingDoctorProvider if match found
+          if (row.prescribing_doctor && typeof row.prescribing_doctor === 'string') {
+            const doctorName = row.prescribing_doctor ? row.prescribing_doctor.toLowerCase() : ''
+            const providerMatch = providers.find(p => p.name && p.name.toLowerCase() === doctorName)
+            if (providerMatch) {
+              context.prescribingDoctorProvider = providerMatch
+            }
+          }
+          // Link pharmacyProvider if match found
+          if (row.pharmacy && typeof row.pharmacy === 'string') {
+            const pharmacyName = row.pharmacy ? row.pharmacy.toLowerCase() : ''
+            const providerMatch = providers.find(p => p.name && p.name.toLowerCase() === pharmacyName)
+            if (providerMatch) {
+              context.pharmacyProvider = providerMatch
+            }
+          }
         }
 
         return context
@@ -259,19 +322,21 @@ export class EldercareContextService {
       const cutoffDateStr = cutoffDate.toISOString().split('T')[0]
 
       let query = `
-        SELECT id, patient_id, appointment_date, appointment_time, 
-               appointment_type, location, status, preparation_notes, notes
-        FROM appointments 
-        WHERE appointment_date >= ?
+        SELECT a.id, a.patient_id, a.appointment_date, a.appointment_time, 
+               a.appointment_type, a.location, a.status, a.provider_id, a.preparation_notes, a.notes,
+               p.id as provider_id, p.name as provider_name, p.specialty as provider_specialty, p.phone as provider_phone, p.address as provider_address, p.notes as provider_notes
+        FROM appointments a
+        LEFT JOIN healthcare_providers p ON a.provider_id = p.id
+        WHERE a.appointment_date >= ?
       `
-      
+
       const params: (string | number)[] = [cutoffDateStr]
       if (patientId) {
-        query += ` AND patient_id = ?`
+        query += ` AND a.patient_id = ?`
         params.push(patientId)
       }
-      
-      query += ` ORDER BY appointment_date ASC LIMIT 20`
+
+      query += ` ORDER BY a.appointment_date ASC LIMIT 20`
 
       const rows = db.prepare(query).all(...params) as Array<{
         id: string
@@ -281,8 +346,14 @@ export class EldercareContextService {
         appointment_type: string | null
         location: string | null
         status: string
+        provider_id: string | null
         preparation_notes: string | null
         notes: string | null
+        provider_name: string | null
+        provider_specialty: string | null
+        provider_phone: string | null
+        provider_address: string | null
+        provider_notes: string | null
       }>
 
       return rows.map(row => {
@@ -292,6 +363,19 @@ export class EldercareContextService {
           appointmentTime: row.appointment_time || undefined,
           appointmentType: row.appointment_type || undefined,
           status: row.status,
+          providerId: row.provider_id || undefined,
+        }
+
+        // Attach provider info if available
+        if (row.provider_id) {
+          context.provider = {
+            id: row.provider_id,
+            name: row.provider_name || '',
+            specialty: row.provider_specialty || undefined,
+            phone: row.provider_phone || undefined,
+            address: row.provider_address || undefined,
+            notes: row.provider_notes || undefined,
+          }
         }
 
         // Include sensitive data only for local models
@@ -312,66 +396,6 @@ export class EldercareContextService {
   /**
    * Get recent vital signs measurements
    */
-  private getRecentVitals(patientId?: string, includePrivateData: boolean = true): VitalContext[] {
-    try {
-      const cutoffDate = new Date()
-      cutoffDate.setDate(cutoffDate.getDate() - this.MAX_RECENT_DAYS)
-      const cutoffDateStr = cutoffDate.toISOString()
-
-      let query = `
-        SELECT id, patient_id, measurement_type, systolic, diastolic, 
-               value, unit, measured_at, measured_by, location, notes
-        FROM vitals 
-        WHERE measured_at >= ?
-      `
-      
-      const params: (string | number)[] = [cutoffDateStr]
-      if (patientId) {
-        query += ` AND patient_id = ?`
-        params.push(patientId)
-      }
-      
-      query += ` ORDER BY measured_at DESC LIMIT 50`
-
-      const rows = db.prepare(query).all(...params) as Array<{
-        id: string
-        patient_id: string
-        measurement_type: string
-        systolic: number | null
-        diastolic: number | null
-        value: number | null
-        unit: string | null
-        measured_at: string
-        measured_by: string | null
-        location: string | null
-        notes: string | null
-      }>
-
-      return rows.map(row => {
-        const context: VitalContext = {
-          id: row.id,
-          measurementType: row.measurement_type,
-          systolic: row.systolic || undefined,
-          diastolic: row.diastolic || undefined,
-          value: row.value || undefined,
-          unit: row.unit || undefined,
-          measuredAt: row.measured_at,
-        }
-
-        // Include sensitive data only for local models
-        if (includePrivateData) {
-          context.measuredBy = row.measured_by || undefined
-          context.location = row.location || undefined
-          context.notes = row.notes || undefined
-        }
-
-        return context
-      })
-    } catch (error) {
-      console.error('Error fetching vitals for context:', error)
-      return []
-    }
-  }
 
   /**
    * Get active caregivers and their current status
@@ -445,94 +469,66 @@ export class EldercareContextService {
    * Generate a summary of eldercare context for AI
    */
   private generateContextSummary(context: EldercareContext): string {
-    const { patients, medications, recentAppointments, recentVitals, caregivers } = context
-    
-    let summary = "## Eldercare Context Summary\n\n"
-    
+  // Use context directly, destructuring removed
+    let summary = "## Eldercare Context Summary\n\n";
     // Patients summary
-    if (patients.length > 0) {
-      summary += `### Patients (${patients.length})\n`
-      patients.forEach(patient => {
-        summary += `- **${patient.name}**`
-        if (patient.relationship) summary += ` (${patient.relationship})`
-        if (patient.age) summary += `, age ${patient.age}`
-        if (patient.gender) summary += `, ${patient.gender}`
-        summary += '\n'
-      })
-      summary += '\n'
+    if (context.patients.length > 0) {
+      summary += `### Patients (${context.patients.length})\n`;
+      context.patients.forEach((patient: PatientContext) => {
+        summary += `- **${patient.name}**`;
+        if (patient.relationship) summary += ` (${patient.relationship})`;
+        if (patient.age) summary += `, age ${patient.age}`;
+        if (patient.gender) summary += `, ${patient.gender}`;
+        summary += '\n';
+      });
+      summary += '\n';
     }
-
     // Active medications summary
-    if (medications.length > 0) {
-      summary += `### Active Medications (${medications.length})\n`
-      const medicationsByPatient = medications.reduce((acc, med) => {
-        // Note: We'll need patient lookup for this, simplified for now
-        acc.push(`- ${med.name} ${med.dosage} (${med.frequency})`)
-        return acc
-      }, [] as string[])
-      summary += medicationsByPatient.slice(0, 10).join('\n') + '\n\n'
+    if (context.medications.length > 0) {
+      summary += `### Active Medications (${context.medications.length})\n`;
+      const medicationsByPatient = context.medications.reduce((acc: string[], med: MedicationContext) => {
+        acc.push(`- ${med.name} ${med.dosage} (${med.frequency})`);
+        return acc;
+      }, []);
+      summary += medicationsByPatient.slice(0, 10).join('\n') + '\n\n';
     }
-
     // Upcoming appointments
-    const upcomingAppointments = recentAppointments.filter(apt => 
+    const upcomingAppointments = context.recentAppointments.filter((apt: AppointmentContext) =>
       new Date(apt.appointmentDate) >= new Date()
-    )
+    );
     if (upcomingAppointments.length > 0) {
-      summary += `### Upcoming Appointments (${upcomingAppointments.length})\n`
-      upcomingAppointments.slice(0, 5).forEach(apt => {
-        summary += `- ${apt.appointmentDate}`
-        if (apt.appointmentTime) summary += ` at ${apt.appointmentTime}`
-        if (apt.appointmentType) summary += ` (${apt.appointmentType})`
-        summary += '\n'
-      })
-      summary += '\n'
+      summary += `### Upcoming Appointments (${upcomingAppointments.length})\n`;
+      upcomingAppointments.slice(0, 5).forEach((apt: AppointmentContext) => {
+        summary += `- ${apt.appointmentDate}`;
+        if (apt.appointmentTime) summary += ` at ${apt.appointmentTime}`;
+        if (apt.appointmentType) summary += ` (${apt.appointmentType})`;
+        summary += '\n';
+      });
+      summary += '\n';
     }
-
-    // Recent vitals summary
-    if (recentVitals.length > 0) {
-      summary += `### Recent Vitals (last ${this.MAX_RECENT_DAYS} days)\n`
-      const vitalsByType = recentVitals.reduce((acc, vital) => {
-        if (!acc[vital.measurementType]) acc[vital.measurementType] = []
-        acc[vital.measurementType].push(vital)
-        return acc
-      }, {} as Record<string, VitalContext[]>)
-
-      Object.entries(vitalsByType).forEach(([type, vitals]) => {
-        const latest = vitals[0] // Already sorted by date DESC
-        summary += `- **${type}**: `
-        if (type === 'blood_pressure' && latest.systolic && latest.diastolic) {
-          summary += `${latest.systolic}/${latest.diastolic}`
-        } else if (latest.value) {
-          summary += `${latest.value}${latest.unit || ''}`
-        }
-        summary += ` (${new Date(latest.measuredAt).toLocaleDateString()})\n`
-      })
-    }
-
     // Active caregivers summary
-    if (caregivers.length > 0) {
-      summary += `\n### Active Caregivers (${caregivers.length})\n`
-      caregivers.forEach(caregiver => {
-        summary += `- **${caregiver.name}**`
-        if (caregiver.relationship) summary += ` (${caregiver.relationship})`
+    if (context.caregivers.length > 0) {
+      summary += `\n### Active Caregivers (${context.caregivers.length})\n`;
+      context.caregivers.forEach((caregiver: CaregiverContext) => {
+        summary += `- **${caregiver.name}**`;
+        if (caregiver.relationship) summary += ` (${caregiver.relationship})`;
         if (caregiver.isCurrentlyWorking) {
-          summary += ' - Currently Working'
+          summary += ' - Currently Working';
           if (caregiver.clockedInSince) {
-            const clockedIn = new Date(caregiver.clockedInSince)
-            const hours = Math.round((Date.now() - clockedIn.getTime()) / (1000 * 60 * 60) * 10) / 10
-            summary += ` (${hours}h)`
+            const clockedIn = new Date(caregiver.clockedInSince);
+            const hours = Math.round((Date.now() - clockedIn.getTime()) / (1000 * 60 * 60) * 10) / 10;
+            summary += ` (${hours}h)`;
           }
         } else if (caregiver.availabilityToday) {
-          summary += ` - Available today: ${caregiver.availabilityToday}`
+          summary += ` - Available today: ${caregiver.availabilityToday}`;
         }
         if (caregiver.specialties && caregiver.specialties.length > 0) {
-          summary += ` | Specialties: ${caregiver.specialties.slice(0, 2).join(', ')}`
+          summary += ` | Specialties: ${caregiver.specialties.slice(0, 2).join(', ')}`;
         }
-        summary += '\n'
-      })
+        summary += '\n';
+      });
     }
-
-    return summary
+    return summary;
   }
 
   /**
@@ -548,15 +544,15 @@ export class EldercareContextService {
     const patients = this.getPatients(includePrivateData)
     const medications = this.getMedications(patientId, includePrivateData)
     const recentAppointments = this.getRecentAppointments(patientId, includePrivateData)
-    const recentVitals = this.getRecentVitals(patientId, includePrivateData)
     const caregivers = this.getCaregivers(includePrivateData)
+    const providers = this.getProviders()
 
     const context: EldercareContext = {
       patients,
       medications,
       recentAppointments,
-      recentVitals,
       caregivers,
+      providers,
       summary: '',
     }
 
@@ -661,9 +657,7 @@ export class EldercareContextService {
     contextPrompt += "\n## Instructions for AI Assistant\n"
     contextPrompt += "- Use the eldercare information above to provide relevant, helpful responses\n"
     contextPrompt += "- When referencing patients, use their names and relationships naturally\n"
-    contextPrompt += "- For medical advice, always recommend consulting healthcare professionals\n"
     contextPrompt += "- Focus on practical caregiving support and information organization\n"
-    contextPrompt += "- Maintain a compassionate, family-focused tone\n"
     
     // Only show privacy note for untrusted cloud models (not your controlled APIs)
     if (!this.isTrustedModel(adapter)) {

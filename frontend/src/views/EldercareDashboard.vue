@@ -57,7 +57,7 @@
             <h3>Appointments</h3>
             <p>Doctor visits & checkups</p>
           </div>
-        </button>\
+        </button>
       </div>
     </div>
 
