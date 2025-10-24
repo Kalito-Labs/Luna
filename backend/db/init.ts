@@ -2,6 +2,8 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import { db } from './db' // Import the shared database connection
+import { migrateToEldercare } from './migrations/001-eldercare-schema'
+import { addDoctorContactFields } from './migrations/002-add-doctor-fields'
 
 const dbPath = path.resolve(__dirname, __dirname.includes('dist') ? '../../../db/kalito.db' : 'kalito.db')
 
@@ -244,3 +246,23 @@ for (const persona of defaultPersonas) {
 // ---------------------------------------------------------------------
 
 console.log('✅ Database initialized at:', dbPath)
+
+// ---------------------------------------------------------------------
+// Run Eldercare Migrations
+// ---------------------------------------------------------------------
+
+// Run eldercare migrations if tables don't exist
+const eldercareTablesExist = db.prepare(`
+  SELECT name FROM sqlite_master 
+  WHERE type='table' AND name='patients'
+`).get()
+
+if (!eldercareTablesExist) {
+  console.log('🏥 Running eldercare migrations for the first time...')
+  migrateToEldercare(db)
+}
+
+// Always run the doctor fields migration (it checks if columns exist)
+addDoctorContactFields(db)
+
+console.log('✅ All migrations completed!')

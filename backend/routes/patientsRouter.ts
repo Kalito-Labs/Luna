@@ -12,32 +12,36 @@ const router = Router()
 
 const createPatientSchema = z.object({
   name: z.string().min(1).max(200),
-  date_of_birth: z.string().optional(),
-  relationship: z.string().optional(),
-  gender: z.string().optional(),
-  phone: z.string().optional(),
-  emergency_contact_name: z.string().optional(),
-  emergency_contact_phone: z.string().optional(),
-  primary_doctor: z.string().optional(),
-  insurance_provider: z.string().optional(),
-  insurance_id: z.string().optional(),
-  notes: z.string().optional(),
+  date_of_birth: z.string().nullable().optional(),
+  relationship: z.string().nullable().optional(),
+  gender: z.string().nullable().optional(),
+  phone: z.string().nullable().optional(),
+  emergency_contact_name: z.string().nullable().optional(),
+  emergency_contact_phone: z.string().nullable().optional(),
+  primary_doctor: z.string().nullable().optional(),
+  doctor_address: z.string().nullable().optional(),
+  doctor_phone: z.string().nullable().optional(),
+  insurance_provider: z.string().nullable().optional(),
+  insurance_id: z.string().nullable().optional(),
+  notes: z.string().nullable().optional(),
 })
 
 const updatePatientSchema = z.object({
   name: z.string().min(1).max(200).optional(),
-  date_of_birth: z.string().optional(),
-  relationship: z.string().optional(),
-  gender: z.string().optional(),
-  phone: z.string().optional(),
-  emergency_contact_name: z.string().optional(),
-  emergency_contact_phone: z.string().optional(),
-  primary_doctor: z.string().optional(),
-  insurance_provider: z.string().optional(),
-  insurance_id: z.string().optional(),
-  notes: z.string().optional(),
+  date_of_birth: z.string().nullable().optional(),
+  relationship: z.string().nullable().optional(),
+  gender: z.string().nullable().optional(),
+  phone: z.string().nullable().optional(),
+  emergency_contact_name: z.string().nullable().optional(),
+  emergency_contact_phone: z.string().nullable().optional(),
+  primary_doctor: z.string().nullable().optional(),
+  doctor_address: z.string().nullable().optional(),
+  doctor_phone: z.string().nullable().optional(),
+  insurance_provider: z.string().nullable().optional(),
+  insurance_id: z.string().nullable().optional(),
+  notes: z.string().nullable().optional(),
   active: z.number().min(0).max(1).optional(),
-})
+}).strict()
 
 /* ------------------------------- Routes ---------------------------------- */
 
@@ -88,8 +92,9 @@ router.post('/', async (req, res) => {
       INSERT INTO patients (
         id, name, date_of_birth, relationship, gender, phone,
         emergency_contact_name, emergency_contact_phone, primary_doctor,
+        doctor_address, doctor_phone,
         insurance_provider, insurance_id, notes, active, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
     `)
 
     insertPatient.run(
@@ -102,6 +107,8 @@ router.post('/', async (req, res) => {
       validatedData.emergency_contact_name || null,
       validatedData.emergency_contact_phone || null,
       validatedData.primary_doctor || null,
+      validatedData.doctor_address || null,
+      validatedData.doctor_phone || null,
       validatedData.insurance_provider || null,
       validatedData.insurance_id || null,
       validatedData.notes || null,
