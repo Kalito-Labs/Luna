@@ -71,14 +71,6 @@
         @edit-appointment="$emit('edit-appointment', $event)"
         @delete-appointment="$emit('delete-appointment', $event)"
       />
-      
-      <!-- Vitals Section -->
-      <VitalsList 
-        :vitals="vitals"
-        @add-vitals="$emit('add-vitals')"
-        @edit-vital="$emit('edit-vital', $event)"
-        @delete-vital="$emit('delete-vital', $event)"
-      />
     </div>
   </div>
 </template>
@@ -121,24 +113,10 @@ interface Appointment {
   status: string
 }
 
-interface Vital {
-  id: string
-  measurement_type: string
-  systolic?: number
-  diastolic?: number
-  value?: number
-  unit?: string
-  measured_at: string
-  measured_by?: string
-  location?: string
-  notes?: string
-}
-
 interface Props {
   patient: Patient
   medications: Medication[]
   appointments: Appointment[]
-  vitals: Vital[]
 }
 
 defineProps<Props>()
@@ -152,9 +130,6 @@ defineEmits<{
   'add-appointment': []
   'edit-appointment': [appointment: Appointment]
   'delete-appointment': [appointment: Appointment]
-  'add-vitals': []
-  'edit-vital': [vital: Vital]
-  'delete-vital': [vital: Vital]
 }>()
 
 function formatRelationship(relationship: string): string {

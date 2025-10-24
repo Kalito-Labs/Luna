@@ -238,7 +238,23 @@ async function submitForm() {
   isSubmitting.value = true
   
   try {
-    emit('save', { ...form.value })
+    // Only send the form fields, not extra database fields
+    const patientData: PatientForm = {
+      name: form.value.name,
+      date_of_birth: form.value.date_of_birth,
+      relationship: form.value.relationship,
+      gender: form.value.gender,
+      phone: form.value.phone,
+      emergency_contact_name: form.value.emergency_contact_name,
+      emergency_contact_phone: form.value.emergency_contact_phone,
+      primary_doctor: form.value.primary_doctor,
+      doctor_address: form.value.doctor_address,
+      doctor_phone: form.value.doctor_phone,
+      insurance_provider: form.value.insurance_provider,
+      insurance_id: form.value.insurance_id,
+      notes: form.value.notes
+    }
+    emit('save', patientData)
   } finally {
     isSubmitting.value = false
   }

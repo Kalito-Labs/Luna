@@ -137,7 +137,7 @@
 
     <!-- Modals -->
     <!-- Patient Form Modal -->
-    <div v-if="showPatientForm" class="modal-overlay" @click="closePatientForm">
+    <div v-if="showPatientForm" class="modal-overlay">
       <PatientForm 
         :patient="editingPatient"
         :is-editing="!!editingPatient"
@@ -145,7 +145,7 @@
         @cancel="closePatientForm"
         @click.stop
       />
-    </div>    <div v-if="showMedicationForm" class="modal-overlay" @click="closeMedicationForm">
+    </div>    <div v-if="showMedicationForm" class="modal-overlay">
       <MedicationForm 
         :medication="editingMedication"
         :is-editing="!!editingMedication"
@@ -157,7 +157,7 @@
     </div>
     
     <!-- Appointment Form Modal -->
-    <div v-if="showAppointmentForm" class="modal-overlay" @click="closeAppointmentForm">
+    <div v-if="showAppointmentForm" class="modal-overlay">
       <AppointmentForm 
         :patients="patients"
         :providers="providers"
@@ -168,7 +168,7 @@
     </div>
 
     <!-- Patient Detail Modal -->
-    <div v-if="showPatientDetail" class="modal-overlay" @click="closePatientDetail">
+    <div v-if="showPatientDetail" class="modal-overlay">
   <PatientDetailModal 
     v-if="selectedPatient"
     :patient="selectedPatient"
@@ -187,7 +187,7 @@
     </div>
 
     <!-- Caregiver Profile Modal -->
-    <div v-if="showCaregiverProfile" class="modal-overlay" @click="closeCaregiverProfile">
+    <div v-if="showCaregiverProfile" class="modal-overlay">
       <CaregiverProfile 
         :caregiver="caregiver"
         :is-editing="!!caregiver"
@@ -399,6 +399,8 @@ async function savePatient(patientData: any) {
     const url = editingPatient.value ? `/api/patients/${editingPatient.value.id}` : '/api/patients'
     const method = editingPatient.value ? 'PUT' : 'POST'
     
+    console.log('Sending patient data:', JSON.stringify(patientData, null, 2))
+    
     const response = await fetch(url, {
       method,
       headers: {
@@ -415,11 +417,16 @@ async function savePatient(patientData: any) {
         'success'
       )
     } else {
-      throw new Error('Failed to save patient')
+      const errorData = await response.json()
+      console.error('Server error response:', JSON.stringify(errorData, null, 2))
+      showMessage(errorData.message || 'Failed to save patient. Please check console for details.', 'error')
+      throw new Error(errorData.message || 'Failed to save patient')
     }
   } catch (error) {
     console.error('Error saving patient:', error)
-    showMessage('Failed to save patient. Please try again.', 'error')
+    if (!(error instanceof Error && error.message.includes('Failed to save patient'))) {
+      showMessage('Failed to save patient. Please try again.', 'error')
+    }
   }
 }
 
