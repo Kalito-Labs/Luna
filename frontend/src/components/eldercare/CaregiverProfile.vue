@@ -109,54 +109,6 @@
         </div>
       </div>
 
-      <!-- Clock In/Out Status -->
-      <div v-if="isEditing && caregiver" class="form-section">
-        <h3>Current Status</h3>
-        
-        <div class="status-card">
-          <div class="status-info">
-            <div class="status-row">
-              <span class="status-label">Current Status:</span>
-              <span :class="['status-badge', clockedIn ? 'clocked-in' : 'clocked-out']">
-                {{ clockedIn ? 'Clocked In' : 'Clocked Out' }}
-              </span>
-            </div>
-            
-            <div v-if="clockedIn && caregiver.clock_in_time" class="status-row">
-              <span class="status-label">Clocked in since:</span>
-              <span class="status-value">{{ formatDateTime(caregiver.clock_in_time) }}</span>
-            </div>
-            
-            <div class="status-row">
-              <span class="status-label">Total hours worked:</span>
-              <span class="status-value">{{ caregiver.total_hours_worked?.toFixed(1) || '0' }} hours</span>
-            </div>
-          </div>
-          
-          <div class="clock-actions">
-            <button 
-              v-if="!clockedIn"
-              type="button" 
-              @click="clockIn" 
-              class="btn btn-primary clock-btn"
-              :disabled="clockingIn"
-            >
-              {{ clockingIn ? 'Clocking In...' : 'Clock In' }}
-            </button>
-            
-            <button 
-              v-if="clockedIn"
-              type="button" 
-              @click="clockOut" 
-              class="btn btn-secondary clock-btn"
-              :disabled="clockingOut"
-            >
-              {{ clockingOut ? 'Clocking Out...' : 'Clock Out' }}
-            </button>
-          </div>
-        </div>
-      </div>
-
       <!-- Notes -->
       <div class="form-section">
         <h3>Personal Notes</h3>
@@ -185,7 +137,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 
 interface CaregiverScheduleDay {
   start: string
@@ -244,8 +196,6 @@ const emit = defineEmits<{
 }>()
 
 const saving = ref(false)
-const clockingIn = ref(false)
-const clockingOut = ref(false)
 
 const form = reactive({
   name: '',
@@ -257,10 +207,6 @@ const form = reactive({
   emergency_contact_name: '',
   emergency_contact_phone: '',
   notes: ''
-})
-
-const clockedIn = computed(() => {
-  return props.caregiver?.clock_in_time && !props.caregiver?.clock_out_time
 })
 
 onMounted(() => {
@@ -278,62 +224,6 @@ onMounted(() => {
     })
   }
 })
-
-async function clockIn() {
-  if (!props.caregiver?.id) return
-  
-  clockingIn.value = true
-  try {
-    const response = await fetch(`/api/caregivers/${props.caregiver.id}/clock`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        action: 'clock_in'
-      })
-    })
-    
-    if (response.ok) {
-      // Emit event to parent to refresh data
-      emit('save', null)
-    }
-  } catch (error) {
-    console.error('Error clocking in:', error)
-  } finally {
-    clockingIn.value = false
-  }
-}
-
-async function clockOut() {
-  if (!props.caregiver?.id) return
-  
-  clockingOut.value = true
-  try {
-    const response = await fetch(`/api/caregivers/${props.caregiver.id}/clock`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        action: 'clock_out'
-      })
-    })
-    
-    if (response.ok) {
-      // Emit event to parent to refresh data
-      emit('save', null)
-    }
-  } catch (error) {
-    console.error('Error clocking out:', error)
-  } finally {
-    clockingOut.value = false
-  }
-}
-
-function formatDateTime(dateTime: string): string {
-  return new Date(dateTime).toLocaleString()
-}
 
 function closeForm() {
   emit('close')
@@ -488,68 +378,6 @@ async function submitForm() {
   outline: none;
   border-color: var(--accent-blue);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Status Card */
-.status-card {
-  background: var(--bg-panel);
-  border: var(--border);
-  border-radius: 8px;
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-}
-
-.status-info {
-  flex: 1;
-}
-
-.status-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.status-row:last-child {
-  margin-bottom: 0;
-}
-
-.status-label {
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.status-value {
-  color: var(--text-main);
-}
-
-.status-badge {
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.status-badge.clocked-in {
-  background: var(--led-green);
-  color: white;
-}
-
-.status-badge.clocked-out {
-  background: var(--text-muted);
-  color: white;
-}
-
-.clock-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.clock-btn {
-  min-width: 120px;
 }
 
 /* Form Actions */
