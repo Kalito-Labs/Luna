@@ -107,6 +107,7 @@
     <div v-if="activeView === 'medications'" class="content-section">
       <MedicationsList 
         :medications="allMedications"
+        :patients="patients"
         @add-medication="showMedicationForm = true"
         @edit-medication="editMedication"
         @delete-medication="deleteMedication"
@@ -670,48 +671,10 @@ function showMessage(text: string, type: 'success' | 'error') {
   z-index: 100; /* Below modals (1000+) but above regular content */
 }
 
-/* ================================================================ */
-/* LARGE DESKTOP (1600px+)                                         */
-/* ================================================================ */
-@media (min-width: 1600px) {
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
   .eldercare-dashboard {
-    padding: 40px;
-  }
-}
-
-/* ================================================================ */
-/* DESKTOP (1280px - 1599px)                                       */
-/* ================================================================ */
-@media (max-width: 1599px) {
-  .eldercare-dashboard {
-    max-width: 1400px;
-    padding: 28px;
-  }
-}
-
-@media (max-width: 1439px) {
-  .eldercare-dashboard {
-    max-width: 1280px;
     padding: 24px;
-  }
-}
-
-/* ================================================================ */
-/* LAPTOP (1024px - 1279px)                                        */
-/* ================================================================ */
-@media (max-width: 1279px) {
-  .eldercare-dashboard {
-    max-width: 100%;
-    padding: 24px;
-  }
-}
-
-/* ================================================================ */
-/* IPAD PRO & LARGE TABLETS (834px - 1023px)                       */
-/* ================================================================ */
-@media (max-width: 1023px) {
-  .eldercare-dashboard {
-    padding: 20px 24px;
   }
   
   .hamburger-fixed {
@@ -720,63 +683,15 @@ function showMessage(text: string, type: 'success' | 'error') {
   }
 }
 
-/* ================================================================ */
-/* IPAD & TABLETS LANDSCAPE (768px - 833px)                        */
-/* ================================================================ */
-@media (max-width: 833px) {
-  .eldercare-dashboard {
-    padding: 20px;
-  }
-}
-
-/* ================================================================ */
-/* IPAD MINI & TABLETS PORTRAIT (600px - 767px)                    */
-/* ================================================================ */
-@media (max-width: 767px) {
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
   .eldercare-dashboard {
     padding: 16px;
   }
   
   .hamburger-fixed {
-    top: 20px;
-    left: 20px;
-  }
-}
-
-/* ================================================================ */
-/* LARGE PHONES & SMALL TABLETS (480px - 599px)                    */
-/* ================================================================ */
-@media (max-width: 599px) {
-  .eldercare-dashboard {
-    padding: 16px 12px;
-  }
-}
-
-/* ================================================================ */
-/* PHONES (375px - 479px)                                          */
-/* ================================================================ */
-@media (max-width: 479px) {
-  .eldercare-dashboard {
-    padding: 12px;
-  }
-  
-  .hamburger-fixed {
     top: 16px;
     left: 16px;
-  }
-}
-
-/* ================================================================ */
-/* SMALL PHONES (320px - 374px)                                    */
-/* ================================================================ */
-@media (max-width: 374px) {
-  .eldercare-dashboard {
-    padding: 10px 8px;
-  }
-  
-  .hamburger-fixed {
-    top: 12px;
-    left: 12px;
   }
 }
 
@@ -806,15 +721,15 @@ function showMessage(text: string, type: 'success' | 'error') {
   line-height: 1.5;
 }
 
-/* IPAD PRO & LARGE TABLETS */
-@media (max-width: 1023px) {
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
   .dashboard-header {
-    margin-bottom: 40px;
+    margin-bottom: 36px;
     padding-bottom: 1.25rem;
   }
   
   .dashboard-header h1 {
-    font-size: 2.25rem;
+    font-size: 2.1rem;
   }
   
   .subtitle {
@@ -822,54 +737,11 @@ function showMessage(text: string, type: 'success' | 'error') {
   }
 }
 
-/* IPAD & TABLETS */
-@media (max-width: 833px) {
-  .dashboard-header {
-    margin-bottom: 36px;
-  }
-  
-  .dashboard-header h1 {
-    font-size: 2.1rem;
-  }
-}
-
-/* IPAD MINI & SMALL TABLETS */
-@media (max-width: 767px) {
-  .dashboard-header {
-    margin-bottom: 32px;
-    padding-bottom: 1rem;
-  }
-  
-  .dashboard-header h1 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-  }
-  
-  .subtitle {
-    font-size: 1rem;
-  }
-}
-
-/* LARGE PHONES */
-@media (max-width: 599px) {
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
   .dashboard-header {
     margin-bottom: 28px;
-  }
-  
-  .dashboard-header h1 {
-    font-size: 1.85rem;
-  }
-  
-  .subtitle {
-    font-size: 0.95rem;
-  }
-}
-
-/* PHONES */
-@media (max-width: 479px) {
-  .dashboard-header {
-    margin-bottom: 24px;
-    padding-bottom: 0.875rem;
+    padding-bottom: 1rem;
   }
   
   .dashboard-header h1 {
@@ -878,18 +750,7 @@ function showMessage(text: string, type: 'success' | 'error') {
   }
   
   .subtitle {
-    font-size: 0.9rem;
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .dashboard-header h1 {
-    font-size: 1.6rem;
-  }
-  
-  .subtitle {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
   }
 }
 
@@ -914,98 +775,37 @@ function showMessage(text: string, type: 'success' | 'error') {
   gap: 24px;
 }
 
-/* DESKTOP - 2 columns */
-@media (max-width: 1279px) {
-  .action-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-}
-
-/* IPAD PRO & LARGE TABLETS - 2 columns */
-@media (max-width: 1023px) {
-  .quick-actions {
-    margin-bottom: 40px;
-  }
-  
-  .quick-actions h2 {
-    font-size: 1.65rem;
-    margin-bottom: 20px;
-  }
-  
-  .action-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* IPAD & TABLETS LANDSCAPE - 2 columns, smaller */
-@media (max-width: 833px) {
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
   .quick-actions {
     margin-bottom: 36px;
   }
   
   .quick-actions h2 {
     font-size: 1.5rem;
+    margin-bottom: 20px;
   }
   
   .action-grid {
-    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 }
 
-/* IPAD MINI & TABLETS PORTRAIT - still 2 columns */
-@media (max-width: 767px) {
-  .quick-actions {
-    margin-bottom: 32px;
-  }
-  
-  .quick-actions h2 {
-    font-size: 1.4rem;
-    margin-bottom: 18px;
-  }
-}
-
-/* LARGE PHONES - single column */
-@media (max-width: 599px) {
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
   .quick-actions {
     margin-bottom: 28px;
   }
   
   .quick-actions h2 {
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     margin-bottom: 16px;
   }
   
   .action-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
-  }
-}
-
-/* PHONES - single column, tighter spacing */
-@media (max-width: 479px) {
-  .quick-actions {
-    margin-bottom: 24px;
-  }
-  
-  .quick-actions h2 {
-    font-size: 1.3rem;
-    margin-bottom: 14px;
-  }
-  
-  .action-grid {
     gap: 12px;
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .quick-actions h2 {
-    font-size: 1.2rem;
-  }
-  
-  .action-grid {
-    gap: 10px;
   }
 }
 
@@ -1029,52 +829,20 @@ function showMessage(text: string, type: 'success' | 'error') {
   box-sizing: border-box;
 }
 
-/* IPAD PRO & LARGE TABLETS */
-@media (max-width: 1023px) {
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
   .action-btn {
     padding: 20px;
-    min-height: 110px;
-  }
-}
-
-/* IPAD & TABLETS */
-@media (max-width: 833px) {
-  .action-btn {
-    padding: 18px;
     min-height: 100px;
   }
 }
 
-/* IPAD MINI & SMALL TABLETS */
-@media (max-width: 767px) {
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
   .action-btn {
     padding: 16px;
-    min-height: 95px;
-  }
-}
-
-/* LARGE PHONES - full width, adjusted height */
-@media (max-width: 599px) {
-  .action-btn {
-    padding: 16px 18px;
-    min-height: 90px;
-  }
-}
-
-/* PHONES */
-@media (max-width: 479px) {
-  .action-btn {
-    padding: 14px 16px;
     min-height: 85px;
     border-radius: 10px;
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .action-btn {
-    padding: 12px 14px;
-    min-height: 80px;
   }
 }
 
@@ -1135,24 +903,8 @@ function showMessage(text: string, type: 'success' | 'error') {
   line-height: 1.4;
 }
 
-/* IPAD PRO & LARGE TABLETS */
-@media (max-width: 1023px) {
-  .btn-icon {
-    font-size: 2.3rem;
-    margin-right: 16px;
-  }
-  
-  .btn-content h3 {
-    font-size: 1.1rem;
-  }
-  
-  .btn-content p {
-    font-size: 0.9rem;
-  }
-}
-
-/* IPAD & TABLETS */
-@media (max-width: 833px) {
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
   .btn-icon {
     font-size: 2.2rem;
     margin-right: 14px;
@@ -1161,43 +913,14 @@ function showMessage(text: string, type: 'success' | 'error') {
   .btn-content h3 {
     font-size: 1.05rem;
   }
-}
-
-/* IPAD MINI & SMALL TABLETS */
-@media (max-width: 767px) {
-  .btn-icon {
-    font-size: 2.1rem;
-    margin-right: 14px;
-  }
-  
-  .btn-content h3 {
-    font-size: 1.05rem;
-    margin-bottom: 5px;
-  }
   
   .btn-content p {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
   }
 }
 
-/* LARGE PHONES */
-@media (max-width: 599px) {
-  .btn-icon {
-    font-size: 2rem;
-    margin-right: 12px;
-  }
-  
-  .btn-content h3 {
-    font-size: 1rem;
-  }
-  
-  .btn-content p {
-    font-size: 0.85rem;
-  }
-}
-
-/* PHONES */
-@media (max-width: 479px) {
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
   .btn-icon {
     font-size: 1.9rem;
     margin-right: 12px;
@@ -1209,177 +932,8 @@ function showMessage(text: string, type: 'success' | 'error') {
   }
   
   .btn-content p {
-    font-size: 0.8rem;
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .btn-icon {
-    font-size: 1.8rem;
-    margin-right: 10px;
-  }
-  
-  .btn-content h3 {
-    font-size: 0.9rem;
-  }
-  
-  .btn-content p {
-    font-size: 0.75rem;
-  }
-}
-
-/* ================================================================ */
-/* NAVIGATION TABS                                                  */
-/* ================================================================ */
-
-.navigation-tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 32px;
-  border-bottom: var(--border);
-  padding-bottom: 0;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* IPAD PRO & LARGE TABLETS */
-@media (max-width: 1023px) {
-  .navigation-tabs {
-    margin-bottom: 28px;
-  }
-}
-
-/* IPAD & TABLETS */
-@media (max-width: 833px) {
-  .navigation-tabs {
-    gap: 3px;
-    margin-bottom: 24px;
-  }
-}
-
-/* IPAD MINI & SMALL TABLETS */
-@media (max-width: 767px) {
-  .navigation-tabs {
-    gap: 2px;
-    margin-bottom: 22px;
-  }
-}
-
-/* LARGE PHONES */
-@media (max-width: 599px) {
-  .navigation-tabs {
-    margin-bottom: 20px;
-  }
-}
-
-/* PHONES */
-@media (max-width: 479px) {
-  .navigation-tabs {
-    gap: 1px;
-    margin-bottom: 18px;
-    padding: 0 4px;
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .navigation-tabs {
-    margin-bottom: 16px;
-  }
-}
-
-/* ================================================================ */
-/* NAVIGATION TAB BUTTONS                                           */
-/* ================================================================ */
-
-.nav-tab {
-  padding: 12px 20px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: 8px 8px 0 0;
-  transition: all 0.2s;
-  position: relative;
-  font-size: 0.95rem;
-  white-space: nowrap;
-  flex-shrink: 0;
-  min-height: 44px; /* Touch-friendly minimum */
-}
-
-/* IPAD PRO & LARGE TABLETS */
-@media (max-width: 1023px) {
-  .nav-tab {
-    padding: 11px 18px;
-    font-size: 0.93rem;
-  }
-}
-
-/* IPAD & TABLETS */
-@media (max-width: 833px) {
-  .nav-tab {
-    padding: 10px 16px;
-    font-size: 0.9rem;
-  }
-}
-
-/* IPAD MINI & SMALL TABLETS */
-@media (max-width: 767px) {
-  .nav-tab {
-    padding: 10px 14px;
-    font-size: 0.88rem;
-  }
-}
-
-/* LARGE PHONES */
-@media (max-width: 599px) {
-  .nav-tab {
-    padding: 9px 12px;
-    font-size: 0.86rem;
-  }
-}
-
-/* PHONES */
-@media (max-width: 479px) {
-  .nav-tab {
-    padding: 8px 12px;
     font-size: 0.85rem;
   }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .nav-tab {
-    padding: 8px 10px;
-    font-size: 0.82rem;
-  }
-}
-
-/* Tab Hover State */
-.nav-tab:hover {
-  background: var(--bg-panel);
-  color: var(--text-main);
-}
-
-/* Active Tab State */
-.nav-tab.active {
-  background: var(--accent-blue);
-  color: white;
-  box-shadow: var(--glow-blue);
-}
-
-/* Active Tab Indicator Line */
-.nav-tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent-blue);
 }
 
 /* ================================================================ */
@@ -1394,45 +948,17 @@ function showMessage(text: string, type: 'success' | 'error') {
   -webkit-overflow-scrolling: touch;
 }
 
-/* IPAD PRO & LARGE TABLETS */
-@media (max-width: 1023px) {
-  .content-section {
-    margin-bottom: 36px;
-  }
-}
-
-/* IPAD & TABLETS */
-@media (max-width: 833px) {
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
   .content-section {
     margin-bottom: 32px;
   }
 }
 
-/* IPAD MINI & SMALL TABLETS */
-@media (max-width: 767px) {
-  .content-section {
-    margin-bottom: 28px;
-  }
-}
-
-/* LARGE PHONES */
-@media (max-width: 599px) {
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
   .content-section {
     margin-bottom: 24px;
-  }
-}
-
-/* PHONES */
-@media (max-width: 479px) {
-  .content-section {
-    margin-bottom: 20px;
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .content-section {
-    margin-bottom: 18px;
   }
 }
 
@@ -1451,71 +977,27 @@ function showMessage(text: string, type: 'success' | 'error') {
   font-size: 1.75rem;
 }
 
-/* IPAD PRO & LARGE TABLETS */
-@media (max-width: 1023px) {
-  .patients-overview {
-    margin-bottom: 36px;
-  }
-  
-  .patients-overview h2 {
-    font-size: 1.65rem;
-    margin: 0 0 22px 0;
-  }
-}
-
-/* IPAD & TABLETS */
-@media (max-width: 833px) {
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
   .patients-overview {
     margin-bottom: 32px;
   }
   
   .patients-overview h2 {
-    font-size: 1.55rem;
+    font-size: 1.5rem;
     margin: 0 0 20px 0;
   }
 }
 
-/* IPAD MINI & SMALL TABLETS */
-@media (max-width: 767px) {
-  .patients-overview {
-    margin-bottom: 28px;
-  }
-  
-  .patients-overview h2 {
-    font-size: 1.45rem;
-    margin: 0 0 18px 0;
-  }
-}
-
-/* LARGE PHONES */
-@media (max-width: 599px) {
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
   .patients-overview {
     margin-bottom: 24px;
   }
   
   .patients-overview h2 {
-    font-size: 1.35rem;
-    margin: 0 0 16px 0;
-  }
-}
-
-/* PHONES */
-@media (max-width: 479px) {
-  .patients-overview {
-    margin-bottom: 20px;
-  }
-  
-  .patients-overview h2 {
     font-size: 1.25rem;
-    margin: 0 0 14px 0;
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .patients-overview h2 {
-    font-size: 1.15rem;
-    margin: 0 0 12px 0;
+    margin: 0 0 16px 0;
   }
 }
 
@@ -1531,72 +1013,19 @@ function showMessage(text: string, type: 'success' | 'error') {
   -webkit-overflow-scrolling: touch;
 }
 
-/* LARGE DESKTOP & ABOVE */
-@media (min-width: 1600px) {
-  .patients-grid {
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-    gap: 28px;
-  }
-}
-
-/* DESKTOP */
-@media (max-width: 1599px) and (min-width: 1280px) {
-  .patients-grid {
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-    gap: 22px;
-  }
-}
-
-/* LAPTOP */
-@media (max-width: 1279px) and (min-width: 1024px) {
-  .patients-grid {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 20px;
-  }
-}
-
-/* IPAD PRO & LARGE TABLETS */
-@media (max-width: 1023px) {
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
   .patients-grid {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 18px;
   }
 }
 
-/* IPAD & TABLETS */
-@media (max-width: 833px) {
-  .patients-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
-  }
-}
-
-/* IPAD MINI & SMALL TABLETS */
-@media (max-width: 767px) {
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
   .patients-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
-  }
-}
-
-/* LARGE PHONES */
-@media (max-width: 599px) {
-  .patients-grid {
     gap: 12px;
-  }
-}
-
-/* PHONES */
-@media (max-width: 479px) {
-  .patients-grid {
-    gap: 10px;
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .patients-grid {
-    gap: 8px;
   }
 }
 
@@ -1614,45 +1043,17 @@ function showMessage(text: string, type: 'success' | 'error') {
   cursor: pointer;
 }
 
-/* IPAD PRO & LARGE TABLETS */
-@media (max-width: 1023px) {
-  .patient-card {
-    padding: 22px;
-  }
-}
-
-/* IPAD & TABLETS */
-@media (max-width: 833px) {
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
   .patient-card {
     padding: 20px;
   }
 }
 
-/* IPAD MINI & SMALL TABLETS */
-@media (max-width: 767px) {
-  .patient-card {
-    padding: 18px;
-  }
-}
-
-/* LARGE PHONES */
-@media (max-width: 599px) {
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
   .patient-card {
     padding: 16px;
-  }
-}
-
-/* PHONES */
-@media (max-width: 479px) {
-  .patient-card {
-    padding: 14px;
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .patient-card {
-    padding: 12px;
   }
 }
 
@@ -1664,7 +1065,7 @@ function showMessage(text: string, type: 'success' | 'error') {
 }
 
 /* Mobile: Reduce hover effect for touch devices */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .patient-card:hover {
     transform: translateY(-1px);
   }
@@ -1685,15 +1086,6 @@ function showMessage(text: string, type: 'success' | 'error') {
   gap: 8px;
 }
 
-/* PHONES & BELOW */
-@media (max-width: 479px) {
-  .patient-header {
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    gap: 6px;
-  }
-}
-
 /* Patient Name Heading */
 .patient-header h3 {
   margin: 0;
@@ -1702,24 +1094,16 @@ function showMessage(text: string, type: 'success' | 'error') {
   font-weight: 600;
 }
 
-/* IPAD & TABLETS */
-@media (max-width: 833px) {
-  .patient-header h3 {
-    font-size: 1.15rem;
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
+  .patient-header {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    gap: 6px;
   }
-}
-
-/* PHONES */
-@media (max-width: 479px) {
+  
   .patient-header h3 {
     font-size: 1.1rem;
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .patient-header h3 {
-    font-size: 1.05rem;
   }
 }
 
@@ -1737,19 +1121,11 @@ function showMessage(text: string, type: 'success' | 'error') {
   white-space: nowrap;
 }
 
-/* PHONES */
-@media (max-width: 479px) {
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
   .relationship-badge {
     padding: 5px 10px;
     font-size: 0.7rem;
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width: 374px) {
-  .relationship-badge {
-    padding: 4px 8px;
-    font-size: 0.65rem;
   }
 }
 
@@ -1771,6 +1147,18 @@ function showMessage(text: string, type: 'success' | 'error') {
   min-width: 120px;
 }
 
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
+  .patient-info strong {
+    min-width: 100px;
+    font-size: 0.9rem;
+  }
+  
+  .patient-info {
+    font-size: 0.9rem;
+  }
+}
+
 .patient-actions {
   display: flex;
   gap: 12px;
@@ -1780,27 +1168,11 @@ function showMessage(text: string, type: 'success' | 'error') {
   flex-wrap: wrap;
 }
 
-/* Responsive patient actions */
+/* Mobile: <= 768px */
 @media (max-width: 768px) {
-  .patient-actions {
-    gap: 8px;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
   .patient-actions {
     flex-direction: column;
     gap: 6px;
-  }
-  
-  .patient-info strong {
-    min-width: 100px;
-    font-size: 0.9rem;
-  }
-  
-  .patient-info {
-    font-size: 0.9rem;
   }
 }
 
@@ -1839,14 +1211,15 @@ function showMessage(text: string, type: 'success' | 'error') {
   padding: 20px;
 }
 
-/* Responsive modal overlay */
-@media (max-width: 768px) {
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
   .modal-overlay {
     padding: 16px;
   }
 }
 
-@media (max-width: 480px) {
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
   .modal-overlay {
     padding: 8px;
     align-items: flex-start;
@@ -1865,21 +1238,15 @@ function showMessage(text: string, type: 'success' | 'error') {
   box-shadow: var(--shadow-strong);
 }
 
-/* Responsive modal content */
+/* Tablet: 769px - 1024px */
 @media (max-width: 1024px) {
   .modal-content {
     width: 85vw;
   }
 }
 
+/* Mobile: <= 768px */
 @media (max-width: 768px) {
-  .modal-content {
-    width: 95vw;
-    border-radius: 8px;
-  }
-}
-
-@media (max-width: 480px) {
   .modal-content {
     width: 100vw;
     height: 100vh;
@@ -1978,24 +1345,85 @@ function showMessage(text: string, type: 'success' | 'error') {
   transform: translateY(-1px);
 }
 
-/* Custom Scrollbars */
+/* Custom Scrollbars - Modern Dark Gray Design */
+
+/* Main dashboard scrollbar */
+.eldercare-dashboard::-webkit-scrollbar {
+  width: 12px;
+}
+
+.eldercare-dashboard::-webkit-scrollbar-track {
+  background: rgba(30, 30, 35, 0.4);
+  border-radius: 6px;
+  margin: 4px;
+}
+
+.eldercare-dashboard::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(60, 60, 70, 0.9), rgba(80, 80, 90, 0.9));
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.3s ease;
+}
+
+.eldercare-dashboard::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(90, 90, 100, 0.95), rgba(110, 110, 120, 0.95));
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.eldercare-dashboard::-webkit-scrollbar-thumb:active {
+  background: rgba(120, 120, 130, 1);
+}
+
+/* Child elements scrollbars */
 .eldercare-dashboard *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 .eldercare-dashboard *::-webkit-scrollbar-track {
-  background: var(--bg-panel);
-  border-radius: 4px;
+  background: rgba(30, 30, 35, 0.3);
+  border-radius: 5px;
 }
 
 .eldercare-dashboard *::-webkit-scrollbar-thumb {
-  background: var(--text-muted);
-  border-radius: 4px;
+  background: rgba(70, 70, 80, 0.8);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.3s ease;
 }
 
 .eldercare-dashboard *::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-blue);
+  background: rgba(100, 100, 110, 0.9);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+.eldercare-dashboard *::-webkit-scrollbar-thumb:active {
+  background: rgba(110, 110, 120, 1);
+}
+
+/* Firefox scrollbar styling */
+.eldercare-dashboard {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(80, 80, 90, 0.9) rgba(30, 30, 35, 0.4);
+}
+
+.eldercare-dashboard * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(70, 70, 80, 0.8) rgba(30, 30, 35, 0.3);
+}
+
+/* Mobile: <= 768px - Thinner scrollbars */
+@media (max-width: 768px) {
+  .eldercare-dashboard::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .eldercare-dashboard *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 }
 
 /* Touch device improvements */

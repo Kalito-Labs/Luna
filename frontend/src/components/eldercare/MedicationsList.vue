@@ -7,14 +7,37 @@
       </button>
     </div>
     
-    <div v-if="medications.length === 0" class="empty-state">
-      <p>No medications recorded yet</p>
+    <!-- Patient Filter Buttons -->
+    <div class="patient-filters">
+      <button 
+        @click="selectedPatientId = null" 
+        :class="['filter-btn', { active: selectedPatientId === null }]"
+      >
+        All Medications
+        <span class="count-badge">{{ medications.length }}</span>
+      </button>
+      <button 
+        v-for="patient in patients" 
+        :key="patient.id"
+        @click="selectedPatientId = patient.id" 
+        :class="['filter-btn', { active: selectedPatientId === patient.id }]"
+      >
+        {{ patient.name }}'s Meds
+        <span class="count-badge">{{ getPatientMedicationCount(patient.id) }}</span>
+      </button>
+    </div>
+    
+    <div v-if="filteredMedications.length === 0" class="empty-state">
+      <p>{{ selectedPatientId ? 'No medications recorded for this patient' : 'No medications recorded yet' }}</p>
     </div>
     
     <div v-else class="medications-grid">
-      <div v-for="medication in medications" :key="medication.id" class="medication-card">
+      <div v-for="medication in filteredMedications" :key="medication.id" class="medication-card">
         <div class="med-header">
-          <h4>{{ medication.name }}</h4>
+          <div class="med-title">
+            <h4>{{ medication.name }}</h4>
+            <span class="patient-badge">{{ medication.patient_name }}</span>
+          </div>
           <span class="dosage-badge">{{ medication.dosage }}</span>
         </div>
         
@@ -51,8 +74,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
+
 interface Medication {
   id: string
+  patient_id: string
+  patient_name: string
   name: string
   generic_name?: string
   dosage: string
@@ -65,17 +92,36 @@ interface Medication {
   notes?: string
 }
 
-interface Props {
-  medications: Medication[]
+interface Patient {
+  id: string
+  name: string
 }
 
-defineProps<Props>()
+interface Props {
+  medications: Medication[]
+  patients: Patient[]
+}
+
+const props = defineProps<Props>()
 
 defineEmits<{
   'add-medication': []
   'edit-medication': [medication: Medication]
   'delete-medication': [medication: Medication]
 }>()
+
+const selectedPatientId = ref<string | null>(null)
+
+const filteredMedications = computed(() => {
+  if (selectedPatientId.value === null) {
+    return props.medications
+  }
+  return props.medications.filter(med => med.patient_id === selectedPatientId.value)
+})
+
+function getPatientMedicationCount(patientId: string): number {
+  return props.medications.filter(med => med.patient_id === patientId).length
+}
 
 function formatFrequency(frequency: string): string {
   const frequencies: Record<string, string> = {
@@ -124,6 +170,62 @@ function formatRoute(route: string): string {
   font-weight: 600;
 }
 
+/* Patient Filter Buttons */
+.patient-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 12px 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-glass);
+  backdrop-filter: var(--blur);
+  color: var(--text-main);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.filter-btn:hover {
+  border-color: var(--accent-blue);
+  background: var(--bg-panel);
+  transform: translateY(-1px);
+}
+
+.filter-btn.active {
+  background: var(--accent-blue);
+  color: white;
+  border-color: var(--accent-blue);
+  box-shadow: var(--glow-blue);
+}
+
+.count-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+}
+
+.filter-btn.active .count-badge {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.filter-btn:not(.active) .count-badge {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--accent-blue);
+}
+
 .medications-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -149,17 +251,34 @@ function formatRoute(route: string): string {
 .med-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: var(--border);
+  gap: 12px;
+}
+
+.med-title {
+  flex: 1;
+  min-width: 0;
 }
 
 .med-header h4 {
-  margin: 0;
+  margin: 0 0 8px 0;
   color: var(--text-heading);
   font-weight: 600;
   font-size: 1.1rem;
+}
+
+.patient-badge {
+  display: inline-block;
+  background: rgba(107, 114, 128, 0.15);
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(107, 114, 128, 0.2);
 }
 
 .dosage-badge {
@@ -314,6 +433,19 @@ function formatRoute(route: string): string {
     gap: 12px;
   }
   
+  .patient-filters {
+    width: 100%;
+    gap: 8px;
+  }
+  
+  .filter-btn {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    padding: 10px 16px;
+    font-size: 0.875rem;
+  }
+  
   .med-actions {
     gap: 8px;
     justify-content: center;
@@ -333,6 +465,15 @@ function formatRoute(route: string): string {
   
   .medication-card {
     padding: 16px;
+  }
+  
+  .patient-filters {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .filter-btn {
+    width: 100%;
   }
   
   .med-header {
