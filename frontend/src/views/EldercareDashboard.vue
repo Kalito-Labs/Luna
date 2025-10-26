@@ -107,6 +107,7 @@
     <div v-if="activeView === 'medications'" class="content-section">
       <MedicationsList 
         :medications="allMedications"
+        :patients="patients"
         @add-medication="showMedicationForm = true"
         @edit-medication="editMedication"
         @delete-medication="deleteMedication"
