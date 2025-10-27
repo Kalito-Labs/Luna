@@ -340,6 +340,7 @@ export async function runAgent(
 
 /**
  * Runs agent in streaming mode.
+ * Supports function calling - will automatically execute tools and return final response.
  */
 export async function* runAgentStream(
   payload: RunAgentParams
@@ -372,6 +373,49 @@ export async function* runAgentStream(
     throw new Error(`Adapter "${modelName}" does not support streaming.`)
   }
 
+  // Only use tools for cloud models (OpenAI)
+  const tools: ChatCompletionTool[] | undefined = adapter.type === 'cloud' ? ([...AVAILABLE_TOOLS] as unknown as ChatCompletionTool[]) : undefined
+
+  console.log(`[Agent Stream] Using ${tools ? tools.length : 0} tools for model type: ${adapter.type}`)
+
+  // For streaming with function calling, we need to handle it differently
+  // Check if adapter supports tools in streaming mode
+  if (tools && tools.length > 0) {
+    // First, do a non-streaming call to check for tool calls
+    const initialResult = await adapter.generate({ messages, settings: mergedSettings, fileIds, tools })
+    
+    if (initialResult.toolCalls && initialResult.toolCalls.length > 0) {
+      // Yield searching marker for frontend
+      yield { delta: '[SEARCHING_ONLINE]\n\n' }
+      
+      // Execute tool calls
+      const toolResults = await Promise.all(
+        initialResult.toolCalls.map(async (toolCall) => {
+          const result = await executeToolCall(toolCall.name, JSON.parse(toolCall.arguments))
+          return { toolCallId: toolCall.id, result }
+        })
+      )
+
+      // Build search results context
+      const searchResults = toolResults.map(tr => tr.result).join('\n\n')
+      
+      // Create new messages with search results
+      const newSystemPrompt = `${finalSystemPrompt}\n\nYou have access to current search results. Use them to provide accurate, up-to-date information.`
+      const newMessages: Array<{ role: string; content: string }> = [
+        { role: 'system', content: newSystemPrompt },
+        { role: 'system', content: `Current search results:\n${searchResults}` },
+        { role: 'user', content: input.trim() }
+      ]
+
+      // Stream final response with search context
+      for await (const chunk of adapter.generateStream({ messages: newMessages, settings: mergedSettings, fileIds })) {
+        yield chunk
+      }
+      return
+    }
+  }
+
+  // No tool calls, proceed with normal streaming
   for await (const chunk of adapter.generateStream({ messages, settings: mergedSettings, fileIds })) {
     yield chunk
   }
