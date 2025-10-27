@@ -14,7 +14,9 @@
   
   <div class="workspace-shell">
     <div class="shell-body">
+      <!-- Desktop Layout -->
       <SessionSidebar
+        v-if="!isMobile && !isTablet"
         :chat-messages="chatMessages"
         :is-session-active="isSessionActive"
         :session-settings="sessionSettings"
@@ -31,6 +33,34 @@
         @load-session="handleLoadSession"
         @create-pin="handleCreatePin"
       />
+
+      <!-- Mobile/Tablet Layout -->
+      <div v-else class="mobile-layout">
+        <ChatPanelMobile
+          :chat-messages="chatMessages"
+          :is-session-active="isSessionActive"
+          :loading="loading"
+          :current-session-id="currentSessionId"
+          @send-message="sendMessage"
+          @open-settings="showMobileSettings = true"
+          @create-pin="handleCreatePin"
+        />
+        <SessionSidebarMobile
+          :show="showMobileSettings"
+          :is-session-active="isSessionActive"
+          :session-settings="sessionSettings"
+          :token-usage="tokenUsage"
+          :sessions="sessions"
+          :current-session-id="currentSessionId"
+          @close="showMobileSettings = false"
+          @update:session-settings="updateSessionSettings"
+          @start-session="handleMobileStartSession"
+          @reset-session="resetSession"
+          @select-session="handleSelectSession"
+          @delete-session="handleDeleteSession"
+          @load-session="handleMobileLoadSession"
+        />
+      </div>
     </div>
 
     <!-- Custom Reset Confirmation Dialog -->
@@ -49,6 +79,8 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import SessionSidebar from './SessionSidebar.vue'
+import SessionSidebarMobile from './SessionSidebarMobile.vue'
+import ChatPanelMobile from './ChatPanelMobile.vue'
 import ConfirmDialog from '../ConfirmDialog.vue'
 import {
   sendMessageToAgent,
@@ -74,6 +106,33 @@ const emit = defineEmits<{
 interface Message {
   role: 'user' | 'assistant'
   content: string
+}
+
+// Viewport detection for responsive layout
+const isMobile = ref(false)
+const isTablet = ref(false)
+const showMobileSettings = ref(false)
+
+function updateViewport() {
+  const width = window.innerWidth
+  isMobile.value = width <= 768
+  isTablet.value = width > 768 && width <= 1024
+}
+
+onMounted(() => {
+  updateViewport()
+  window.addEventListener('resize', updateViewport)
+})
+
+// Mobile-specific session handlers
+function handleMobileStartSession(settings: any) {
+  startSession(settings)
+  showMobileSettings.value = false
+}
+
+function handleMobileLoadSession(session: any) {
+  handleLoadSession(session)
+  showMobileSettings.value = false
 }
 
 /**
@@ -978,6 +1037,14 @@ function updateSessionSettings(newSettings: SessionSettings) {
   width: 100%;
   height: 100%;
   background: transparent;
+}
+
+/* Mobile Layout Wrapper */
+.mobile-layout {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 /* Component-specific modal adjustments */
