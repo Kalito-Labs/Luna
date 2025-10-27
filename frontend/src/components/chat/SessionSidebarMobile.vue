@@ -586,7 +586,7 @@ function formatDate(dateStr: string | undefined): string {
 
 /* Mobile Sidebar Modal */
 .mobile-sidebar-modal {
-  width: 100%;
+  width: 98%;
   max-height: 85vh;
   background: linear-gradient(135deg, rgba(14, 18, 26, 0.98) 0%, rgba(20, 25, 35, 0.98) 100%);
   backdrop-filter: blur(24px) saturate(180%);
@@ -603,7 +603,7 @@ function formatDate(dateStr: string | undefined): string {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem;
+  padding: 1rem;
   border-bottom: 1px solid rgba(139, 92, 246, 0.2);
   background: linear-gradient(135deg, rgba(11, 7, 20, 0.08) 0%, rgba(139, 92, 246, 0.04) 100%);
 }

@@ -338,7 +338,7 @@ onUnmounted(() => {
 .chat-panel-mobile {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 90vh;
   width: 100%;
   background: linear-gradient(135deg, #0c0e14 0%, #1a1d29 100%);
   overflow: hidden;
