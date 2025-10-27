@@ -2,6 +2,7 @@
 
 import OpenAI from 'openai'
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions'
+import type { ChatCompletionTool } from 'openai/resources'
 import type { LLMAdapter } from '../../modelRegistry'
 import type { 
   OpenAIAdapterOptions, 
@@ -73,12 +74,25 @@ async function generateWithChatAPI(
   maxTokens: number,
   temperature: number,
   pricing?: { input: number; output: number },
-  settings?: Record<string, unknown>
-): Promise<OpenAIGenerateResult> {
+  settings?: Record<string, unknown>,
+  tools?: ChatCompletionTool[]
+): Promise<OpenAIGenerateResult & { toolCalls?: Array<{ id: string; name: string; arguments: string }> }> {
+  // Function calling enabled for this request
+  
   const castMessages = messages as ChatCompletionMessageParam[]
   
   // Build OpenAI API parameters with additional settings
-  const apiParams = {
+  const apiParams: {
+    model: string
+    messages: ChatCompletionMessageParam[]
+    temperature: number
+    top_p?: number
+    frequency_penalty?: number
+    presence_penalty?: number
+    max_tokens: number
+    tools?: ChatCompletionTool[]
+    tool_choice?: 'auto'
+  } = {
     model: modelName,
     messages: castMessages,
     temperature,
@@ -88,15 +102,32 @@ async function generateWithChatAPI(
     max_tokens: maxTokens,
   }
   
+  // Add tools if provided
+  if (tools && tools.length > 0) {
+    apiParams.tools = tools
+    apiParams.tool_choice = 'auto'
+  }
+  
   const completion = await client.chat.completions.create(apiParams)
   
-  const reply = completion.choices[0]?.message?.content ?? ''
+  const message = completion.choices[0]?.message
+  const reply = message?.content ?? ''
   const usage = completion.usage
+  
+  // Extract tool calls if any
+  const toolCalls = message?.tool_calls
+    ?.filter(tc => tc.type === 'function')
+    .map(tc => ({
+      id: tc.id,
+      name: tc.type === 'function' ? tc.function.name : '',
+      arguments: tc.type === 'function' ? tc.function.arguments : '',
+    }))
   
   return {
     reply,
     tokenUsage: usage?.total_tokens,
     estimatedCost: estimateCost(usage, pricing),
+    toolCalls,
   }
 }
 
@@ -175,10 +206,12 @@ export function createOpenAIAdapter(options: OpenAIAdapterOptions): LLMAdapter {
     async generate({
       messages,
       settings = {},
+      tools,
     }: {
       messages: { role: string; content: string }[]
       settings?: Record<string, unknown>
-    }): Promise<{ reply: string; tokenUsage: number | null }> {
+      tools?: ChatCompletionTool[]
+    }): Promise<{ reply: string; tokenUsage: number | null; toolCalls?: Array<{ id: string; name: string; arguments: string }> }> {
       const maxTokens = (settings.maxTokens as number) ?? config.defaultMaxTokens
       const temperature = (settings.temperature as number) ?? config.defaultTemperature
       
@@ -190,18 +223,21 @@ export function createOpenAIAdapter(options: OpenAIAdapterOptions): LLMAdapter {
           maxTokens,
           temperature,
           config.pricing,
-          settings
+          settings,
+          tools
         )
         
         console.log(`[${adapterId}] Generation successful:`, {
           replyLength: result.reply.length,
           tokenUsage: result.tokenUsage,
-          estimatedCost: result.estimatedCost ? `$${result.estimatedCost.toFixed(6)}` : 'N/A'
+          estimatedCost: result.estimatedCost ? `$${result.estimatedCost.toFixed(6)}` : 'N/A',
+          toolCalls: result.toolCalls?.length ?? 0,
         })
         
         return {
           reply: result.reply,
           tokenUsage: result.tokenUsage ?? null,
+          toolCalls: result.toolCalls,
         }
         
       } catch (error) {

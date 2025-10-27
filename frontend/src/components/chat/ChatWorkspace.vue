@@ -22,6 +22,7 @@
         :session-settings="sessionSettings"
         :token-usage="tokenUsage"
         :loading="loading"
+        :searching="searching"
         :sessions="sessions"
         :current-session-id="currentSessionId"
         @send-message="sendMessage"
@@ -40,6 +41,7 @@
           :chat-messages="chatMessages"
           :is-session-active="isSessionActive"
           :loading="loading"
+          :searching="searching"
           :current-session-id="currentSessionId"
           @send-message="sendMessage"
           @open-settings="showMobileSettings = true"
@@ -246,6 +248,7 @@ const chatMessages = ref<ChatMessage[]>(
 const tokenUsage = ref<number>(0)
 const currentSessionId = ref<string | null>(null)
 const loading = ref(false)
+const searching = ref(false)
 const sessions = ref<Session[]>([])           // <-- always an array
 // lastSaveTime removed - no longer needed with auto-save model
 const models = ref<any[]>([]) // AI-Protocols: Always initialize as empty array
@@ -667,6 +670,7 @@ async function sendMessage(text: string) {
 
   chatMessages.value.push({ from: 'user', text })
   loading.value = true
+  searching.value = false
   const assistantMessageIndex = chatMessages.value.length
   chatMessages.value.push({ from: 'kalito', text: '' })
   try {
@@ -681,12 +685,19 @@ async function sendMessage(text: string) {
       currentSessionId.value || undefined
     )) {
       if (chunk.error) {
-        chatMessages.value[assistantMessageIndex].text = chunk.error
+        chatMessages.value[assistantMessageIndex]!.text = chunk.error
         break
       }
       if (chunk.delta) {
         accumulatedText += chunk.delta
-        chatMessages.value[assistantMessageIndex].text = accumulatedText
+        
+        // Check for searching marker
+        if (accumulatedText.includes('[SEARCHING_ONLINE]')) {
+          searching.value = true
+          accumulatedText = accumulatedText.replace('[SEARCHING_ONLINE]', '')
+        }
+        
+        chatMessages.value[assistantMessageIndex]!.text = accumulatedText
       }
       if (chunk.tokenUsage !== undefined) {
         console.log('Chunk token usage:', chunk.tokenUsage)
@@ -695,6 +706,7 @@ async function sendMessage(text: string) {
       }
       if (chunk.done) {
         console.log('Message complete. Tokens for this exchange:', finalTokenUsage)
+        searching.value = false
         if (finalTokenUsage > 0) {
           tokenUsage.value += finalTokenUsage // Accumulate tokens when message is complete
         }
@@ -705,9 +717,10 @@ async function sendMessage(text: string) {
       }
     }
   } catch (err: any) {
-    chatMessages.value[assistantMessageIndex].text = `Agent error: ${err?.message || String(err)}`
+    chatMessages.value[assistantMessageIndex]!.text = `Agent error: ${err?.message || String(err)}`
   } finally {
     loading.value = false
+    searching.value = false
   }
 }
 

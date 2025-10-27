@@ -47,7 +47,8 @@ export function createOllamaAdapter(config: OllamaAdapterConfig): LLMAdapter {
       messages: { role: string; content: string }[]
       settings?: Record<string, unknown>
       fileIds?: string[]
-    }) {
+      tools?: unknown // Ollama doesn't support tools yet
+    }): Promise<{ reply: string; tokenUsage: number | null; toolCalls?: Array<{ id: string; name: string; arguments: string }> }> {
       const { messages, settings = {} } = payload
 
       // Map generic settings -> Ollama options

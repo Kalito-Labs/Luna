@@ -146,6 +146,7 @@
         :session-settings="sessionSettings"
         :token-usage="tokenUsage"
         :loading="loading"
+        :searching="searching"
         :current-session-id="currentSessionId"
         @send-message="$emit('send-message', $event)"
         @update:session-settings="$emit('update:session-settings', $event)"
@@ -200,6 +201,7 @@ const props = defineProps<{
   chatMessages: { from: 'user' | 'kalito'; text?: string; isRecap?: boolean }[]
   isSessionActive: boolean
   loading?: boolean
+  searching?: boolean
   sessionSettings?: any
   tokenUsage?: number
   sessions?: Session[] | { items?: Session[]; data?: Session[]; list?: Session[] } | null

@@ -3,6 +3,9 @@
  * LLM Adapter interface - defines the contract for all AI model adapters
  * Used by both backend model registry and frontend model management
  */
+
+import type { ChatCompletionTool } from 'openai/resources'
+
 export interface LLMAdapter {
   id: string
   name: string
@@ -17,7 +20,8 @@ export interface LLMAdapter {
     messages: { role: string; content: string }[]
     settings?: Record<string, unknown>
     fileIds?: string[]
-  }): Promise<{ reply: string; tokenUsage: number | null }>
+    tools?: ChatCompletionTool[]
+  }): Promise<{ reply: string; tokenUsage: number | null; toolCalls?: Array<{ id: string; name: string; arguments: string }> }>
 
   /**
    * Streaming generation (optional)

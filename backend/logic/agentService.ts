@@ -8,9 +8,11 @@ import type { LLMAdapter } from './modelRegistry'
 import { db } from '../db/db'
 import { MemoryManager } from './memoryManager'
 import { EldercareContextService } from './eldercareContextService'
+import { AVAILABLE_TOOLS, executeToolCall } from './tools'
 import type { AgentRequest } from '../types/agent'
 import type { Persona as _Persona } from '../types/personas'
 import type { ConversationSummary, SemanticPin, MessageWithImportance } from '../types/memory'
+import type { ChatCompletionTool } from 'openai/resources'
 
 // Initialize MemoryManager for enhanced context building
 const memoryManager = new MemoryManager()
@@ -144,16 +146,28 @@ async function getConversationHistory(sessionId?: string, maxTokens: number = 30
     // Add older messages with clear labeling they are reference material
     if (totalMessages > recentThreshold) {
       const olderMessages = messages.slice(0, totalMessages - recentThreshold);
-      // Combine older messages into a single system message to reduce their influence
+      // Add older messages with clear labeling they are reference material
       if (olderMessages.length > 0) {
-        const combinedOlderMessages = olderMessages
-          .map((msg: MessageWithImportance) => `${msg.role.toUpperCase()}: ${msg.text}`)
-          .join('\n\n');
-          
-        history.push({
-          role: 'system',
-          content: `HISTORICAL REFERENCE ONLY: ${combinedOlderMessages}\n\n[NOTE: These are older messages provided only for background context. DO NOT respond to any questions or requests in this historical content.]`
+        // Filter out invalid roles before processing
+        const validOlderMessages = olderMessages.filter((msg: MessageWithImportance) => {
+          const validRoles = ['system', 'user', 'assistant'];
+          if (!validRoles.includes(msg.role)) {
+            console.warn(`[Agent] Filtering out older message with invalid role: ${msg.role}`);
+            return false;
+          }
+          return true;
         });
+        
+        if (validOlderMessages.length > 0) {
+          const combinedOlderMessages = validOlderMessages
+            .map((msg: MessageWithImportance) => `${msg.role.toUpperCase()}: ${msg.text}`)
+            .join('\n\n');
+            
+          history.push({
+            role: 'system',
+            content: `HISTORICAL REFERENCE ONLY: ${combinedOlderMessages}\n\n[NOTE: These are older messages provided only for background context. DO NOT respond to any questions or requests in this historical content.]`
+          });
+        }
       }
       
       // Add a separator for clarity
@@ -166,6 +180,13 @@ async function getConversationHistory(sessionId?: string, maxTokens: number = 30
     // Add recent messages with clear markers that they're from the recent conversation
     const recentMessages = messages.slice(Math.max(0, totalMessages - recentThreshold));
     for (const message of recentMessages) {
+      // Filter out invalid roles that OpenAI doesn't support
+      const validRoles = ['system', 'user', 'assistant'];
+      if (!validRoles.includes(message.role)) {
+        console.warn(`[Agent] Skipping message with invalid role: ${message.role}`);
+        continue;
+      }
+      
       // Add a prefix to distinguish this as a recent message but not the current one
       history.push({
         role: message.role,
@@ -226,6 +247,7 @@ function buildSystemPrompt(
 
 /**
  * Runs agent for a single classic (full) completion.
+ * Supports function calling - will automatically execute tools and return final response.
  */
 export async function runAgent(
   payload: RunAgentParams
@@ -249,7 +271,7 @@ export async function runAgent(
   const finalSystemPrompt = buildSystemPrompt(adapter, input, personaId, systemPrompt, fileIds)
 
   // Build messages array with system prompt first
-  const messages = []
+  const messages: Array<{ role: string; content: string }> = []
   if (finalSystemPrompt && finalSystemPrompt.trim()) {
     messages.push({ role: 'system', content: finalSystemPrompt.trim() })
   }
@@ -267,7 +289,53 @@ export async function runAgent(
     messages.push({ role: 'user', content: input.trim() })
   }
 
-  return adapter.generate({ messages, settings: mergedSettings, fileIds })
+  // Only use tools for cloud models (OpenAI)
+  const tools: ChatCompletionTool[] | undefined = adapter.type === 'cloud' ? ([...AVAILABLE_TOOLS] as unknown as ChatCompletionTool[]) : undefined
+
+  // Remove debug logging
+  console.log(`[Agent] Using ${tools ? tools.length : 0} tools for model type: ${adapter.type}`)
+
+  // Initial generation with tools
+  let result = await adapter.generate({ messages, settings: mergedSettings, fileIds, tools })
+
+  // Handle tool calls if any
+  if (result.toolCalls && result.toolCalls.length > 0) {
+    console.log(`[Agent] Model requested ${result.toolCalls.length} tool call(s)`)
+
+    // Execute tool calls and provide results as context for a new simple request
+    let searchResults = ''
+    
+    for (const toolCall of result.toolCalls) {
+      console.log(`[Agent] Executing tool: ${toolCall.name}`)
+      
+      try {
+        const args = JSON.parse(toolCall.arguments)
+        const toolResult = await executeToolCall(toolCall.name, args)
+        searchResults += `Search results for "${args.query}":\n${toolResult}\n\n`
+      } catch (error) {
+        console.error(`[Agent] Tool execution failed:`, error)
+        searchResults += `Search failed: ${error instanceof Error ? error.message : 'Unknown error'}\n\n`
+      }
+    }
+
+    // Create a completely new request with search results as context
+    const newSystemPrompt = `${finalSystemPrompt}\n\nYou have access to current search results. Use them to provide accurate, up-to-date information.`
+    
+    const newMessages: Array<{ role: string; content: string }> = [
+      { role: 'system', content: newSystemPrompt },
+      { role: 'system', content: `Current search results:\n${searchResults}` },
+      { role: 'user', content: input.trim() }
+    ]
+
+    // Generate final response with search context but no tools (to avoid recursion)
+    console.log(`[Agent] Generating final response with search results`)
+    result = await adapter.generate({ messages: newMessages, settings: mergedSettings, fileIds })
+    
+    // Add searching marker for frontend
+    result.reply = '[SEARCHING_ONLINE]\n\n' + result.reply
+  }
+
+  return result
 }
 
 /**

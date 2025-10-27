@@ -26,6 +26,20 @@
             <!-- Plain text content -->
             <div v-else-if="msg.text" class="plain-content">{{ msg.text }}</div>
 
+            <!-- Searching indicator -->
+            <div
+              v-else-if="searching && i === chatMessages.length - 1 && msg.from === 'kalito'"
+              class="searching-placeholder"
+            >
+              <span class="search-icon">🔍</span>
+              <span class="search-text">Searching online...</span>
+              <span class="search-dots">
+                <span class="dot">●</span>
+                <span class="dot">●</span>
+                <span class="dot">●</span>
+              </span>
+            </div>
+
             <!-- Loading placeholder -->
             <div
               v-else-if="loading && i === chatMessages.length - 1 && msg.from === 'kalito'"
@@ -37,7 +51,7 @@
 
             <!-- Streaming indicator -->
             <span
-              v-if="loading && i === chatMessages.length - 1 && msg.from === 'kalito'"
+              v-if="loading && i === chatMessages.length - 1 && msg.from === 'kalito' && !searching"
               class="streaming-indicator"
               >●</span
             >
@@ -105,6 +119,7 @@ const props = defineProps<{
   chatMessages: { from: 'user' | 'kalito'; text?: string; isRecap?: boolean; id?: string }[]
   isSessionActive: boolean
   loading?: boolean
+  searching?: boolean
   sessionSettings?: any
   tokenUsage?: number
   sessions?: any[]
@@ -667,6 +682,76 @@ onUnmounted(() => {
 
 .loading-placeholder {
   min-height: 1rem;
+}
+
+/* Searching indicator */
+.searching-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(66, 165, 245, 0.9);
+  font-weight: 500;
+  padding: 0.5rem 0;
+  animation: searchPulse 2s ease-in-out infinite;
+}
+
+.search-icon {
+  font-size: 1.2rem;
+  animation: searchRotate 2s linear infinite;
+}
+
+@keyframes searchRotate {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+.search-text {
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
+.search-dots {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.search-dots .dot {
+  font-size: 0.6rem;
+  animation: searchDotBounce 1.4s infinite;
+  opacity: 0.7;
+}
+
+.search-dots .dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.search-dots .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.search-dots .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes searchDotBounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  30% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
+@keyframes searchPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .fallback-content {

@@ -2,8 +2,8 @@ import Database from 'better-sqlite3'
 import * as path from 'path'
 import { logError } from '../utils/logger'
 
-// Path to your SQLite file - always points to source database
-const dbFile = path.resolve(__dirname, __dirname.includes('dist') ? '../../../db/kalito.db' : 'kalito.db')
+// Path to your SQLite file - always points to db directory
+const dbFile = path.resolve(__dirname, __dirname.includes('dist') ? '../../../db/kalito.db' : './kalito.db')
 
 // Create database connection with error handling and optimizations
 export const db = (() => {
