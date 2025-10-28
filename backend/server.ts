@@ -25,6 +25,7 @@ import memoryRouter from './routes/memoryRouter'
 import patientsRouter from './routes/patientsRouter'
 import providersRouter from './routes/providersRouter'
 import medicationsRouter from './routes/medicationsRouter'
+import vitalsRouter from './routes/vitalsRouter'
 import { appointmentsRouter } from './routes/appointmentsRouter'
 import caregiversRouter from './routes/caregiversRouter'
 import { searchRouter } from './routes/searchRouter'
@@ -142,6 +143,7 @@ app.use('/api/memory', memoryRouter)
 app.use('/api/patients', patientsRouter)
 app.use('/api/providers', providersRouter)
 app.use('/api/medications', medicationsRouter)
+app.use('/api/vitals', vitalsRouter)
 app.use('/api/appointments', appointmentsRouter)
 app.use('/api/caregivers', caregiversRouter)
 app.use('/api/search', searchRouter)

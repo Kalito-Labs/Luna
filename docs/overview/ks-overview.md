@@ -337,7 +337,7 @@ Support for multiple AI providers and model types.
 - **Schema auto-initialization**: Creates tables, indexes, foreign keys on startup
 - **Cascade deletes**: Session deletion removes messages, pins, summaries
 - **Migration system**: Adds columns if missing, preserves existing data
-- **11 core tables**:
+- **12 core tables**:
   - `sessions`: Conversation storage with auto-save
   - `messages`: Chat messages with importance scoring
   - `personas`: AI personality configurations
@@ -345,6 +345,7 @@ Support for multiple AI providers and model types.
   - `semantic_pins`: Key information extraction
   - `patients`: Patient profiles and demographics
   - `medications`: Medication tracking per patient
+  - `medication_logs`: Medication administration history
   - `appointments`: Healthcare appointment management
   - `healthcare_providers`: Provider contact directory
   - `caregivers`: Professional caregiver management
@@ -950,18 +951,19 @@ Made for tinkering:
 - ✅ Health checks
 - ✅ PWA support
 
+### �️ Removed Features
+
+**Voice Capability** (Implemented and Removed - October 27, 2025):
+- Attempted Web Speech API integration with button-activated voice input
+- Supported bilingual (English/Spanish) recognition and text-to-speech
+- Removed due to browser compatibility issues:
+  - Brave: Network errors blocking Google speech servers
+  - Chrome: Recognition started but transcripts not captured reliably
+- May revisit with OpenAI Whisper API or improved browser support in future
+
 ### 🚧 Planned Features
 
-**Voice Capability** (Next Priority):
-- 🔲 Voice input using Web Speech API
-- 🔲 Voice output (text-to-speech)
-- 🔲 Bilingual support (English + Spanish)
-- 🔲 Hands-free mode for accessibility
-- 🔲 Voice activation ("Hey Kalito")
-- **Estimated time**: 4-6 hours
-- **Cost**: $0/month (browser-native API)
-
-**Enhanced Search**:
+**Enhanced Search** (Next Priority):
 - 🔲 Search result caching
 - 🔲 Domain filtering (trusted health sources)
 - 🔲 Time-based searches (news from today)
@@ -1007,15 +1009,15 @@ Made for tinkering:
 ### 🎯 Future Vision
 
 **Short Term** (Next 1-2 months):
-- Voice capability for hands-free use
-- Enhanced search with caching
+- Enhanced search with caching and domain filtering
 - Medication/appointment reminders
+- Advanced memory with vector search
 
 **Medium Term** (3-6 months):
 - Multi-user support with authentication
-- Advanced memory with vector search
 - Photo attachments and document storage
 - Report generation
+- Additional AI tools (calculator, weather, calendar)
 
 **Long Term** (6-12 months):
 - Mobile app (React Native or Capacitor)
@@ -1023,7 +1025,7 @@ Made for tinkering:
 - Wearable device integration (health tracking)
 - Family sharing features
 - Multi-language support
-- More AI tools and capabilities
+- Voice capability (via OpenAI Whisper or improved browser APIs)
 
 ### Database Expansion Potential
 

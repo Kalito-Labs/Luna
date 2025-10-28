@@ -11,11 +11,12 @@ Kalito Space is a comprehensive eldercare management platform designed to help f
 Caring for aging parents is one of life's most important responsibilities. Kalito Space recognizes that eldercare involves complex coordination of medical information, schedules, medications, and multiple caregivers. Our platform brings everything together in one secure, family-friendly interface.
 
 ### ✨ Key Benefits
-- **🔒 Complete Privacy**: All data stored locally - no cloud dependencies
+- **🔒 Complete Privacy**: All data stored locally - no cloud dependencies for data storage
 - **👨‍⚕️ Professional Caregiver Tools**: Comprehensive scheduling and time tracking
-- **🤖 AI-Powered Assistance**: Context-aware AI that understands your family's care situation
+- **🤖 AI-Powered Assistance**: Context-aware AI with eldercare database access and web search
 - **📱 Modern Interface**: Beautiful, intuitive design that works on all devices
 - **🏥 Complete Care Management**: Patients, medications, appointments, and vitals in one place
+- **🔍 Real-Time Information**: Integrated web search for current medical and care information
 
 ## 🚀 Quick Start
 
@@ -105,36 +106,41 @@ kalito-repo/
 - Healthcare provider information
 - Appointment type categorization
 
-### 📊 Vital Signs Monitoring
-- Blood pressure, weight, and temperature tracking
-- Health trend monitoring over time
-- Date-stamped measurement records
-
-### 👨‍⚕️ Caregiver Profile System
+### ‍⚕️ Caregiver Profile System
 - Professional caregiver management
 - Weekly availability scheduling
 - Clock in/out time tracking
 - Specialties and certifications tracking
 
 ### 🤖 AI-Powered Care Assistant
-- Context-aware AI that knows your family's care situation
-- Support for OpenAI, Anthropic (Claude), and local models
-- Privacy-conscious with different context levels
-- Intelligent care recommendations
+- Context-aware AI with full eldercare database access
+- GPT-4.1 Nano (cloud) and Phi3 Mini (local) models
+- Real-time web search integration via Tavily API
+- Hybrid memory system (recent messages, pins, summaries)
+- Customizable AI personas with temperature and behavior settings
+- Privacy-conscious with local and cloud model options
+
+### 🔍 Web Search Integration
+- Real-time internet search capability
+- Tavily API integration for current information
+- Automatic tool calling - AI decides when to search
+- Search medical information, news, research, and more
 
 ## 🔧 Technology Stack
 
 ### Backend
-- **Node.js + Express**: RESTful API server
-- **TypeScript**: Type-safe development
-- **SQLite**: Local database storage
-- **AI Integration**: OpenAI, Anthropic, Local models
+- **Node.js 18+ with Express 5.1.0**: RESTful API server
+- **TypeScript 5.8.3**: Type-safe development
+- **SQLite (better-sqlite3 12.2.0)**: Local database storage
+- **AI Integration**: OpenAI SDK 5.0.1, Tavily Search API
+- **Security**: Helmet 8.1.0, CORS, rate limiting
 
 ### Frontend  
-- **Vue.js 3**: Modern reactive framework
-- **TypeScript**: Type safety throughout
-- **Vite**: Fast development and building
-- **Responsive Design**: Works on all devices
+- **Vue.js 3.5.13**: Modern reactive framework with Composition API
+- **TypeScript 5.8.3**: Full type safety throughout
+- **Vite 6.3.5**: Lightning-fast development and optimized builds
+- **Shiki 3.9.2**: Syntax highlighting for code in chat
+- **Responsive Design**: Works seamlessly on all devices
 
 ## 📱 User Interface
 
@@ -143,10 +149,10 @@ Navigate your family's care with six main sections:
 
 - **👨‍⚕️ My Caregiver Profile** - Manage your professional caregiver information
 - **👤 Add Patient** - Register new family members
-- **👥 Saved Patients** - View and manage all patients
+- **👥 Saved Patients** - View and manage all patients (includes vital signs tracking)
 - **💊 Medications** - Track all medications and dosages
 - **📅 Appointments** - Schedule and manage medical visits
-- **📊 Vitals** - Monitor health metrics and trends
+- **� AI Assistant** - Context-aware chat with eldercare knowledge and web search
 
 ### Modal Design
 - **Widescreen Caregiver Modal**: Comprehensive profile management
@@ -168,38 +174,46 @@ Navigate your family's care with six main sections:
 ## 🌐 API Endpoints
 
 ```
-GET/POST   /api/patients          # Patient management
-GET/POST   /api/medications       # Medication tracking  
-GET/POST   /api/appointments      # Appointment scheduling
-GET/POST   /api/vitals           # Vital signs monitoring
+# Core Chat & AI
+POST       /api/agent            # AI chat completions (streaming/non-streaming)
+GET/POST   /api/sessions         # Session management & persistence
+GET/POST   /api/personas         # AI persona CRUD operations
+GET        /api/models           # List available AI models
+GET/POST   /api/memory           # Conversation memory (pins, summaries)
+GET        /api/search           # Web search integration
+
+# Eldercare Management
+GET/POST   /api/patients         # Patient profiles (includes vitals)
+GET/POST   /api/providers        # Healthcare provider directory
+GET/POST   /api/medications      # Medication tracking  
+GET/POST   /api/appointments     # Appointment scheduling
 GET/POST   /api/caregivers       # Caregiver management
-POST       /api/agents           # AI model interactions
-GET/POST   /api/memory           # AI conversation memory
-GET/POST   /api/sessions         # Chat sessions
 ```
 
 ## 🤖 AI Configuration
 
 ### Supported Models
-- **OpenAI**: GPT-4, GPT-3.5 Turbo
-- **Anthropic**: Claude 3.5 Sonnet, Claude 3 Haiku  
-- **Local Models**: Ollama integration
+- **OpenAI GPT-4.1 Nano**: Fast, context-aware cloud model with function calling support
+- **Phi3 Mini (Ollama)**: Privacy-first local model for offline operation
 
 ### Environment Setup
 ```bash
-# Optional - for AI features
+# Required for cloud AI features
 OPENAI_API_KEY=your_openai_key
-ANTHROPIC_API_KEY=your_anthropic_key
 
-# Local models (Ollama)
-OLLAMA_BASE_URL=http://localhost:11434
+# Required for web search capability
+TAVILY_API_KEY=your_tavily_key
+
+# Local models (Ollama) - optional
+OLLAMA_URL=http://localhost:11434
 ```
 
 ## 📖 Documentation
 
-- **[Complete Overview](docs/Kalito-Space-Overview.md)** - Detailed platform documentation
-- **[Database Documentation](docs/db-docs/)** - Database schema and operations
-- **[AI Protocols](docs/ai/)** - AI integration and protocols
+- **[Complete Platform Overview](docs/overview/ks-overview.md)** - Comprehensive technical documentation
+- **[AI Development Protocols](docs/00-Ai-Protocols/)** - AI integration guidelines and best practices
+
+For more information, explore the `/docs` directory in this repository.
 
 ## 🛠️ Development
 
@@ -220,9 +234,11 @@ npm run preview  # Preview production build
 
 ### Database Management
 ```bash
-cd backend
-npm run db:backup    # Backup database
-npm run db:restore   # Restore from backup
+# Backup database (from project root)
+./scripts/backup-db
+
+# Restore database (from project root)
+./scripts/restore-db
 ```
 
 ## 🤝 Contributing
@@ -260,9 +276,10 @@ npm run build
 - Ensure these ports are available
 
 **AI Features Not Working**
-- Check API keys in `.env` file
-- Verify network connectivity for cloud models
-- For local models, ensure Ollama is running
+- Check API keys in `.env` file (OPENAI_API_KEY, TAVILY_API_KEY)
+- Verify network connectivity for cloud models and web search
+- For local models, ensure Ollama is running: `ollama serve`
+- Check Ollama has Phi3 Mini installed: `ollama list`
 
 ## 📄 License
 
@@ -289,7 +306,7 @@ Kalito Labs is dedicated to building technology that strengthens families and co
 
 **Questions? Need Help?**
 
-- 📖 [Read the Full Documentation](docs/Kalito-Space-Overview.md)
+- 📖 [Read the Full Documentation](docs/overview/ks-overview.md)
 - 🐛 [Report Issues](https://github.com/Kalito-Labs/kalito-repo/issues)
 - 💬 [Discussions](https://github.com/Kalito-Labs/kalito-repo/discussions)
 
