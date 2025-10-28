@@ -139,22 +139,6 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 
-interface CaregiverScheduleDay {
-  start: string
-  end: string
-  available: boolean
-}
-
-interface CaregiverSchedule {
-  monday: CaregiverScheduleDay
-  tuesday: CaregiverScheduleDay
-  wednesday: CaregiverScheduleDay
-  thursday: CaregiverScheduleDay
-  friday: CaregiverScheduleDay
-  saturday: CaregiverScheduleDay
-  sunday: CaregiverScheduleDay
-}
-
 interface Caregiver {
   id: string
   name: string
@@ -163,19 +147,9 @@ interface Caregiver {
   phone?: string
   address?: string
   relationship?: string
-  specialties: string[]
-  certifications: string[]
-  availability_schedule: CaregiverSchedule
   emergency_contact_name?: string
   emergency_contact_phone?: string
   notes?: string
-  clock_in_time?: string
-  clock_out_time?: string
-  is_active: number
-  last_clock_in?: string
-  last_clock_out?: string
-  total_hours_worked: number
-  hourly_rate?: number
   created_at: string
   updated_at: string
 }

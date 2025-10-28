@@ -78,12 +78,6 @@ export interface CaregiverContext {
   id: string
   name: string
   relationship?: string
-  specialties: string[]
-  certifications: string[]
-  isCurrentlyWorking: boolean
-  clockedInSince?: string
-  totalHoursWorked: number
-  availabilityToday?: string
   notes?: string
 }
 
@@ -92,7 +86,7 @@ export type EldercareContext = {
   patients: PatientContext[];
   medications: MedicationContext[];
   recentAppointments: AppointmentContext[];
-  caregivers: CaregiverContext[];
+  caregiver: CaregiverContext | null;  // Singleton - only one caregiver (you)
   providers: ProviderContext[];
   summary: string;
 };
@@ -443,70 +437,42 @@ export class EldercareContextService {
    */
 
   /**
-   * Get active caregivers and their current status
+   * Get caregiver profile (singleton - there's only one caregiver: you)
    */
-  private getCaregivers(includePrivateData: boolean = true): CaregiverContext[] {
+  private getCaregiver(includePrivateData: boolean = true): CaregiverContext | null {
     try {
       const query = `
-        SELECT id, name, relationship, specialties, certifications, 
-               clock_in_time, clock_out_time, total_hours_worked, 
-               availability_schedule, notes
+        SELECT id, name, relationship, notes
         FROM caregivers 
-        WHERE is_active = 1 
-        ORDER BY name ASC
+        LIMIT 1
       `
 
-      const rows = db.prepare(query).all() as Array<{
+      const row = db.prepare(query).get() as {
         id: string
         name: string
         relationship: string | null
-        specialties: string | null
-        certifications: string | null
-        clock_in_time: string | null
-        clock_out_time: string | null
-        total_hours_worked: number
-        availability_schedule: string | null
         notes: string | null
-      }>
+      } | undefined
 
-      const now = new Date()
-      const weekday = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() // 'monday', 'tuesday', etc.
-      const today = weekday.substring(0, 3) // 'mon', 'tue', etc.
+      if (!row) {
+        return null
+      }
 
-      return rows.map(row => {
-        const specialties = row.specialties ? JSON.parse(row.specialties) : []
-        const certifications = row.certifications ? JSON.parse(row.certifications) : []
-        const availability = row.availability_schedule ? JSON.parse(row.availability_schedule) : {}
+      const context: CaregiverContext = {
+        id: row.id,
+        name: row.name,
+        relationship: row.relationship || undefined,
+      }
 
-        // Determine availability today
-        let availabilityToday: string | undefined
-        const todaySchedule = availability[today + 'day'] // 'monday', 'tuesday', etc.
-        if (todaySchedule?.available) {
-          availabilityToday = `${todaySchedule.start} - ${todaySchedule.end}`
-        }
+      // Include sensitive data only for local models
+      if (includePrivateData && row.notes) {
+        context.notes = row.notes
+      }
 
-        const context: CaregiverContext = {
-          id: row.id,
-          name: row.name,
-          relationship: row.relationship || undefined,
-          specialties,
-          certifications,
-          isCurrentlyWorking: !!row.clock_in_time && !row.clock_out_time,
-          clockedInSince: row.clock_in_time || undefined,
-          totalHoursWorked: row.total_hours_worked || 0,
-          availabilityToday,
-        }
-
-        // Include sensitive data only for local models
-        if (includePrivateData) {
-          context.notes = row.notes || undefined
-        }
-
-        return context
-      })
+      return context
     } catch (error) {
-      console.error('Error fetching caregivers for context:', error)
-      return []
+      console.error('Error fetching caregiver for context:', error)
+      return null
     }
   }
 
@@ -590,27 +556,14 @@ export class EldercareContextService {
       });
       summary += '\n';
     }
-    // Active caregivers summary
-    if (context.caregivers.length > 0) {
-      summary += `### Active Caregivers (${context.caregivers.length})\n`;
-      context.caregivers.forEach((caregiver: CaregiverContext) => {
-        summary += `- **${caregiver.name}**`;
-        if (caregiver.relationship) summary += ` (${caregiver.relationship})`;
-        if (caregiver.isCurrentlyWorking) {
-          summary += ' - Currently Working';
-          if (caregiver.clockedInSince) {
-            const clockedIn = new Date(caregiver.clockedInSince);
-            const hours = Math.round((Date.now() - clockedIn.getTime()) / (1000 * 60 * 60) * 10) / 10;
-            summary += ` (${hours}h)`;
-          }
-        } else if (caregiver.availabilityToday) {
-          summary += ` - Available today: ${caregiver.availabilityToday}`;
-        }
-        if (caregiver.specialties && caregiver.specialties.length > 0) {
-          summary += ` | Specialties: ${caregiver.specialties.slice(0, 2).join(', ')}`;
-        }
-        summary += '\n';
-      });
+    // Caregiver summary (singleton)
+    if (context.caregiver) {
+      summary += `### Caregiver\n`;
+      summary += `- **${context.caregiver.name}**`;
+      if (context.caregiver.relationship) {
+        summary += ` (${context.caregiver.relationship})`;
+      }
+      summary += '\n\n';
     }
     return summary;
   }
@@ -628,14 +581,14 @@ export class EldercareContextService {
     const patients = this.getPatients(includePrivateData)
     const medications = this.getMedications(patientId, includePrivateData)
     const recentAppointments = this.getRecentAppointments(patientId, includePrivateData)
-    const caregivers = this.getCaregivers(includePrivateData)
+    const caregiver = this.getCaregiver(includePrivateData)
     const providers = this.getProviders()
 
     const context: EldercareContext = {
       patients,
       medications,
       recentAppointments,
-      caregivers,
+      caregiver,
       providers,
       summary: '',
     }

@@ -154,8 +154,17 @@ A comprehensive care coordination system with everything needed to manage family
 - Date-stamped entries
 - Provider and location information
 - Importance scoring for prioritization
-- Tag system for categorization
-- Attachment support for documents
+- Tag system for categorization (JSON)
+- Attachment support for documents (JSON)
+- Patient relationship linking
+
+**Vitals** (`vitals` table):
+- Health metrics tracking per patient
+- Weight tracking (kg)
+- Blood glucose monitoring (AM and PM readings)
+- Date-stamped vital sign entries
+- Notes for context and observations
+- Active/inactive status
 - Patient relationship linking
 
 **UI Components:**
@@ -170,17 +179,20 @@ A comprehensive care coordination system with everything needed to manage family
 Create and manage custom AI personalities for different use cases.
 
 **What you can customize:**
-- **Name & Icon**: Give each persona a recognizable identity
+- **Name & Icon**: Give each persona a recognizable identity (emoji icons)
 - **Category**: Cloud (high-performance) or Local (privacy-focused)
 - **System Prompt**: Define the AI's personality, expertise, and behavior
 - **Model Settings**:
   - `temperature`: Creativity vs. precision (0.0-2.0)
   - `maxTokens`: Response length limit
-  - `topP`: Nucleus sampling parameter
-  - `repeatPenalty`: Reduce repetitive responses
+  - `topP`: Nucleus sampling parameter (0.0-1.0)
+  - `repeatPenalty`: Reduce repetitive responses (1.0+)
+  - `stopSequences`: Custom stop sequences (JSON array)
 - **Default Models**: Suggest specific models for each persona
-- **Eldercare Specialty**: Context integration for care-focused personas
-- **Patient Context**: Toggle eldercare database access
+- **Eldercare Specialty**: Medical specialty focus (cardiology, neurology, geriatrics, etc.) for domain-specific context
+- **Patient Context**: Toggle eldercare database access (enables/disables patient data in prompts)
+- **Suggested Models**: JSON array of recommended models for this persona
+- **Default Flag**: Mark as default persona for new sessions
 
 **Default Personas:**
 - **Default Cloud Assistant**: Versatile GPT-4.1 Nano persona
@@ -221,10 +233,12 @@ Memory Context = Recent Messages + Semantic Pins + Conversation Summaries
 - Key information extracted from conversations
 - User-created or AI-generated pins
 - Importance scoring (0.0-1.0, default 0.8)
-- Pin types: user, system, medical
-- Medical category tagging
-- Patient relationship linking
-- Urgency level tracking
+- Pin types: user, system, auto, medical
+- Medical category tagging (allergy, medication, diagnosis, symptom, warning, etc.)
+- Patient relationship linking (connects pins to specific patients)
+- Urgency level tracking (normal, high, critical)
+- Source message tracking for context
+- Session-scoped with cascade delete on session removal
 
 **Conversation Summaries** (`conversation_summaries` table):
 - Auto-generated when sessions reach 15+ messages
@@ -251,17 +265,17 @@ Memory Context = Recent Messages + Semantic Pins + Conversation Summaries
 Every conversation is automatically saved and organized.
 
 **Sessions** (`sessions` table):
-- Unique session ID (timestamp-based or UUID)
+- Unique session ID (UUID or timestamp-based)
 - Session name (auto-generated from first exchange or custom)
 - Model used for conversation
 - AI-generated recap/summary
 - Persona ID linking
 - Creation and update timestamps
 - Saved flag (all sessions auto-saved now)
-- Session type categorization (chat, patient, appointment)
-- Patient relationship linking
-- Related record tracking
-- Care category tagging
+- **Session type categorization** (chat, eldercare) - defaults to 'chat'
+- **Patient relationship linking** - optional patient_id for patient-specific sessions
+- **Related record tracking** - related_record_id for linking to medical records, appointments
+- **Care category tagging** - categorizes eldercare sessions (medication, appointment, vital, etc.)
 
 **Features:**
 - **Auto-Save Model**: All sessions immediately persistent
@@ -335,22 +349,27 @@ Support for multiple AI providers and model types.
 **Database** (SQLite + better-sqlite3):
 - **Single database file**: `backend/db/kalito.db`
 - **Schema auto-initialization**: Creates tables, indexes, foreign keys on startup
-- **Cascade deletes**: Session deletion removes messages, pins, summaries
+- **Cascade deletes**: Session deletion removes messages, pins, summaries; Patient deletion removes all related records
 - **Migration system**: Adds columns if missing, preserves existing data
-- **12 core tables**:
-  - `sessions`: Conversation storage with auto-save
-  - `messages`: Chat messages with importance scoring
-  - `personas`: AI personality configurations
-  - `conversation_summaries`: Auto-generated session summaries
-  - `semantic_pins`: Key information extraction
-  - `patients`: Patient profiles and demographics
-  - `medications`: Medication tracking per patient
-  - `medication_logs`: Medication administration history
-  - `appointments`: Healthcare appointment management
-  - `healthcare_providers`: Provider contact directory
-  - `caregivers`: Professional caregiver management
-  - `medical_records`: Comprehensive medical documentation
-- **Indexes**: Optimized for common queries (patient lookups, date ranges, importance scores)
+- **14 core tables**:
+  - **Chat System (5 tables)**:
+    - `sessions`: Conversation storage with auto-save, patient linking, session types
+    - `messages`: Chat messages with importance scoring
+    - `personas`: AI personality configurations with eldercare specialties
+    - `conversation_summaries`: Auto-generated session summaries
+    - `semantic_pins`: Key information extraction with medical categories and urgency levels
+  - **Eldercare System (9 tables)**:
+    - `patients`: Patient profiles and demographics
+    - `caregivers`: Professional caregiver management
+    - `medical_records`: Comprehensive medical documentation with record types
+    - `healthcare_providers`: Provider contact directory
+    - `appointments`: Healthcare appointment management with outcomes
+    - `medications`: Medication tracking per patient
+    - `medication_logs`: Medication administration and adherence tracking
+    - `vitals`: Health metrics (weight, glucose readings)
+    - `sqlite_sequence`: Auto-increment tracking (system table)
+- **13 Foreign Keys**: Full referential integrity with 11 cascade deletes
+- **11+ Indexes**: Optimized for patient lookups, date ranges, importance scores, status filtering
 
 **Business Logic**:
 - `agentService.ts` (433 lines): AI conversation orchestration, tool calling, streaming
@@ -379,6 +398,8 @@ Support for multiple AI providers and model types.
 - `/api/appointments`: Appointment scheduling
 - `/api/caregivers`: Caregiver management
 - `/api/search`: Web search endpoints
+
+**Note**: Additional routers exist for medical records but may not be fully exposed in the current API surface.
 
 **Middleware**:
 - `security.ts`: Helmet, CORS, rate limiting, request timeouts
@@ -894,7 +915,7 @@ Made for tinkering:
 
 ## Current Status & Roadmap
 
-### ✅ Fully Implemented (October 27, 2025)
+### ✅ Fully Implemented (As of October 28, 2025)
 
 **Core AI System**:
 - ✅ GPT-4.1 Nano integration (cloud)
@@ -921,35 +942,39 @@ Made for tinkering:
 
 **Eldercare Management**:
 - ✅ Patient profiles (complete CRUD)
-- ✅ Medication tracking
-- ✅ Appointment scheduling
+- ✅ Medication tracking with pharmacy info
+- ✅ Medication adherence logs
+- ✅ Appointment scheduling with outcomes
 - ✅ Healthcare provider directory
-- ✅ Caregiver management
-- ✅ Medical records system
-- ✅ Patient detail views
+- ✅ Caregiver management with clock in/out
+- ✅ Medical records system (5 record types)
+- ✅ Vitals tracking (weight, glucose AM/PM)
+- ✅ Patient detail views with all related data
 - ✅ Dashboard with 6 quick actions
-- ✅ Modal-based forms
+- ✅ Modal-based forms with validation
 
 **Data & Memory**:
-- ✅ SQLite database with 11 tables
-- ✅ Automatic schema initialization
-- ✅ Foreign key constraints
-- ✅ Cascade deletes
-- ✅ Importance scoring
-- ✅ Semantic pins
-- ✅ Auto-summarization
-- ✅ Context truncation
-- ✅ Cache management
+- ✅ SQLite database with 14 tables (5 chat + 9 eldercare)
+- ✅ Automatic schema initialization with migrations
+- ✅ 13 foreign key constraints with referential integrity
+- ✅ 11 cascade deletes for clean data management
+- ✅ 11+ performance indexes
+- ✅ Importance scoring system
+- ✅ Semantic pins with medical categories
+- ✅ Auto-summarization (15+ message threshold)
+- ✅ Smart context truncation
+- ✅ Cache management (5-second TTL)
 
 **Infrastructure**:
 - ✅ TypeScript backend and frontend
 - ✅ Express API with validation
-- ✅ Security middleware
-- ✅ Error handling
-- ✅ Structured logging
-- ✅ Rate limiting
-- ✅ Health checks
-- ✅ PWA support
+- ✅ Security middleware (Helmet, CORS, rate limiting)
+- ✅ Error handling and logging
+- ✅ Structured logging (Winston)
+- ✅ Rate limiting (100/15min general, 20/15min AI)
+- ✅ Health checks and model status endpoints
+- ✅ PWA support with installability
+- ✅ **Comprehensive documentation** (25+ technical docs, ERD diagrams)
 
 ### �️ Removed Features
 
@@ -1029,7 +1054,18 @@ Made for tinkering:
 
 ### Database Expansion Potential
 
-Current tables support eldercare, but architecture allows for:
+**Already Built** (14 tables):
+- ✅ **Chat System**: Sessions, messages, personas, summaries, semantic pins
+- ✅ **Patient Management**: Complete patient profiles with demographics
+- ✅ **Medical Records**: Diagnoses, treatments, test results, incidents, notes
+- ✅ **Appointments**: Scheduling with providers, outcomes, follow-ups
+- ✅ **Medications**: Prescription tracking with pharmacy info
+- ✅ **Medication Logs**: Adherence tracking and reminder system
+- ✅ **Vitals**: Weight and glucose monitoring
+- ✅ **Healthcare Providers**: Provider directory with specialties
+- ✅ **Caregivers**: Professional caregiver management
+
+**Future Expansion Ideas**:
 - **Family Events**: Birthdays, anniversaries, gatherings
 - **Tasks & Reminders**: To-do lists, shopping lists
 - **Financial Tracking**: Bills, expenses, budget
@@ -1041,6 +1077,82 @@ Current tables support eldercare, but architecture allows for:
 - **Goals**: Family goals and progress tracking
 
 Each new table = new AI capabilities. The platform grows with our needs.
+
+## Database Schema Deep Dive
+
+For detailed entity-relationship diagrams and complete schema documentation, see:
+**[Database Schema Diagrams](/docs/overview/backend/db/database-schema-diagrams.md)**
+
+### Schema Statistics
+
+**Table Count**: 14 total
+- Chat/AI System: 5 tables
+- Eldercare Management: 9 tables
+
+**Relationships**: 13 foreign keys
+- Cascade deletes: 11 (clean data management)
+- Set NULL: 1 (healthcare_providers → appointments)
+- No action: 1 (reference only)
+
+**Performance Optimization**: 11+ indexes
+- Composite indexes for complex queries
+- Single-column indexes for lookups
+- Covering common access patterns (patient + date, session + type, etc.)
+
+### Key Schema Features
+
+**Hybrid Design**:
+- Chat tables extended with eldercare fields
+- `sessions.patient_id` links conversations to patients
+- `sessions.session_type` distinguishes chat from eldercare contexts
+- `semantic_pins.medical_category` categorizes medical information
+- `personas.eldercare_specialty` provides domain expertise
+
+**Data Integrity**:
+- Foreign key constraints enforce referential integrity
+- Cascade deletes prevent orphaned records
+- Soft deletes via `active` flags for medications, vitals, patients
+- Default values for optional fields
+- Timestamp tracking (created_at, updated_at) throughout
+
+**Extended Features Beyond Basic Schema**:
+- Sessions have eldercare extensions (session_type, patient_id, care_category, related_record_id)
+- Personas have eldercare_specialty and patient_context flags
+- Semantic pins have medical_category, patient_id, urgency_level fields
+- Patients have extended doctor contact info (doctor_address, doctor_phone)
+- Appointments track preparation notes, outcomes, and follow-up requirements
+- Medications link to pharmacy info and track side effects
+- Medical records support JSON attachments and tag arrays
+
+### Complete Table List
+
+**Chat & AI System**:
+1. `sessions` - Conversation storage with patient linking
+2. `messages` - Individual chat messages with importance scoring
+3. `personas` - AI personality configs with eldercare specialties
+4. `conversation_summaries` - AI-generated conversation compression
+5. `semantic_pins` - Important facts with medical categorization
+
+**Eldercare Management**:
+6. `patients` - Patient demographics and core information
+7. `caregivers` - Professional caregiver directory
+8. `medical_records` - Medical history with record types and attachments
+9. `healthcare_providers` - Doctor and specialist directory
+10. `appointments` - Appointment scheduling with outcomes
+11. `medications` - Patient medications with pharmacy info
+12. `medication_logs` - Medication adherence tracking
+13. `vitals` - Health metrics (weight, glucose)
+14. `sqlite_sequence` - Auto-increment tracking (SQLite system table)
+
+### Index Strategy
+
+Indexes optimize the most common queries:
+- Patient-centric queries (all records for a patient)
+- Date-range queries (upcoming appointments, recent vitals)
+- Status filtering (active medications, scheduled appointments)
+- Importance-based retrieval (high-priority pins, important records)
+- Session-type queries (eldercare sessions for a patient)
+- Medical category filtering (pins by category + importance)
 
 ## Development Philosophy & Lessons Learned
 
@@ -1597,8 +1709,24 @@ This is what family looks like in 2025.
 
 ---
 
-**Document Version**: 2.0
-**Last Updated**: October 27, 2025
+## Additional Documentation
+
+For comprehensive visual documentation of the database schema:
+- **[Database Schema Diagrams](/docs/overview/backend/db/database-schema-diagrams.md)** - 10 Mermaid diagrams showing:
+  - Complete ERD with all 14 tables
+  - Chat system architecture
+  - Eldercare system (patient-centric view)
+  - Healthcare provider network
+  - Medication management system
+  - Memory & context system
+  - Index optimization strategy
+  - Cascade delete flows
+  - Patient care workflow sequences
+
+---
+
+**Document Version**: 2.1
+**Last Updated**: October 28, 2025
 **Author**: Caleb Sanchez
 **Built with love for Aurora and Basilio Sanchez**
 
