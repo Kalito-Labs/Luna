@@ -246,6 +246,27 @@ for (const persona of defaultPersonas) {
 console.log('✅ Database initialized at:', dbPath)
 
 // ---------------------------------------------------------------------
+// Eldercare Tables
+// ---------------------------------------------------------------------
+
+// Vitals table for tracking patient health metrics
+db.exec(`
+CREATE TABLE IF NOT EXISTS vitals (
+  id TEXT PRIMARY KEY,
+  patient_id TEXT NOT NULL,
+  weight_kg REAL,
+  glucose_am INTEGER,
+  glucose_pm INTEGER,
+  recorded_date TEXT NOT NULL,
+  notes TEXT,
+  active INTEGER DEFAULT 1,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+);
+`)
+
+// ---------------------------------------------------------------------
 // Check Eldercare Tables
 // ---------------------------------------------------------------------
 
