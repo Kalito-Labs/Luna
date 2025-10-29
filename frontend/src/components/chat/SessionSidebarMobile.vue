@@ -75,18 +75,56 @@
 
                   <!-- Session Actions -->
                   <div class="session-actions">
-                    <button
-                      v-if="!isSessionActive"
-                      class="btn-primary"
-                      @click="handleStartSession"
-                    >
-                      🚀 Start New Session
-                    </button>
-                    <div v-else class="active-session-actions">
-                      <button class="btn-secondary" @click="$emit('reset-session')" :disabled="!isSessionActive">
+                    <!-- Start New Session -->
+                    <template v-if="!isSessionActive">
+                      <button
+                        v-if="!confirmingStartSession"
+                        class="btn-primary"
+                        @click="confirmingStartSession = true"
+                      >
+                        🚀 Start New Session
+                      </button>
+                      <div v-else class="action-confirmation">
+                        <div class="confirmation-message">
+                          <span class="confirmation-icon">🚀</span>
+                          <span>Start new session?</span>
+                        </div>
+                        <div class="confirmation-actions">
+                          <button class="btn-confirm" @click="handleStartSession">
+                            Yes
+                          </button>
+                          <button class="btn-cancel" @click="confirmingStartSession = false">
+                            No
+                          </button>
+                        </div>
+                      </div>
+                    </template>
+
+                    <!-- Reset Session -->
+                    <template v-else>
+                      <button
+                        v-if="!confirmingReset"
+                        class="btn-secondary"
+                        @click="confirmingReset = true"
+                        :disabled="!isSessionActive"
+                      >
                         🔄 Reset
                       </button>
-                    </div>
+                      <div v-else class="action-confirmation">
+                        <div class="confirmation-message">
+                          <span class="confirmation-icon">⚠️</span>
+                          <span>Reset session?</span>
+                        </div>
+                        <div class="confirmation-actions">
+                          <button class="btn-confirm" @click="handleResetSession">
+                            Yes
+                          </button>
+                          <button class="btn-cancel" @click="confirmingReset = false">
+                            No
+                          </button>
+                        </div>
+                      </div>
+                    </template>
                   </div>
                 </div>
               </Transition>
@@ -113,35 +151,65 @@
                         class="session-item glass-panel-primary"
                         :class="{ 
                           active: session.id === currentSessionId,
-                          'has-content': session.recap && session.recap.trim().length > 0 && !session.recap.includes('😞')
+                          'has-content': session.recap && session.recap.trim().length > 0 && !session.recap.includes('😞'),
+                          'confirming-delete': sessionToDelete === session.id
                         }"
                       >
-                        <div class="session-content" @click="loadSession(session)">
-                          <div class="session-header">
-                            <div class="session-title text-truncate">
-                              {{ getSessionTitle(session) }}
-                              <span v-if="session.saved === 1" class="text-muted"> • Saved</span>
+                        <!-- Normal session view -->
+                        <template v-if="sessionToDelete !== session.id">
+                          <div class="session-content" @click="loadSession(session)">
+                            <div class="session-header">
+                              <div class="session-title text-truncate">
+                                {{ getSessionTitle(session) }}
+                                <span v-if="session.saved === 1" class="text-muted"> • Saved</span>
+                              </div>
+                              <div class="session-date text-muted">{{ formatDate(session.created_at) }}</div>
                             </div>
-                            <div class="session-date text-muted">{{ formatDate(session.created_at) }}</div>
+                            <div class="session-preview text-muted">{{ getSessionPreview(session) }}</div>
                           </div>
-                          <div class="session-preview text-muted">{{ getSessionPreview(session) }}</div>
-                        </div>
-                        <div class="session-actions">
-                          <button
-                            class="session-action-btn btn-glass-icon-small"
-                            @click.stop="loadSession(session)"
-                            title="Load session"
-                          >
-                            ▶
-                          </button>
-                          <button
-                            class="session-action-btn btn-glass-icon-small"
-                            @click.stop="confirmDeleteSession(session.id, session.name || `Session ${session.id.slice(0, 6)}`)"
-                            title="Delete session"
-                          >
-                            ×
-                          </button>
-                        </div>
+                          <div class="session-actions">
+                            <button
+                              class="session-action-btn btn-glass-icon-small"
+                              @click.stop="loadSession(session)"
+                              title="Load session"
+                            >
+                              ▶
+                            </button>
+                            <button
+                              class="session-action-btn btn-glass-icon-small"
+                              @click.stop="sessionToDelete = session.id"
+                              title="Delete session"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </template>
+
+                        <!-- Delete confirmation view -->
+                        <template v-else>
+                          <div class="delete-confirmation">
+                            <div class="delete-message">
+                              <span class="delete-icon">⚠️</span>
+                              <span>Delete this session?</span>
+                            </div>
+                            <div class="delete-actions">
+                              <button
+                                class="btn-delete-confirm"
+                                @click.stop="handleDeleteConfirm"
+                                title="Yes, delete"
+                              >
+                                Yes
+                              </button>
+                              <button
+                                class="btn-delete-cancel"
+                                @click.stop="handleDeleteCancel"
+                                title="Cancel"
+                              >
+                                No
+                              </button>
+                            </div>
+                          </div>
+                        </template>
                       </div>
                     </div>
                   </div>
@@ -153,23 +221,11 @@
       </Transition>
     </div>
   </Transition>
-
-  <!-- Delete Session Confirmation Dialog -->
-  <ConfirmDialog
-    :show="showDeleteDialog"
-    title="Delete Session"
-    :message="deleteDialogMessage"
-    confirm-text="Yes, Delete"
-    cancel-text="Cancel"
-    @confirm="handleDeleteConfirm"
-    @cancel="handleDeleteCancel"
-  />
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, watch, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import ConfirmDialog from '../ConfirmDialog.vue'
 import { fetchAvailableModels, fetchSessionMessages } from '../../core'
 import { usePersonaStore } from '../../composables/usePersonaStore'
 
@@ -211,10 +267,10 @@ const emit = defineEmits<{
   (e: 'load-session', session: any): void
 }>()
 
-// Delete confirmation dialog state
-const showDeleteDialog = ref(false)
-const deleteDialogMessage = ref('')
+// Confirmation states (inline, no modals)
 const sessionToDelete = ref<string | null>(null)
+const confirmingStartSession = ref(false)
+const confirmingReset = ref(false)
 
 // Session menu state
 const models = ref<Model[]>([])
@@ -370,7 +426,13 @@ function handleStartSession() {
     maxTokens: 1000,
   }
   emit('start-session', sessionData)
+  confirmingStartSession.value = false
   emit('close') // Close modal after starting session
+}
+
+function handleResetSession() {
+  emit('reset-session')
+  confirmingReset.value = false
 }
 
 // Saved sessions
@@ -439,25 +501,15 @@ function loadSession(session: Session) {
   emit('close') // Close modal after loading session
 }
 
-function confirmDeleteSession(sessionId: string, sessionName: string) {
-  sessionToDelete.value = sessionId
-  deleteDialogMessage.value = `Are you sure you want to delete "${sessionName}"?\n\nThis action cannot be undone.`
-  showDeleteDialog.value = true
-}
-
 function handleDeleteConfirm() {
   if (sessionToDelete.value) {
     emit('delete-session', sessionToDelete.value)
     sessionToDelete.value = null
   }
-  showDeleteDialog.value = false
-  deleteDialogMessage.value = ''
 }
 
 function handleDeleteCancel() {
   sessionToDelete.value = null
-  showDeleteDialog.value = false
-  deleteDialogMessage.value = ''
 }
 
 // UI helpers
@@ -853,6 +905,71 @@ function formatDate(dateStr: string | undefined): string {
   margin-top: 1.5rem;
 }
 
+/* Action Confirmation (Start/Reset) */
+.action-confirmation {
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.confirmation-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(139, 92, 246, 0.9);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.confirmation-icon {
+  font-size: 1.5rem;
+}
+
+.confirmation-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.btn-confirm,
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid;
+  min-width: 80px;
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, rgba(30, 25, 85, 0.9) 0%, rgba(55, 48, 163, 0.9) 100%);
+  border-color: rgba(67, 56, 202, 0.4);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(67, 56, 202, 0.2);
+}
+
+.btn-confirm:active {
+  transform: scale(0.95);
+  box-shadow: 0 1px 4px rgba(67, 56, 202, 0.3);
+}
+
+.btn-cancel {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: rgba(139, 92, 246, 0.9);
+}
+
+.btn-cancel:active {
+  background: rgba(139, 92, 246, 0.2);
+  transform: scale(0.95);
+}
+
 .btn-primary {
   background: linear-gradient(135deg, rgba(30, 25, 85, 0.9) 0%, rgba(55, 48, 163, 0.9) 100%);
   border: 1px solid rgba(67, 56, 202, 0.4);
@@ -1008,6 +1125,73 @@ function formatDate(dateStr: string | undefined): string {
 
 .session-action-btn:active {
   transform: scale(0.9);
+}
+
+/* Delete Confirmation Inline */
+.session-item.confirming-delete {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.delete-confirmation {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+.delete-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #fca5a5;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.delete-icon {
+  font-size: 1.5rem;
+}
+
+.delete-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.btn-delete-confirm,
+.btn-delete-cancel {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid;
+  min-width: 80px;
+}
+
+.btn-delete-confirm {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+.btn-delete-confirm:active {
+  background: rgba(239, 68, 68, 0.25);
+  transform: scale(0.95);
+}
+
+.btn-delete-cancel {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: rgba(139, 92, 246, 0.9);
+}
+
+.btn-delete-cancel:active {
+  background: rgba(139, 92, 246, 0.2);
+  transform: scale(0.95);
 }
 
 /* Empty State */
