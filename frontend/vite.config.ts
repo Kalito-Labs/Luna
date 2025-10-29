@@ -1,23 +1,73 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+      manifest: {
+        name: 'Kalito Space',
+        short_name: 'Kalito',
+        description: 'Your family\'s AI command center - self-hosted AI chat with comprehensive life management tools',
+        theme_color: '#1a1a2e',
+        background_color: '#0f0f1e',
+        display: 'standalone',
+        start_url: '/',
+        scope: '/',
+        icons: [
+          {
+            src: '/favicon_io/android-chrome-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: '/favicon_io/android-chrome-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          },
+          {
+            src: '/favicon_io/android-chrome-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^\/api\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 // 24 hours
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          }
+        ]
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module'
+      }
+    })
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
   },
   server: {
-    // Do NOT set a specific port unless you need to.
-    // port: 5174, // <-- Remove this line
-    // strictPort: true, // <-- Remove this line
-
-    // `historyApiFallback` is not a standard Vite server option, it's from webpack.
-    // Vite uses `historyFallback` under `server` as `historyApiFallback` is not needed for Vite.
-    // The correct property is `server.fs.strict` or just rely on Vite's SPA fallback.
-    // You can usually omit it unless you have a custom history fallback.
     watch: {
       usePolling: true,
       interval: 150,

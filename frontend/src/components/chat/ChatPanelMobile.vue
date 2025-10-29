@@ -24,6 +24,20 @@
           <div class="agent-message">
             <div class="sender-label">Kalito<span v-if="msg.isRecap"> (Recap)</span>:</div>
 
+            <!-- Searching indicator (shown BEFORE content when searching) -->
+            <div
+              v-if="searching && i === chatMessages.length - 1 && msg.from === 'kalito'"
+              class="searching-placeholder"
+            >
+              <span class="search-icon">🔍</span>
+              <span class="search-text">Searching online...</span>
+              <span class="search-dots">
+                <span class="dot">●</span>
+                <span class="dot">●</span>
+                <span class="dot">●</span>
+              </span>
+            </div>
+
             <!-- Formatted content (with syntax highlighting) -->
             <div
               v-if="
@@ -36,20 +50,6 @@
 
             <!-- Plain text content -->
             <div v-else-if="msg.text" class="plain-content">{{ msg.text }}</div>
-
-            <!-- Searching indicator -->
-            <div
-              v-else-if="searching && i === chatMessages.length - 1 && msg.from === 'kalito'"
-              class="searching-placeholder"
-            >
-              <span class="search-icon">🔍</span>
-              <span class="search-text">Searching online...</span>
-              <span class="search-dots">
-                <span class="dot">●</span>
-                <span class="dot">●</span>
-                <span class="dot">●</span>
-              </span>
-            </div>
 
             <!-- Loading placeholder -->
             <div

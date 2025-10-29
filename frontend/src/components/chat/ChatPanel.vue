@@ -360,7 +360,7 @@ onUnmounted(() => {
   justify-content: flex-end;
   align-items: center;
   width: 100%;
-  height: 99vh;
+  height: 100vh;
   position: relative;
   overflow: hidden;
   padding: 0.5rem;
@@ -372,7 +372,7 @@ onUnmounted(() => {
   width: 100%;
   flex: 1 1 auto;
   min-height: 300px;
-  max-height: 95vh;
+  max-height: 97vh;
   padding: 1rem;
   display: flex;
   flex-direction: column;
