@@ -10,7 +10,7 @@
       <h1 class="main-title">KalitoSpace</h1>
             <div class="intro-block">
         <div class="intro-hero">
-          <h2 class="intro-headline">Caregiving made Simple</h2>
+          <h2 class="intro-headline">Helping Mom and Dad, Made Easy</h2>
         </div>
 
         <div class="features-container">
@@ -28,22 +28,23 @@
               <span class="emoji">📊</span>
               <div class="feature-content">
                 <strong>Health Trend Monitoring</strong>
-                <span class="feature-desc">Visualize blood pressure, weight, and glucose patterns to spot changes early.</span>
+                <span class="feature-desc">Visualize  weight, and glucose patterns to spot changes early.</span>
               </div>
             </li>
 
             <li>
               <span class="emoji">🤖</span>
               <div class="feature-content">
-                <strong>AI Care Assistant</strong>
-                <span class="feature-desc">Context-aware AI that understands and helps you make informed decisions.</span>
+                <strong>Kalito AI</strong>
+                <span class="feature-desc">  Always ready to help with everyday questions, planning, and family support.
+</span>
               </div>
             </li>
 
             <li>
               <span class="emoji">🔒</span>
               <div class="feature-content">
-                <strong>Privacy You Can Trust</strong>
+                <strong>Private and Local</strong>
                 <span class="feature-desc">All data stored locally. No cloud storage, No tracking.</span>
               </div>
             </li>
@@ -58,7 +59,7 @@
             </router-link>
             <router-link to="/kalito" class="btn btn-secondary">
               <span class="btn-icon">💬</span>
-              Talk to AI Assistant
+              Talk to Kalito
             </router-link>
           </div>
         </div>
