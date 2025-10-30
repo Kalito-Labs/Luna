@@ -12,14 +12,17 @@ const router = Router()
 
 const createAppointmentSchema = z.object({
   patient_id: z.string().min(1),
-  provider_id: z.string().min(1),
-  appointment_type: z.string().min(1).max(100),
+  provider_id: z.string().optional(), // Optional - can be free text via provider_name
+  provider_name: z.string().optional(), // Free text provider name
+  appointment_type: z.string().optional(),
   appointment_date: z.string().min(1),
-  duration_minutes: z.number().int().min(1).max(480),
+  appointment_time: z.string().optional(),
   status: z.string().optional().default('scheduled'),
   location: z.string().optional(),
   notes: z.string().optional(),
-  reason: z.string().optional(),
+  preparation_notes: z.string().optional(),
+  outcome_summary: z.string().optional(),
+  follow_up_required: z.boolean().optional(),
 })
 
 const updateAppointmentSchema = createAppointmentSchema.partial().omit({ patient_id: true })
@@ -88,20 +91,22 @@ router.post('/', async (req, res) => {
     
     // Verify patient exists
     const patient = db.prepare(`
-      SELECT id FROM patients WHERE id = ? AND active = 1
+      SELECT id FROM patients WHERE id = ?
     `).get(validatedData.patient_id)
     
     if (!patient) {
       return err(res, 404, 'NOT_FOUND', 'Patient not found')
     }
     
-    // Verify provider exists
-    const provider = db.prepare(`
-      SELECT id FROM healthcare_providers WHERE id = ? AND active = 1
-    `).get(validatedData.provider_id)
-    
-    if (!provider) {
-      return err(res, 404, 'NOT_FOUND', 'Provider not found')
+    // If provider_id is provided, verify it exists (optional validation)
+    if (validatedData.provider_id) {
+      const provider = db.prepare(`
+        SELECT id FROM healthcare_providers WHERE id = ?
+      `).get(validatedData.provider_id)
+      
+      if (!provider) {
+        return err(res, 404, 'NOT_FOUND', 'Provider not found')
+      }
     }
     
     const appointmentId = generateId()
@@ -109,23 +114,26 @@ router.post('/', async (req, res) => {
     
     const insertAppointment = db.prepare(`
       INSERT INTO appointments (
-        id, patient_id, provider_id, appointment_type, appointment_date,
-        duration_minutes, status, location, notes, reason,
-        created_at, updated_at, active
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+        id, patient_id, provider_id, provider_name, appointment_type, appointment_date,
+        appointment_time, status, location, notes, preparation_notes,
+        outcome_summary, follow_up_required, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `)
     
     insertAppointment.run(
       appointmentId,
       validatedData.patient_id,
-      validatedData.provider_id,
-      validatedData.appointment_type,
+      validatedData.provider_id || null,
+      validatedData.provider_name || null,
+      validatedData.appointment_type || null,
       validatedData.appointment_date,
-      validatedData.duration_minutes,
+      validatedData.appointment_time || null,
       validatedData.status || 'scheduled',
       validatedData.location || null,
       validatedData.notes || null,
-      validatedData.reason || null,
+      validatedData.preparation_notes || null,
+      validatedData.outcome_summary || null,
+      validatedData.follow_up_required ? 1 : 0,
       now,
       now
     )
@@ -164,17 +172,17 @@ router.put('/:id', async (req, res) => {
     
     // Check if appointment exists
     const existingAppointment = db.prepare(`
-      SELECT id FROM appointments WHERE id = ? AND active = 1
+      SELECT id FROM appointments WHERE id = ?
     `).get(id)
     
     if (!existingAppointment) {
       return err(res, 404, 'NOT_FOUND', 'Appointment not found')
     }
     
-    // Verify provider exists if being updated
+    // Verify provider exists if being updated (optional check)
     if (validatedData.provider_id) {
       const provider = db.prepare(`
-        SELECT id FROM healthcare_providers WHERE id = ? AND active = 1
+        SELECT id FROM healthcare_providers WHERE id = ?
       `).get(validatedData.provider_id)
       
       if (!provider) {
@@ -189,7 +197,12 @@ router.put('/:id', async (req, res) => {
     Object.entries(validatedData).forEach(([key, value]) => {
       if (value !== undefined) {
         updates.push(`${key} = ?`)
-        values.push(value)
+        // Convert boolean to integer for SQLite
+        if (key === 'follow_up_required') {
+          values.push(value ? 1 : 0)
+        } else {
+          values.push(value as string | number | null)
+        }
       }
     })
     
@@ -204,7 +217,7 @@ router.put('/:id', async (req, res) => {
     const updateQuery = `
       UPDATE appointments 
       SET ${updates.join(', ')} 
-      WHERE id = ? AND active = 1
+      WHERE id = ?
     `
     
     const result = db.prepare(updateQuery).run(...values)

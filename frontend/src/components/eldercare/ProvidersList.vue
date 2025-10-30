@@ -1,46 +1,56 @@
 <template>
-  <div class="appointments-list">
+  <div class="providers-list">
     <div class="list-header">
-      <h3>Appointments</h3>
-      <button @click="$emit('add-appointment')" class="btn btn-sm btn-primary">
-        Schedule Appointment
+      <h3>Healthcare Providers</h3>
+      <button @click="$emit('add-provider')" class="btn btn-sm btn-primary">
+        Add Provider
       </button>
     </div>
     
-    <div v-if="appointments.length === 0" class="empty-state">
-      <p>No appointments scheduled yet</p>
+    <div v-if="providers.length === 0" class="empty-state">
+      <p>No healthcare providers added yet</p>
     </div>
     
-    <div v-else class="appointments-grid">
-      <div v-for="appointment in appointments" :key="appointment.id" class="appointment-card">
-        <div class="appt-header">
-          <h4>{{ formatAppointmentType(appointment.appointment_type) }}</h4>
-          <span class="status-badge" :class="appointment.status">
-            {{ formatStatus(appointment.status) }}
+    <div v-else class="providers-grid">
+      <div 
+        v-for="provider in providers" 
+        :key="provider.id" 
+        class="provider-card"
+        :class="{ preferred: provider.preferred }"
+      >
+        <div class="provider-header">
+          <div class="header-content">
+            <h4>{{ provider.name }}</h4>
+            <span v-if="provider.preferred" class="preferred-badge">⭐ Preferred</span>
+          </div>
+          <span v-if="provider.specialty" class="specialty-badge">
+            {{ provider.specialty }}
           </span>
         </div>
         
-        <div class="appt-details">
-          <p><strong>Date:</strong> {{ formatDate(appointment.appointment_date) }}</p>
-          <p v-if="appointment.appointment_time">
-            <strong>Time:</strong> {{ formatTime(appointment.appointment_time) }}
+        <div class="provider-details">
+          <p v-if="provider.practice_name">
+            <strong>Practice:</strong> {{ provider.practice_name }}
           </p>
-          <p v-if="appointment.provider_name">
-            <strong>Provider:</strong> {{ appointment.provider_name }}
+          <p v-if="provider.phone">
+            <strong>Phone:</strong> {{ provider.phone }}
           </p>
-          <p v-if="appointment.location">
-            <strong>Location:</strong> {{ appointment.location }}
+          <p v-if="provider.email">
+            <strong>Email:</strong> {{ provider.email }}
           </p>
-          <p v-if="appointment.notes">
-            <strong>Notes:</strong> {{ appointment.notes }}
+          <p v-if="provider.address">
+            <strong>Address:</strong> {{ provider.address }}
+          </p>
+          <p v-if="provider.notes" class="notes">
+            <strong>Notes:</strong> {{ provider.notes }}
           </p>
         </div>
         
-        <div class="appt-actions">
-          <button @click="$emit('edit-appointment', appointment)" class="btn btn-xs btn-outline">
+        <div class="provider-actions">
+          <button @click="$emit('edit-provider', provider)" class="btn btn-xs btn-outline">
             Edit
           </button>
-          <button @click="$emit('delete-appointment', appointment)" class="btn btn-xs btn-danger">
+          <button @click="$emit('delete-provider', provider)" class="btn btn-xs btn-danger">
             Delete
           </button>
         </div>
@@ -50,77 +60,38 @@
 </template>
 
 <script setup lang="ts">
-interface Appointment {
+interface Provider {
   id: string
-  appointment_date: string
-  appointment_time?: string
-  appointment_type?: string
-  provider_name?: string
-  location?: string
+  name: string
+  specialty?: string
+  practice_name?: string
+  phone?: string
+  email?: string
+  address?: string
   notes?: string
-  status: string
+  preferred?: number
 }
 
 interface Props {
-  appointments: Appointment[]
+  providers: Provider[]
 }
 
 defineProps<Props>()
 
 defineEmits<{
-  'add-appointment': []
-  'edit-appointment': [appointment: Appointment]
-  'delete-appointment': [appointment: Appointment]
+  'add-provider': []
+  'edit-provider': [provider: Provider]
+  'delete-provider': [provider: Provider]
 }>()
-
-function formatAppointmentType(type?: string): string {
-  if (!type) return 'Appointment'
-  const types: Record<string, string> = {
-    'routine': 'Routine Check-up',
-    'follow_up': 'Follow-up',
-    'specialist': 'Specialist',
-    'emergency': 'Emergency',
-    'procedure': 'Procedure',
-    'lab_work': 'Lab Work',
-    'imaging': 'Imaging'
-  }
-  return types[type] || type
-}
-
-function formatStatus(status: string): string {
-  const statuses: Record<string, string> = {
-    'scheduled': 'Scheduled',
-    'completed': 'Completed',
-    'cancelled': 'Cancelled',
-    'rescheduled': 'Rescheduled'
-  }
-  return statuses[status] || status
-}
-
-function formatDate(dateString: string): string {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return date.toLocaleDateString()
-}
-
-function formatTime(timeString: string): string {
-  if (!timeString) return ''
-  const [hours, minutes] = timeString.split(':')
-  if (!hours || !minutes) return timeString
-  const date = new Date()
-  date.setHours(parseInt(hours), parseInt(minutes))
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
 </script>
 
 <style scoped>
-.appointments-list {
+.providers-list {
   margin-bottom: 40px;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
-  .appointments-list {
+  .providers-list {
     margin-bottom: 30px;
   }
 }
@@ -134,7 +105,6 @@ function formatTime(timeString: string): string {
   border-bottom: var(--border);
 }
 
-/* Responsive header */
 @media (max-width: 480px) {
   .list-header {
     flex-direction: column;
@@ -150,42 +120,40 @@ function formatTime(timeString: string): string {
   font-size: 1.5rem;
 }
 
-/* Responsive header title */
 @media (max-width: 480px) {
   .list-header h3 {
     font-size: 1.25rem;
   }
 }
 
-.appointments-grid {
+.providers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 24px;
 }
 
-/* Responsive grid */
 @media (max-width: 1200px) {
-  .appointments-grid {
+  .providers-grid {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 20px;
   }
 }
 
 @media (max-width: 768px) {
-  .appointments-grid {
+  .providers-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
   }
 }
 
 @media (max-width: 480px) {
-  .appointments-grid {
+  .providers-grid {
     grid-template-columns: 1fr;
     gap: 12px;
   }
 }
 
-.appointment-card {
+.provider-card {
   background: var(--bg-glass);
   backdrop-filter: var(--blur);
   border: var(--border);
@@ -195,135 +163,131 @@ function formatTime(timeString: string): string {
   transition: all 0.2s ease;
 }
 
-.appointment-card:hover {
+.provider-card.preferred {
+  border-color: rgba(251, 191, 36, 0.3);
+  background: linear-gradient(135deg, var(--bg-glass), rgba(251, 191, 36, 0.05));
+}
+
+.provider-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-strong);
   border-color: var(--accent-blue);
 }
 
-/* Responsive cards */
 @media (max-width: 768px) {
-  .appointment-card {
+  .provider-card {
     padding: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .appointment-card {
+  .provider-card {
     padding: 16px;
   }
 }
 
-/* Touch devices */
 @media (hover: none) and (pointer: coarse) {
-  .appointment-card:hover {
+  .provider-card:hover {
     transform: none;
     box-shadow: var(--shadow-soft);
   }
 }
 
-.appt-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.provider-header {
   margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: var(--border);
 }
 
-.appt-header h4 {
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.provider-header h4 {
   margin: 0;
   color: var(--text-heading);
   font-weight: 600;
   font-size: 1.1rem;
 }
 
-/* Responsive header */
 @media (max-width: 480px) {
-  .appt-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  
-  .appt-header h4 {
+  .provider-header h4 {
     font-size: 1rem;
   }
 }
 
-.status-badge {
+.preferred-badge {
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  white-space: nowrap;
+}
+
+.specialty-badge {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-.status-badge.scheduled {
   background: rgba(59, 130, 246, 0.15);
   color: var(--accent-blue);
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+  display: inline-block;
+  white-space: nowrap;
 }
 
-.status-badge.completed {
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--led-green);
-  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
-}
-
-.status-badge.cancelled {
-  background: rgba(239, 68, 68, 0.15);
-  color: var(--led-red);
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
-}
-
-.status-badge.rescheduled {
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
-  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
-}
-
-.appt-details {
+.provider-details {
   margin-bottom: 16px;
 }
 
-.appt-details p {
+.provider-details p {
   margin: 8px 0;
   font-size: 0.95rem;
   color: var(--text-muted);
-  display: flex;
-  align-items: center;
+  line-height: 1.5;
 }
 
-.appt-details strong {
+.provider-details strong {
   color: var(--text-heading);
   margin-right: 8px;
-  min-width: 80px;
+  display: inline-block;
+  min-width: 70px;
 }
 
-/* Responsive details */
+.provider-details .notes {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: var(--border);
+}
+
 @media (max-width: 480px) {
-  .appt-details p {
+  .provider-details p {
     font-size: 0.9rem;
   }
   
-  .appt-details strong {
-    min-width: 70px;
+  .provider-details strong {
+    min-width: 60px;
   }
 }
 
-.appt-actions {
+.provider-actions {
   display: flex;
   gap: 12px;
   padding-top: 12px;
   border-top: var(--border);
 }
 
-/* Responsive actions */
 @media (max-width: 480px) {
-  .appt-actions {
+  .provider-actions {
     flex-direction: column;
     gap: 8px;
   }
@@ -344,7 +308,6 @@ function formatTime(timeString: string): string {
   font-size: 1rem;
 }
 
-/* Responsive empty state */
 @media (max-width: 480px) {
   .empty-state {
     padding: 40px 16px;
@@ -420,7 +383,6 @@ function formatTime(timeString: string): string {
   transform: translateY(-1px);
 }
 
-/* Touch device improvements */
 @media (hover: none) and (pointer: coarse) {
   .btn:hover {
     transform: none !important;
