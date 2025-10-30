@@ -60,13 +60,13 @@
         
         <div class="form-row">
           <div class="form-group">
-            <label for="provider_id">Healthcare Provider</label>
-            <select id="provider_id" v-model="form.provider_id">
-              <option value="">Select provider</option>
-              <option v-for="provider in providers" :key="provider.id" :value="provider.id">
-                {{ provider.name }} - {{ provider.specialty }}
-              </option>
-            </select>
+            <label for="provider_name">Healthcare Provider</label>
+            <input 
+              id="provider_name"
+              v-model="form.provider_name" 
+              type="text" 
+              placeholder="Doctor's name or clinic name"
+            />
           </div>
           
           <div class="form-group">
@@ -160,7 +160,7 @@ import { ref, onMounted } from 'vue'
 
 interface AppointmentForm {
   patient_id: string
-  provider_id: string
+  provider_name: string
   appointment_date: string
   appointment_time: string
   appointment_type: string
@@ -175,7 +175,6 @@ interface AppointmentForm {
 interface Props {
   appointment?: any
   patients: Array<{ id: string, name: string }>
-  providers: Array<{ id: string, name: string, specialty: string }>
   isEditing?: boolean
 }
 
@@ -192,7 +191,7 @@ const isSubmitting = ref(false)
 
 const form = ref<AppointmentForm>({
   patient_id: '',
-  provider_id: '',
+  provider_name: '',
   appointment_date: '',
   appointment_time: '',
   appointment_type: '',
@@ -206,7 +205,20 @@ const form = ref<AppointmentForm>({
 
 onMounted(() => {
   if (props.appointment) {
-    Object.assign(form.value, props.appointment)
+    // Load all fields from the appointment being edited
+    Object.assign(form.value, {
+      patient_id: props.appointment.patient_id || '',
+      provider_name: props.appointment.provider_name || '',
+      appointment_date: props.appointment.appointment_date || '',
+      appointment_time: props.appointment.appointment_time || '',
+      appointment_type: props.appointment.appointment_type || '',
+      location: props.appointment.location || '',
+      notes: props.appointment.notes || '',
+      preparation_notes: props.appointment.preparation_notes || '',
+      status: props.appointment.status || 'scheduled',
+      outcome_summary: props.appointment.outcome_summary || '',
+      follow_up_required: props.appointment.follow_up_required || false
+    })
   }
 })
 

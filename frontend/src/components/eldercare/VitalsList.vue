@@ -410,7 +410,7 @@ function getGlucoseClass(value: number): string {
 }
 
 .btn-sm {
-  padding: 10px 16px;
+  padding: 8px 16px;
   font-size: 0.875rem;
 }
 

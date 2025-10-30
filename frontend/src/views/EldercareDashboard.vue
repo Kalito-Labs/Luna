@@ -23,21 +23,12 @@
           </div>
         </button>
         
-        <!-- Add Patient -->
-        <button @click="showPatientForm = true" class="action-btn patient-btn">
-          <div class="btn-icon">👤</div>
-          <div class="btn-content">
-            <h3>Add Patient</h3>
-            <p>Add a new family member</p>
-          </div>
-        </button>
-        
-        <!-- Saved Patients -->
+        <!-- Patients -->
         <button @click="activeView = 'patients'" class="action-btn patients-btn" :class="{ active: activeView === 'patients' }">
-          <div class="btn-icon">�</div>
+          <div class="btn-icon">👥</div>
           <div class="btn-content">
-            <h3>Saved Patients</h3>
-            <p>View all family members</p>
+            <h3>Patients</h3>
+            <p>Manage family members</p>
           </div>
         </button>
         
@@ -67,49 +58,29 @@
             <p>Weight & glucose tracking</p>
           </div>
         </button>
+        
+        <!-- Healthcare Providers -->
+        <button @click="activeView = 'providers'" class="action-btn providers-btn" :class="{ active: activeView === 'providers' }">
+          <div class="btn-icon">🏥</div>
+          <div class="btn-content">
+            <h3>Healthcare Providers</h3>
+            <p>Doctors & specialists</p>
+          </div>
+        </button>
       </div>
     </div>
 
     <!-- Content Sections -->
 
     <!-- Patients Overview -->
-    <div v-if="activeView === 'patients'" class="patients-overview">
-      <h2>Patients</h2>
-      <div v-if="patients.length > 0" class="patients-grid">
-        <div v-for="patient in patients" :key="patient.id" class="patient-card">
-          <div class="patient-header">
-            <h3>{{ patient.name }}</h3>
-            <span class="relationship-badge">{{ formatRelationship(patient.relationship) }}</span>
-          </div>
-          <div class="patient-info">
-            <p v-if="patient.date_of_birth">
-              <strong>Age:</strong> {{ calculateAge(patient.date_of_birth) }}
-            </p>
-            <p v-if="patient.primary_doctor">
-              <strong>Primary Doctor:</strong> {{ patient.primary_doctor }}
-            </p>
-            <p v-if="patient.phone">
-              <strong>Phone:</strong> {{ patient.phone }}
-            </p>
-          </div>
-          <div class="patient-actions">
-            <button @click="editPatient(patient)" class="btn btn-sm btn-outline">
-              Edit
-            </button>
-            <button @click="viewPatientDetails(patient)" class="btn btn-sm btn-primary">
-              View Details
-            </button>
-            <button @click="deletePatient(patient)" class="btn btn-sm btn-danger">
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
-      <div v-else class="empty-state">
-        <div class="empty-icon">👥</div>
-        <h3>No patients yet</h3>
-        <p>Add your first patient using the Quick Actions above</p>
-      </div>
+    <div v-if="activeView === 'patients'" class="content-section">
+      <PatientsList 
+        :patients="patients"
+        @add-patient="showPatientForm = true"
+        @view-details="viewPatientDetails"
+        @edit-patient="editPatient"
+        @delete-patient="deletePatient"
+      />
     </div>
 
     <!-- Medications Overview -->
@@ -144,14 +115,14 @@
       />
     </div>
 
-    <!-- Empty State -->
-    <div v-if="patients.length === 0" class="empty-state">
-      <div class="empty-icon">👥</div>
-      <h3>No Patients Added Yet</h3>
-      <p>Start by adding your first patient (like Mom, Dad, or yourself)</p>
-      <button @click="showPatientForm = true" class="btn btn-primary btn-lg">
-        Add Your First Patient
-      </button>
+    <!-- Healthcare Providers Overview -->
+    <div v-if="activeView === 'providers'" class="content-section">
+      <ProvidersList 
+        :providers="allProviders"
+        @add-provider="showProviderForm = true"
+        @edit-provider="editProvider"
+        @delete-provider="deleteProvider"
+      />
     </div>
 
     <!-- Modals -->
@@ -189,12 +160,11 @@
     </div>
     
     <!-- Appointment Form Modal -->
-    
-    <!-- Appointment Form Modal -->
     <div v-if="showAppointmentForm" class="modal-overlay">
       <AppointmentForm 
         :patients="patients"
-        :providers="providers"
+        :appointment="editingAppointment"
+        :isEditing="!!editingAppointment"
         @save="saveAppointment"
         @cancel="closeAppointmentForm"
         @click.stop
@@ -231,6 +201,18 @@
       />
     </div>
 
+    <!-- Provider Form Modal -->
+    <div v-if="showProviderForm" class="modal-overlay">
+      <ProviderForm 
+        :provider="editingProvider"
+        :isEditing="!!editingProvider"
+        @save="saveProvider"
+        @cancel="closeProviderForm"
+        @close="closeProviderForm"
+        @click.stop
+      />
+    </div>
+
     <!-- Success/Error Messages -->
     <div v-if="message" class="message" :class="messageType">
       {{ message }}
@@ -242,6 +224,7 @@
 import { ref, onMounted } from 'vue'
 import HamburgerMenu from '../components/HamburgerMenu.vue'
 import PatientForm from '../components/eldercare/PatientForm.vue'
+import PatientsList from '../components/eldercare/PatientsList.vue'
 import MedicationForm from '../components/eldercare/MedicationForm.vue'
 import VitalsForm from '../components/eldercare/VitalsForm.vue'
 import AppointmentForm from '../components/eldercare/AppointmentForm.vue'
@@ -250,6 +233,8 @@ import MedicationsList from '../components/eldercare/MedicationsList.vue'
 import AppointmentsList from '../components/eldercare/AppointmentsList.vue'
 import VitalsList from '../components/eldercare/VitalsList.vue'
 import CaregiverProfile from '../components/eldercare/CaregiverProfile.vue'
+import ProviderForm from '../components/eldercare/ProviderForm.vue'
+import ProvidersList from '../components/eldercare/ProvidersList.vue'
 
 interface Patient {
   id: string
@@ -276,12 +261,15 @@ const showVitalsForm = ref(false)
 const showAppointmentForm = ref(false)
 const showPatientDetail = ref(false)
 const showCaregiverProfile = ref(false)
+const showProviderForm = ref(false)
 
-const activeView = ref<'patients' | 'medications' | 'vitals' | 'appointments'>('patients')
+const activeView = ref<'patients' | 'medications' | 'vitals' | 'appointments' | 'providers'>('patients')
 
 const editingPatient = ref<Patient | null>(null)
 const editingMedication = ref<any | null>(null)
 const editingVital = ref<any | null>(null)
+const editingAppointment = ref<any | null>(null)
+const editingProvider = ref<any | null>(null)
 const selectedPatient = ref<Patient | null>(null)
 const patientMedications = ref<any[]>([])
 const patientAppointments = ref<any[]>([])
@@ -291,6 +279,7 @@ const patientVitals = ref<any[]>([])
 const allMedications = ref<any[]>([])
 const allAppointments = ref<any[]>([])
 const allVitals = ref<any[]>([])
+const allProviders = ref<any[]>([])
 
 const message = ref('')
 const messageType = ref<'success' | 'error'>('success')
@@ -301,6 +290,7 @@ onMounted(async () => {
   await loadAllMedications()
   await loadAllAppointments()
   await loadAllVitals()
+  await loadAllProviders()
 })
 
 async function loadPatients() {
@@ -364,24 +354,16 @@ async function loadAllVitals() {
   }
 }
 
-// loadAllVitals removed
-
-function formatRelationship(relationship?: string): string {
-  if (!relationship) return ''
-  return relationship.charAt(0).toUpperCase() + relationship.slice(1)
-}
-
-function calculateAge(dateOfBirth: string): number {
-  const today = new Date()
-  const birthDate = new Date(dateOfBirth)
-  let age = today.getFullYear() - birthDate.getFullYear()
-  const monthDiff = today.getMonth() - birthDate.getMonth()
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-    age--
+async function loadAllProviders() {
+  try {
+    const response = await fetch('/api/providers')
+    if (response.ok) {
+      const result = await response.json()
+      allProviders.value = result.data || []
+    }
+  } catch (error) {
+    console.error('Failed to load providers:', error)
   }
-  
-  return age
 }
 
 function editPatient(patient: Patient) {
@@ -521,8 +503,13 @@ async function saveMedication(medicationData: any) {
 
 async function saveAppointment(appointmentData: any) {
   try {
-    const response = await fetch('/api/appointments', {
-      method: 'POST',
+    const url = editingAppointment.value 
+      ? `/api/appointments/${editingAppointment.value.id}` 
+      : '/api/appointments'
+    const method = editingAppointment.value ? 'PUT' : 'POST'
+    
+    const response = await fetch(url, {
+      method,
       headers: {
         'Content-Type': 'application/json'
       },
@@ -530,14 +517,23 @@ async function saveAppointment(appointmentData: any) {
     })
     
     if (response.ok) {
+      await loadAllAppointments()
+      if (selectedPatient.value) {
+        await loadPatientData(selectedPatient.value.id)
+      }
       closeAppointmentForm()
-      showMessage('Appointment scheduled successfully!', 'success')
+      showMessage(
+        editingAppointment.value 
+          ? 'Appointment updated successfully!' 
+          : 'Appointment scheduled successfully!', 
+        'success'
+      )
     } else {
       throw new Error('Failed to save appointment')
     }
   } catch (error) {
     console.error('Error saving appointment:', error)
-    showMessage('Failed to schedule appointment. Please try again.', 'error')
+    showMessage('Failed to save appointment. Please try again.', 'error')
   }
 }
 
@@ -663,11 +659,12 @@ async function deleteMedication(medication: any) {
 
 function closeAppointmentForm() {
   showAppointmentForm.value = false
+  editingAppointment.value = null
 }
 
-async function editAppointment(_appointment: any) {
-  // TODO: Implement edit appointment
-  showMessage('Edit appointment functionality coming soon!', 'success')
+function editAppointment(appointment: any) {
+  editingAppointment.value = appointment
+  showAppointmentForm.value = true
 }
 
 async function deleteAppointment(appointment: any) {
@@ -761,6 +758,72 @@ async function saveCaregiver(caregiverData: any) {
   } catch (error) {
     console.error('Error saving caregiver:', error)
     showMessage('Failed to save caregiver profile', 'error')
+  }
+}
+
+// Provider Management Functions
+function editProvider(provider: any) {
+  editingProvider.value = provider
+  showProviderForm.value = true
+}
+
+function closeProviderForm() {
+  showProviderForm.value = false
+  editingProvider.value = null
+}
+
+async function saveProvider(providerData: any) {
+  try {
+    const url = editingProvider.value 
+      ? `/api/providers/${editingProvider.value.id}` 
+      : '/api/providers'
+    const method = editingProvider.value ? 'PUT' : 'POST'
+    
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(providerData)
+    })
+    
+    if (response.ok) {
+      await loadAllProviders()
+      closeProviderForm()
+      showMessage(
+        editingProvider.value 
+          ? 'Provider updated successfully!' 
+          : 'Provider added successfully!', 
+        'success'
+      )
+    } else {
+      throw new Error('Failed to save provider')
+    }
+  } catch (error) {
+    console.error('Error saving provider:', error)
+    showMessage('Failed to save provider. Please try again.', 'error')
+  }
+}
+
+async function deleteProvider(provider: any) {
+  if (!confirm(`Are you sure you want to delete ${provider.name}?`)) {
+    return
+  }
+  
+  try {
+    const response = await fetch(`/api/providers/${provider.id}`, {
+      method: 'DELETE'
+    })
+    
+    if (response.ok) {
+      await loadAllProviders()
+      showMessage('Provider deleted successfully!', 'success')
+    } else {
+      throw new Error('Failed to delete provider')
+    }
+  } catch (error) {
+    console.error('Error deleting provider:', error)
+    showMessage('Failed to delete provider. Please try again.', 'error')
   }
 }
 
@@ -1095,216 +1158,6 @@ function showMessage(text: string, type: 'success' | 'error') {
 /* ================================================================ */
 /* PATIENTS OVERVIEW SECTION                                        */
 /* ================================================================ */
-
-.patients-overview {
-  margin-bottom: 40px;
-}
-
-.patients-overview h2 {
-  color: var(--text-heading);
-  margin: 0 0 24px 0;
-  font-weight: 600;
-  font-size: 1.75rem;
-}
-
-/* Tablet: 769px - 1024px */
-@media (max-width: 1024px) {
-  .patients-overview {
-    margin-bottom: 32px;
-  }
-  
-  .patients-overview h2 {
-    font-size: 1.5rem;
-    margin: 0 0 20px 0;
-  }
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .patients-overview {
-    margin-bottom: 24px;
-  }
-  
-  .patients-overview h2 {
-    font-size: 1.25rem;
-    margin: 0 0 16px 0;
-  }
-}
-
-/* ================================================================ */
-/* PATIENTS GRID                                                    */
-/* ================================================================ */
-
-.patients-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 24px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Tablet: 769px - 1024px */
-@media (max-width: 1024px) {
-  .patients-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 18px;
-  }
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .patients-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-}
-
-/* ================================================================ */
-/* PATIENT CARDS                                                    */
-/* ================================================================ */
-
-.patient-card {
-  background: var(--bg-glass);
-  backdrop-filter: var(--blur);
-  border: var(--border);
-  border-radius: 12px;
-  padding: 24px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-/* Tablet: 769px - 1024px */
-@media (max-width: 1024px) {
-  .patient-card {
-    padding: 20px;
-  }
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .patient-card {
-    padding: 16px;
-  }
-}
-
-/* Patient Card Hover State */
-.patient-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-soft);
-  border-color: var(--accent-blue);
-}
-
-/* Mobile: Reduce hover effect for touch devices */
-@media (max-width: 768px) {
-  .patient-card:hover {
-    transform: translateY(-1px);
-  }
-}
-
-/* ================================================================ */
-/* PATIENT CARD HEADER                                              */
-/* ================================================================ */
-
-.patient-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: var(--border);
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-/* Patient Name Heading */
-.patient-header h3 {
-  margin: 0;
-  color: var(--text-heading);
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .patient-header {
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    gap: 6px;
-  }
-  
-  .patient-header h3 {
-    font-size: 1.1rem;
-  }
-}
-
-/* Relationship Badge */
-.relationship-badge {
-  background: var(--accent-blue);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: var(--glow-blue);
-  white-space: nowrap;
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .relationship-badge {
-    padding: 5px 10px;
-    font-size: 0.7rem;
-  }
-}
-
-.patient-info {
-  margin-bottom: 20px;
-}
-
-.patient-info p {
-  margin: 8px 0;
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-}
-
-.patient-info strong {
-  color: var(--text-heading);
-  margin-right: 8px;
-  min-width: 120px;
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .patient-info strong {
-    min-width: 100px;
-    font-size: 0.9rem;
-  }
-  
-  .patient-info {
-    font-size: 0.9rem;
-  }
-}
-
-.patient-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  padding-top: 16px;
-  border-top: var(--border);
-  flex-wrap: wrap;
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .patient-actions {
-    flex-direction: column;
-    gap: 6px;
-  }
-}
 
 .empty-state {
   text-align: center;
