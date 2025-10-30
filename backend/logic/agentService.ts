@@ -27,6 +27,53 @@ type RunAgentParams = AgentRequest & {
 }
 
 /**
+ * Checks if user input contains explicit intent to search online.
+ * Only returns true when user explicitly requests web search using clear keywords.
+ * This prevents autonomous AI decisions about when to search the internet.
+ */
+function hasExplicitSearchIntent(input: string): boolean {
+  const lowerInput = input.toLowerCase()
+  
+  const explicitTriggers = [
+    'search online',
+    'search for',
+    'look up',
+    'find online',
+    'check online',
+    'google',
+    'search google',
+    'what is the current',
+    'what are the current',
+    'what\'s the current',
+    'what is the latest',
+    'what are the latest',
+    'what\'s the latest',
+    'recent ',
+    'recently',
+    'today\'s',
+    'this week',
+    'this month',
+    'up-to-date',
+    'real-time',
+    'live ',
+    'breaking news',
+    'go online',
+    'browse',
+    'web search',
+  ]
+  
+  const hasIntent = explicitTriggers.some(trigger => lowerInput.includes(trigger))
+  
+  if (!hasIntent) {
+    console.log('[Agent] No explicit search intent detected - web search tool withheld')
+  } else {
+    console.log('[Agent] Explicit search intent detected - web search tool available')
+  }
+  
+  return hasIntent
+}
+
+/**
  * Gets a persona's prompt from the database by ID.
  * Returns empty string if persona not found.
  */
@@ -289,10 +336,12 @@ export async function runAgent(
     messages.push({ role: 'user', content: input.trim() })
   }
 
-  // Only use tools for cloud models (OpenAI)
-  const tools: ChatCompletionTool[] | undefined = adapter.type === 'cloud' ? ([...AVAILABLE_TOOLS] as unknown as ChatCompletionTool[]) : undefined
+  // Only use tools for cloud models (OpenAI) AND if user explicitly requested search
+  const tools: ChatCompletionTool[] | undefined = 
+    adapter.type === 'cloud' && hasExplicitSearchIntent(input)
+      ? ([...AVAILABLE_TOOLS] as unknown as ChatCompletionTool[])
+      : undefined
 
-  // Remove debug logging
   console.log(`[Agent] Using ${tools ? tools.length : 0} tools for model type: ${adapter.type}`)
 
   // Initial generation with tools
@@ -373,8 +422,11 @@ export async function* runAgentStream(
     throw new Error(`Adapter "${modelName}" does not support streaming.`)
   }
 
-  // Only use tools for cloud models (OpenAI)
-  const tools: ChatCompletionTool[] | undefined = adapter.type === 'cloud' ? ([...AVAILABLE_TOOLS] as unknown as ChatCompletionTool[]) : undefined
+  // Only use tools for cloud models (OpenAI) AND if user explicitly requested search
+  const tools: ChatCompletionTool[] | undefined = 
+    adapter.type === 'cloud' && hasExplicitSearchIntent(input)
+      ? ([...AVAILABLE_TOOLS] as unknown as ChatCompletionTool[])
+      : undefined
 
   console.log(`[Agent Stream] Using ${tools ? tools.length : 0} tools for model type: ${adapter.type}`)
 

@@ -145,7 +145,7 @@ app.use('/api/providers', providersRouter)
 app.use('/api/medications', medicationsRouter)
 app.use('/api/vitals', vitalsRouter)
 app.use('/api/appointments', appointmentsRouter)
-app.use('/api/caregivers', caregiversRouter)
+app.use('/api/caregiver', caregiversRouter)
 app.use('/api/search', searchRouter)
 
 // --- 404 handler ---
