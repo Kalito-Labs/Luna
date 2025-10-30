@@ -716,13 +716,18 @@ function closeCaregiverProfile() {
 
 async function loadCaregiver() {
   try {
-    const response = await fetch('/api/caregivers')
+    const response = await fetch('/api/caregiver')
     if (response.ok) {
       const result = await response.json()
-      // Get the first (and should be only) caregiver profile
-      if (result.data && result.data.length > 0) {
-        caregiver.value = result.data[0]
+      // Get the singleton caregiver profile
+      if (result.data) {
+        caregiver.value = result.data
+        console.log('Loaded caregiver profile:', result.data)
       }
+    } else if (response.status === 404) {
+      // No profile exists yet, that's fine
+      caregiver.value = null
+      console.log('No caregiver profile found')
     }
   } catch (error) {
     console.error('Error loading caregiver:', error)
@@ -736,11 +741,9 @@ async function openCaregiverProfile() {
 
 async function saveCaregiver(caregiverData: any) {
   try {
-    const method = caregiver.value ? 'PUT' : 'POST'
-    const url = caregiver.value ? `/api/caregivers/${caregiver.value.id}` : '/api/caregivers'
-    
-    const response = await fetch(url, {
-      method,
+    // Always use PUT - backend handles create or update automatically
+    const response = await fetch('/api/caregiver', {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -750,7 +753,7 @@ async function saveCaregiver(caregiverData: any) {
     if (response.ok) {
       await loadCaregiver() // Refresh the caregiver data
       showMessage('Caregiver profile saved successfully!', 'success')
-      closeCaregiverProfile()
+      // Don't close the form - keep it open so user can see their saved data
     } else {
       const errorData = await response.json()
       showMessage(errorData.message || 'Failed to save caregiver profile', 'error')

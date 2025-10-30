@@ -16,7 +16,7 @@ export const AVAILABLE_TOOLS = [
     type: 'function' as const,
     function: {
       name: 'web_search',
-      description: 'Search the internet for current information, news, facts, or research. Use this when you need up-to-date information that may not be in your training data, or when the user explicitly asks you to search online or look something up. Returns AI-generated answer along with source URLs.',
+      description: 'Perform a web search ONLY when the user EXPLICITLY requests to search online. User must use clear keywords like "search online", "look up", "find online", "what is the current/latest", "check online", "recent", or similar explicit phrases indicating they want real-time information from the internet. DO NOT use this tool for general knowledge questions that can be answered from your training data. DO NOT use this tool unless the user clearly indicates they want up-to-date information from the web.',
       parameters: {
         type: 'object',
         properties: {

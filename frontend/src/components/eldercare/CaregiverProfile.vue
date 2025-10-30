@@ -137,7 +137,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, watch } from 'vue'
 
 interface Caregiver {
   id: string
@@ -183,7 +183,8 @@ const form = reactive({
   notes: ''
 })
 
-onMounted(() => {
+// Load form data whenever caregiver prop changes
+function loadFormData() {
   if (props.caregiver) {
     Object.assign(form, {
       name: props.caregiver.name,
@@ -197,7 +198,12 @@ onMounted(() => {
       notes: props.caregiver.notes || ''
     })
   }
-})
+}
+
+// Watch for changes to caregiver prop and update form
+watch(() => props.caregiver, () => {
+  loadFormData()
+}, { immediate: true })
 
 function closeForm() {
   emit('close')
