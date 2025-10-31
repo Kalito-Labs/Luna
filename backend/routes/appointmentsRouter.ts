@@ -37,7 +37,7 @@ router.get('/', async (req, res) => {
     let query = `
       SELECT a.*, 
              p.name as patient_name,
-             hp.name as provider_name
+             hp.name as healthcare_provider_name
       FROM appointments a
       LEFT JOIN patients p ON a.patient_id = p.id
       LEFT JOIN healthcare_providers hp ON a.provider_id = hp.id
@@ -67,7 +67,7 @@ router.get('/:id', async (req, res) => {
     const appointment = db.prepare(`
       SELECT a.*, 
              p.name as patient_name,
-             hp.name as provider_name
+             hp.name as healthcare_provider_name
       FROM appointments a
       LEFT JOIN patients p ON a.patient_id = p.id
       LEFT JOIN healthcare_providers hp ON a.provider_id = hp.id
@@ -142,7 +142,7 @@ router.post('/', async (req, res) => {
     const newAppointment = db.prepare(`
       SELECT a.*, 
              p.name as patient_name,
-             hp.name as provider_name
+             hp.name as healthcare_provider_name
       FROM appointments a
       LEFT JOIN patients p ON a.patient_id = p.id
       LEFT JOIN healthcare_providers hp ON a.provider_id = hp.id
@@ -230,7 +230,7 @@ router.put('/:id', async (req, res) => {
     const updatedAppointment = db.prepare(`
       SELECT a.*, 
              p.name as patient_name,
-             hp.name as provider_name
+             hp.name as healthcare_provider_name
       FROM appointments a
       LEFT JOIN patients p ON a.patient_id = p.id
       LEFT JOIN healthcare_providers hp ON a.provider_id = hp.id
@@ -252,16 +252,15 @@ router.put('/:id', async (req, res) => {
   }
 })
 
-// DELETE /api/appointments/:id - Soft delete an appointment
+// DELETE /api/appointments/:id - Delete an appointment
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params
     
     const result = db.prepare(`
-      UPDATE appointments 
-      SET active = 0, updated_at = ? 
-      WHERE id = ? AND active = 1
-    `).run(new Date().toISOString(), id)
+      DELETE FROM appointments 
+      WHERE id = ?
+    `).run(id)
     
     if (result.changes === 0) {
       return err(res, 404, 'NOT_FOUND', 'Appointment not found')
