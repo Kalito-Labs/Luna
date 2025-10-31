@@ -250,20 +250,11 @@ router.get('/:id/summary', async (req, res) => {
       LIMIT 10
     `).all(id)
 
-    // Get recent medical records
-    const medicalRecords = db.prepare(`
-      SELECT * FROM medical_records 
-      WHERE patient_id = ? 
-      ORDER BY date_recorded DESC 
-      LIMIT 5
-    `).all(id)
-
     const summary = {
       patient,
       medications,
       appointments,
       vitals,
-      medicalRecords,
     }
 
     okItem(res, summary)

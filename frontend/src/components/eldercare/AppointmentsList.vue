@@ -99,7 +99,14 @@ function formatStatus(status: string): string {
 
 function formatDate(dateString: string): string {
   if (!dateString) return ''
-  const date = new Date(dateString)
+  // Parse date string directly to avoid timezone issues
+  // dateString format: 'YYYY-MM-DD'
+  const parts = dateString.split('-')
+  if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) return dateString
+  const year = parseInt(parts[0])
+  const month = parseInt(parts[1])
+  const day = parseInt(parts[2])
+  const date = new Date(year, month - 1, day) // month is 0-indexed
   return date.toLocaleDateString()
 }
 
