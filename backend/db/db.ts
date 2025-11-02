@@ -1,9 +1,17 @@
 import Database from 'better-sqlite3'
 import * as path from 'path'
+import * as fs from 'fs'
 import { logError } from '../utils/logger'
 
-// Path to your SQLite file - always points to db directory
-const dbFile = path.resolve(__dirname, __dirname.includes('dist') ? '../../../db/kalito.db' : './kalito.db')
+// Path to your SQLite file - always points to db directory relative to this file
+// This works in both dev (ts-node) and production (compiled) modes
+const dbFile = path.resolve(__dirname, './kalito.db')
+
+// Ensure the directory exists
+const dbDir = path.dirname(dbFile)
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true })
+}
 
 // Create database connection with error handling and optimizations
 export const db = (() => {
