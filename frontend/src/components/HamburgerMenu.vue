@@ -67,18 +67,18 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
 <style scoped>
 .hamburger-button {
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 9px;
+  gap: 6px;
   padding: 0;
   margin: 0;
   background: linear-gradient(145deg, #0d1117, #0a0e13);
   border: 1.7px solid #303851;
-  border-radius: 0.7em;
+  border-radius: 0.6em;
   cursor: pointer;
   box-shadow:
     0 4px 20px 0 #11192875,
@@ -103,7 +103,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   right: -2px;
   bottom: -2px;
   background: linear-gradient(45deg, transparent, rgba(143, 216, 252, 0.1), transparent);
-  border-radius: 0.8em;
+  border-radius: 0.7em;
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: -1;
@@ -173,8 +173,8 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 }
 
 .hamburger-button span {
-  width: 37px;
-  height: 4.3px;
+  width: 26px;
+  height: 3px;
   background: linear-gradient(90deg, #b4c3cf, #d1e3f0);
   border-radius: 5px;
   transition:
@@ -196,7 +196,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 }
 
 .hamburger-button.open span:nth-child(1) {
-  transform: translateY(11px) rotate(45deg);
+  transform: translateY(7.5px) rotate(45deg);
   background: linear-gradient(90deg, #4a9eff, #74c7ff);
   box-shadow: 
     0 0 15px rgba(74, 158, 255, 0.6),
@@ -209,7 +209,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 }
 
 .hamburger-button.open span:nth-child(3) {
-  transform: translateY(-11px) rotate(-45deg);
+  transform: translateY(-7.5px) rotate(-45deg);
   background: linear-gradient(90deg, #4a9eff, #74c7ff);
   box-shadow: 
     0 0 15px rgba(74, 158, 255, 0.6),

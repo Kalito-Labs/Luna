@@ -6,8 +6,7 @@
     </div>
     
     <div class="dashboard-header">
-      <h1>Family Care Dashboard</h1>
-      <p class="subtitle">Your unified hub for managing family health and caregiving</p>
+      <h1>Family Dashboard</h1>
     </div>
     
     <!-- Quick Actions - Main Dashboard -->
@@ -907,12 +906,6 @@ function showMessage(text: string, type: 'success' | 'error') {
   letter-spacing: -0.01em;
 }
 
-.subtitle {
-  color: var(--text-muted);
-  font-size: 1.1rem;
-  margin: 0;
-  line-height: 1.5;
-}
 
 /* Tablet: 769px - 1024px */
 @media (max-width: 1024px) {
@@ -925,9 +918,6 @@ function showMessage(text: string, type: 'success' | 'error') {
     font-size: 2.1rem;
   }
   
-  .subtitle {
-    font-size: 1.05rem;
-  }
 }
 
 /* Mobile: <= 768px */
@@ -942,9 +932,6 @@ function showMessage(text: string, type: 'success' | 'error') {
     margin-bottom: 8px;
   }
   
-  .subtitle {
-    font-size: 0.95rem;
-  }
 }
 
 /* ================================================================ */
