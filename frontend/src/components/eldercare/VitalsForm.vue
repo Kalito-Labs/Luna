@@ -36,14 +36,14 @@
           </div>
           
           <div class="form-group">
-            <label for="weight_kg">Weight (kg)</label>
+            <label for="weight_lbs">Weight (lbs)</label>
             <input 
-              id="weight_kg"
-              v-model.number="form.weight_kg" 
+              id="weight_lbs"
+              v-model.number="form.weight_lbs" 
               type="number" 
               step="0.1"
               min="0"
-              placeholder="e.g., 75.5"
+              placeholder="e.g., 165.0"
             />
             <small class="field-note">Check weekly</small>
           </div>
@@ -108,7 +108,7 @@ import { ref, watch } from 'vue'
 interface Vital {
   id?: string
   patient_id: string
-  weight_kg?: number | null
+  weight_lbs?: number | null
   glucose_am?: number | null
   glucose_pm?: number | null
   recorded_date: string
@@ -135,7 +135,7 @@ const emit = defineEmits<{
 
 const form = ref<Vital>({
   patient_id: '',
-  weight_kg: null,
+  weight_lbs: null,
   glucose_am: null,
   glucose_pm: null,
   recorded_date: new Date().toISOString().split('T')[0] || '', // Today's date
@@ -147,7 +147,7 @@ watch(() => props.vital, (vital) => {
   if (vital) {
     form.value = {
       patient_id: vital.patient_id,
-      weight_kg: vital.weight_kg ?? null,
+      weight_lbs: vital.weight_lbs ?? null,
       glucose_am: vital.glucose_am ?? null,
       glucose_pm: vital.glucose_pm ?? null,
       recorded_date: vital.recorded_date,
@@ -158,11 +158,12 @@ watch(() => props.vital, (vital) => {
 
 function submitForm() {
   // Convert empty strings to null for optional fields
+  // Use ?? instead of || to handle 0 as a valid value
   const vitalData: Vital = {
     patient_id: form.value.patient_id,
-    weight_kg: form.value.weight_kg || null,
-    glucose_am: form.value.glucose_am || null,
-    glucose_pm: form.value.glucose_pm || null,
+    weight_lbs: form.value.weight_lbs ?? null,
+    glucose_am: form.value.glucose_am ?? null,
+    glucose_pm: form.value.glucose_pm ?? null,
     recorded_date: form.value.recorded_date,
     notes: form.value.notes || undefined,
   }

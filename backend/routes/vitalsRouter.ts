@@ -12,7 +12,7 @@ const router = Router()
 
 const createVitalSchema = z.object({
   patient_id: z.string().min(1),
-  weight_kg: z.number().positive().nullable().optional(),
+  weight_lbs: z.number().positive().nullable().optional(),
   glucose_am: z.number().int().positive().nullable().optional(),
   glucose_pm: z.number().int().positive().nullable().optional(),
   recorded_date: z.string().min(1), // ISO date string
@@ -91,7 +91,7 @@ router.post('/', async (req, res) => {
     
     const insertVital = db.prepare(`
       INSERT INTO vitals (
-        id, patient_id, weight_kg, glucose_am, glucose_pm,
+        id, patient_id, weight_lbs, glucose_am, glucose_pm,
         recorded_date, notes, active, created_at, updated_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
     `)
@@ -99,7 +99,7 @@ router.post('/', async (req, res) => {
     insertVital.run(
       vitalId,
       validatedData.patient_id,
-      validatedData.weight_kg ?? null,
+      validatedData.weight_lbs ?? null,
       validatedData.glucose_am ?? null,
       validatedData.glucose_pm ?? null,
       validatedData.recorded_date,
@@ -144,9 +144,9 @@ router.put('/:id', async (req, res) => {
     const updates: string[] = []
     const values: (string | number | null)[] = []
 
-    if (validatedData.weight_kg !== undefined) {
-      updates.push('weight_kg = ?')
-      values.push(validatedData.weight_kg)
+    if (validatedData.weight_lbs !== undefined) {
+      updates.push('weight_lbs = ?')
+      values.push(validatedData.weight_lbs)
     }
     if (validatedData.glucose_am !== undefined) {
       updates.push('glucose_am = ?')

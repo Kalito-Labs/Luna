@@ -42,11 +42,11 @@
         
         <div class="vital-details">
           <div class="vital-metrics">
-            <div v-if="vital.weight_kg" class="metric-item">
+            <div v-if="vital.weight_lbs" class="metric-item">
               <div class="metric-icon">⚖️</div>
               <div class="metric-content">
                 <span class="metric-label">Weight</span>
-                <span class="metric-value">{{ vital.weight_kg }} kg</span>
+                <span class="metric-value">{{ vital.weight_lbs }} lbs</span>
               </div>
             </div>
             
@@ -96,7 +96,7 @@ interface Vital {
   id: string
   patient_id: string
   patient_name: string
-  weight_kg?: number | null
+  weight_lbs?: number | null
   glucose_am?: number | null
   glucose_pm?: number | null
   recorded_date: string
@@ -186,7 +186,7 @@ function getGlucoseClass(value: number): string {
 
 .filter-btn {
   padding: 12px 20px;
-  border: 2px solid var(--border-color);
+  border: var(--border);
   border-radius: 8px;
   background: var(--bg-glass);
   backdrop-filter: var(--blur);
