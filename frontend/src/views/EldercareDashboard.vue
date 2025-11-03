@@ -1034,10 +1034,13 @@ function showMessage(text: string, type: 'success' | 'error') {
 }
 
 .action-btn.active {
-  background: var(--accent-blue);
-  color: white;
+  background: linear-gradient(145deg, 
+    rgba(59, 130, 246, 0.15), 
+    rgba(59, 130, 246, 0.08));
   border-color: var(--accent-blue);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 
+    0 0 0 2px rgba(59, 130, 246, 0.2) inset,
+    0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
 .action-btn.active .btn-content h3 {
@@ -1124,7 +1127,7 @@ function showMessage(text: string, type: 'success' | 'error') {
   margin-bottom: 40px;
   overflow-x: auto;
   overflow-y: auto;
-  max-height: calc(100vh - 280px); /* Allow scrolling with enough space for header */
+  max-height: calc(100vh - 300px); /* Allow scrolling with enough space for header */
   -webkit-overflow-scrolling: touch;
 }
 
@@ -1191,9 +1194,8 @@ function showMessage(text: string, type: 'success' | 'error') {
 /* Mobile: <= 768px */
 @media (max-width: 768px) {
   .modal-overlay {
-    padding: 8px;
-    align-items: flex-start;
-    padding-top: 20px;
+  padding: 0;
+    align-items: stretch;
   }
 }
 
