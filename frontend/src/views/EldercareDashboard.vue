@@ -1,11 +1,10 @@
 <template>
   <div class="eldercare-dashboard">
-    <!-- Hamburger button/menu, top left -->
-    <div class="hamburger-fixed">
-      <HamburgerMenu />
-    </div>
-    
     <div class="dashboard-header">
+      <!-- Hamburger button/menu in header -->
+      <div class="hamburger-header">
+        <HamburgerMenu />
+      </div>
       <h1>Family Dashboard</h1>
     </div>
     
@@ -855,23 +854,10 @@ function showMessage(text: string, type: 'success' | 'error') {
   box-sizing: border-box;
 }
 
-/* Fixed hamburger placement */
-.hamburger-fixed {
-  position: fixed;
-  top: 32px;
-  left: 32px;
-  z-index: 100; /* Below modals (1000+) but above regular content */
-}
-
 /* Tablet: 769px - 1024px */
 @media (max-width: 1024px) {
   .eldercare-dashboard {
     padding: 24px;
-  }
-  
-  .hamburger-fixed {
-    top: 24px;
-    left: 24px;
   }
 }
 
@@ -880,11 +866,6 @@ function showMessage(text: string, type: 'success' | 'error') {
   .eldercare-dashboard {
     padding: 16px;
   }
-  
-  .hamburger-fixed {
-    top: 16px;
-    left: 16px;
-  }
 }
 
 /* ================================================================ */
@@ -892,10 +873,19 @@ function showMessage(text: string, type: 'success' | 'error') {
 /* ================================================================ */
 
 .dashboard-header {
+  position: relative;
   text-align: center;
   margin-bottom: 48px;
   padding-bottom: 1.5rem;
   border-bottom: var(--border);
+}
+
+/* Hamburger menu in header */
+.hamburger-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100; /* Below modals (1000+) but above regular content */
 }
 
 .dashboard-header h1 {
