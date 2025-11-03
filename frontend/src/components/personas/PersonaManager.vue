@@ -1,12 +1,10 @@
 <template>
   <div class="persona-manager-view">
-    <!-- Hamburger button/menu, top left -->
-    <div class="hamburger-fixed">
-      <HamburgerMenu />
-    </div>
-    
     <div class="header">
-      <div class="header-spacer"></div>
+      <!-- Hamburger button/menu in header -->
+      <div class="hamburger-header">
+        <HamburgerMenu />
+      </div>
       <h1 class="page-title">Persona Manager</h1>
       <button class="primary-button" @click="showCreateModal = true">
         <span class="plus-icon">+</span>
@@ -326,15 +324,8 @@ onMounted(async () => {
   overflow: auto;
 }
 
-/* Fixed hamburger placement */
-.hamburger-fixed {
-  position: fixed;
-  top: 32px;
-  left: 32px;
-  z-index: 100; /* Below modals (1000+) but above regular content */
-}
-
 .header {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -343,9 +334,12 @@ onMounted(async () => {
   border-bottom: var(--border);
 }
 
-.header-spacer {
-  /* Empty div to balance the grid - ensures title stays centered */
-  min-width: 0;
+/* Hamburger menu in header */
+.hamburger-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100; /* Below modals (1000+) but above regular content */
 }
 
 .page-title {
@@ -367,7 +361,7 @@ onMounted(async () => {
   border: none;
   border-radius: 0.5rem;
   color: white;
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1.2rem;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
