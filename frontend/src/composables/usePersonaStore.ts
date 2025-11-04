@@ -6,6 +6,7 @@ import type {
   PersonaListResponse,
 } from '../../../backend/types/personas'
 import type { ApiErrorResponse } from '../../../backend/types/api'
+import { apiUrl } from '../config/api'
 
 // Global persona state
 const personas = ref<Persona[]>([])
@@ -20,7 +21,7 @@ export function usePersonaStore() {
     error.value = null
 
     try {
-      const res = await fetch('/api/personas')
+      const res = await fetch(apiUrl('/api/personas'))
       const json: PersonaListResponse | ApiErrorResponse = await res.json()
 
       if ('error' in json) {
@@ -39,7 +40,7 @@ export function usePersonaStore() {
 
   // Create a new persona
   async function createPersona(personaData: CreatePersonaRequest): Promise<void> {
-    const res = await fetch('/api/personas', {
+    const res = await fetch(apiUrl('/api/personas'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(personaData),
@@ -55,7 +56,7 @@ export function usePersonaStore() {
 
   // Update an existing persona
   async function updatePersona(id: string, updateData: UpdatePersonaRequest): Promise<void> {
-    const res = await fetch(`/api/personas/${id}`, {
+    const res = await fetch(apiUrl(`/api/personas/${id}`), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updateData),
@@ -71,7 +72,7 @@ export function usePersonaStore() {
 
   // Delete a persona
   async function deletePersona(id: string): Promise<void> {
-    const res = await fetch(`/api/personas/${id}`, { method: 'DELETE' })
+    const res = await fetch(apiUrl(`/api/personas/${id}`), { method: 'DELETE' })
     const json = await res.json()
 
     if (!res.ok || 'error' in json) {

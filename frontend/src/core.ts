@@ -7,6 +7,7 @@
 
 import type { AgentRequest, AgentResponse } from '../../backend/types/agent'
 import type { PersonaCategory } from '../../backend/types/personas'
+import { apiUrl } from './config/api'
 
 /**
  * sendMessageToAgent
@@ -66,7 +67,7 @@ export async function sendMessageToAgent(
     if (persona) payload.personaId = persona
     if (customContext) payload.customContext = customContext
 
-    const response = await fetch('/api/agent', {
+    const response = await fetch(apiUrl('/api/agent'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -151,7 +152,7 @@ export async function* sendMessageToAgentStream(
     if (persona) payload.personaId = persona
     if (customContext) payload.customContext = customContext
 
-    const response = await fetch('/api/agent', {
+    const response = await fetch(apiUrl('/api/agent'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -223,7 +224,7 @@ export async function* sendMessageToAgentStream(
  * Fetches the list of available models from the backend `/api/models` endpoint.
  */
 export async function fetchAvailableModels() {
-  const response = await fetch('/api/models')
+  const response = await fetch(apiUrl('/api/models'))
   if (!response.ok) throw new Error('Failed to fetch models')
   const data = await response.json()
   return data.models || [] // Extract models array from response
@@ -314,7 +315,7 @@ export function optimizePromptForModel(prompt: string, modelKey: string): string
  * Fetches all chat sessions from the backend `/api/sessions`.
  */
 export async function fetchSessions() {
-  const response = await fetch('/api/sessions')
+  const response = await fetch(apiUrl('/api/sessions'))
   if (!response.ok) throw new Error('Failed to fetch sessions')
   return response.json()
 }
@@ -324,7 +325,7 @@ export async function fetchSessions() {
  * Fetches messages for a specific session from the backend.
  */
 export async function fetchSessionMessages(sessionId: string) {
-  const response = await fetch(`/api/sessions/${sessionId}/messages`)
+  const response = await fetch(apiUrl(`/api/sessions/${sessionId}/messages`))
   if (!response.ok) throw new Error('Failed to fetch session messages')
   return response.json()
 }
@@ -423,7 +424,7 @@ export async function saveSession(
   personaId?: string,
   name?: string
 ) {
-  const response = await fetch('/api/sessions/save', {
+  const response = await fetch(apiUrl('/api/sessions/save'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ sessionId, recap, model, personaId, name }),
@@ -448,7 +449,7 @@ export async function createSemanticPin(
   pinType: 'manual' | 'auto' | 'code' | 'concept' | 'system' = 'manual'
 ) {
   try {
-    const response = await fetch('/api/memory/pins', {
+    const response = await fetch(apiUrl('/api/memory/pins'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -473,7 +474,7 @@ export async function createSemanticPin(
 
 export async function deleteSession(sessionId: string) {
   if (!sessionId) throw new Error('No sessionId provided')
-  const response = await fetch(`/api/sessions/${encodeURIComponent(sessionId)}`, {
+  const response = await fetch(apiUrl(`/api/sessions/${encodeURIComponent(sessionId)}`), {
     method: 'DELETE',
   })
   if (!response.ok) throw new Error('Failed to delete session')
@@ -486,7 +487,7 @@ export async function deleteSession(sessionId: string) {
  */
 export async function fetchAvailablePersonas() {
   try {
-    const response = await fetch('/api/personas')
+    const response = await fetch(apiUrl('/api/personas'))
     if (!response.ok) {
       // eslint-disable-next-line no-console
       console.error('Failed to fetch personas:', response.status, response.statusText)

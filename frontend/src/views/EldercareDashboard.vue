@@ -220,6 +220,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { apiUrl } from '../config/api'
 import HamburgerMenu from '../components/HamburgerMenu.vue'
 import PatientForm from '../components/eldercare/PatientForm.vue'
 import PatientsList from '../components/eldercare/PatientsList.vue'
@@ -293,7 +294,7 @@ onMounted(async () => {
 
 async function loadPatients() {
   try {
-    const response = await fetch('/api/patients')
+    const response = await fetch(apiUrl('/api/patients'))
     if (response.ok) {
       const result = await response.json()
       patients.value = result.data || []
@@ -306,7 +307,7 @@ async function loadPatients() {
 
 async function loadProviders() {
   try {
-    const response = await fetch('/api/providers')
+    const response = await fetch(apiUrl('/api/providers'))
     if (response.ok) {
       const result = await response.json()
       providers.value = result.data || []
@@ -318,7 +319,7 @@ async function loadProviders() {
 
 async function loadAllMedications() {
   try {
-    const response = await fetch('/api/medications')
+    const response = await fetch(apiUrl('/api/medications'))
     if (response.ok) {
       const result = await response.json()
       allMedications.value = result.data || []
@@ -330,7 +331,7 @@ async function loadAllMedications() {
 
 async function loadAllAppointments() {
   try {
-    const response = await fetch('/api/appointments')
+    const response = await fetch(apiUrl('/api/appointments'))
     if (response.ok) {
       const result = await response.json()
       allAppointments.value = result.data || []
@@ -342,7 +343,7 @@ async function loadAllAppointments() {
 
 async function loadAllVitals() {
   try {
-    const response = await fetch('/api/vitals')
+    const response = await fetch(apiUrl('/api/vitals'))
     if (response.ok) {
       const result = await response.json()
       allVitals.value = result.data || []
@@ -354,7 +355,7 @@ async function loadAllVitals() {
 
 async function loadAllProviders() {
   try {
-    const response = await fetch('/api/providers')
+    const response = await fetch(apiUrl('/api/providers'))
     if (response.ok) {
       const result = await response.json()
       allProviders.value = result.data || []
@@ -372,7 +373,7 @@ function editPatient(patient: Patient) {
 async function deletePatient(patient: Patient) {
   if (confirm(`Are you sure you want to delete ${patient.name}? This action cannot be undone.`)) {
     try {
-      const response = await fetch(`/api/patients/${patient.id}`, {
+      const response = await fetch(apiUrl(`/api/patients/${patient.id}`), {
         method: 'DELETE'
       })
       
@@ -401,9 +402,9 @@ async function loadPatientData(patientId: string) {
   try {
     // Load patient's medications, appointments, and vitals
     const [medicationsRes, appointmentsRes, vitalsRes] = await Promise.all([
-      fetch(`/api/medications?patient_id=${patientId}`),
-      fetch(`/api/appointments?patient_id=${patientId}`),
-      fetch(`/api/vitals?patient_id=${patientId}`)
+      fetch(apiUrl(`/api/medications?patient_id=${patientId}`)),
+      fetch(apiUrl(`/api/appointments?patient_id=${patientId}`)),
+      fetch(apiUrl(`/api/vitals?patient_id=${patientId}`))
     ])
 
     if (medicationsRes.ok) {
@@ -599,7 +600,7 @@ async function deleteVital(vital: any) {
   }
   
   try {
-    const response = await fetch(`/api/vitals/${vital.id}`, {
+    const response = await fetch(apiUrl(`/api/vitals/${vital.id}`), {
       method: 'DELETE'
     })
     
@@ -629,7 +630,7 @@ async function deleteMedication(medication: any) {
   }
   
   try {
-    const response = await fetch(`/api/medications/${medication.id}`, {
+    const response = await fetch(apiUrl(`/api/medications/${medication.id}`), {
       method: 'DELETE'
     })
     
@@ -671,7 +672,7 @@ async function deleteAppointment(appointment: any) {
   }
   
   try {
-    const response = await fetch(`/api/appointments/${appointment.id}`, {
+    const response = await fetch(apiUrl(`/api/appointments/${appointment.id}`), {
       method: 'DELETE'
     })
     
@@ -711,7 +712,7 @@ function closeCaregiverProfile() {
 
 async function loadCaregiver() {
   try {
-    const response = await fetch('/api/caregiver')
+    const response = await fetch(apiUrl('/api/caregiver'))
     if (response.ok) {
       const result = await response.json()
       // Get the singleton caregiver profile
@@ -737,7 +738,7 @@ async function openCaregiverProfile() {
 async function saveCaregiver(caregiverData: any) {
   try {
     // Always use PUT - backend handles create or update automatically
-    const response = await fetch('/api/caregiver', {
+    const response = await fetch(apiUrl('/api/caregiver'), {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -809,7 +810,7 @@ async function deleteProvider(provider: any) {
   }
   
   try {
-    const response = await fetch(`/api/providers/${provider.id}`, {
+    const response = await fetch(apiUrl(`/api/providers/${provider.id}`), {
       method: 'DELETE'
     })
     
