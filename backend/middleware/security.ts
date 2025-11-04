@@ -23,13 +23,17 @@ const getCorsOptions = () => {
   }
 
   if (process.env.NODE_ENV === 'development') {
-    // Development: Allow local development
+    // Development: Allow local development + Android app
     return {
       origin: [
         'http://localhost:3000',
         'http://localhost:5173', // Vite dev server
         'http://127.0.0.1:3000',
         'http://127.0.0.1:5173',
+        'http://192.168.1.96:5173', // Network IP for mobile testing
+        'https://192.168.1.96:5173', // HTTPS network access
+        'capacitor://localhost', // Android app (Capacitor)
+        'http://localhost', // Android WebView fallback
       ],
       credentials: true,
       optionsSuccessStatus: 200,

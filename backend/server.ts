@@ -51,6 +51,7 @@ import { logger } from './utils/logger'
 
 const app = express()
 const PORT = Number(process.env.PORT) || 3000
+const HOST = process.env.HOST || '0.0.0.0' // Bind to all network interfaces
 
 // If running behind a reverse proxy (nginx, fly.io, render, etc.)
 // this lets Express trust X-Forwarded-* headers so rate-limits/IPs are accurate.
@@ -158,11 +159,13 @@ app.use(errorHandler)
 setupGlobalErrorHandlers()
 
 // --- Start the server ---
-const server = app.listen(PORT, async () => {
+const server = app.listen(PORT, HOST, async () => {
   logger.info('Server started successfully', {
     service: 'kalito-backend',
+    host: HOST,
     port: PORT,
     environment: nodeEnv,
+    networkUrl: `http://192.168.1.96:${PORT}`,
   })
 
   // Keep-alive heartbeat (helps some hosts keep process warm)
