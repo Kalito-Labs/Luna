@@ -46,6 +46,11 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 
+# SSL certificates (dev only)
+*.pem
+.certs/
+frontend/.certs/
+
 # IDE and editor files
 .vscode/
 .idea/

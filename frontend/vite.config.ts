@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
+import fs from 'fs'
 
 export default defineConfig({
   plugins: [
@@ -36,12 +37,6 @@ export default defineConfig({
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
-          },
-          {
-            src: '/favicon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any'
           }
         ]
       },
@@ -76,6 +71,11 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0', // Allow network access for PWA testing on mobile devices
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, '.certs/key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, '.certs/cert.pem')),
+    },
     watch: {
       usePolling: true,
       interval: 150,
