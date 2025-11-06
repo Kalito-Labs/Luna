@@ -204,6 +204,7 @@
       <ProviderForm 
         :provider="editingProvider"
         :isEditing="!!editingProvider"
+        :patients="patients"
         @save="saveProvider"
         @cancel="closeProviderForm"
         @close="closeProviderForm"

@@ -6,6 +6,20 @@
     </div>
     
     <form @submit.prevent="submitForm" class="form-container">
+      <!-- Patient Selection -->
+      <div class="form-section">
+        <h3>Patient</h3>
+        <div class="form-group">
+          <label for="patient_id">Select Patient *</label>
+          <select id="patient_id" v-model="form.patient_id" required>
+            <option value="">Choose a patient</option>
+            <option v-for="patient in patients" :key="patient.id" :value="patient.id">
+              {{ patient.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+
       <!-- Basic Information -->
       <div class="form-section">
         <h3>Basic Information</h3>
@@ -122,10 +136,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
+import { ref, onMounted } from 'vue'
+
+interface ProviderForm {
+  patient_id: string
+  name: string
+  specialty: string
+  practice_name: string
+  phone: string
+  email: string
+  address: string
+  notes: string
+  preferred: boolean
+}
 
 interface Provider {
   id: string
+  patient_id?: string
   name: string
   specialty?: string
   practice_name?: string
@@ -140,6 +167,7 @@ interface Provider {
 
 interface Props {
   provider?: Provider
+  patients: Array<{ id: string, name: string }>
   isEditing?: boolean
 }
 
@@ -155,7 +183,8 @@ const emit = defineEmits<{
 
 const saving = ref(false)
 
-const form = reactive({
+const form = ref<ProviderForm>({
+  patient_id: '',
   name: '',
   specialty: '',
   practice_name: '',
@@ -166,24 +195,11 @@ const form = reactive({
   preferred: false
 })
 
-function loadFormData() {
+onMounted(() => {
   if (props.provider) {
-    Object.assign(form, {
-      name: props.provider.name,
-      specialty: props.provider.specialty || '',
-      practice_name: props.provider.practice_name || '',
-      phone: props.provider.phone || '',
-      email: props.provider.email || '',
-      address: props.provider.address || '',
-      notes: props.provider.notes || '',
-      preferred: !!props.provider.preferred
-    })
+    Object.assign(form.value, props.provider)
   }
-}
-
-watch(() => props.provider, () => {
-  loadFormData()
-}, { immediate: true })
+})
 
 function closeForm() {
   emit('close')
@@ -194,14 +210,15 @@ async function submitForm() {
   
   try {
     const providerData = {
-      name: form.name,
-      specialty: form.specialty || undefined,
-      practice_name: form.practice_name || undefined,
-      phone: form.phone || undefined,
-      email: form.email || undefined,
-      address: form.address || undefined,
-      notes: form.notes || undefined,
-      preferred: form.preferred ? 1 : 0
+      patient_id: form.value.patient_id,
+      name: form.value.name,
+      specialty: form.value.specialty || undefined,
+      practice_name: form.value.practice_name || undefined,
+      phone: form.value.phone || undefined,
+      email: form.value.email || undefined,
+      address: form.value.address || undefined,
+      notes: form.value.notes || undefined,
+      preferred: form.value.preferred ? 1 : 0
     }
     
     emit('save', providerData)

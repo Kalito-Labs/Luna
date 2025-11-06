@@ -62,6 +62,7 @@
 <script setup lang="ts">
 interface Provider {
   id: string
+  patient_id?: string
   name: string
   specialty?: string
   practice_name?: string
