@@ -33,8 +33,8 @@
           <p v-if="patient.gender">
             <strong>Gender:</strong> {{ patient.gender }}
           </p>
-          <p v-if="patient.primary_doctor">
-            <strong>Primary Doctor:</strong> {{ patient.primary_doctor }}
+          <p v-if="getPrimaryDoctorName(patient.primary_doctor_id)">
+            <strong>Primary Doctor:</strong> {{ getPrimaryDoctorName(patient.primary_doctor_id) }}
           </p>
           <p v-if="patient.phone">
             <strong>Phone:</strong> {{ patient.phone }}
@@ -71,16 +71,29 @@ interface Patient {
   relationship?: string
   gender?: string
   phone?: string
-  primary_doctor?: string
+  primary_doctor_id?: string
   emergency_contact_name?: string
   notes?: string
 }
 
-interface Props {
-  patients: Patient[]
+interface Provider {
+  id: string
+  name: string
+  specialty?: string
 }
 
-defineProps<Props>()
+interface Props {
+  patients: Patient[]
+  providers: Provider[]
+}
+
+const props = defineProps<Props>()
+
+function getPrimaryDoctorName(patientDoctorId?: string): string {
+  if (!patientDoctorId) return ''
+  const doctor = props.providers.find(p => p.id === patientDoctorId)
+  return doctor ? `${doctor.name}${doctor.specialty ? ` (${doctor.specialty})` : ''}` : ''
+}
 
 defineEmits<{
   'add-patient': []
