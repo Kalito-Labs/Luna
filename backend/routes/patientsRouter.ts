@@ -18,9 +18,7 @@ const createPatientSchema = z.object({
   phone: z.string().nullable().optional(),
   emergency_contact_name: z.string().nullable().optional(),
   emergency_contact_phone: z.string().nullable().optional(),
-  primary_doctor: z.string().nullable().optional(),
-  doctor_address: z.string().nullable().optional(),
-  doctor_phone: z.string().nullable().optional(),
+  primary_doctor_id: z.string().nullable().optional(),
   insurance_provider: z.string().nullable().optional(),
   insurance_id: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
@@ -34,9 +32,7 @@ const updatePatientSchema = z.object({
   phone: z.string().nullable().optional(),
   emergency_contact_name: z.string().nullable().optional(),
   emergency_contact_phone: z.string().nullable().optional(),
-  primary_doctor: z.string().nullable().optional(),
-  doctor_address: z.string().nullable().optional(),
-  doctor_phone: z.string().nullable().optional(),
+  primary_doctor_id: z.string().nullable().optional(),
   insurance_provider: z.string().nullable().optional(),
   insurance_id: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
@@ -91,10 +87,9 @@ router.post('/', async (req, res) => {
     const insertPatient = db.prepare(`
       INSERT INTO patients (
         id, name, date_of_birth, relationship, gender, phone,
-        emergency_contact_name, emergency_contact_phone, primary_doctor,
-        doctor_address, doctor_phone,
+        emergency_contact_name, emergency_contact_phone, primary_doctor_id,
         insurance_provider, insurance_id, notes, active, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
     `)
 
     insertPatient.run(
@@ -106,9 +101,7 @@ router.post('/', async (req, res) => {
       validatedData.phone || null,
       validatedData.emergency_contact_name || null,
       validatedData.emergency_contact_phone || null,
-      validatedData.primary_doctor || null,
-      validatedData.doctor_address || null,
-      validatedData.doctor_phone || null,
+      validatedData.primary_doctor_id || null,
       validatedData.insurance_provider || null,
       validatedData.insurance_id || null,
       validatedData.notes || null,

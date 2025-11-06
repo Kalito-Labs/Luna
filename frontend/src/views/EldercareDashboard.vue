@@ -74,6 +74,7 @@
     <div v-if="activeView === 'patients'" class="content-section">
       <PatientsList 
         :patients="patients"
+        :providers="providers"
         @add-patient="showPatientForm = true"
         @view-details="viewPatientDetails"
         @edit-patient="editPatient"
@@ -129,6 +130,7 @@
       <PatientForm 
         :patient="editingPatient"
         :is-editing="!!editingPatient"
+        :providers="providers"
         @save="savePatient"
         @cancel="closePatientForm"
         @click.stop

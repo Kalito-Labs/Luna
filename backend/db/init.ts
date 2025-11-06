@@ -130,6 +130,7 @@ const migrations: { column: string; ddl: string }[] = [
   { column: 'repeatPenalty', ddl: 'ALTER TABLE personas ADD COLUMN repeatPenalty REAL' },
   { column: 'is_default', ddl: 'ALTER TABLE personas ADD COLUMN is_default INTEGER DEFAULT 0' },
   { column: 'saved', ddl: 'ALTER TABLE sessions ADD COLUMN saved INTEGER DEFAULT 0' },
+  { column: 'primary_doctor_id', ddl: 'ALTER TABLE patients ADD COLUMN primary_doctor_id TEXT' },
 ]
 
 for (const { column, ddl } of migrations) {
@@ -139,6 +140,59 @@ for (const { column, ddl } of migrations) {
   } catch {
     // ignore if column exists
   }
+}
+
+// Migrate patients table to use primary_doctor_id instead of manual doctor fields
+if (!columnExists('patients', 'primary_doctor_id')) {
+  console.log('🔄 Migrating patients table to use provider references...')
+  
+  db.transaction(() => {
+    db.pragma('foreign_keys = OFF')
+
+    // Create new patients table with correct schema
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS patients_new (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        date_of_birth TEXT,
+        relationship TEXT,
+        gender TEXT,
+        phone TEXT,
+        emergency_contact_name TEXT,
+        emergency_contact_phone TEXT,
+        primary_doctor_id TEXT,
+        insurance_provider TEXT,
+        insurance_id TEXT,
+        notes TEXT,
+        active INTEGER DEFAULT 1,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (primary_doctor_id) REFERENCES providers(id)
+      );
+    `)
+
+    // Copy data from old table (excluding the manual doctor fields)
+    db.exec(`
+      INSERT INTO patients_new (
+        id, name, date_of_birth, relationship, gender, phone,
+        emergency_contact_name, emergency_contact_phone,
+        insurance_provider, insurance_id, notes, active, created_at, updated_at
+      )
+      SELECT 
+        id, name, date_of_birth, relationship, gender, phone,
+        emergency_contact_name, emergency_contact_phone,
+        insurance_provider, insurance_id, notes, active, created_at, updated_at
+      FROM patients;
+    `)
+
+    // Drop old table and rename new one
+    db.exec(`DROP TABLE patients;`)
+    db.exec(`ALTER TABLE patients_new RENAME TO patients;`)
+
+    db.pragma('foreign_keys = ON')
+  })()
+  
+  console.log('✅ Migration completed: patients table now uses provider references')
 }
 
 // Ensure messages has FK to sessions

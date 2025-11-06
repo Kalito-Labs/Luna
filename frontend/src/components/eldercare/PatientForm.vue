@@ -99,33 +99,13 @@
         <h3>Medical Information</h3>
         
         <div class="form-group">
-          <label for="primary_doctor">Primary Doctor</label>
-          <input 
-            id="primary_doctor"
-            v-model="form.primary_doctor" 
-            type="text" 
-            placeholder="Dr. Smith"
-          />
-        </div>
-        
-        <div class="form-group">
-          <label for="doctor_address">Address</label>
-          <textarea 
-            id="doctor_address"
-            v-model="form.doctor_address" 
-            rows="2"
-            placeholder="Doctor's office address"
-          ></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label for="doctor_phone">Phone Number</label>
-          <input 
-            id="doctor_phone"
-            v-model="form.doctor_phone" 
-            type="tel" 
-            placeholder="(555) 123-4567"
-          />
+          <label for="primary_doctor_id">Primary Doctor</label>
+          <select id="primary_doctor_id" v-model="form.primary_doctor_id">
+            <option value="">Choose a primary doctor</option>
+            <option v-for="provider in providers" :key="provider.id" :value="provider.id">
+              {{ provider.name }}{{ provider.specialty ? ` - ${provider.specialty}` : '' }}{{ provider.phone ? ` - ${provider.phone}` : '' }}
+            </option>
+          </select>
         </div>
         
         <div class="form-row">
@@ -188,16 +168,22 @@ interface PatientForm {
   phone: string
   emergency_contact_name: string
   emergency_contact_phone: string
-  primary_doctor: string
-  doctor_address: string
-  doctor_phone: string
+  primary_doctor_id: string
   insurance_provider: string
   insurance_id: string
   notes: string
 }
 
+interface Provider {
+  id: string
+  name: string
+  specialty?: string
+  phone?: string
+}
+
 interface Props {
   patient?: any
+  providers: Array<Provider>
   isEditing?: boolean
 }
 
@@ -220,9 +206,7 @@ const form = ref<PatientForm>({
   phone: '',
   emergency_contact_name: '',
   emergency_contact_phone: '',
-  primary_doctor: '',
-  doctor_address: '',
-  doctor_phone: '',
+  primary_doctor_id: '',
   insurance_provider: '',
   insurance_id: '',
   notes: ''
@@ -247,9 +231,7 @@ async function submitForm() {
       phone: form.value.phone,
       emergency_contact_name: form.value.emergency_contact_name,
       emergency_contact_phone: form.value.emergency_contact_phone,
-      primary_doctor: form.value.primary_doctor,
-      doctor_address: form.value.doctor_address,
-      doctor_phone: form.value.doctor_phone,
+      primary_doctor_id: form.value.primary_doctor_id,
       insurance_provider: form.value.insurance_provider,
       insurance_id: form.value.insurance_id,
       notes: form.value.notes
