@@ -3,8 +3,12 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { db } from './db' // Import the shared database connection
 
-// Path to database file - relative to this file's location
-const dbPath = path.resolve(__dirname, './kalito.db')
+// Use the same path resolution as db.ts for consistency
+const currentDir = process.cwd()
+const isInBackendDir = currentDir.endsWith('/backend')
+const dbPath = isInBackendDir 
+  ? path.resolve(currentDir, 'db/kalito.db')
+  : path.resolve(currentDir, 'backend/db/kalito.db')
 
 // Create DB file if it doesn't exist
 if (!fs.existsSync(dbPath)) {
