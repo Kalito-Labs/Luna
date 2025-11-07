@@ -2,7 +2,12 @@
   <div class="patient-detail-modal">
     <div class="modal-header">
       <h2>{{ patient.name }}</h2>
-      <button @click="$emit('close')" class="close-btn">&times;</button>
+      <div class="modal-actions">
+        <button @click="printModal" class="btn btn-sm btn-outline print-btn" title="Print patient information">
+          🖨️ Print
+        </button>
+        <button @click="$emit('close')" class="close-btn">&times;</button>
+      </div>
     </div>
     
     <div class="modal-body">
@@ -10,9 +15,6 @@
       <div class="patient-info-section">
         <div class="section-header">
           <h3>Patient Information</h3>
-          <button @click="$emit('edit-patient', patient)" class="btn btn-sm btn-outline">
-            Edit Patient
-          </button>
         </div>
         
         <div class="info-grid">
@@ -36,9 +38,9 @@
             <label>Phone:</label>
             <span>{{ patient.phone }}</span>
           </div>
-          <div class="info-item" v-if="patient.primary_doctor">
+          <div class="info-item" v-if="primaryDoctorName">
             <label>Primary Doctor:</label>
-            <span>{{ patient.primary_doctor }}</span>
+            <span>{{ primaryDoctorName }}</span>
           </div>
           <div class="info-item" v-if="patient.insurance_provider">
             <label>Insurance:</label>
@@ -72,13 +74,25 @@
         @delete-appointment="$emit('delete-appointment', $event)"
       />
     </div>
+
+    <!-- Hidden Printable Component - Only for printing -->
+    <div class="print-only-wrapper">
+      <PrintablePatientReport 
+        ref="printComponent"
+        :patient="patient"
+        :medications="medications"
+        :appointments="appointments"
+        :providers="providers"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import MedicationsList from './MedicationsList.vue'
 import AppointmentsList from './AppointmentsList.vue'
-
+import PrintablePatientReport from './PrintablePatientReport.vue'
 
 interface Patient {
   id: string
@@ -87,10 +101,19 @@ interface Patient {
   relationship?: string
   gender?: string
   phone?: string
-  primary_doctor?: string
+  primary_doctor_id?: string
   insurance_provider?: string
+  insurance_id?: string
   emergency_contact_name?: string
+  emergency_contact_phone?: string
   notes?: string
+}
+
+interface Provider {
+  id: string
+  name: string
+  specialty?: string
+  phone?: string
 }
 
 interface Medication {
@@ -101,6 +124,7 @@ interface Medication {
   prescribing_doctor?: string
   start_date?: string
   refills_remaining?: number
+  notes?: string
 }
 
 interface Appointment {
@@ -117,13 +141,13 @@ interface Props {
   patient: Patient
   medications: Medication[]
   appointments: Appointment[]
+  providers: Provider[]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 defineEmits<{
   close: []
-  'edit-patient': [patient: Patient]
   'add-medication': []
   'edit-medication': [medication: Medication]
   'delete-medication': [medication: Medication]
@@ -131,6 +155,14 @@ defineEmits<{
   'edit-appointment': [appointment: Appointment]
   'delete-appointment': [appointment: Appointment]
 }>()
+
+const printComponent = ref<InstanceType<typeof PrintablePatientReport> | null>(null)
+
+const primaryDoctorName = computed(() => {
+  if (!props.patient.primary_doctor_id) return null
+  const doctor = props.providers.find(p => p.id === props.patient.primary_doctor_id)
+  return doctor ? `${doctor.name}${doctor.specialty ? ` - ${doctor.specialty}` : ''}` : null
+})
 
 function formatRelationship(relationship: string): string {
   const relationships: Record<string, string> = {
@@ -155,6 +187,12 @@ function calculateAge(dateOfBirth: string): number {
   }
   
   return age
+}
+
+function printModal() {
+  if (printComponent.value) {
+    printComponent.value.printReport()
+  }
 }
 </script>
 
@@ -188,6 +226,19 @@ function calculateAge(dateOfBirth: string): number {
   font-weight: 600;
 }
 
+.modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.print-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+}
+
 .close-btn {
   background: none;
   border: none;
@@ -213,6 +264,33 @@ function calculateAge(dateOfBirth: string): number {
   padding: 24px;
   overflow-y: auto;
   flex: 1;
+}
+
+.print-only-wrapper {
+  display: none !important;
+  position: absolute !important;
+  left: -99999px !important;
+  top: -99999px !important;
+}
+
+@media print {
+  /* Hide everything in the modal during print */
+  .modal-header,
+  .modal-body > *:not(.print-only-wrapper) {
+    display: none !important;
+  }
+  
+  /* Show only the printable report */
+  .print-only-wrapper {
+    display: block !important;
+    position: static !important;
+    left: 0 !important;
+    top: 0 !important;
+  }
+}
+
+.print-header {
+  display: none;
 }
 
 .patient-info-section {
@@ -361,6 +439,15 @@ function calculateAge(dateOfBirth: string): number {
     font-size: 1.5rem;
   }
   
+  .modal-actions {
+    gap: 8px;
+  }
+  
+  .print-btn {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+  
   .modal-body {
     padding: 16px;
   }
@@ -388,6 +475,16 @@ function calculateAge(dateOfBirth: string): number {
   
   .modal-header h2 {
     font-size: 1.25rem;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .print-btn {
+    font-size: 0.75rem;
+    padding: 6px 10px;
   }
   
   .modal-body {
