@@ -1,3 +1,4 @@
+
 <template>
   <div class="printable-report" ref="printableContent">
       <h2 class="section-title">Patient Information</h2>
@@ -281,6 +282,11 @@ defineExpose({
 
 /* Print - table-based list layout */
 @media print {
+  @page {
+    size: letter;
+    margin: 0;
+  }
+
   .printable-report {
     position: static !important;
     left: 0 !important;
@@ -292,18 +298,13 @@ defineExpose({
     opacity: 1 !important;
     display: block !important;
     width: 100%;
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0.25in 0.5in 0.5in 0.5in !important;
     font-family: Arial, sans-serif;
     font-size: 11pt;
     line-height: 1.3;
     color: #000;
     background: #fff;
-  }
-
-  @page {
-    size: letter;
-    margin: 0.5in;
   }
 
   .section-title {

@@ -274,9 +274,14 @@ function printModal() {
 }
 
 @media print {
+  .patient-detail-modal {
+    all: unset !important;
+    display: block !important;
+  }
+  
   /* Hide everything in the modal during print */
   .modal-header,
-  .modal-body > *:not(.print-only-wrapper) {
+  .modal-body {
     display: none !important;
   }
   
