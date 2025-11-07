@@ -176,8 +176,9 @@
   <PatientDetailModal 
     v-if="selectedPatient"
     :patient="selectedPatient"
-  :medications="patientMedications"
-  :appointments="patientAppointments"
+    :medications="patientMedications"
+    :appointments="patientAppointments"
+    :providers="allProviders"
     @close="closePatientDetail"
     @edit-patient="editPatient"
     @add-medication="() => { showPatientDetail = false; showMedicationForm = true }"
@@ -396,8 +397,16 @@ async function deletePatient(patient: Patient) {
 }
 
 async function viewPatientDetails(patient: Patient) {
-  selectedPatient.value = patient
+  // Reset data arrays first to prevent stale data
+  patientMedications.value = []
+  patientAppointments.value = []
+  patientVitals.value = []
+  
+  // Load patient data BEFORE showing modal
   await loadPatientData(patient.id)
+  
+  // Now set the patient and show modal
+  selectedPatient.value = patient
   showPatientDetail.value = true
 }
 
@@ -413,16 +422,22 @@ async function loadPatientData(patientId: string) {
     if (medicationsRes.ok) {
       const data = await medicationsRes.json()
       patientMedications.value = data.data || []
+    } else {
+      patientMedications.value = []
     }
     
     if (appointmentsRes.ok) {
       const data = await appointmentsRes.json()
       patientAppointments.value = data.data || []
+    } else {
+      patientAppointments.value = []
     }
     
     if (vitalsRes.ok) {
       const data = await vitalsRes.json()
       patientVitals.value = data.data || []
+    } else {
+      patientVitals.value = []
     }
   } catch (error) {
     console.error('Failed to load patient data:', error)

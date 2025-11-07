@@ -61,6 +61,7 @@
       <!-- Medications Section -->
       <MedicationsList 
         :medications="medications"
+        :patients="[patient]"
         @add-medication="$emit('add-medication')"
         @edit-medication="$emit('edit-medication', $event)"
         @delete-medication="$emit('delete-medication', $event)"
