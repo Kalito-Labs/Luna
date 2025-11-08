@@ -44,6 +44,8 @@ export interface PatientContext {
 
 export interface MedicationContext {
   id: string
+  patientId: string  // Link to patient
+  patientName?: string  // Patient name for easy reference
   name: string
   genericName?: string
   dosage: string
@@ -81,11 +83,22 @@ export interface CaregiverContext {
   notes?: string
 }
 
+export interface VitalContext {
+  id: string
+  patientId: string
+  patientName?: string
+  weightLbs?: number
+  glucoseAm?: number
+  glucosePm?: number
+  recordedDate: string
+  notes?: string
+}
 
 export type EldercareContext = {
   patients: PatientContext[];
   medications: MedicationContext[];
   recentAppointments: AppointmentContext[];
+  vitals: VitalContext[];
   caregiver: CaregiverContext | null;  // Singleton - only one caregiver (you)
   providers: ProviderContext[];
   summary: string;
@@ -262,22 +275,25 @@ export class EldercareContextService {
   private getMedications(patientId?: string, includePrivateData: boolean = true): MedicationContext[] {
     try {
       let query = `
-        SELECT id, patient_id, name, generic_name, dosage, frequency, route,
-               prescribing_doctor, pharmacy, rx_number,
-               side_effects, notes
-        FROM medications 
-        WHERE active = 1
+        SELECT m.id, m.patient_id, m.name, m.generic_name, m.dosage, m.frequency, m.route,
+               m.prescribing_doctor, m.pharmacy, m.rx_number,
+               m.side_effects, m.notes,
+               p.name as patient_name
+        FROM medications m
+        LEFT JOIN patients p ON m.patient_id = p.id
+        WHERE m.active = 1
       `
       const params: (string | number)[] = []
       if (patientId) {
-        query += ` AND patient_id = ?`
+        query += ` AND m.patient_id = ?`
         params.push(patientId)
       }
-      query += ` ORDER BY created_at DESC LIMIT 50`
+      query += ` ORDER BY m.created_at DESC LIMIT 50`
 
       const rows = db.prepare(query).all(...params) as Array<{
         id: string
         patient_id: string
+        patient_name: string
         name: string
         generic_name: string | null
         dosage: string
@@ -296,6 +312,8 @@ export class EldercareContextService {
       return rows.map(row => {
         const context: MedicationContext = {
           id: row.id,
+          patientId: row.patient_id,
+          patientName: row.patient_name || undefined,
           name: row.name,
           genericName: row.generic_name || undefined,
           dosage: row.dosage,
@@ -435,6 +453,63 @@ export class EldercareContextService {
   /**
    * Get recent vital signs measurements
    */
+  private getVitals(patientId?: string, includePrivateData: boolean = true): VitalContext[] {
+    try {
+      const cutoffDate = new Date()
+      cutoffDate.setDate(cutoffDate.getDate() - this.MAX_RECENT_DAYS)
+      const cutoffDateStr = cutoffDate.toISOString().split('T')[0]
+
+      let query = `
+        SELECT v.id, v.patient_id, v.weight_lbs, v.glucose_am, v.glucose_pm,
+               v.recorded_date, v.notes,
+               p.name as patient_name
+        FROM vitals v
+        LEFT JOIN patients p ON v.patient_id = p.id
+        WHERE v.active = 1 AND v.recorded_date >= ?
+      `
+
+      const params: (string | number)[] = [cutoffDateStr]
+      if (patientId) {
+        query += ` AND v.patient_id = ?`
+        params.push(patientId)
+      }
+
+      query += ` ORDER BY v.recorded_date DESC LIMIT 50`
+
+      const rows = db.prepare(query).all(...params) as Array<{
+        id: string
+        patient_id: string
+        patient_name: string
+        weight_lbs: number | null
+        glucose_am: number | null
+        glucose_pm: number | null
+        recorded_date: string
+        notes: string | null
+      }>
+
+      return rows.map(row => {
+        const context: VitalContext = {
+          id: row.id,
+          patientId: row.patient_id,
+          patientName: row.patient_name || undefined,
+          recordedDate: row.recorded_date,
+        }
+
+        // Include data based on privacy setting
+        if (includePrivateData) {
+          context.weightLbs = row.weight_lbs || undefined
+          context.glucoseAm = row.glucose_am || undefined
+          context.glucosePm = row.glucose_pm || undefined
+          context.notes = row.notes || undefined
+        }
+
+        return context
+      })
+    } catch (error) {
+      console.error('Error fetching vitals for context:', error)
+      return []
+    }
+  }
 
   /**
    * Get caregiver profile (singleton - there's only one caregiver: you)
@@ -508,19 +583,37 @@ export class EldercareContextService {
       });
       summary += '\n';
     }
-    // Active medications summary
+    // Active medications summary - grouped by patient
     if (context.medications.length > 0) {
-      summary += `### Active Medications (${context.medications.length})\n`;
-      context.medications.slice(0, 10).forEach((med: MedicationContext) => {
-        summary += `- ${med.name}`;
-        if (med.genericName) summary += ` (${med.genericName})`;
-        summary += ` ${med.dosage} - ${med.frequency}`;
-        if (med.prescribingDoctor) summary += `\n  Prescribed by: ${med.prescribingDoctor}`;
-        if (med.pharmacy) summary += `\n  Pharmacy: ${med.pharmacy}`;
-        if (med.rxNumber) summary += ` (Rx: ${med.rxNumber})`;
+      summary += `### Active Medications (${context.medications.length})\n\n`;
+      
+      // Group medications by patient
+      const medsByPatient = new Map<string, MedicationContext[]>();
+      context.medications.forEach((med: MedicationContext) => {
+        const patientName = med.patientName || 'Unknown Patient';
+        if (!medsByPatient.has(patientName)) {
+          medsByPatient.set(patientName, []);
+        }
+        medsByPatient.get(patientName)!.push(med);
+      });
+      
+      // Display medications grouped by patient
+      medsByPatient.forEach((meds, patientName) => {
+        summary += `**${patientName} (${meds.length} medication${meds.length !== 1 ? 's' : ''})**\n`;
+        meds.forEach((med: MedicationContext) => {
+          summary += `- ${med.name}`;
+          if (med.genericName) summary += ` (${med.genericName})`;
+          summary += ` ${med.dosage} - ${med.frequency}\n`;
+          if (med.prescribingDoctor) summary += `  Prescribed by: ${med.prescribingDoctor}\n`;
+          if (med.pharmacy) {
+            summary += `  Pharmacy: ${med.pharmacy}`;
+            if (med.rxNumber) summary += ` (Rx: ${med.rxNumber})`;
+            summary += '\n';
+          }
+          if (med.notes) summary += `  Notes: ${med.notes}\n`;
+        });
         summary += '\n';
       });
-      summary += '\n';
     }
     // Upcoming appointments
     const upcomingAppointments = context.recentAppointments.filter((apt: AppointmentContext) =>
@@ -538,6 +631,24 @@ export class EldercareContextService {
           if (apt.provider.phone) summary += `\n  Phone: ${apt.provider.phone}`;
           if (apt.location) summary += `\n  Location: ${apt.location}`;
         }
+        summary += '\n';
+      });
+      summary += '\n';
+    }
+    // Recent vitals
+    if (context.vitals.length > 0) {
+      summary += `### Recent Vital Signs (${context.vitals.length})\n`;
+      context.vitals.slice(0, 10).forEach((vital: VitalContext) => {
+        summary += `- ${vital.recordedDate}`;
+        if (vital.patientName) summary += ` - ${vital.patientName}`;
+        const measurements = []
+        if (vital.weightLbs) measurements.push(`Weight: ${vital.weightLbs} lbs`)
+        if (vital.glucoseAm) measurements.push(`Glucose AM: ${vital.glucoseAm} mg/dL`)
+        if (vital.glucosePm) measurements.push(`Glucose PM: ${vital.glucosePm} mg/dL`)
+        if (measurements.length > 0) {
+          summary += `\n  ${measurements.join(', ')}`
+        }
+        if (vital.notes) summary += `\n  Notes: ${vital.notes}`
         summary += '\n';
       });
       summary += '\n';
@@ -581,6 +692,7 @@ export class EldercareContextService {
     const patients = this.getPatients(includePrivateData)
     const medications = this.getMedications(patientId, includePrivateData)
     const recentAppointments = this.getRecentAppointments(patientId, includePrivateData)
+    const vitals = this.getVitals(patientId, includePrivateData)
     const caregiver = this.getCaregiver(includePrivateData)
     const providers = this.getProviders()
 
@@ -588,6 +700,7 @@ export class EldercareContextService {
       patients,
       medications,
       recentAppointments,
+      vitals,
       caregiver,
       providers,
       summary: '',
@@ -666,15 +779,37 @@ export class EldercareContextService {
       }
     }
 
-    // If no direct keyword match, try to extract names from the query
+    // If no direct keyword match, try to find patient names in the query
     if (!foundPatient) {
-      const words = userQuery.split(/\s+/)
-      for (const word of words) {
-        if (word.length > 2) { // Skip short words
-          const patient = this.findPatientByReference(word)
-          if (patient) {
-            foundPatient = patient
-            break
+      // First, try to match full patient names (handles "Aurora Sanchez", "Basilio Sanchez", etc.)
+      // Get all active patients to search through their names
+      const allPatients = this.getPatients(true) // We just need names, so includePrivateData can be true for this search
+      
+      for (const patient of allPatients) {
+        // Check if the full patient name appears in the query (case-insensitive)
+        if (queryLower.includes(patient.name.toLowerCase())) {
+          foundPatient = patient
+          break
+        }
+        
+        // Also check first name only as a fallback
+        const firstName = patient.name.split(' ')[0].toLowerCase()
+        if (firstName.length > 2 && queryLower.includes(firstName)) {
+          foundPatient = patient
+          break
+        }
+      }
+      
+      // If still no match, try individual words (but this is less reliable)
+      if (!foundPatient) {
+        const words = userQuery.split(/\s+/)
+        for (const word of words) {
+          if (word.length > 2) { // Skip short words
+            const patient = this.findPatientByReference(word)
+            if (patient) {
+              foundPatient = patient
+              break
+            }
           }
         }
       }
@@ -691,8 +826,13 @@ export class EldercareContextService {
     contextPrompt += context.summary
     
     // Add specific instructions for AI behavior
-    contextPrompt += "\n## Instructions for AI Assistant\n"
-    contextPrompt += "- Use the eldercare information above to provide relevant, helpful responses\n"
+    contextPrompt += "\n## CRITICAL Instructions for AI Assistant\n"
+    contextPrompt += "- **USE ONLY CURRENT DATA**: The medication list above is the AUTHORITATIVE source - ignore any medication data from previous messages\n"
+    contextPrompt += "- **MEDICATION LISTING REQUIREMENTS**: When asked about medications, you MUST list ONLY the medications shown above for the requested patient\n"
+    contextPrompt += "- **MANDATORY FIELDS**: ALWAYS include ALL details for every medication: name, dosage, frequency, prescribing doctor, pharmacy, and RX number\n"
+    contextPrompt += "- **RX NUMBERS ARE PROVIDED**: Every medication above includes an RX number in format '(Rx: XXXXX)' - NEVER say 'not specified' or 'not provided'\n"
+    contextPrompt += "- **DO NOT HALLUCINATE**: Only use medication data shown above - do not invent or recall medications from memory or previous conversations\n"
+    contextPrompt += "- **PATIENT ACCURACY**: Verify you are listing medications for the correct patient - do not mix up patients\n"
     contextPrompt += "- When referencing patients, use their names and relationships naturally\n"
     contextPrompt += "- Focus on practical caregiving support and information organization\n"
     
