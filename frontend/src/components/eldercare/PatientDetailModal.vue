@@ -275,23 +275,77 @@ function printModal() {
 }
 
 @media print {
-  .patient-detail-modal {
-    all: unset !important;
+  /* CRITICAL: Reset and clean the entire page for printing */
+  :root,
+  html,
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  
+  /* Hide the entire application */
+  body * {
+    visibility: hidden !important;
+  }
+  
+  /* Show only the modal overlay and its contents */
+  .modal-overlay,
+  .modal-overlay * {
+    visibility: visible !important;
+  }
+  
+  /* Reset modal overlay to be a clean container */
+  .modal-overlay {
+    position: static !important;
+    background: white !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
     display: block !important;
   }
   
-  /* Hide everything in the modal during print */
+  /* Reset modal container */
+  .patient-detail-modal {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+  
+  /* Hide modal UI elements */
   .modal-header,
-  .modal-body {
+  .modal-body,
+  .patient-info-section,
+  .close-btn,
+  .print-btn {
     display: none !important;
+    visibility: hidden !important;
   }
   
   /* Show only the printable report */
   .print-only-wrapper {
     display: block !important;
+    visibility: visible !important;
     position: static !important;
     left: 0 !important;
     top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
   }
 }
 
