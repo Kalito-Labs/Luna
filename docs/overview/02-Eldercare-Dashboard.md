@@ -79,7 +79,7 @@ A family care coordination system to manage Mom and Dads Health.
 
 **UI Components:**
 
-- `EldercareDashboard.vue`: Main dashboard with 6-section quick actions
+- `FamilyHub.vue`: Main dashboard with 6-section quick actions
 - `PatientForm.vue`, `MedicationForm.vue`, `AppointmentForm.vue`: Data entry
 - `PatientDetailModal.vue`: Comprehensive patient view with all related data and print functionality
 - `PrintablePatientReport.vue`: Professional print-optimized patient reports (hidden on screen, visible only when printing)

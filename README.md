@@ -96,7 +96,7 @@ Unlike generic chatbots or cloud-based eldercare apps, Kalito Space provides:
 
 6. **Open your browser**
    ```
-   http://localhost:5173/eldercare
+   http://localhost:5173/family-hub
    ```
 
 ## 🏗️ Project Structure
@@ -139,7 +139,7 @@ kalito-repo/
 │   │   │   └── personas/       # PersonaManager
 │   │   ├── 📁 views/           # Page views
 │   │   │   ├── HomeView.vue    # Landing page
-│   │   │   └── EldercareDashboard.vue  # Care management
+│   │   │   └── FamilyHub.vue   # Care management
 │   │   ├── 📁 router/          # Vue Router config
 │   │   ├── 📁 utils/           # Frontend utilities
 │   │   └── core.ts             # API client & core logic
@@ -306,9 +306,9 @@ kalito-repo/
 - **`/`** - Landing page with feature showcase
 - **`/kalito`** - AI chat interface (ChatWorkspace)
 - **`/personas`** - AI persona management
-- **`/eldercare`** - Eldercare dashboard (care management)
+- **`/family-hub`** - Family Hub dashboard (care management)
 
-### Eldercare Dashboard
+### Family Hub Dashboard
 Six main sections with modal-based workflows:
 
 - **👨‍⚕️ My Caregiver Profile** - Widescreen modal for professional caregiver management

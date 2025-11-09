@@ -240,7 +240,7 @@ cd backend && npm run dev
 cd frontend && npm run dev
 
 # Open browser
-http://localhost:5173/eldercare
+http://localhost:5173/family-hub
 ```
 
 That's it. No cloud services to configure (unless you want AI features).

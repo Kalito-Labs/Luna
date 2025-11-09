@@ -360,7 +360,7 @@ router.post('/import-all', (req, res) => {
 
 #### Step 2: Frontend Export UI
 
-**Add to EldercareDashboard.vue:**
+**Add to FamilyHub.vue:**
 
 ```vue
 <template>

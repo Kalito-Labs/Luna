@@ -1,5 +1,5 @@
 <template>
-  <div class="eldercare-dashboard">
+  <div class="family-hub">
     <div class="dashboard-header">
       <!-- Hamburger button/menu in header -->
       <div class="hamburger-header">
@@ -224,7 +224,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { apiUrl } from '../config/api'
 import HamburgerMenu from '../components/HamburgerMenu.vue'
 import PatientForm from '../components/eldercare/PatientForm.vue'
@@ -239,8 +238,6 @@ import VitalsList from '../components/eldercare/VitalsList.vue'
 import CaregiverProfile from '../components/eldercare/CaregiverProfile.vue'
 import ProviderForm from '../components/eldercare/ProviderForm.vue'
 import ProvidersList from '../components/eldercare/ProvidersList.vue'
-
-const router = useRouter()
 
 interface Patient {
   id: string
@@ -869,7 +866,7 @@ function showMessage(text: string, type: 'success' | 'error') {
 /* BASE LAYOUT - Desktop First, Fluid Responsive                   */
 /* ================================================================ */
 
-.eldercare-dashboard {
+.family-hub {
   max-width: 1600px;
   width: 100%;
   margin: 0 auto;
@@ -885,14 +882,14 @@ function showMessage(text: string, type: 'success' | 'error') {
 
 /* Tablet: 769px - 1024px */
 @media (max-width: 1024px) {
-  .eldercare-dashboard {
+  .family-hub {
     padding: 24px;
   }
 }
 
 /* Mobile: <= 768px */
 @media (max-width: 768px) {
-  .eldercare-dashboard {
+  .family-hub {
     padding: 16px;
   }
 }
@@ -1339,17 +1336,17 @@ function showMessage(text: string, type: 'success' | 'error') {
 /* Custom Scrollbars - Modern Dark Gray Design */
 
 /* Main dashboard scrollbar */
-.eldercare-dashboard::-webkit-scrollbar {
+.family-hub::-webkit-scrollbar {
   width: 12px;
 }
 
-.eldercare-dashboard::-webkit-scrollbar-track {
+.family-hub::-webkit-scrollbar-track {
   background: rgba(30, 30, 35, 0.4);
   border-radius: 6px;
   margin: 4px;
 }
 
-.eldercare-dashboard::-webkit-scrollbar-thumb {
+.family-hub::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, rgba(60, 60, 70, 0.9), rgba(80, 80, 90, 0.9));
   border-radius: 6px;
   border: 2px solid transparent;
@@ -1357,27 +1354,27 @@ function showMessage(text: string, type: 'success' | 'error') {
   transition: all 0.3s ease;
 }
 
-.eldercare-dashboard::-webkit-scrollbar-thumb:hover {
+.family-hub::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, rgba(90, 90, 100, 0.95), rgba(110, 110, 120, 0.95));
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 }
 
-.eldercare-dashboard::-webkit-scrollbar-thumb:active {
+.family-hub::-webkit-scrollbar-thumb:active {
   background: rgba(120, 120, 130, 1);
 }
 
 /* Child elements scrollbars */
-.eldercare-dashboard *::-webkit-scrollbar {
+.family-hub *::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-.eldercare-dashboard *::-webkit-scrollbar-track {
+.family-hub *::-webkit-scrollbar-track {
   background: rgba(30, 30, 35, 0.3);
   border-radius: 5px;
 }
 
-.eldercare-dashboard *::-webkit-scrollbar-thumb {
+.family-hub *::-webkit-scrollbar-thumb {
   background: rgba(70, 70, 80, 0.8);
   border-radius: 5px;
   border: 2px solid transparent;
@@ -1385,33 +1382,33 @@ function showMessage(text: string, type: 'success' | 'error') {
   transition: all 0.3s ease;
 }
 
-.eldercare-dashboard *::-webkit-scrollbar-thumb:hover {
+.family-hub *::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 100, 110, 0.9);
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
-.eldercare-dashboard *::-webkit-scrollbar-thumb:active {
+.family-hub *::-webkit-scrollbar-thumb:active {
   background: rgba(110, 110, 120, 1);
 }
 
 /* Firefox scrollbar styling */
-.eldercare-dashboard {
+.family-hub {
   scrollbar-width: thin;
   scrollbar-color: rgba(80, 80, 90, 0.9) rgba(30, 30, 35, 0.4);
 }
 
-.eldercare-dashboard * {
+.family-hub * {
   scrollbar-width: thin;
   scrollbar-color: rgba(70, 70, 80, 0.8) rgba(30, 30, 35, 0.3);
 }
 
 /* Mobile: <= 768px - Thinner scrollbars */
 @media (max-width: 768px) {
-  .eldercare-dashboard::-webkit-scrollbar {
+  .family-hub::-webkit-scrollbar {
     width: 8px;
   }
   
-  .eldercare-dashboard *::-webkit-scrollbar {
+  .family-hub *::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }

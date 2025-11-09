@@ -53,7 +53,7 @@
         <div class="cta-section">
           <p class="cta-text">Ready to Start?</p>
           <div class="cta-buttons">
-            <router-link to="/eldercare" class="btn btn-primary">
+            <router-link to="/family-hub" class="btn btn-primary">
               <span class="btn-icon">🏥</span>
               Family Hub
             </router-link>
@@ -85,10 +85,10 @@ const homeBgStyle = computed(() => ({
   background: `#16161e url('${homeBg}') center center/cover no-repeat`,
 }))
 
-// Navigate to eldercare vitals with state to auto-open the vitals form
+// Navigate to family hub vitals with state to auto-open the vitals form
 function goToVitals() {
   router.push({
-    path: '/eldercare',
+    path: '/family-hub',
     state: { openVitalsModal: true }
   })
 }
