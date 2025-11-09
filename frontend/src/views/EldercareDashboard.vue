@@ -5,7 +5,7 @@
       <div class="hamburger-header">
         <HamburgerMenu />
       </div>
-      <h1>Family Dashboard</h1>
+      <h1>Family Hub</h1>
     </div>
     
     <!-- Quick Actions - Main Dashboard -->
@@ -224,6 +224,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { apiUrl } from '../config/api'
 import HamburgerMenu from '../components/HamburgerMenu.vue'
 import PatientForm from '../components/eldercare/PatientForm.vue'
@@ -238,6 +239,8 @@ import VitalsList from '../components/eldercare/VitalsList.vue'
 import CaregiverProfile from '../components/eldercare/CaregiverProfile.vue'
 import ProviderForm from '../components/eldercare/ProviderForm.vue'
 import ProvidersList from '../components/eldercare/ProvidersList.vue'
+
+const router = useRouter()
 
 interface Patient {
   id: string
@@ -294,6 +297,13 @@ onMounted(async () => {
   await loadAllAppointments()
   await loadAllVitals()
   await loadAllProviders()
+  
+  // Check if we should open vitals modal (from home page shortcut)
+  const state = history.state as { openVitalsModal?: boolean }
+  if (state?.openVitalsModal) {
+    activeView.value = 'vitals'
+    showVitalsForm.value = true
+  }
 })
 
 async function loadPatients() {
