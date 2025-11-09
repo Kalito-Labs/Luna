@@ -8,8 +8,8 @@ import type { LLMAdapter } from './modelRegistry'
 import { db } from '../db/db'
 import { MemoryManager } from './memoryManager'
 import { EldercareContextService } from './eldercareContextService'
-import { StructuredMedicationService } from './structuredMedicationService'
-import { detectQueryType, extractPatientReference } from './queryRouter'
+import { StructuredAppointmentService } from './structuredAppointmentService'
+import { detectQueryType, extractPatientReference, containsPronounReference } from './queryRouter'
 import { AVAILABLE_TOOLS, executeToolCall } from './tools'
 import type { AgentRequest } from '../types/agent'
 import type { Persona as _Persona } from '../types/personas'
@@ -22,8 +22,8 @@ const memoryManager = new MemoryManager()
 // Initialize EldercareContextService for eldercare data integration
 const eldercareContextService = new EldercareContextService()
 
-// Initialize StructuredMedicationService for validated medication queries
-const structuredMedicationService = new StructuredMedicationService()
+// Initialize structured validation services
+const structuredAppointmentService = new StructuredAppointmentService()
 
 type RunAgentParams = AgentRequest & {
   stream?: boolean // new: enable streaming mode
@@ -274,128 +274,6 @@ async function getConversationHistory(sessionId?: string, maxTokens: number = 30
 }
 
 /**
- * Handle medication queries with structured validation
- * Returns formatted text response (conversational) with validated data
- */
-async function handleMedicationQuery(
-  userInput: string,
-  adapter: LLMAdapter,
-  settings?: Record<string, unknown>
-): Promise<{ reply: string; tokenUsage: number | null; isValidated: boolean }> {
-  console.log('[Agent] Handling medication query with structured validation')
-  
-  // Try to extract patient reference from query
-  const patientRef = extractPatientReference(userInput)
-  let patientId: string | null = null
-  let patientName = ''
-
-  // Look up patient by reference
-  if (patientRef) {
-    if (patientRef === 'aurora' || patientRef === 'mother') {
-      const patient = db.prepare('SELECT id, name FROM patients WHERE name LIKE ?').get('%Aurora%') as { id: string; name: string } | undefined
-      if (patient) {
-        patientId = patient.id
-        patientName = patient.name
-      }
-    } else if (patientRef === 'basilio' || patientRef === 'father') {
-      const patient = db.prepare('SELECT id, name FROM patients WHERE name LIKE ?').get('%Basilio%') as { id: string; name: string } | undefined
-      if (patient) {
-        patientId = patient.id
-        patientName = patient.name
-      }
-    }
-  }
-
-  // If no specific patient, try to get from context or use all patients
-  if (!patientId) {
-    console.log('[Agent] No specific patient identified, using general context')
-    // Fall back to regular eldercare context
-    const contextPrompt = eldercareContextService.generateContextualPrompt(adapter, userInput)
-    const result = await adapter.generate({
-      messages: [
-        { role: 'system', content: contextPrompt },
-        { role: 'user', content: userInput }
-      ],
-      settings
-    })
-    return { ...result, isValidated: false }
-  }
-
-  // Get structured medication data
-  const groundTruth = structuredMedicationService.getMedicationsStructured(patientId)
-  
-  if (!groundTruth) {
-    console.log('[Agent] No medication data found for patient')
-    return {
-      reply: `I couldn't find any medication records for ${patientName}.`,
-      tokenUsage: null,
-      isValidated: true
-    }
-  }
-
-  // Generate structured prompt with schema
-  const structuredPrompt = structuredMedicationService.generateStructuredPrompt(patientId, patientName)
-  
-  // Add instruction for conversational response (not raw JSON)
-  const conversationalInstruction = `
-Based on the medication data provided above, please answer the user's question in a natural, conversational way.
-Include all relevant details (medication names, dosages, frequencies, RX numbers, prescribing doctors, pharmacies).
-Be thorough and accurate - all data is verified from the database.
-`
-
-  try {
-    // First attempt: Ask AI to respond conversationally
-    const result = await adapter.generate({
-      messages: [
-        { role: 'system', content: structuredPrompt + '\n\n' + conversationalInstruction },
-        { role: 'user', content: userInput }
-      ],
-      settings
-    })
-
-    console.log('[Agent] ✅ Medication response generated with validated data')
-    return { ...result, isValidated: true }
-
-  } catch (error) {
-    console.error('[Agent] Error generating AI response, falling back to ground truth:', error)
-    
-    // Fallback: Format ground truth as text
-    const fallbackResponse = formatMedicationsAsText(groundTruth)
-    return {
-      reply: fallbackResponse,
-      tokenUsage: null,
-      isValidated: true
-    }
-  }
-}
-
-/**
- * Format medication data as conversational text
- */
-function formatMedicationsAsText(data: { patient_name: string; medications: Array<{ name: string; generic_name?: string; dosage: string; frequency: string; rx_number: string; prescribing_doctor: string; pharmacy: string; notes?: string }> }): string {
-  let text = `Here are the medications for ${data.patient_name}:\n\n`
-  
-  data.medications.forEach((med, idx) => {
-    text += `${idx + 1}. **${med.name}**`
-    if (med.generic_name) {
-      text += ` (${med.generic_name})`
-    }
-    text += `\n`
-    text += `   • Dosage: ${med.dosage}\n`
-    text += `   • Frequency: ${med.frequency.replace(/_/g, ' ')}\n`
-    text += `   • RX Number: ${med.rx_number}\n`
-    text += `   • Prescribed by: ${med.prescribing_doctor}\n`
-    text += `   • Pharmacy: ${med.pharmacy}\n`
-    if (med.notes) {
-      text += `   • Notes: ${med.notes}\n`
-    }
-    text += `\n`
-  })
-  
-  return text
-}
-
-/**
  * Builds the final system prompt by combining persona prompt, document context, eldercare context, and custom system prompt.
  */
 function buildSystemPrompt(
@@ -403,14 +281,15 @@ function buildSystemPrompt(
   userInput: string,
   personaId?: string,
   customSystemPrompt?: string,
-  fileIds: string[] = []
+  fileIds: string[] = [],
+  sessionId?: string
 ): string {
   const personaPrompt = getPersonaPrompt(personaId)
   const documentContext = getDocumentContext(fileIds)
   const customPrompt = customSystemPrompt?.trim() || ''
   
   // Get eldercare context based on user query and model capabilities
-  const eldercareContext = eldercareContextService.generateContextualPrompt(adapter, userInput)
+  const eldercareContext = eldercareContextService.generateContextualPrompt(adapter, userInput, sessionId)
   
   // Add stronger and more explicit instructions to focus on current query only
   const focusInstructions = "CRITICAL INSTRUCTION: You MUST address ONLY the user's CURRENT QUESTION. Previous conversation is provided SOLELY as background context. You MUST NOT: 1) Answer questions from previous exchanges, 2) Refer to previous topics unless explicitly asked, 3) Provide information not directly relevant to the current question. Treat the current question as if it were asked in isolation, while using context only to enhance your understanding of what the user is currently asking."
@@ -441,23 +320,97 @@ export async function runAgent(
     mergedSettings
   })
 
-  // NEW: Detect query type and route to structured validation if needed
+  // Extract and track patient context for session continuity
+  if (sessionId) {
+    const patientRef = extractPatientReference(input)
+    if (patientRef) {
+      // Use eldercareContextService to properly resolve patient reference
+      const patient = eldercareContextService.findPatientByReference(patientRef)
+      
+      if (patient) {
+        // Update session to track patient focus
+        db.prepare('UPDATE sessions SET patient_id = ? WHERE id = ?').run(patient.id, sessionId)
+        console.log(`[Agent] 👤 Session patient context set: ${patient.name} (${patient.id})`)
+      }
+    }
+  }
+
+  // Detect query type for structured validation
   const queryType = detectQueryType(input)
   console.log(`[Agent] Query type detected: ${queryType}`)
 
-  if (queryType === 'MEDICATIONS') {
-    console.log('[Agent] 🏥 Routing to structured medication validation')
-    const result = await handleMedicationQuery(input, adapter, mergedSettings)
-    console.log(`[Agent] Medication query completed (validated: ${result.isValidated})`)
+  // Route to structured validation services for database queries
+  if (queryType === 'APPOINTMENTS') {
+    console.log('[Agent] 📅 Routing to structured appointment validation')
+    
+    // Get patient from session or query
+    let patientId: string | null = null
+    let patientSource = 'unknown'
+    
+    // Priority 1: Check if query contains pronouns AND session has patient
+    if (containsPronounReference(input) && sessionId) {
+      const session = db.prepare('SELECT patient_id FROM sessions WHERE id = ?').get(sessionId) as { patient_id: string | null } | undefined
+      if (session?.patient_id) {
+        patientId = session.patient_id
+        patientSource = 'session-pronoun'
+        console.log(`[Agent] Pronoun detected ("she"/"he"), using session patient_id: ${patientId}`)
+      }
+    }
+    
+    // Priority 2: Extract explicit patient reference from query
+    if (!patientId) {
+      const patientRef = extractPatientReference(input)
+      console.log(`[Agent] Extracted patient reference: ${patientRef}`)
+      if (patientRef) {
+        const patient = eldercareContextService.findPatientByReference(patientRef)
+        patientId = patient?.id || null
+        patientSource = 'query-explicit'
+        console.log(`[Agent] Resolved patient: ${patient?.name} (${patientId})`)
+      }
+    }
+    
+    // Priority 3: Use session patient if available
+    if (!patientId && sessionId) {
+      const session = db.prepare('SELECT patient_id FROM sessions WHERE id = ?').get(sessionId) as { patient_id: string | null } | undefined
+      patientId = session?.patient_id || null
+      patientSource = 'session-fallback'
+      console.log(`[Agent] Using session patient_id as fallback: ${patientId}`)
+    }
+    
+    if (!patientId) {
+      console.log('[Agent] ❌ No patient identified for appointment query')
+      return {
+        reply: "I need to know which patient you're asking about. Please specify the patient's name.",
+        tokenUsage: null
+      }
+    }
+    
+    console.log(`[Agent] Patient resolved via: ${patientSource}`)
+    
+    // Get structured appointment data from database
+    const appointmentData = structuredAppointmentService.getAppointmentsStructured(patientId)
+    
+    if (!appointmentData) {
+      console.log('[Agent] ❌ No patient found in database')
+      return {
+        reply: "I couldn't find patient information in the database.",
+        tokenUsage: null
+      }
+    }
+    
+    // Return definitive ground truth - no AI generation needed
+    const reply = structuredAppointmentService.formatAppointmentsAsText(appointmentData)
+    console.log(`[Agent] ✅ Appointment query answered with database ground truth (${appointmentData.upcoming_count} appointments)`)
+    
     return {
-      reply: result.reply,
-      tokenUsage: result.tokenUsage
+      reply,
+      tokenUsage: null
     }
   }
 
   // Build a clean system prompt without any special instructions
   // Let Ollama handle the conversation naturally
-  const finalSystemPrompt = buildSystemPrompt(adapter, input, personaId, systemPrompt, fileIds)
+  const finalSystemPrompt = buildSystemPrompt(adapter, input, personaId, systemPrompt, fileIds, sessionId)
 
   // Build messages array with system prompt first
   const messages: Array<{ role: string; content: string }> = []
@@ -542,9 +495,90 @@ export async function* runAgentStream(
 
   const personaSettings = getPersonaSettings(personaId)
   const mergedSettings = { ...personaSettings, ...settings }
+
+  // Extract and track patient context for session continuity
+  if (sessionId) {
+    const patientRef = extractPatientReference(input)
+    if (patientRef) {
+      const patient = eldercareContextService.findPatientByReference(patientRef)
+      if (patient) {
+        db.prepare('UPDATE sessions SET patient_id = ? WHERE id = ?').run(patient.id, sessionId)
+        console.log(`[Agent Stream] 👤 Session patient context set: ${patient.name} (${patient.id})`)
+      }
+    }
+  }
+
+  // Detect query type for structured validation
+  const queryType = detectQueryType(input)
+  console.log(`[Agent Stream] Query type detected: ${queryType}`)
+
+  // Route to structured validation services for database queries
+  if (queryType === 'APPOINTMENTS') {
+    console.log('[Agent Stream] 📅 Routing to structured appointment validation')
+    
+    let patientId: string | null = null
+    let patientSource = 'unknown'
+    
+    // Priority 1: Check if query contains pronouns AND session has patient
+    if (containsPronounReference(input) && sessionId) {
+      const session = db.prepare('SELECT patient_id FROM sessions WHERE id = ?').get(sessionId) as { patient_id: string | null } | undefined
+      if (session?.patient_id) {
+        patientId = session.patient_id
+        patientSource = 'session-pronoun'
+        console.log(`[Agent Stream] Pronoun detected, using session patient_id: ${patientId}`)
+      }
+    }
+    
+    // Priority 2: Extract explicit patient reference
+    if (!patientId) {
+      const patientRef = extractPatientReference(input)
+      if (patientRef) {
+        const patient = eldercareContextService.findPatientByReference(patientRef)
+        patientId = patient?.id || null
+        patientSource = 'query-explicit'
+        console.log(`[Agent Stream] Resolved patient: ${patient?.name} (${patientId})`)
+      }
+    }
+    
+    // Priority 3: Use session patient fallback
+    if (!patientId && sessionId) {
+      const session = db.prepare('SELECT patient_id FROM sessions WHERE id = ?').get(sessionId) as { patient_id: string | null } | undefined
+      patientId = session?.patient_id || null
+      patientSource = 'session-fallback'
+      console.log(`[Agent Stream] Using session patient_id as fallback: ${patientId}`)
+    }
+    
+    if (!patientId) {
+      const reply = "I need to know which patient you're asking about. Please specify the patient's name."
+      yield { delta: reply }
+      yield { delta: '', done: true }
+      return
+    }
+    
+    console.log(`[Agent Stream] Patient resolved via: ${patientSource}`)
+    
+    const appointmentData = structuredAppointmentService.getAppointmentsStructured(patientId)
+    
+    if (!appointmentData) {
+      const reply = "I couldn't find patient information in the database."
+      yield { delta: reply }
+      yield { delta: '', done: true }
+      return
+    }
+    
+    const reply = structuredAppointmentService.formatAppointmentsAsText(appointmentData)
+    console.log(`[Agent Stream] ✅ Appointment query answered (${appointmentData.upcoming_count} appointments)`)
+    
+    // Stream the response character by character for better UX
+    for (const char of reply) {
+      yield { delta: char }
+    }
+    yield { delta: '', done: true }
+    return
+  }
     
   // Build the system prompt without special instructions
-  const finalSystemPrompt = buildSystemPrompt(adapter, input, personaId, systemPrompt, fileIds)
+  const finalSystemPrompt = buildSystemPrompt(adapter, input, personaId, systemPrompt, fileIds, sessionId)
 
   const messages = []
   if (finalSystemPrompt && finalSystemPrompt.trim()) {

@@ -78,3 +78,18 @@ export function extractPatientReference(query: string): string | null {
   
   return null
 }
+
+/**
+ * Check if query contains pronoun references (he, she, him, her, his)
+ * These indicate continuation of previous patient context
+ */
+export function containsPronounReference(query: string): boolean {
+  const lowerQuery = query.toLowerCase()
+  const pronounPatterns = [
+    /\b(she|her|hers)\b/i,  // feminine
+    /\b(he|him|his)\b/i,    // masculine
+    /\b(they|them|their)\b/i // neutral
+  ]
+  
+  return pronounPatterns.some(pattern => pattern.test(lowerQuery))
+}
