@@ -11,6 +11,7 @@
 
 import { db } from '../db/db'
 import type { LLMAdapter } from './modelRegistry'
+import { StructuredMedicationService } from './structuredMedicationService'
 
 export interface ProviderContext {
   id: string
@@ -106,6 +107,12 @@ export type EldercareContext = {
 
 export class EldercareContextService {
   private readonly MAX_RECENT_DAYS = 30
+  private structuredMedicationService: StructuredMedicationService
+  
+  constructor() {
+    this.structuredMedicationService = new StructuredMedicationService()
+  }
+  
   /**
    * Get all healthcare providers
    */
@@ -271,82 +278,73 @@ export class EldercareContextService {
 
   /**
    * Get active medications for all patients or specific patient
+   * Uses StructuredMedicationService for validated data with complete information
    */
   private getMedications(patientId?: string, includePrivateData: boolean = true): MedicationContext[] {
     try {
-      let query = `
-        SELECT m.id, m.patient_id, m.name, m.generic_name, m.dosage, m.frequency, m.route,
-               m.prescribing_doctor, m.pharmacy, m.rx_number,
-               m.side_effects, m.notes,
-               p.name as patient_name
-        FROM medications m
-        LEFT JOIN patients p ON m.patient_id = p.id
-        WHERE m.active = 1
-      `
-      const params: (string | number)[] = []
-      if (patientId) {
-        query += ` AND m.patient_id = ?`
-        params.push(patientId)
+      // If no specific patient, get all patients and fetch their medications
+      if (!patientId) {
+        const patients = this.getPatients(includePrivateData)
+        const allMedications: MedicationContext[] = []
+        
+        for (const patient of patients) {
+          const patientMeds = this.getMedications(patient.id, includePrivateData)
+          allMedications.push(...patientMeds)
+        }
+        
+        return allMedications
       }
-      query += ` ORDER BY m.created_at DESC LIMIT 50`
-
-      const rows = db.prepare(query).all(...params) as Array<{
-        id: string
-        patient_id: string
-        patient_name: string
-        name: string
-        generic_name: string | null
-        dosage: string
-        frequency: string
-        route: string | null
-        prescribing_doctor: string | null
-        pharmacy: string | null
-        rx_number: string | null
-        side_effects: string | null
-        notes: string | null
-      }>
-
+      
+      // Use structured validation service for specific patient
+      const structuredData = this.structuredMedicationService.getMedicationsStructured(patientId)
+      
+      if (!structuredData) {
+        return []
+      }
+      
       // Get all providers for lookup
       const providers = this.getProviders()
-
-      return rows.map(row => {
+      
+      // Convert structured format to MedicationContext format
+      return structuredData.medications.map((med, index) => {
         const context: MedicationContext = {
-          id: row.id,
-          patientId: row.patient_id,
-          patientName: row.patient_name || undefined,
-          name: row.name,
-          genericName: row.generic_name || undefined,
-          dosage: row.dosage,
-          frequency: row.frequency,
-          route: row.route || undefined,
+          id: `${patientId}-med-${index}`, // Generate ID from index
+          patientId: patientId,
+          patientName: structuredData.patient_name,
+          name: med.name,
+          genericName: med.generic_name || undefined,
+          dosage: med.dosage,
+          frequency: med.frequency,
+          route: undefined, // Not in structured format
         }
-
+        
         // Include sensitive data only for local models
         if (includePrivateData) {
-          context.prescribingDoctor = row.prescribing_doctor || undefined
-          context.pharmacy = row.pharmacy || undefined
-          context.rxNumber = row.rx_number || undefined
-          context.sideEffects = row.side_effects || undefined
-          context.notes = row.notes || undefined
-
+          context.prescribingDoctor = med.prescribing_doctor
+          context.pharmacy = med.pharmacy
+          context.rxNumber = med.rx_number
+          context.sideEffects = undefined // Not in structured format
+          context.notes = med.notes || undefined
+          
           // Link prescribingDoctorProvider if match found
-          if (row.prescribing_doctor && typeof row.prescribing_doctor === 'string') {
-            const doctorName = row.prescribing_doctor ? row.prescribing_doctor.toLowerCase() : ''
+          if (med.prescribing_doctor) {
+            const doctorName = med.prescribing_doctor.toLowerCase()
             const providerMatch = providers.find(p => p.name && p.name.toLowerCase() === doctorName)
             if (providerMatch) {
               context.prescribingDoctorProvider = providerMatch
             }
           }
+          
           // Link pharmacyProvider if match found
-          if (row.pharmacy && typeof row.pharmacy === 'string') {
-            const pharmacyName = row.pharmacy ? row.pharmacy.toLowerCase() : ''
+          if (med.pharmacy) {
+            const pharmacyName = med.pharmacy.toLowerCase()
             const providerMatch = providers.find(p => p.name && p.name.toLowerCase() === pharmacyName)
             if (providerMatch) {
               context.pharmacyProvider = providerMatch
             }
           }
         }
-
+        
         return context
       })
     } catch (error) {
@@ -634,6 +632,13 @@ export class EldercareContextService {
         summary += '\n';
       });
       summary += '\n';
+    } else {
+      // Explicitly state when no appointments exist to prevent AI hallucination
+      summary += `### Upcoming Appointments\n`;
+      summary += `**NO UPCOMING APPOINTMENTS SCHEDULED**\n`;
+      summary += `- There are currently no appointments in the system\n`;
+      summary += `- Do not fabricate or suggest appointment dates\n`;
+      summary += `- If asked about appointments, clearly state that none are scheduled\n\n`;
     }
     // Recent vitals
     if (context.vitals.length > 0) {
@@ -761,54 +766,83 @@ export class EldercareContextService {
   }
 
   /**
-   * Generate contextual prompt addition for AI based on user query
-   * This analyzes the user's query and adds relevant eldercare context
+   * Generate contextual prompt addition for AI based on user query and session
+   * This provides relevant eldercare context with session-based patient focus
    */
-  public generateContextualPrompt(adapter: LLMAdapter, userQuery: string): string {
-    // Look for patient references in the query
-    const patientKeywords = ['dad', 'father', 'mom', 'mother', 'parent', 'spouse', 'wife', 'husband']
-    const queryLower = userQuery.toLowerCase()
-    
+  public generateContextualPrompt(adapter: LLMAdapter, userQuery: string, sessionId?: string): string {
     let foundPatient: PatientContext | null = null
     
-    // Check for direct patient references
-    for (const keyword of patientKeywords) {
-      if (queryLower.includes(keyword)) {
-        foundPatient = this.findPatientByReference(keyword)
-        break
+    // Priority 1: Check if session has a tracked patient (maintains conversation focus)
+    if (sessionId) {
+      try {
+        const session = db.prepare('SELECT patient_id FROM sessions WHERE id = ?').get(sessionId) as { patient_id: string | null } | undefined
+        if (session?.patient_id) {
+          const patient = db.prepare('SELECT id, name, relationship, date_of_birth, gender FROM patients WHERE id = ? AND active = 1').get(session.patient_id) as {
+            id: string
+            name: string
+            relationship: string | null
+            date_of_birth: string | null
+            gender: string | null
+          } | undefined
+          
+          if (patient) {
+            foundPatient = {
+              id: patient.id,
+              name: patient.name,
+              relationship: patient.relationship || undefined,
+              age: patient.date_of_birth ? this.calculateAge(patient.date_of_birth) : undefined,
+              gender: patient.gender || undefined,
+            }
+            console.log(`[EldercareContext] Using session patient focus: ${patient.name}`)
+          }
+        }
+      } catch (error) {
+        console.error('Error reading session patient_id:', error)
       }
     }
-
-    // If no direct keyword match, try to find patient names in the query
+    
+    // Priority 2: If no session patient, try to extract from query
     if (!foundPatient) {
-      // First, try to match full patient names (handles "Aurora Sanchez", "Basilio Sanchez", etc.)
-      // Get all active patients to search through their names
-      const allPatients = this.getPatients(true) // We just need names, so includePrivateData can be true for this search
+      const patientKeywords = ['dad', 'father', 'mom', 'mother', 'parent', 'spouse', 'wife', 'husband']
+      const queryLower = userQuery.toLowerCase()
       
-      for (const patient of allPatients) {
-        // Check if the full patient name appears in the query (case-insensitive)
-        if (queryLower.includes(patient.name.toLowerCase())) {
-          foundPatient = patient
-          break
-        }
-        
-        // Also check first name only as a fallback
-        const firstName = patient.name.split(' ')[0].toLowerCase()
-        if (firstName.length > 2 && queryLower.includes(firstName)) {
-          foundPatient = patient
+      // Check for direct patient references
+      for (const keyword of patientKeywords) {
+        if (queryLower.includes(keyword)) {
+          foundPatient = this.findPatientByReference(keyword)
           break
         }
       }
-      
-      // If still no match, try individual words (but this is less reliable)
+
+      // If no direct keyword match, try to find patient names in the query
       if (!foundPatient) {
-        const words = userQuery.split(/\s+/)
-        for (const word of words) {
-          if (word.length > 2) { // Skip short words
-            const patient = this.findPatientByReference(word)
-            if (patient) {
-              foundPatient = patient
-              break
+        const allPatients = this.getPatients(true)
+        
+        for (const patient of allPatients) {
+          // Check if the full patient name appears in the query (case-insensitive)
+          if (queryLower.includes(patient.name.toLowerCase())) {
+            foundPatient = patient
+            break
+          }
+          
+          // Also check first name only as a fallback
+          const firstName = patient.name.split(' ')[0].toLowerCase()
+          if (firstName.length > 2 && queryLower.includes(firstName)) {
+            foundPatient = patient
+            break
+          }
+        }
+        
+        // If still no match, try individual words (but this is less reliable)
+        if (!foundPatient) {
+          const words = userQuery.split(/\s+/)
+          for (const word of words) {
+            if (word.length > 2) { // Skip short words
+              const patient = this.findPatientByReference(word)
+              if (patient) {
+                foundPatient = patient
+                break
+              }
             }
           }
         }

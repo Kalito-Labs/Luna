@@ -7,8 +7,8 @@
       </button>
     </div>
     
-    <!-- Patient Filter Buttons -->
-    <div class="patient-filters">
+    <!-- Patient Filter Buttons - Only show when multiple patients -->
+    <div v-if="patients.length > 1" class="patient-filters">
       <button 
         @click="selectedPatientId = null" 
         :class="['filter-btn', { active: selectedPatientId === null }]"

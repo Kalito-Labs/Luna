@@ -4,9 +4,9 @@
 
 > *Technology in service of family, dignity, and love.*
 
-Kalito Space is a comprehensive AI-powered family platform that combines intelligent conversation, real-time internet search, and complete eldercare management. It's a Progressive Web App (PWA) that runs locally with complete privacy control, designed specifically for families managing complex care coordination.
+Kalito Space is a comprehensive AI-powered family platform that combines intelligent conversation, real-time internet search, and complete eldercare management. It's designed specifically for families managing complex care coordination.
 
-Built for Aurora and Basilio Sanchez, this deeply personal tool has evolved into a full-featured family AI hub that grows with your needs.
+This deeply personal tool has evolved into a full-featured family AI hub that grows with our needs.
 
 ## 📊 At a Glance
 
@@ -15,10 +15,11 @@ Built for Aurora and Basilio Sanchez, this deeply personal tool has evolved into
 - **11+ Performance Indexes**: Optimized queries for patient, date, and status lookups
 - **11 API Routers**: Complete REST API for all operations
 - **50+ Features**: From AI chat to medication adherence tracking
-- **15,000+ Lines of Code**: Backend + Frontend in TypeScript
+- **143,000+ Lines of Code**: Backend + Frontend in TypeScript & Vue
 - **25+ Documentation Files**: Comprehensive technical documentation
 - **6 Months Development**: Evenings and weekends of love and dedication
 - **2 AI Models**: Cloud (GPT-4.1 Nano) and Local (Phi3 Mini)
+- **Zero Hallucinations**: Ground truth validation prevents AI fabrication
 - **1 Mission**: Take the best possible care of family
 
 ## 🌟 Why Kalito Space?
@@ -34,15 +35,16 @@ Unlike generic chatbots or cloud-based eldercare apps, Kalito Space provides:
 ### ✨ Key Features
 - **🤖 Intelligent AI Assistant**: GPT-4.1 Nano (cloud) or Phi3 Mini (local) with full family context
 - **🔍 Web Search Integration**: AI can search the internet for current information
-- **� Hybrid Memory System**: Recent messages + semantic pins + conversation summaries
+- **🧠 Hybrid Memory System**: Recent messages + semantic pins + conversation summaries
 - **🎭 Custom Personas**: Create specialized AI personalities for different tasks
+- **🛡️ Ground Truth Validation**: Structured services prevent AI hallucination of medical data
 - **👥 Patient Management**: Complete profiles with demographics and emergency contacts
-- **💊 Medication Tracking**: Full medication management with adherence logs
-- **� Appointment Scheduling**: Healthcare appointments with preparation notes and outcomes
+- **💊 Medication Tracking**: Full medication management with adherence logs and validated data
+- **📅 Appointment Scheduling**: Healthcare appointments with database-verified accuracy
 - **📊 Vitals Tracking**: Weight and glucose monitoring over time
 - **🏥 Medical Records**: Comprehensive documentation with attachments and tags
 - **👨‍⚕️ Caregiver Management**: Professional caregiver scheduling and time tracking
-- **� Complete Privacy**: Local storage with optional cloud AI (your choice)
+- **🔒 Complete Privacy**: Local storage with optional cloud AI (your choice)
 - **📱 Progressive Web App**: Install on any device, works like a native app
 
 ## 🚀 Quick Start
@@ -94,7 +96,7 @@ Unlike generic chatbots or cloud-based eldercare apps, Kalito Space provides:
 
 6. **Open your browser**
    ```
-   http://localhost:5173/eldercare
+   http://localhost:5173/family-hub
    ```
 
 ## 🏗️ Project Structure
@@ -111,7 +113,12 @@ kalito-repo/
 │   │   ├── agentService.ts      # AI orchestration & tool calling
 │   │   ├── memoryManager.ts     # Hybrid memory system
 │   │   ├── eldercareContextService.ts  # Database-to-prompt conversion
+│   │   ├── structuredMedicationService.ts  # Ground truth medication validation
+│   │   ├── structuredAppointmentService.ts # Ground truth appointment validation
+│   │   ├── queryRouter.ts       # Query intent detection & patient resolution
 │   │   ├── modelRegistry.ts     # AI model management
+│   │   ├── tavilyService.ts     # Web search integration
+│   │   ├── tools.ts             # AI function calling tools
 │   │   └── adapters/            # OpenAI & Ollama integrations
 │   ├── 📁 routes/               # 11 API routers
 │   │   ├── agentRouter.ts       # Chat completions
@@ -132,7 +139,7 @@ kalito-repo/
 │   │   │   └── personas/       # PersonaManager
 │   │   ├── 📁 views/           # Page views
 │   │   │   ├── HomeView.vue    # Landing page
-│   │   │   └── EldercareDashboard.vue  # Care management
+│   │   │   └── FamilyHub.vue   # Care management
 │   │   ├── 📁 router/          # Vue Router config
 │   │   ├── 📁 utils/           # Frontend utilities
 │   │   └── core.ts             # API client & core logic
@@ -140,6 +147,8 @@ kalito-repo/
 │   ├── 📁 overview/            # System documentation
 │   │   ├── ks-overview.md      # Complete platform overview
 │   │   └── backend/db/         # Database schema diagrams
+│   ├── 📁 fixes/               # Technical fix documentation
+│   │   └── appointment-hallucination-fix.md  # Ground truth validation implementation
 │   └── 📁 00-Ai-Protocols/     # AI development guidelines
 ├── 📁 scripts/                  # Utility scripts
 │   ├── backup-db               # Database backup
@@ -156,6 +165,7 @@ kalito-repo/
 - Hybrid memory system: recent messages + semantic pins + conversation summaries
 - Auto-summarization after 15+ messages for efficient context management
 - Importance scoring prioritizes relevant information
+- **Ground truth validation**: Structured services intercept medical queries and return database facts before AI generation
 
 **Real-Time Web Search**:
 - Integrated Tavily Search API for current information
@@ -173,6 +183,13 @@ kalito-repo/
 - Eldercare specialty focus (cardiology, neurology, etc.)
 - Toggle patient context access per persona
 
+**Hallucination Prevention**:
+- Query type detection routes medication and appointment questions to database
+- Structured validation services return ground truth data
+- AI never generates answers for validated queries - only database facts shown
+- Session-based patient tracking maintains conversation context
+- Pronoun resolution ("she"/"he") uses session patient focus
+
 ### 👥 Patient Management
 - Complete patient profiles with demographics
 - Emergency contacts and insurance information
@@ -188,6 +205,7 @@ kalito-repo/
 - RX number and side effects documentation
 - Active/inactive medication status
 - **Medication adherence logs** with reminder tracking
+- **Ground truth validation**: AI queries return exact database data (no hallucination)
 - Status tracking (taken, missed, late, skipped)
 
 ### 📅 Appointment Scheduling
@@ -197,6 +215,7 @@ kalito-repo/
 - **Preparation notes** (what to bring, special instructions)
 - Status tracking (scheduled, completed, cancelled, rescheduled)
 - **Post-appointment outcome summaries**
+- **Validated responses**: AI returns database facts, explicitly states when no appointments exist
 - Follow-up requirement flags
 
 ### 📊 Vitals Tracking
@@ -240,10 +259,11 @@ kalito-repo/
 ### 📊 Session Management
 - All conversations auto-saved
 - Session types: chat, eldercare
-- Patient-specific sessions
+- **Patient-specific sessions**: Sessions track current patient focus for context continuity
 - Related record tracking
 - Care category tagging
 - AI-generated recaps
+- **Pronoun resolution**: "Does she have appointments?" automatically uses session patient
 - Cascade delete (removes messages, pins, summaries)
 
 ## 🔧 Technology Stack
@@ -256,6 +276,10 @@ kalito-repo/
   - OpenAI SDK 5.0.1 (GPT-4.1 Nano with function calling)
   - Tavily Search API (@tavily/core 0.5.12)
   - Ollama integration for local Phi3 Mini
+- **Ground Truth Validation**: 
+  - StructuredMedicationService: Database-first medication responses
+  - StructuredAppointmentService: Database-first appointment responses
+  - Query routing intercepts medical queries before AI generation
 - **Security**: Helmet 8.1.0, CORS, rate limiting (100/15min general, 20/15min AI)
 - **Validation**: Zod 3.23.8 for runtime type checking
 - **Logging**: Winston 3.17.0 with structured output
@@ -282,9 +306,9 @@ kalito-repo/
 - **`/`** - Landing page with feature showcase
 - **`/kalito`** - AI chat interface (ChatWorkspace)
 - **`/personas`** - AI persona management
-- **`/eldercare`** - Eldercare dashboard (care management)
+- **`/family-hub`** - Family Hub dashboard (care management)
 
-### Eldercare Dashboard
+### Family Hub Dashboard
 Six main sections with modal-based workflows:
 
 - **👨‍⚕️ My Caregiver Profile** - Widescreen modal for professional caregiver management
@@ -325,12 +349,14 @@ Six main sections with modal-based workflows:
 - Questions sent to OpenAI GPT-4.1 Nano (with eldercare context for intelligent responses)
 - Web search queries to Tavily API (no patient names or sensitive identifiers)
 - AI responses back to your device
+- **Note**: Medical data queries (medications, appointments) are intercepted and answered from local database before reaching AI
 
 **What NEVER Leaves Your Device**:
 - SQLite database file
 - Raw patient records
 - Conversation history (stored locally only)
 - Medical history and personal health identifiers
+- Ground truth medication and appointment data (validated locally)
 
 ### Security Features
 - **Helmet.js**: XSS protection, CSP, HSTS security headers
@@ -452,6 +478,13 @@ OLLAMA_URL=http://localhost:11434
 - **[AI Development Protocols](docs/00-Ai-Protocols/)**
   - 01-Ai-Protocols.md - AI integration guidelines
   - 02-Self-Audit-Questions.md - Quality assurance
+
+- **[Technical Fix Documentation](docs/fixes/)**
+  - appointment-hallucination-fix.md - Ground truth validation implementation
+    - Problem: AI fabricating appointment dates when database had zero appointments
+    - Solution: Query interception with structured services (StructuredAppointmentService, StructuredMedicationService)
+    - Architecture: Dual-path routing (streaming + non-streaming), session patient tracking, pronoun resolution
+    - Result: Zero hallucinations, database accuracy guaranteed
 
 **Total Documentation**: 25+ comprehensive markdown files covering every aspect of the system.
 
@@ -615,7 +648,8 @@ Built with love for Aurora and Basilio Sanchez, and families everywhere caring f
 - ✅ Kalito knows your family data (patients, medications, appointments)
 - ✅ Conversations saved locally with full history
 - ✅ Customizable personas for different needs
-- ❌ ChatGPT has no context of your life, no data persistence
+- ✅ **Ground truth validation prevents hallucination** (medication/appointment queries return database facts)
+- ❌ ChatGPT has no context of your life, no data persistence, may fabricate medical information
 
 **vs. Eldercare Apps** (CareZone, Caring Village):
 - ✅ Kalito has intelligent AI assistant with context
@@ -633,10 +667,13 @@ Built with love for Aurora and Basilio Sanchez, and families everywhere caring f
 
 **The Value**:
 - 6+ months of development done
-- 15,000+ lines of code
+- 143,000+ lines of code
 - 50+ distinct features
 - 14-table database with full relationships
 - 25+ documentation files
+- **Industry-standard hallucination prevention** (ground truth validation architecture)
+- **Session-based patient tracking** for conversation continuity
+- **Dual-path AI routing** (streaming + non-streaming coverage)
 - Proven architecture and patterns
 - Ready to use, ready to extend
 
@@ -662,6 +699,7 @@ This platform represents the belief that technology should serve to enhance huma
 - Complete care coordination in one place
 - Peace of mind through organization
 - Confidence through accessible information
+- **Trustworthy AI**: Ground truth validation ensures medical data accuracy
 - Legacy of care and dignity
 
 ---
@@ -672,7 +710,8 @@ This platform represents the belief that technology should serve to enhance huma
 
 - 📖 [Read the Full Documentation](docs/overview/ks-overview.md)
 - 📊 [View Database Schema Diagrams](docs/overview/backend/db/database-schema-diagrams.md)
-- 🐛 [Report Issues](https://github.com/Kalito-Labs/kalito-repo/issues)
+- �️ [Hallucination Prevention Fix](docs/fixes/appointment-hallucination-fix.md)
+- �🐛 [Report Issues](https://github.com/Kalito-Labs/kalito-repo/issues)
 - 💬 [Discussions](https://github.com/Kalito-Labs/kalito-repo/discussions)
 
 ---

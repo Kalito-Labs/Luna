@@ -53,13 +53,17 @@
         <div class="cta-section">
           <p class="cta-text">Ready to Start?</p>
           <div class="cta-buttons">
-            <router-link to="/eldercare" class="btn btn-primary">
+            <router-link to="/family-hub" class="btn btn-primary">
               <span class="btn-icon">🏥</span>
-              Start Managing Care
+              Family Hub
             </router-link>
+            <button @click="goToVitals" class="btn btn-vitals">
+              <span class="btn-icon">📊</span>
+              Vitals
+            </button>
             <router-link to="/kalito" class="btn btn-secondary">
               <span class="btn-icon">💬</span>
-              Talk to Kalito
+              Kalito AI
             </router-link>
           </div>
         </div>
@@ -70,13 +74,24 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import homeBg from '@/assets/images/home-1.webp'
+
+const router = useRouter()
 
 // Background style for the home view
 const homeBgStyle = computed(() => ({
   background: `#16161e url('${homeBg}') center center/cover no-repeat`,
 }))
+
+// Navigate to family hub vitals with state to auto-open the vitals form
+function goToVitals() {
+  router.push({
+    path: '/family-hub',
+    state: { openVitalsModal: true }
+  })
+}
 </script>
 
 <style scoped>
@@ -329,6 +344,19 @@ const homeBgStyle = computed(() => ({
 .btn-secondary:hover {
   background: rgba(50, 58, 86, 0.7);
   border-color: rgba(90, 123, 199, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-vitals {
+  background: linear-gradient(135deg, #e85d75 0%, #d94e66 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(232, 93, 117, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-vitals:hover {
+  background: linear-gradient(135deg, #f06d85 0%, #e35d75 100%);
+  box-shadow: 0 6px 20px rgba(232, 93, 117, 0.4);
   transform: translateY(-2px);
 }
 
