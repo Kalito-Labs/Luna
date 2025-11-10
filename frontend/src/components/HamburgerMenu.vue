@@ -102,7 +102,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, transparent, rgba(143, 216, 252, 0.1), transparent);
+  background: linear-gradient(45deg, transparent, rgba(95, 184, 184, 0.1), transparent);
   border-radius: 0.7em;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -112,12 +112,12 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 .hamburger-button:hover,
 .hamburger-button:focus {
   background: linear-gradient(145deg, #1a2332, #0f1419);
-  border-color: #4a9eff;
+  border-color: #3d9999;
   box-shadow:
-    0 8px 28px 2px rgba(74, 158, 255, 0.2),
+    0 8px 28px 2px rgba(61, 153, 153, 0.2),
     0 2px 9px 0 #29366b55,
-    0 0.5px 0 #dbefff66 inset,
-    0 0 15px rgba(74, 158, 255, 0.3),
+    0 0.5px 0 #b8e6e666 inset,
+    0 0 15px rgba(61, 153, 153, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
   transform: translateY(-1px);
 }
@@ -129,13 +129,13 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
 .hamburger-button.open {
   background: rgba(8, 10, 14, 0.85);
-  border: 1.5px solid rgba(74, 158, 255, 0.6);
+  border: 1.5px solid rgba(61, 153, 153, 0.6);
   box-shadow:
-    0 0 20px rgba(74, 158, 255, 0.4),
-    0 0 40px rgba(74, 158, 255, 0.2),
+    0 0 20px rgba(61, 153, 153, 0.4),
+    0 0 40px rgba(61, 153, 153, 0.2),
     0 1.5px 10px 0 #10132332,
-    0 0 0 1px rgba(74, 158, 255, 0.3),
-    inset 0 1px 0 rgba(74, 158, 255, 0.2);
+    0 0 0 1px rgba(61, 153, 153, 0.3),
+    inset 0 1px 0 rgba(61, 153, 153, 0.2);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   animation: neonPulse 2s ease-in-out infinite alternate;
@@ -144,32 +144,32 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 @keyframes neonPulse {
   0% {
     box-shadow:
-      0 0 20px rgba(74, 158, 255, 0.4),
-      0 0 40px rgba(74, 158, 255, 0.2),
+      0 0 20px rgba(61, 153, 153, 0.4),
+      0 0 40px rgba(61, 153, 153, 0.2),
       0 1.5px 10px 0 #10132332,
-      0 0 0 1px rgba(74, 158, 255, 0.3),
-      inset 0 1px 0 rgba(74, 158, 255, 0.2);
+      0 0 0 1px rgba(61, 153, 153, 0.3),
+      inset 0 1px 0 rgba(61, 153, 153, 0.2);
   }
   100% {
     box-shadow:
-      0 0 30px rgba(74, 158, 255, 0.6),
-      0 0 60px rgba(74, 158, 255, 0.3),
+      0 0 30px rgba(61, 153, 153, 0.6),
+      0 0 60px rgba(61, 153, 153, 0.3),
       0 1.5px 10px 0 #10132332,
-      0 0 0 1px rgba(74, 158, 255, 0.4),
-      inset 0 1px 0 rgba(74, 158, 255, 0.3);
+      0 0 0 1px rgba(61, 153, 153, 0.4),
+      inset 0 1px 0 rgba(61, 153, 153, 0.3);
   }
 }
 
 .hamburger-button.open:hover,
 .hamburger-button.open:focus {
   background: rgba(12, 14, 18, 0.9);
-  border-color: rgba(74, 158, 255, 0.8);
+  border-color: rgba(61, 153, 153, 0.8);
   box-shadow:
-    0 0 25px rgba(74, 158, 255, 0.6),
-    0 0 50px rgba(74, 158, 255, 0.3),
+    0 0 25px rgba(61, 153, 153, 0.6),
+    0 0 50px rgba(61, 153, 153, 0.3),
     0 2px 12px 0 #10132344,
-    0 0 0 1px rgba(74, 158, 255, 0.4),
-    inset 0 1px 0 rgba(74, 158, 255, 0.3);
+    0 0 0 1px rgba(61, 153, 153, 0.4),
+    inset 0 1px 0 rgba(61, 153, 153, 0.3);
 }
 
 .hamburger-button span {
@@ -189,18 +189,18 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 }
 
 .hamburger-button:hover span {
-  background: linear-gradient(90deg, #4a9eff, #74c7ff);
+  background: linear-gradient(90deg, #3d9999, #5fb8b8);
   box-shadow: 
     0 1.5px 6px #21232b44,
-    0 0 12px rgba(74, 158, 255, 0.5);
+    0 0 12px rgba(61, 153, 153, 0.5);
 }
 
 .hamburger-button.open span:nth-child(1) {
   transform: translateY(7.5px) rotate(45deg);
-  background: linear-gradient(90deg, #4a9eff, #74c7ff);
+  background: linear-gradient(90deg, #3d9999, #5fb8b8);
   box-shadow: 
-    0 0 15px rgba(74, 158, 255, 0.6),
-    0 0 30px rgba(74, 158, 255, 0.3);
+    0 0 15px rgba(61, 153, 153, 0.6),
+    0 0 30px rgba(61, 153, 153, 0.3);
 }
 
 .hamburger-button.open span:nth-child(2) {
@@ -210,10 +210,10 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
 .hamburger-button.open span:nth-child(3) {
   transform: translateY(-7.5px) rotate(-45deg);
-  background: linear-gradient(90deg, #4a9eff, #74c7ff);
+  background: linear-gradient(90deg, #3d9999, #5fb8b8);
   box-shadow: 
-    0 0 15px rgba(74, 158, 255, 0.6),
-    0 0 30px rgba(74, 158, 255, 0.3);
+    0 0 15px rgba(61, 153, 153, 0.6),
+    0 0 30px rgba(61, 153, 153, 0.3);
 }
 
 .hamburger-button span {
@@ -228,18 +228,18 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   margin-top: 0.5rem;
   min-width: 200px;
   max-width: 450px;
-  /* Enhanced glass/frosted style with neon accents */
+  /* Enhanced glass/frosted style with teal accents */
   background: linear-gradient(145deg, 
     rgba(12, 14, 18, 0.671), 
     rgba(8, 10, 14, 0.5));
-  border: 1.5px solid rgba(74, 158, 255, 0.3);
+  border: 1.5px solid rgba(61, 153, 153, 0.3);
   border-radius: 1em;
   box-shadow:
-    0 0 20px rgba(74, 158, 255, 0.2),
+    0 0 20px rgba(61, 153, 153, 0.2),
     0 6px 32px 0 rgba(0, 0, 0, 0.4),
-    0 0 0 1.5px rgba(74, 158, 255, 0.1),
+    0 0 0 1.5px rgba(61, 153, 153, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(74, 158, 255, 0.2);
+    inset 0 -1px 0 rgba(61, 153, 153, 0.2);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   padding: .5em;
@@ -257,72 +257,67 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 @keyframes menuGlow {
   0% {
     box-shadow:
-      0 0 20px rgba(74, 158, 255, 0.2),
+      0 0 20px rgba(61, 153, 153, 0.2),
       0 6px 32px 0 rgba(0, 0, 0, 0.4),
-      0 0 0 1.5px rgba(74, 158, 255, 0.1),
+      0 0 0 1.5px rgba(61, 153, 153, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      inset 0 -1px 0 rgba(74, 158, 255, 0.2);
+      inset 0 -1px 0 rgba(61, 153, 153, 0.2);
   }
   100% {
     box-shadow:
-      0 0 30px rgba(74, 158, 255, 0.3),
+      0 0 30px rgba(61, 153, 153, 0.3),
       0 6px 32px 0 rgba(0, 0, 0, 0.4),
-      0 0 0 1.5px rgba(74, 158, 255, 0.2),
+      0 0 0 1.5px rgba(61, 153, 153, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.15),
-      inset 0 -1px 0 rgba(74, 158, 255, 0.3);
+      inset 0 -1px 0 rgba(61, 153, 153, 0.3);
   }
 }
 
 .menu-item {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.02), 
+    rgba(61, 153, 153, 0.03));
+  border: 1px solid rgba(61, 153, 153, 0.15);
+  border-radius: 0.75rem;
+  color: var(--color-text);
+  text-decoration: none;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: linear-gradient(145deg, 
-    rgba(8, 10, 14, 0.85), 
-    rgba(12, 16, 20, 0.75));
-  border: 1.5px solid rgba(66, 72, 110, 0.4);
-  border-radius: 0.6em;
-  box-shadow:
-    0 1.5px 10px 0 rgba(16, 19, 35, 0.4),
-    0 0 0 1px rgba(58, 65, 101, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px) saturate(150%);
-  -webkit-backdrop-filter: blur(10px) saturate(150%);
-  padding: 1rem 0.8rem;
-  font-family: var(--font-base);
-  font-size: 1.1rem;
-  color: #a6d3f7;
-  text-align: center;
+  gap: 0.75rem;
   cursor: pointer;
-  width: 95%;
-  font-weight: 400;
-  position: relative;
-  overflow: hidden;
-  transition:
-    background 0.3s ease,
-    color 0.3s ease,
-    border-color 0.3s ease,
-    box-shadow 0.3s ease,
-    transform 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.95rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.menu-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(74, 158, 255, 0.1), 
-    transparent);
-  transition: left 0.5s ease;
+.menu-item:hover {
+  /* Even more dramatic gradient + glow on hover with teal */
+  background: linear-gradient(135deg, 
+    rgba(61, 153, 153, 0.1),
+    rgba(95, 184, 184, 0.08));
+  border-color: rgba(61, 153, 153, 0.4);
+  color: var(--color-heading);
+  transform: translateX(4px);
+  box-shadow:
+    0 0 25px rgba(61, 153, 153, 0.35),
+    0 0 15px rgba(61, 153, 153, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 20px rgba(61, 153, 153, 0.05);
+  text-shadow: 0 0 8px rgba(61, 153, 153, 0.6);
 }
 
-.menu-item:hover::before {
-  left: 100%;
+.menu-item:active {
+  transform: translateX(2px);
+  box-shadow:
+    0 0 15px rgba(61, 153, 153, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .menu-icon {
@@ -338,20 +333,20 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   background: linear-gradient(145deg, 
     rgba(35, 36, 43, 0.9), 
     rgba(28, 32, 40, 0.85));
-  color: #4a9eff;
-  border-color: rgba(74, 158, 255, 0.6);
+  color: #3d9999;
+  border-color: rgba(61, 153, 153, 0.6);
   box-shadow: 
-    0 0 20px rgba(74, 158, 255, 0.4),
+    0 0 20px rgba(61, 153, 153, 0.4),
     0 3px 19px rgba(16, 23, 36, 0.6),
-    0 0 0 1px rgba(74, 158, 255, 0.3),
-    inset 0 1px 0 rgba(74, 158, 255, 0.2);
+    0 0 0 1px rgba(61, 153, 153, 0.3),
+    inset 0 1px 0 rgba(61, 153, 153, 0.2);
   transform: translateY(-3px) scale(1.05);
-  text-shadow: 0 0 10px rgba(74, 158, 255, 0.5);
+  text-shadow: 0 0 10px rgba(61, 153, 153, 0.5);
 }
 
 .menu-item:hover .menu-icon {
   opacity: 1;
-  text-shadow: 0 0 15px rgba(74, 158, 255, 0.8);
+  text-shadow: 0 0 15px rgba(61, 153, 153, 0.8);
   transform: scale(1.1);
 }
 
@@ -359,13 +354,13 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   background: linear-gradient(145deg, 
     rgba(22, 24, 26, 0.95), 
     rgba(16, 18, 22, 0.9));
-  color: #74c7ff;
-  border-color: rgba(116, 199, 255, 0.8);
+  color: #5fb8b8;
+  border-color: rgba(95, 184, 184, 0.8);
   transform: scale(0.98) translateY(-1px);
   box-shadow: 
-    0 0 15px rgba(116, 199, 255, 0.6),
+    0 0 15px rgba(95, 184, 184, 0.6),
     0 1px 5px rgba(16, 23, 36, 0.4),
-    0 0 0 1px rgba(116, 199, 255, 0.4),
+    0 0 0 1px rgba(95, 184, 184, 0.4),
     inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 

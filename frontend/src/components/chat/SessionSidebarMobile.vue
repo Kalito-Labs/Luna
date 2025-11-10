@@ -82,7 +82,7 @@
                         class="btn-primary"
                         @click="confirmingStartSession = true"
                       >
-                        🚀 Start New Session
+                        ♻ New Session
                       </button>
                       <div v-else class="action-confirmation">
                         <div class="confirmation-message">
@@ -404,12 +404,8 @@ watch(
 watch(
   localSessionSettings,
   newSettings => {
-    const sessionData = {
-      ...newSettings,
-      temperature: 0.7,
-      maxTokens: 1000,
-    }
-    emit('update:session-settings', sessionData)
+    // Don't override persona settings - just pass through
+    emit('update:session-settings', { ...newSettings })
   },
   { deep: true }
 )
@@ -420,10 +416,9 @@ function toggleSection(section: keyof typeof sectionExpanded) {
 }
 
 function handleStartSession() {
+  // Don't override persona settings - backend will merge them properly
   const sessionData = {
     ...localSessionSettings,
-    temperature: 0.7,
-    maxTokens: 1000,
   }
   emit('start-session', sessionData)
   confirmingStartSession.value = false
@@ -628,22 +623,22 @@ function formatDate(dateStr: string | undefined): string {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(8px);
   z-index: 9999;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
 }
 
 /* Mobile Sidebar Modal */
 .mobile-sidebar-modal {
-  width: 98%;
-  max-height: 85vh;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(135deg, rgba(14, 18, 26, 0.98) 0%, rgba(20, 25, 35, 0.98) 100%);
   backdrop-filter: blur(24px) saturate(180%);
-  border-radius: 1.5rem 1.5rem 0 0;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+  border-radius: 0;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -673,10 +668,10 @@ function formatDate(dateStr: string | undefined): string {
   height: 44px;
   min-width: 44px;
   min-height: 44px;
-  background: rgba(239, 68, 68, 0.12);
+  background: rgba(114, 63, 30, 0.253);
   border: 1px solid rgba(239, 68, 68, 0.25);
-  border-radius: 50%;
-  color: rgba(239, 68, 68, 0.9);
+  border-radius: 40%;
+  color: rgba(239, 94, 68, 0.9);
   font-size: 2rem;
   font-weight: 300;
   cursor: pointer;
@@ -971,7 +966,7 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, rgba(30, 25, 85, 0.9) 0%, rgba(55, 48, 163, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(20, 48, 71, 0.9) 0%, rgba(48, 88, 163, 0.9) 100%);
   border: 1px solid rgba(67, 56, 202, 0.4);
   color: #ffffff;
   padding: 1.25rem 1.5rem;
@@ -1247,12 +1242,13 @@ function formatDate(dateStr: string | undefined): string {
 
 .modal-slide-enter-active,
 .modal-slide-leave-active {
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .modal-slide-enter-from,
 .modal-slide-leave-to {
-  transform: translateY(100%);
+  opacity: 0;
+  transform: scale(0.95);
 }
 
 .section-expand-enter-active,

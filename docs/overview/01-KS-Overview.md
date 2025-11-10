@@ -19,7 +19,8 @@ Think of this as your family's digital filing cabinet:
 
 ## Kalito Ai Assistant
 
-_**Two Model Options**_
+Kalito Ai is powered by 2 types of AI models:
+
 - **Cloud AI (GPT-4.1 Nano)**: Fast, intelligent, with advanced reasoning—but requires internet and sends your questions to OpenAI
 
 - **Local AI (Phi3 Mini)**: Runs entirely on your computer, 100% private, no internet needed—perfect for sensitive questions
@@ -29,6 +30,7 @@ _**Two Model Options**_
 - "What medications does Mom take in the morning?" - AI queries medications with frequency filters
 - "Search online for latest information about Metformin side effects" - AI uses web search function
 - "Has Dad's blood pressure been trending down?" - AI analyzes vitals data over time
+
 ### Internet Search Capability ( Cloud Only)
 
 **What it can do:**

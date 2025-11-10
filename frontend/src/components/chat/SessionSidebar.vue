@@ -410,12 +410,8 @@ watch(
 watch(
   localSessionSettings,
   newSettings => {
-    const sessionData = {
-      ...newSettings,
-      temperature: 0.7,
-      maxTokens: 1000,
-    }
-    emit('update:session-settings', sessionData)
+    // Don't override persona settings - just pass through
+    emit('update:session-settings', { ...newSettings })
   },
   { deep: true }
 )
@@ -426,10 +422,9 @@ function toggleSection(section: keyof typeof sectionExpanded) {
 }
 
 function handleStartSession() {
+  // Don't override persona settings - backend will merge them properly
   const sessionData = {
     ...localSessionSettings,
-    temperature: 0.7,
-    maxTokens: 1000,
   }
   emit('start-session', sessionData)
 }
