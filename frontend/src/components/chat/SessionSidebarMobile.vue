@@ -628,22 +628,22 @@ function formatDate(dateStr: string | undefined): string {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(8px);
   z-index: 9999;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
 }
 
 /* Mobile Sidebar Modal */
 .mobile-sidebar-modal {
-  width: 98%;
-  max-height: 85vh;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(135deg, rgba(14, 18, 26, 0.98) 0%, rgba(20, 25, 35, 0.98) 100%);
   backdrop-filter: blur(24px) saturate(180%);
-  border-radius: 1.5rem 1.5rem 0 0;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+  border-radius: 0;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1247,12 +1247,13 @@ function formatDate(dateStr: string | undefined): string {
 
 .modal-slide-enter-active,
 .modal-slide-leave-active {
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .modal-slide-enter-from,
 .modal-slide-leave-to {
-  transform: translateY(100%);
+  opacity: 0;
+  transform: scale(0.95);
 }
 
 .section-expand-enter-active,

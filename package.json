@@ -15,7 +15,12 @@
     "dev:frontend": "cd frontend && pnpm dev",
     "status": "echo '📊 Project Status:' && echo '✅ Linting:' && pnpm lint --quiet && echo '✅ Format:' && pnpm format:check --log-level=silent && echo '🚀 Ready for development!'",
     "db:backup": "./scripts/backup-db",
-    "db:restore": "./scripts/restore-db"
+    "db:restore": "./scripts/restore-db",
+    "build-app": "cd frontend && pnpm build && npx cap sync android && cd android && ./gradlew assembleDebug",
+    "android:build": "cd frontend && pnpm build && npx cap sync android",
+    "android:apk": "cd frontend/android && ./gradlew assembleDebug",
+    "android:install": "adb install -r frontend/android/app/build/outputs/apk/debug/app-debug.apk",
+    "android:run": "pnpm build-app && pnpm android:install"
   },
   "lint-staged": {
     "*.ts": [
