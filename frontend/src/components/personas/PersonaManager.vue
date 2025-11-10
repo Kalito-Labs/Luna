@@ -6,10 +6,6 @@
         <HamburgerMenu />
       </div>
       <h1 class="page-title">Persona Manager</h1>
-      <button class="primary-button" @click="showCreateModal = true">
-        <span class="plus-icon">+</span>
-        New Persona
-      </button>
     </div>
 
     <div class="personas-grid" v-if="personas.length > 0">
@@ -37,14 +33,6 @@
               :title="`Edit ${persona.name}`"
             >
               ✏️
-            </button>
-            <button
-              v-if="!isDefaultPersona(persona.id)"
-              class="action-button delete"
-              @click="confirmDelete(persona)"
-              :title="`Delete ${persona.name}`"
-            >
-              🗑️
             </button>
           </div>
         </div>
@@ -78,8 +66,7 @@
     <div v-else-if="!loading && !error" class="empty-state">
       <div class="empty-icon">🤖</div>
       <h2>No Personas Found</h2>
-      <p>Create your first custom persona to get started.</p>
-      <button class="primary-button" @click="showCreateModal = true">Create First Persona</button>
+      <p>Default personas will appear here once the backend is connected.</p>
     </div>
 
     <div v-if="loading" class="loading-state">
@@ -87,41 +74,14 @@
       <p>Loading personas...</p>
     </div>
 
-    <!-- Create/Edit Modal -->
+    <!-- Edit Modal -->
     <PersonaEditModal
-      :show="showCreateModal || showEditModal"
+      :show="showEditModal"
       :isEditing="showEditModal"
       :editingPersona="showEditModal ? personaToEdit : null"
       @close="handleModalClose"
       @save="handlePersonaSave"
     />
-
-    <!-- Delete Confirmation Modal -->
-    <div v-if="showDeleteModal" class="modal-overlay" @click="showDeleteModal = false">
-      <div class="modal modal-small" @click.stop>
-        <div class="modal-header">
-          <h2>Confirm Delete</h2>
-        </div>
-
-        <div class="modal-content">
-          <p>
-            Are you sure you want to delete the persona
-            <strong>"{{ personaToDelete?.name }}"</strong>?
-          </p>
-          <p class="warning-text">
-            This action cannot be undone. Any active sessions using this persona will be switched to
-            the default persona.
-          </p>
-        </div>
-
-        <div class="form-actions">
-          <button class="secondary-button" @click="showDeleteModal = false">Cancel</button>
-          <button class="danger-button" @click="deletePersona" :disabled="submitting">
-            {{ submitting ? 'Deleting...' : 'Delete Persona' }}
-          </button>
-        </div>
-      </div>
-    </div>
 
     <!-- Toast notifications -->
     <div v-if="notification" class="toast" :class="notification.type">
@@ -134,7 +94,7 @@
 import { ref, onMounted } from 'vue'
 import HamburgerMenu from '../HamburgerMenu.vue'
 import PersonaEditModal from './PersonaEditModal.vue'
-import type { Persona, PersonaCategory, CreatePersonaRequest } from '../../../../backend/types/personas'
+import type { Persona, PersonaCategory } from '../../../../backend/types/personas'
 import { usePersonaStore } from '../../composables/usePersonaStore'
 
 const personaStore = usePersonaStore()
@@ -144,10 +104,7 @@ const { personas, loading, error } = personaStore
 const submitting = ref(false)
 
 // Modals
-const showCreateModal = ref(false)
 const showEditModal = ref(false)
-const showDeleteModal = ref(false)
-const personaToDelete = ref<Persona | null>(null)
 const personaToEdit = ref<Persona | null>(null)
 
 // Notification system
@@ -213,11 +170,6 @@ function editPersona(persona: Persona) {
   showEditModal.value = true
 }
 
-function confirmDelete(persona: Persona) {
-  personaToDelete.value = persona
-  showDeleteModal.value = true
-}
-
 function showNotification(type: 'success' | 'error', message: string) {
   notification.value = { type, message }
   setTimeout(() => {
@@ -225,88 +177,43 @@ function showNotification(type: 'success' | 'error', message: string) {
   }, 3000)
 }
 
-// Generate a unique ID for new personas
-function generatePersonaId(name: string): string {
-  // Create a clean ID based on the name, with timestamp for uniqueness
-  const cleanName = name
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-')         // Replace spaces with hyphens
-    .replace(/-+/g, '-')          // Collapse multiple hyphens
-    .replace(/^-|-$/g, '')        // Remove leading/trailing hyphens
-  
-  const timestamp = Date.now().toString(36) // Base36 for shorter string
-  return `${cleanName}-${timestamp}`.substring(0, 50) // Ensure it fits the DB limit
-}
-
-// **FIXED**: consume payload and persist via store
+// Update existing persona only
 async function handlePersonaSave(payload: PersonaPayload) {
   submitting.value = true
   try {
-    const isEdit = showEditModal.value && !!personaToEdit.value
-    if (isEdit) {
-      // Update existing persona - clean up the payload
-      const updatePayload = {
-        name: payload.name,
-        prompt: payload.prompt,
-        description: payload.description?.trim() || undefined,
-        icon: payload.icon?.trim() || undefined,
-        category: payload.category,
-        settings: payload.settings
-      }
-      await personaStore.updatePersona(personaToEdit.value!.id, updatePayload)
-    } else {
-      // Create new persona - add the missing ID field
-      const createPayload: CreatePersonaRequest = {
-        id: generatePersonaId(payload.name),
-        name: payload.name,
-        prompt: payload.prompt,
-        description: payload.description?.trim() || undefined,
-        icon: payload.icon?.trim() || undefined,
-        category: payload.category,
-        settings: payload.settings
-      }
-      await personaStore.createPersona(createPayload)
+    if (!personaToEdit.value) {
+      throw new Error('No persona selected for editing')
     }
 
-    // Refresh list (or optimistically update if your store returns the entity)
+    // Update existing persona - clean up the payload
+    const updatePayload = {
+      name: payload.name,
+      prompt: payload.prompt,
+      description: payload.description?.trim() || undefined,
+      icon: payload.icon?.trim() || undefined,
+      category: payload.category,
+      settings: payload.settings
+    }
+    await personaStore.updatePersona(personaToEdit.value.id, updatePayload)
+
+    // Refresh list
     await personaStore.loadPersonas()
 
-    showNotification('success', `Persona ${isEdit ? 'updated' : 'created'} successfully!`)
+    showNotification('success', 'Persona updated successfully!')
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error saving persona:', error)
     showNotification('error', error instanceof Error ? error.message : 'Failed to save persona')
   } finally {
     submitting.value = false
-    showCreateModal.value = false
     showEditModal.value = false
     personaToEdit.value = null
   }
 }
 
 function handleModalClose() {
-  showCreateModal.value = false
   showEditModal.value = false
   personaToEdit.value = null
-}
-
-async function deletePersona() {
-  if (!personaToDelete.value) return
-  submitting.value = true
-  try {
-    await personaStore.deletePersona(personaToDelete.value.id)
-    showNotification('success', `Persona "${personaToDelete.value.name}" deleted successfully!`)
-    showDeleteModal.value = false
-    personaToDelete.value = null
-    await personaStore.loadPersonas()
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error deleting persona:', error)
-    showNotification('error', error instanceof Error ? error.message : 'Failed to delete persona')
-  } finally {
-    submitting.value = false
-  }
 }
 
 // Lifecycle

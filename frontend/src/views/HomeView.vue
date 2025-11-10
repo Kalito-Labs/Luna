@@ -10,7 +10,7 @@
       <h1 class="main-title">KalitoSpace</h1>
             <div class="intro-block">
         <div class="intro-hero">
-          <h2 class="intro-headline">Helping Mom and Dad, Made Easy</h2>
+          <h2 class="intro-headline">Family Care Made Simple</h2>
         </div>
 
         <div class="features-container">
@@ -19,8 +19,8 @@
             <li>
               <span class="emoji">🏥</span>
               <div class="feature-content">
-                <strong>Complete Care Dashboard</strong>
-                <span class="feature-desc">Track medications, appointments, vitals, and caregiver schedules in one organized view.</span>
+                <strong>Everything in One Place</strong>
+                <span class="feature-desc">Doctors, Medications, Appointments, and Vitals in a Single Dashboard.</span>
               </div>
             </li>
 
@@ -28,16 +28,7 @@
               <span class="emoji">📊</span>
               <div class="feature-content">
                 <strong>Health Trend Monitoring</strong>
-                <span class="feature-desc">Visualize  weight, and glucose patterns to spot changes early.</span>
-              </div>
-            </li>
-
-            <li>
-              <span class="emoji">🤖</span>
-              <div class="feature-content">
-                <strong>Kalito AI</strong>
-                <span class="feature-desc">  Always ready to help with everyday questions, planning, and family support.
-</span>
+                <span class="feature-desc">Track  weight, and glucose patterns to spot changes early.</span>
               </div>
             </li>
 
@@ -76,7 +67,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
-import homeBg from '@/assets/images/home-1.webp'
+import homeBg from '@/assets/images/bg-3.webp'
 
 const router = useRouter()
 
@@ -322,7 +313,7 @@ function goToVitals() {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #5a7bc7 0%, #4c6bb8 100%);
+  background: linear-gradient(135deg, #224950 0%, #4c8db8 100%);
   color: #fff;
   box-shadow: 0 4px 16px rgba(90, 123, 199, 0.3);
   border-color: rgba(255, 255, 255, 0.1);
@@ -335,7 +326,7 @@ function goToVitals() {
 }
 
 .btn-secondary {
-  background: rgba(42, 48, 72, 0.6);
+  background: rgba(8, 85, 148, 0.76);
   color: #d4e7fd;
   border-color: rgba(66, 72, 110, 0.4);
   backdrop-filter: blur(8px);
@@ -348,7 +339,7 @@ function goToVitals() {
 }
 
 .btn-vitals {
-  background: linear-gradient(135deg, #e85d75 0%, #d94e66 100%);
+  background: linear-gradient(135deg, #753a44 0%, #a7374a 100%);
   color: #fff;
   box-shadow: 0 4px 16px rgba(232, 93, 117, 0.3);
   border-color: rgba(255, 255, 255, 0.1);
