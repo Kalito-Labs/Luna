@@ -364,11 +364,13 @@ onMounted(() => {
   .hamburger-fixed {
     top: 16px;
     left: 16px;
+    margin-top: .8rem;
   }
 
   .main-title {
     font-size: 1.7rem;
     margin: 0.3em 0 0.4em 0;
+    margin-top: 2rem;
   }
 
   .intro-block {
