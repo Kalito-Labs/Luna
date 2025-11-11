@@ -140,7 +140,7 @@ app.use('/api/models', modelsRouter)
 // Memory system (context, pins, summaries)
 app.use('/api/memory', memoryRouter)
 
-// Eldercare management
+// KalitoHub management (user profile, medications, appointments)
 app.use('/api/patients', patientsRouter)
 app.use('/api/providers', providersRouter)
 app.use('/api/medications', medicationsRouter)

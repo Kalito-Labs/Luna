@@ -36,11 +36,9 @@ router.get('/', async (req, res) => {
     
     let query = `
       SELECT a.*, 
-             p.name as patient_name,
-             hp.name as healthcare_provider_name
+             p.name as patient_name
       FROM appointments a
       LEFT JOIN patients p ON a.patient_id = p.id
-      LEFT JOIN healthcare_providers hp ON a.provider_id = hp.id
       WHERE 1=1
     `
     const params: string[] = []
@@ -66,11 +64,9 @@ router.get('/:id', async (req, res) => {
     
     const appointment = db.prepare(`
       SELECT a.*, 
-             p.name as patient_name,
-             hp.name as healthcare_provider_name
+             p.name as patient_name
       FROM appointments a
       LEFT JOIN patients p ON a.patient_id = p.id
-      LEFT JOIN healthcare_providers hp ON a.provider_id = hp.id
       WHERE a.id = ?
     `).get(id)
 
@@ -96,17 +92,6 @@ router.post('/', async (req, res) => {
     
     if (!patient) {
       return err(res, 404, 'NOT_FOUND', 'Patient not found')
-    }
-    
-    // If provider_id is provided, verify it exists (optional validation)
-    if (validatedData.provider_id) {
-      const provider = db.prepare(`
-        SELECT id FROM healthcare_providers WHERE id = ?
-      `).get(validatedData.provider_id)
-      
-      if (!provider) {
-        return err(res, 404, 'NOT_FOUND', 'Provider not found')
-      }
     }
     
     const appointmentId = generateId()
@@ -141,11 +126,9 @@ router.post('/', async (req, res) => {
     // Return the created appointment
     const newAppointment = db.prepare(`
       SELECT a.*, 
-             p.name as patient_name,
-             hp.name as healthcare_provider_name
+             p.name as patient_name
       FROM appointments a
       LEFT JOIN patients p ON a.patient_id = p.id
-      LEFT JOIN healthcare_providers hp ON a.provider_id = hp.id
       WHERE a.id = ?
     `).get(appointmentId)
     
@@ -177,17 +160,6 @@ router.put('/:id', async (req, res) => {
     
     if (!existingAppointment) {
       return err(res, 404, 'NOT_FOUND', 'Appointment not found')
-    }
-    
-    // Verify provider exists if being updated (optional check)
-    if (validatedData.provider_id) {
-      const provider = db.prepare(`
-        SELECT id FROM healthcare_providers WHERE id = ?
-      `).get(validatedData.provider_id)
-      
-      if (!provider) {
-        return err(res, 404, 'NOT_FOUND', 'Provider not found')
-      }
     }
     
     // Build dynamic update query
@@ -229,11 +201,9 @@ router.put('/:id', async (req, res) => {
     // Return updated appointment
     const updatedAppointment = db.prepare(`
       SELECT a.*, 
-             p.name as patient_name,
-             hp.name as healthcare_provider_name
+             p.name as patient_name
       FROM appointments a
       LEFT JOIN patients p ON a.patient_id = p.id
-      LEFT JOIN healthcare_providers hp ON a.provider_id = hp.id
       WHERE a.id = ?
     `).get(id)
     

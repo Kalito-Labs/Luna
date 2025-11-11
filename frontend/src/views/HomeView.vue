@@ -18,9 +18,6 @@
             <div class="quote-author">
               — {{ currentQuote.author }}
             </div>
-            <button @click="refreshQuote" class="new-quote-btn" title="Get new quote">
-              🔄
-            </button>
           </div>
         </div>
         <div class="cta-section">
@@ -29,6 +26,10 @@
             <router-link to="/kalito" class="btn btn-primary">
               <span class="btn-icon">🌙</span>
               Luna AI
+            </router-link>
+            <router-link to="/kalito-hub" class="btn btn-secondary">
+              <span class="btn-icon">🏠</span>
+              Kalito Hub
             </router-link>
           </div>
         </div>
@@ -46,11 +47,6 @@ import homeBg from '@/assets/images/bg-1.webp'
 // Current quote state
 const currentQuote = ref<Quote>({ text: '', author: '' })
 
-// Get random quote function
-function refreshQuote() {
-  currentQuote.value = getRandomQuote()
-}
-
 // Background style for the home view
 const homeBgStyle = computed(() => ({
   background: `#16161e url('${homeBg}') center center/cover no-repeat`,
@@ -58,7 +54,7 @@ const homeBgStyle = computed(() => ({
 
 // Initialize with random quote on mount
 onMounted(() => {
-  refreshQuote()
+  currentQuote.value = getRandomQuote()
 })
 </script>
 
@@ -195,30 +191,6 @@ onMounted(() => {
   margin-top: 0.5em;
 }
 
-.new-quote-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(139, 92, 246, 0.2);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 50%;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 1.1rem;
-  color: #e4ecf7;
-}
-
-.new-quote-btn:hover {
-  background: rgba(139, 92, 246, 0.3);
-  border-color: rgba(139, 92, 246, 0.5);
-  transform: rotate(180deg);
-}
-
 /* CTA Section */
 .cta-section {
   display: flex;
@@ -274,6 +246,22 @@ onMounted(() => {
   background: linear-gradient(135deg, #9d72f7 0%, #8b5cf6 100%);
   box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
   transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: rgba(20, 25, 40, 0.8);
+  color: #e4ecf7;
+  box-shadow: 0 4px 16px rgba(20, 25, 40, 0.6);
+  border-color: rgba(110, 121, 199, 0.4);
+  font-size: 1.1rem;
+  padding: 1em 2.2em;
+}
+
+.btn-secondary:hover {
+  background: rgba(30, 35, 50, 0.9);
+  box-shadow: 0 6px 20px rgba(110, 121, 199, 0.5);
+  transform: translateY(-2px);
+  border-color: rgba(110, 121, 199, 0.6);
 }
 
 /* ================================================================ */
@@ -359,12 +347,6 @@ onMounted(() => {
     font-size: 0.95rem;
   }
 
-  .new-quote-btn {
-    width: 2.2rem;
-    height: 2.2rem;
-    font-size: 1rem;
-  }
-
   .cta-text {
     font-size: 1rem;
   }
@@ -415,14 +397,6 @@ onMounted(() => {
     font-size: 0.9rem;
   }
 
-  .new-quote-btn {
-    width: 2rem;
-    height: 2rem;
-    font-size: 0.9rem;
-    top: 0.8rem;
-    right: 0.8rem;
-  }
-
   .cta-text {
     font-size: 0.95rem;
   }
@@ -464,12 +438,6 @@ onMounted(() => {
 
   .quote-author {
     font-size: 0.85rem;
-  }
-
-  .new-quote-btn {
-    width: 1.8rem;
-    height: 1.8rem;
-    font-size: 0.8rem;
   }
 
   .cta-section {

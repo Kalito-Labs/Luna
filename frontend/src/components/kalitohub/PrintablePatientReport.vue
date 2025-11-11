@@ -120,7 +120,7 @@
 
     <!-- Print Footer -->
     <div class="print-footer">
-      <p>This report was generated on {{ formattedDate }} from Kalito Eldercare Management System.</p>
+      <p>This report was generated on {{ formattedDate }} from the Luna Management System.</p>
       <p class="disclaimer">This information is confidential and intended for medical use only.</p>
     </div>
   </div>
@@ -142,13 +142,6 @@ interface Patient {
   emergency_contact_name?: string
   emergency_contact_phone?: string
   notes?: string
-}
-
-interface Provider {
-  id: string
-  name: string
-  specialty?: string
-  phone?: string
 }
 
 interface Medication {
@@ -178,7 +171,6 @@ interface Props {
   patient: Patient
   medications: Medication[]
   appointments: Appointment[]
-  providers: Provider[]
 }
 
 const props = defineProps<Props>()
@@ -195,9 +187,7 @@ const formattedDate = computed(() => {
 })
 
 const primaryDoctorName = computed(() => {
-  if (!props.patient.primary_doctor_id) return null
-  const doctor = props.providers.find(p => p.id === props.patient.primary_doctor_id)
-  return doctor ? `${doctor.name}${doctor.specialty ? ` - ${doctor.specialty}` : ''}` : null
+  return null
 })
 
 const sortedAppointments = computed(() => {
