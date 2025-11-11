@@ -323,14 +323,30 @@ async function savePatient(patientData: any) {
     const url = isEditing ? apiUrl(`/api/patients/${patientData.id}`) : apiUrl('/api/patients')
     const method = isEditing ? 'PUT' : 'POST'
     
-    console.log('Sending patient data:', JSON.stringify(patientData, null, 2))
+    // Only send fields that the API accepts (strip out id, created_at, updated_at, etc.)
+    const allowedFields = {
+      name: patientData.name,
+      date_of_birth: patientData.date_of_birth,
+      relationship: patientData.relationship,
+      gender: patientData.gender,
+      phone: patientData.phone,
+      emergency_contact_name: patientData.emergency_contact_name,
+      emergency_contact_phone: patientData.emergency_contact_phone,
+      primary_doctor_id: patientData.primary_doctor_id,
+      insurance_provider: patientData.insurance_provider,
+      insurance_id: patientData.insurance_id,
+      notes: patientData.notes,
+      active: patientData.active
+    }
+    
+    console.log('Sending patient data:', JSON.stringify(allowedFields, null, 2))
     
     const response = await fetch(url, {
       method,
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(patientData)
+      body: JSON.stringify(allowedFields)
     })
     
     if (response.ok) {
