@@ -1,0 +1,1 @@
+Can't delete saved sessions in SessionSidebarMobile.vue we'll need to compare the code with the desktop version and implement the delete functionality.
