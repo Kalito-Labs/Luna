@@ -6,19 +6,19 @@
     </div>
     
     <div class="dashboard-header">
-      <h1>Family Hub</h1>
+      <h1>Kalito Hub</h1>
     </div>
     
     <!-- Quick Actions - Main Dashboard -->
     <div class="quick-actions">
       <h2>Dashboard</h2>
       <div class="action-grid">
-        <!-- Patients -->
-        <button @click="activeView = 'patients'" class="action-btn patients-btn" :class="{ active: activeView === 'patients' }">
-          <div class="btn-icon">👥</div>
+        <!-- My Profile -->
+        <button @click="openMyProfile" class="action-btn patients-btn">
+          <div class="btn-icon">�</div>
           <div class="btn-content">
-            <h3>Patients</h3>
-            <p>Manage family members</p>
+            <h3>My Profile</h3>
+            <p>Personal information & health records</p>
           </div>
         </button>
         
@@ -44,18 +44,6 @@
 
     <!-- Content Sections -->
 
-    <!-- Patients Overview -->
-    <div v-if="activeView === 'patients'" class="content-section">
-      <PatientsList 
-        :patients="patients"
-        :providers="providers"
-        @add-patient="showPatientForm = true"
-        @view-details="viewPatientDetails"
-        @edit-patient="editPatient"
-        @delete-patient="deletePatient"
-      />
-    </div>
-
     <!-- Medications Overview -->
     <div v-if="activeView === 'medications'" class="content-section">
       <MedicationsList 
@@ -77,39 +65,8 @@
       />
     </div>
 
-    <!-- Vitals Overview -->
-    <div v-if="activeView === 'vitals'" class="content-section">
-      <VitalsList 
-        :vitals="allVitals"
-        :patients="patients"
-        @add-vital="showVitalsForm = true"
-        @edit-vital="editVital"
-        @delete-vital="deleteVital"
-      />
-    </div>
-
-    <!-- Healthcare Providers Overview -->
-    <div v-if="activeView === 'providers'" class="content-section">
-      <ProvidersList 
-        :providers="allProviders"
-        @add-provider="showProviderForm = true"
-        @edit-provider="editProvider"
-        @delete-provider="deleteProvider"
-      />
-    </div>
-
     <!-- Modals -->
-    <!-- Patient Form Modal -->
-    <div v-if="showPatientForm" class="modal-overlay">
-      <PatientForm 
-        :patient="editingPatient"
-        :is-editing="!!editingPatient"
-        :providers="providers"
-        @save="savePatient"
-        @cancel="closePatientForm"
-        @click.stop
-      />
-    </div>        <!-- Medication Form Modal -->
+    <!-- Medication Form Modal -->
     <div v-if="showMedicationForm" class="modal-overlay">
       <MedicationForm 
         :medication="editingMedication"
@@ -117,18 +74,6 @@
         :patients="patients"
         @save="saveMedication"
         @cancel="closeMedicationForm"
-        @click.stop
-      />
-    </div>
-    
-    <!-- Vitals Form Modal -->
-    <div v-if="showVitalsForm" class="modal-overlay">
-      <VitalsForm 
-        :vital="editingVital"
-        :is-editing="!!editingVital"
-        :patients="patients"
-        @save="saveVital"
-        @cancel="closeVitalsForm"
         @click.stop
       />
     </div>
@@ -151,42 +96,14 @@
     v-if="selectedPatient"
     :patient="selectedPatient"
     :medications="patientMedications"
-    :appointments="patientAppointments"
     :providers="allProviders"
     @close="closePatientDetail"
-    @edit-patient="editPatient"
+    @save-patient="savePatient"
     @add-medication="() => { showPatientDetail = false; showMedicationForm = true }"
     @edit-medication="editMedication"
     @delete-medication="deleteMedication"
-    @add-appointment="() => { showPatientDetail = false; showAppointmentForm = true }"
-    @edit-appointment="editAppointment"
-    @delete-appointment="deleteAppointment"
     @click.stop
   />
-    </div>
-
-    <!-- Caregiver Profile Modal -->
-    <div v-if="showCaregiverProfile" class="modal-overlay">
-      <CaregiverProfile 
-        :caregiver="caregiver"
-        :is-editing="!!caregiver"
-        @close="closeCaregiverProfile" 
-        @save="saveCaregiver"
-        @click.stop
-      />
-    </div>
-
-    <!-- Provider Form Modal -->
-    <div v-if="showProviderForm" class="modal-overlay">
-      <ProviderForm 
-        :provider="editingProvider"
-        :isEditing="!!editingProvider"
-        :patients="patients"
-        @save="saveProvider"
-        @cancel="closeProviderForm"
-        @close="closeProviderForm"
-        @click.stop
-      />
     </div>
 
     <!-- Success/Error Messages -->
@@ -200,8 +117,6 @@
 import { ref, onMounted } from 'vue'
 import { apiUrl } from '../config/api'
 import HamburgerMenu from '../components/HamburgerMenu.vue'
-import PatientForm from '../components/eldercare/PatientForm.vue'
-import PatientsList from '../components/eldercare/PatientsList.vue'
 import MedicationForm from '../components/eldercare/MedicationForm.vue'
 import AppointmentForm from '../components/eldercare/AppointmentForm.vue'
 import PatientDetailModal from '../components/eldercare/PatientDetailModal.vue'
@@ -227,30 +142,21 @@ const patients = ref<Patient[]>([])
 const providers = ref<Provider[]>([])
 const caregiver = ref<any>(null)
 
-const showPatientForm = ref(false)
 const showMedicationForm = ref(false)
-const showVitalsForm = ref(false)
 const showAppointmentForm = ref(false)
 const showPatientDetail = ref(false)
-const showCaregiverProfile = ref(false)
-const showProviderForm = ref(false)
 
-const activeView = ref<'patients' | 'medications' | 'vitals' | 'appointments' | 'providers'>('patients')
+const activeView = ref<'patients' | 'medications' | 'appointments'>('medications')
 
-const editingPatient = ref<Patient | null>(null)
 const editingMedication = ref<any | null>(null)
-const editingVital = ref<any | null>(null)
 const editingAppointment = ref<any | null>(null)
-const editingProvider = ref<any | null>(null)
 const selectedPatient = ref<Patient | null>(null)
 const patientMedications = ref<any[]>([])
 const patientAppointments = ref<any[]>([])
-const patientVitals = ref<any[]>([])
 
 // Global data for all tabs
 const allMedications = ref<any[]>([])
 const allAppointments = ref<any[]>([])
-const allVitals = ref<any[]>([])
 const allProviders = ref<any[]>([])
 
 const message = ref('')
@@ -261,15 +167,7 @@ onMounted(async () => {
   await loadProviders()
   await loadAllMedications()
   await loadAllAppointments()
-  await loadAllVitals()
   await loadAllProviders()
-  
-  // Check if we should open vitals modal (from home page shortcut)
-  const state = history.state as { openVitalsModal?: boolean }
-  if (state?.openVitalsModal) {
-    activeView.value = 'vitals'
-    showVitalsForm.value = true
-  }
 })
 
 async function loadPatients() {
@@ -345,32 +243,7 @@ async function loadAllProviders() {
   }
 }
 
-function editPatient(patient: Patient) {
-  editingPatient.value = patient
-  showPatientForm.value = true
-}
 
-async function deletePatient(patient: Patient) {
-  if (confirm(`Are you sure you want to delete ${patient.name}? This action cannot be undone.`)) {
-    try {
-      const response = await fetch(apiUrl(`/api/patients/${patient.id}`), {
-        method: 'DELETE'
-      })
-      
-      if (response.ok) {
-        // Remove patient from local array
-        patients.value = patients.value.filter(p => p.id !== patient.id)
-        showMessage('Patient deleted successfully', 'success')
-      } else {
-        const error = await response.json()
-        showMessage(error.message || 'Failed to delete patient', 'error')
-      }
-    } catch (error) {
-      console.error('Error deleting patient:', error)
-      showMessage('Failed to delete patient', 'error')
-    }
-  }
-}
 
 async function viewPatientDetails(patient: Patient) {
   // Reset data arrays first to prevent stale data
@@ -386,13 +259,40 @@ async function viewPatientDetails(patient: Patient) {
   showPatientDetail.value = true
 }
 
+async function openMyProfile() {
+  // Load or create a default patient for single-user mode
+  if (patients.value.length === 0) {
+    // If no patients exist, create a default patient
+    const defaultPatient: Patient = {
+      id: '1',
+      name: 'My Profile',
+      date_of_birth: '',
+      relationship: 'Self',
+      phone: '',
+      primary_doctor: ''
+    }
+    patients.value = [defaultPatient]
+    selectedPatient.value = defaultPatient
+  } else {
+    // Use the first patient as the profile (single-user approach)
+    const firstPatient = patients.value[0]
+    if (firstPatient) {
+      selectedPatient.value = firstPatient
+      // Load their data
+      await loadPatientData(firstPatient.id)
+    }
+  }
+  
+  // Show the patient detail modal
+  showPatientDetail.value = true
+}
+
 async function loadPatientData(patientId: string) {
   try {
-    // Load patient's medications, appointments, and vitals
-    const [medicationsRes, appointmentsRes, vitalsRes] = await Promise.all([
+    // Load patient's medications and appointments
+    const [medicationsRes, appointmentsRes] = await Promise.all([
       fetch(apiUrl(`/api/medications?patient_id=${patientId}`)),
-      fetch(apiUrl(`/api/appointments?patient_id=${patientId}`)),
-      fetch(apiUrl(`/api/vitals?patient_id=${patientId}`))
+      fetch(apiUrl(`/api/appointments?patient_id=${patientId}`))
     ])
 
     if (medicationsRes.ok) {
@@ -408,26 +308,20 @@ async function loadPatientData(patientId: string) {
     } else {
       patientAppointments.value = []
     }
-    
-    if (vitalsRes.ok) {
-      const data = await vitalsRes.json()
-      patientVitals.value = data.data || []
-    } else {
-      patientVitals.value = []
-    }
   } catch (error) {
     console.error('Failed to load patient data:', error)
     // Set empty arrays as fallback
     patientMedications.value = []
     patientAppointments.value = []
-    patientVitals.value = []
   }
 }
 
 async function savePatient(patientData: any) {
   try {
-    const url = editingPatient.value ? `/api/patients/${editingPatient.value.id}` : '/api/patients'
-    const method = editingPatient.value ? 'PUT' : 'POST'
+    // Determine if we're editing based on whether the patient has an id
+    const isEditing = patientData.id && patientData.id !== ''
+    const url = isEditing ? apiUrl(`/api/patients/${patientData.id}`) : apiUrl('/api/patients')
+    const method = isEditing ? 'PUT' : 'POST'
     
     console.log('Sending patient data:', JSON.stringify(patientData, null, 2))
     
@@ -441,9 +335,18 @@ async function savePatient(patientData: any) {
     
     if (response.ok) {
       await loadPatients()
-      closePatientForm()
+      
+      // Update the selectedPatient if we're editing the current patient
+      if (isEditing && selectedPatient.value?.id === patientData.id) {
+        // Find the updated patient from the refreshed list
+        const updatedPatient = patients.value.find(p => p.id === patientData.id)
+        if (updatedPatient) {
+          selectedPatient.value = updatedPatient
+        }
+      }
+      
       showMessage(
-        editingPatient.value ? 'Patient updated successfully!' : 'Patient added successfully!',
+        isEditing ? 'Profile updated successfully!' : 'Patient added successfully!',
         'success'
       )
     } else {
@@ -528,11 +431,6 @@ async function saveAppointment(appointmentData: any) {
     console.error('Error saving appointment:', error)
     showMessage('Failed to save appointment. Please try again.', 'error')
   }
-}
-
-function closePatientForm() {
-  showPatientForm.value = false
-  editingPatient.value = null
 }
 
 function editMedication(medication: any) {
@@ -697,7 +595,6 @@ function closePatientDetail() {
   selectedPatient.value = null
   patientMedications.value = []
   patientAppointments.value = []
-  patientVitals.value = []
 }
 
 function closeCaregiverProfile() {
@@ -722,11 +619,6 @@ async function loadCaregiver() {
   } catch (error) {
     console.error('Error loading caregiver:', error)
   }
-}
-
-async function openCaregiverProfile() {
-  await loadCaregiver()
-  showCaregiverProfile.value = true
 }
 
 async function saveCaregiver(caregiverData: any) {

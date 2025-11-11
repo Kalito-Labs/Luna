@@ -1,9 +1,18 @@
 <template>
   <div class="patient-detail-modal">
     <div class="modal-header">
-      <h2>{{ patient.name }}</h2>
+      <h2>{{ isEditing ? 'Edit My Profile' : 'My Profile' }}</h2>
       <div class="modal-actions">
-        <button @click="printModal" class="btn btn-sm btn-outline print-btn" title="Print patient information">
+        <button v-if="!isEditing" @click="toggleEdit" class="btn btn-sm btn-primary edit-btn" title="Edit profile information">
+          ✏️ Edit
+        </button>
+        <button v-if="isEditing" @click="saveChanges" class="btn btn-sm btn-success save-btn" title="Save changes">
+          💾 Save
+        </button>
+        <button v-if="isEditing" @click="cancelEdit" class="btn btn-sm btn-secondary cancel-btn" title="Cancel editing">
+          ❌ Cancel
+        </button>
+        <button v-if="!isEditing" @click="printModal" class="btn btn-sm btn-outline print-btn" title="Print patient information">
           🖨️ Print
         </button>
         <button @click="$emit('close')" class="close-btn">&times;</button>
@@ -17,7 +26,8 @@
           <h3>Patient Information</h3>
         </div>
         
-        <div class="info-grid">
+        <!-- View Mode -->
+        <div v-if="!isEditing" class="info-grid">
           <div class="info-item">
             <label>Name:</label>
             <span>{{ patient.name }}</span>
@@ -52,7 +62,136 @@
           </div>
         </div>
         
-        <div v-if="patient.notes" class="notes-section">
+        <!-- Edit Mode -->
+        <div v-if="isEditing" class="edit-form">
+          <form class="form-container">
+            <div class="form-section">
+              <h4>Basic Information</h4>
+              
+              <div class="form-group">
+                <label for="edit-name">Full Name *</label>
+                <input 
+                  id="edit-name"
+                  v-model="editForm.name" 
+                  type="text" 
+                  required 
+                  placeholder="Enter your full name"
+                />
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="edit-date_of_birth">Date of Birth</label>
+                  <input 
+                    id="edit-date_of_birth"
+                    v-model="editForm.date_of_birth" 
+                    type="date"
+                  />
+                </div>
+                
+                <div class="form-group">
+                  <label for="edit-relationship">Relationship</label>
+                  <select id="edit-relationship" v-model="editForm.relationship">
+                    <option value="">Select relationship</option>
+                    <option value="mother">Mother</option>
+                    <option value="father">Father</option>
+                    <option value="spouse">Spouse</option>
+                    <option value="self">Self</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="edit-gender">Gender</label>
+                  <select id="edit-gender" v-model="editForm.gender">
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-section">
+              <h4>Contact Information</h4>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="edit-phone">Phone Number</label>
+                  <input 
+                    id="edit-phone"
+                    v-model="editForm.phone" 
+                    type="tel" 
+                    placeholder="Enter phone number"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-section">
+              <h4>Medical Information</h4>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="edit-insurance_provider">Insurance Provider</label>
+                  <input 
+                    id="edit-insurance_provider"
+                    v-model="editForm.insurance_provider" 
+                    type="text" 
+                    placeholder="Enter insurance provider"
+                  />
+                </div>
+                
+                <div class="form-group">
+                  <label for="edit-insurance_id">Insurance ID</label>
+                  <input 
+                    id="edit-insurance_id"
+                    v-model="editForm.insurance_id" 
+                    type="text" 
+                    placeholder="Enter insurance ID"
+                  />
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="edit-emergency_contact_name">Emergency Contact Name</label>
+                  <input 
+                    id="edit-emergency_contact_name"
+                    v-model="editForm.emergency_contact_name" 
+                    type="text" 
+                    placeholder="Enter emergency contact name"
+                  />
+                </div>
+                
+                <div class="form-group">
+                  <label for="edit-emergency_contact_phone">Emergency Contact Phone</label>
+                  <input 
+                    id="edit-emergency_contact_phone"
+                    v-model="editForm.emergency_contact_phone" 
+                    type="tel" 
+                    placeholder="Enter emergency contact phone"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-section">
+              <div class="form-group">
+                <label for="edit-notes">Notes</label>
+                <textarea 
+                  id="edit-notes"
+                  v-model="editForm.notes" 
+                  rows="4" 
+                  placeholder="Enter any additional notes..."
+                ></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+        
+        <div v-if="patient.notes && !isEditing" class="notes-section">
           <label>Notes:</label>
           <p>{{ patient.notes }}</p>
         </div>
@@ -66,14 +205,6 @@
         @edit-medication="$emit('edit-medication', $event)"
         @delete-medication="$emit('delete-medication', $event)"
       />
-      
-      <!-- Appointments Section -->
-      <AppointmentsList 
-        :appointments="appointments"
-        @add-appointment="$emit('add-appointment')"
-        @edit-appointment="$emit('edit-appointment', $event)"
-        @delete-appointment="$emit('delete-appointment', $event)"
-      />
     </div>
 
     <!-- Hidden Printable Component - Only for printing -->
@@ -82,7 +213,7 @@
         ref="printComponent"
         :patient="patient"
         :medications="medications"
-        :appointments="appointments"
+        :appointments="[]"
         :providers="providers"
       />
     </div>
@@ -92,7 +223,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import MedicationsList from './MedicationsList.vue'
-import AppointmentsList from './AppointmentsList.vue'
 import PrintablePatientReport from './PrintablePatientReport.vue'
 
 interface Patient {
@@ -128,34 +258,38 @@ interface Medication {
   notes?: string
 }
 
-interface Appointment {
-  id: string
-  appointment_date: string
-  appointment_time?: string
-  appointment_type?: string
-  location?: string
-  notes?: string
-  status: string
-}
-
 interface Props {
   patient: Patient
   medications: Medication[]
-  appointments: Appointment[]
   providers: Provider[]
 }
 
 const props = defineProps<Props>()
 
-defineEmits<{
+const emit = defineEmits<{
   close: []
   'add-medication': []
   'edit-medication': [medication: Medication]
   'delete-medication': [medication: Medication]
-  'add-appointment': []
-  'edit-appointment': [appointment: Appointment]
-  'delete-appointment': [appointment: Appointment]
+  'save-patient': [patient: Patient]
 }>()
+
+// Edit mode state
+const isEditing = ref(false)
+const editForm = ref<Patient>({
+  id: '',
+  name: '',
+  date_of_birth: '',
+  relationship: '',
+  gender: '',
+  phone: '',
+  primary_doctor_id: '',
+  insurance_provider: '',
+  insurance_id: '',
+  emergency_contact_name: '',
+  emergency_contact_phone: '',
+  notes: ''
+})
 
 const printComponent = ref<InstanceType<typeof PrintablePatientReport> | null>(null)
 
@@ -194,6 +328,25 @@ function printModal() {
   if (printComponent.value) {
     printComponent.value.printReport()
   }
+}
+
+// Edit mode functions
+function toggleEdit() {
+  isEditing.value = true
+  // Copy current patient data to edit form
+  editForm.value = { ...props.patient }
+}
+
+function cancelEdit() {
+  isEditing.value = false
+  // Reset form to original patient data
+  editForm.value = { ...props.patient }
+}
+
+function saveChanges() {
+  // Emit the save event with the edited patient data
+  emit('save-patient', editForm.value)
+  isEditing.value = false
 }
 </script>
 
@@ -429,6 +582,75 @@ function printModal() {
   line-height: 1.6;
 }
 
+/* Edit Form Styles */
+.edit-form {
+  margin-top: 20px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-section {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border-light);
+}
+
+.form-section h4 {
+  margin: 0 0 16px 0;
+  color: var(--text-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--text-heading);
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: var(--bg-main);
+  color: var(--text-main);
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-alpha);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
 .btn {
   padding: 10px 18px;
   border-radius: 8px;
@@ -465,6 +687,48 @@ function printModal() {
   background: var(--accent-blue);
   color: white;
   box-shadow: var(--glow-blue);
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: 2px solid var(--primary);
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover, #5b21b6);
+  border-color: var(--primary-hover, #5b21b6);
+  box-shadow: var(--glow-purple);
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+  border: 2px solid #10b981;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #059669;
+  border-color: #059669;
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+  border: 2px solid #6b7280;
+  box-shadow: 0 2px 4px rgba(107, 114, 128, 0.2);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #4b5563;
+  border-color: #4b5563;
+  box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
   transform: translateY(-1px);
 }
 
