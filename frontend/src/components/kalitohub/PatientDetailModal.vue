@@ -211,7 +211,6 @@
         :patient="patient"
         :medications="medications"
         :appointments="[]"
-        :providers="providers"
       />
     </div>
   </div>
@@ -242,13 +241,6 @@ interface Patient {
   notes?: string
 }
 
-interface Provider {
-  id: string
-  name: string
-  specialty?: string
-  phone?: string
-}
-
 interface Medication {
   id: string
   name: string
@@ -263,7 +255,6 @@ interface Medication {
 interface Props {
   patient: Patient
   medications: Medication[]
-  providers: Provider[]
 }
 
 const props = defineProps<Props>()

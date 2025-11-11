@@ -14,7 +14,7 @@
           <span class="menu-icon">🏠</span>
           Home
         </button>
-        <button class="menu-item" @click="goToChat">Chat</button>
+        <button class="menu-item" @click="goToChat">Luna Ai</button>
         <button class="menu-item" @click="goToPersonas">
           <span class="menu-icon">👤</span>
           Personas
@@ -53,7 +53,7 @@ function goToPersonas() {
 
 function goToKalitoHub() {
   open.value = false
-  router.push({ name: 'family-hub' })
+  router.push({ name: 'kalito-hub' })
 }
 
 function handleClickOutside(event: MouseEvent) {

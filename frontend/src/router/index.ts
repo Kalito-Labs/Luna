@@ -8,7 +8,7 @@ const routes = [
   { path: '/', name: 'home', component: HomeView },
   { path: '/kalito', name: 'chat', component: ChatWorkspace },
   { path: '/personas', name: 'personas', component: PersonaManager },
-  { path: '/family-hub', name: 'family-hub', component: KalitoHub },
+  { path: '/kalito-hub', name: 'kalito-hub', component: KalitoHub },
 ]
 
 const router = createRouter({

@@ -1,5 +1,5 @@
 <template>
-  <div class="family-hub">
+  <div class="kalito-hub">
     <div class="dashboard-header">
       <HamburgerMenu />
       <h1>Kalito Hub</h1>
@@ -92,7 +92,6 @@
     v-if="selectedPatient"
     :patient="selectedPatient"
     :medications="patientMedications"
-    :providers="allProviders"
     @close="closePatientDetail"
     @save-patient="savePatient"
     @add-medication="() => { showPatientDetail = false; showMedicationForm = true }"
@@ -113,11 +112,11 @@
 import { ref, onMounted } from 'vue'
 import { apiUrl } from '../config/api'
 import HamburgerMenu from '../components/HamburgerMenu.vue'
-import MedicationForm from '../components/eldercare/MedicationForm.vue'
-import AppointmentForm from '../components/eldercare/AppointmentForm.vue'
-import PatientDetailModal from '../components/eldercare/PatientDetailModal.vue'
-import MedicationsList from '../components/eldercare/MedicationsList.vue'
-import AppointmentsList from '../components/eldercare/AppointmentsList.vue'
+import MedicationForm from '../components/kalitohub/MedicationForm.vue'
+import AppointmentForm from '../components/kalitohub/AppointmentForm.vue'
+import PatientDetailModal from '../components/kalitohub/PatientDetailModal.vue'
+import MedicationsList from '../components/kalitohub/MedicationsList.vue'
+import AppointmentsList from '../components/kalitohub/AppointmentsList.vue'
 
 interface Patient {
   id: string
@@ -153,17 +152,14 @@ const patientAppointments = ref<any[]>([])
 // Global data for all tabs
 const allMedications = ref<any[]>([])
 const allAppointments = ref<any[]>([])
-const allProviders = ref<any[]>([])
 
 const message = ref('')
 const messageType = ref<'success' | 'error'>('success')
 
 onMounted(async () => {
   await loadPatients()
-  await loadProviders()
   await loadAllMedications()
   await loadAllAppointments()
-  await loadAllProviders()
 })
 
 async function loadPatients() {
@@ -176,18 +172,6 @@ async function loadPatients() {
     }
   } catch (error) {
     console.error('Failed to load patients:', error)
-  }
-}
-
-async function loadProviders() {
-  try {
-    const response = await fetch(apiUrl('/api/providers'))
-    if (response.ok) {
-      const result = await response.json()
-      providers.value = result.data || []
-    }
-  } catch (error) {
-    console.error('Failed to load providers:', error)
   }
 }
 
@@ -227,25 +211,10 @@ async function loadAllVitals() {
   }
 }
 
-async function loadAllProviders() {
-  try {
-    const response = await fetch(apiUrl('/api/providers'))
-    if (response.ok) {
-      const result = await response.json()
-      allProviders.value = result.data || []
-    }
-  } catch (error) {
-    console.error('Failed to load providers:', error)
-  }
-}
-
-
-
 async function viewPatientDetails(patient: Patient) {
   // Reset data arrays first to prevent stale data
   patientMedications.value = []
   patientAppointments.value = []
-  patientVitals.value = []
   
   // Load patient data BEFORE showing modal
   await loadPatientData(patient.id)
@@ -690,7 +659,6 @@ async function saveProvider(providerData: any) {
     })
     
     if (response.ok) {
-      await loadAllProviders()
       closeProviderForm()
       showMessage(
         editingProvider.value 
@@ -718,7 +686,6 @@ async function deleteProvider(provider: any) {
     })
     
     if (response.ok) {
-      await loadAllProviders()
       showMessage('Provider deleted successfully!', 'success')
     } else {
       throw new Error('Failed to delete provider')
@@ -744,7 +711,7 @@ function showMessage(text: string, type: 'success' | 'error') {
 /* BASE LAYOUT - Desktop First, Fluid Responsive                   */
 /* ================================================================ */
 
-.family-hub {
+.kalito-hub {
   max-width: 1600px;
   width: 100%;
   margin: 0 auto;
@@ -760,7 +727,7 @@ function showMessage(text: string, type: 'success' | 'error') {
 
 /* Tablet: 769px - 1024px */
 @media (max-width: 1024px) {
-  .family-hub {
+  .kalito-hub {
     padding: 24px;
   }
 
@@ -772,7 +739,7 @@ function showMessage(text: string, type: 'success' | 'error') {
 
 /* Mobile: <= 768px */
 @media (max-width: 768px) {
-  .family-hub {
+  .kalito-hub {
     padding: 16px;
   }
 
@@ -1222,17 +1189,17 @@ function showMessage(text: string, type: 'success' | 'error') {
 /* Custom Scrollbars - Modern Dark Gray Design */
 
 /* Main dashboard scrollbar */
-.family-hub::-webkit-scrollbar {
+.kalito-hub::-webkit-scrollbar {
   width: 12px;
 }
 
-.family-hub::-webkit-scrollbar-track {
+.kalito-hub::-webkit-scrollbar-track {
   background: rgba(30, 30, 35, 0.4);
   border-radius: 6px;
   margin: 4px;
 }
 
-.family-hub::-webkit-scrollbar-thumb {
+.kalito-hub::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, rgba(60, 60, 70, 0.9), rgba(80, 80, 90, 0.9));
   border-radius: 6px;
   border: 2px solid transparent;
@@ -1240,27 +1207,27 @@ function showMessage(text: string, type: 'success' | 'error') {
   transition: all 0.3s ease;
 }
 
-.family-hub::-webkit-scrollbar-thumb:hover {
+.kalito-hub::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, rgba(90, 90, 100, 0.95), rgba(110, 110, 120, 0.95));
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 }
 
-.family-hub::-webkit-scrollbar-thumb:active {
+.kalito-hub::-webkit-scrollbar-thumb:active {
   background: rgba(120, 120, 130, 1);
 }
 
 /* Child elements scrollbars */
-.family-hub *::-webkit-scrollbar {
+.kalito-hub *::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-.family-hub *::-webkit-scrollbar-track {
+.kalito-hub *::-webkit-scrollbar-track {
   background: rgba(30, 30, 35, 0.3);
   border-radius: 5px;
 }
 
-.family-hub *::-webkit-scrollbar-thumb {
+.kalito-hub *::-webkit-scrollbar-thumb {
   background: rgba(70, 70, 80, 0.8);
   border-radius: 5px;
   border: 2px solid transparent;
@@ -1268,33 +1235,33 @@ function showMessage(text: string, type: 'success' | 'error') {
   transition: all 0.3s ease;
 }
 
-.family-hub *::-webkit-scrollbar-thumb:hover {
+.kalito-hub *::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 100, 110, 0.9);
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
-.family-hub *::-webkit-scrollbar-thumb:active {
+.kalito-hub *::-webkit-scrollbar-thumb:active {
   background: rgba(110, 110, 120, 1);
 }
 
 /* Firefox scrollbar styling */
-.family-hub {
+.kalito-hub {
   scrollbar-width: thin;
   scrollbar-color: rgba(80, 80, 90, 0.9) rgba(30, 30, 35, 0.4);
 }
 
-.family-hub * {
+.kalito-hub * {
   scrollbar-width: thin;
   scrollbar-color: rgba(70, 70, 80, 0.8) rgba(30, 30, 35, 0.3);
 }
 
 /* Mobile: <= 768px - Thinner scrollbars */
 @media (max-width: 768px) {
-  .family-hub::-webkit-scrollbar {
+  .kalito-hub::-webkit-scrollbar {
     width: 8px;
   }
   
-  .family-hub *::-webkit-scrollbar {
+  .kalito-hub *::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
