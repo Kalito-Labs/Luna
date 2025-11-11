@@ -19,9 +19,9 @@
           <span class="menu-icon">👤</span>
           Personas
         </button>
-        <button class="menu-item" @click="goToFamilyHub">
+        <button class="menu-item" @click="goToKalitoHub">
           <span class="menu-icon">🏥</span>
-          Family Hub
+          Kalito Hub
         </button>
       </div>
     </transition>
@@ -51,7 +51,7 @@ function goToPersonas() {
   router.push({ name: 'personas' })
 }
 
-function goToFamilyHub() {
+function goToKalitoHub() {
   open.value = false
   router.push({ name: 'family-hub' })
 }

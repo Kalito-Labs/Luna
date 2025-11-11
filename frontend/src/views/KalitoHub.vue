@@ -13,15 +13,6 @@
     <div class="quick-actions">
       <h2>Dashboard</h2>
       <div class="action-grid">
-        <!-- Caregiver Profile -->
-        <button @click="openCaregiverProfile" class="action-btn caregiver-btn">
-          <div class="btn-icon">👨‍⚕️</div>
-          <div class="btn-content">
-            <h3>My Caregiver Profile</h3>
-            <p>Manage your professional info</p>
-          </div>
-        </button>
-        
         <!-- Patients -->
         <button @click="activeView = 'patients'" class="action-btn patients-btn" :class="{ active: activeView === 'patients' }">
           <div class="btn-icon">👥</div>
@@ -46,24 +37,6 @@
           <div class="btn-content">
             <h3>Appointments</h3>
             <p>Doctor visits & checkups</p>
-          </div>
-        </button>
-        
-        <!-- Vitals -->
-        <button @click="activeView = 'vitals'" class="action-btn vitals-btn" :class="{ active: activeView === 'vitals' }">
-          <div class="btn-icon">📊</div>
-          <div class="btn-content">
-            <h3>Vital Signs</h3>
-            <p>Weight & glucose tracking</p>
-          </div>
-        </button>
-        
-        <!-- Healthcare Providers -->
-        <button @click="activeView = 'providers'" class="action-btn providers-btn" :class="{ active: activeView === 'providers' }">
-          <div class="btn-icon">🏥</div>
-          <div class="btn-content">
-            <h3>Healthcare Providers</h3>
-            <p>Doctors & specialists</p>
           </div>
         </button>
       </div>
@@ -230,15 +203,10 @@ import HamburgerMenu from '../components/HamburgerMenu.vue'
 import PatientForm from '../components/eldercare/PatientForm.vue'
 import PatientsList from '../components/eldercare/PatientsList.vue'
 import MedicationForm from '../components/eldercare/MedicationForm.vue'
-import VitalsForm from '../components/eldercare/VitalsForm.vue'
 import AppointmentForm from '../components/eldercare/AppointmentForm.vue'
 import PatientDetailModal from '../components/eldercare/PatientDetailModal.vue'
 import MedicationsList from '../components/eldercare/MedicationsList.vue'
 import AppointmentsList from '../components/eldercare/AppointmentsList.vue'
-import VitalsList from '../components/eldercare/VitalsList.vue'
-import CaregiverProfile from '../components/eldercare/CaregiverProfile.vue'
-import ProviderForm from '../components/eldercare/ProviderForm.vue'
-import ProvidersList from '../components/eldercare/ProvidersList.vue'
 
 interface Patient {
   id: string

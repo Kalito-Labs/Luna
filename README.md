@@ -139,7 +139,7 @@ kalito-repo/
 │   │   │   └── personas/       # PersonaManager
 │   │   ├── 📁 views/           # Page views
 │   │   │   ├── HomeView.vue    # Landing page
-│   │   │   └── FamilyHub.vue   # Care management
+│   │   │   └── KalitoHub.vue   # Care management
 │   │   ├── 📁 router/          # Vue Router config
 │   │   ├── 📁 utils/           # Frontend utilities
 │   │   └── core.ts             # API client & core logic
