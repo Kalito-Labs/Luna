@@ -120,7 +120,7 @@
 
     <!-- Print Footer -->
     <div class="print-footer">
-      <p>This report was generated on {{ formattedDate }} from Kalito Eldercare Management System.</p>
+      <p>This report was generated on {{ formattedDate }} from the Luna Management System.</p>
       <p class="disclaimer">This information is confidential and intended for medical use only.</p>
     </div>
   </div>

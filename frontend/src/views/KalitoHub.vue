@@ -1,11 +1,7 @@
 <template>
   <div class="family-hub">
-    <!-- Hamburger button/menu, top left -->
-    <div class="hamburger-fixed">
-      <HamburgerMenu />
-    </div>
-    
     <div class="dashboard-header">
+      <HamburgerMenu />
       <h1>Kalito Hub</h1>
     </div>
     
@@ -790,20 +786,18 @@ function showMessage(text: string, type: 'success' | 'error') {
 /* DASHBOARD HEADER                                                 */
 /* ================================================================ */
 
-/* Hamburger menu fixed position */
-.hamburger-fixed {
-  position: fixed;
-  top: 32px;
-  left: 32px;
-  z-index: 2001;
-}
-
 .dashboard-header {
   position: relative;
   text-align: center;
   margin-bottom: 48px;
   padding-bottom: 1.5rem;
   border-bottom: var(--border);
+}
+
+.dashboard-header :deep(.hamburger-menu) {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .dashboard-header h1 {

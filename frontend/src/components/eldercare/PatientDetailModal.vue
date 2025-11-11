@@ -4,16 +4,16 @@
       <h2>{{ isEditing ? 'Edit My Profile' : 'My Profile' }}</h2>
       <div class="modal-actions">
         <button v-if="!isEditing" @click="toggleEdit" class="btn btn-sm btn-primary edit-btn" title="Edit profile information">
-          ✏️ Edit
+          ✏️<span class="btn-text"> Edit</span>
         </button>
         <button v-if="isEditing" @click="saveChanges" class="btn btn-sm btn-success save-btn" title="Save changes">
-          💾 Save
+          💾<span class="btn-text"> Save</span>
         </button>
         <button v-if="isEditing" @click="cancelEdit" class="btn btn-sm btn-secondary cancel-btn" title="Cancel editing">
-          ❌ Cancel
+          ❌<span class="btn-text"> Cancel</span>
         </button>
         <button v-if="!isEditing" @click="printModal" class="btn btn-sm btn-outline print-btn" title="Print patient information">
-          🖨️ Print
+          🖨️<span class="btn-text"> Print</span>
         </button>
         <button @click="$emit('close')" class="close-btn">&times;</button>
       </div>
@@ -779,21 +779,35 @@ function saveChanges() {
 
 @media (max-width: 480px) {
   .modal-header {
-    padding: 16px;
-  }
-  
-  .modal-header h2 {
-    font-size: 1.25rem;
-  }
-  
-  .modal-actions {
-    flex-direction: column;
+    padding: 12px;
     gap: 8px;
   }
   
-  .print-btn {
-    font-size: 0.75rem;
-    padding: 6px 10px;
+  .modal-header h2 {
+    font-size: 1.1rem;
+    flex: 1;
+  }
+  
+  .modal-actions {
+    flex-direction: row;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  
+  .modal-actions .btn {
+    padding: 8px 10px;
+    font-size: 1.2rem;
+    min-width: auto;
+  }
+  
+  .modal-actions .btn .btn-text {
+    display: none;
+  }
+  
+  .close-btn {
+    font-size: 1.5rem;
+    width: 32px;
+    height: 32px;
   }
   
   .modal-body {
