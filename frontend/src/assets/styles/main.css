@@ -1,0 +1,351 @@
+/* ============================================================================
+   main.css — Global Base Styles + Common UI Components
+   ============================================================================ */
+
+/* 1. Root Variables — global system */
+:root {
+  --bg-main: #16181e;
+  --bg-panel: #1b1f27;
+  --bg-glass: rgba(30, 34, 44, 0.7);
+  --accent-blue: #20b6ef;
+  --accent-teal: #30ffe2;
+  --accent-green: #37f593;
+  --accent-magenta: #e347ff;
+  --accent-yellow: #fff176;
+  --accent-gray: #2c313a;
+  --led-green: #37f593;
+  --led-yellow: #ffe963;
+  --led-red: #ef5350;
+  --led-blue: #20b6ef;
+  --led-gray: #a0a4b8;
+  --text-main: #e6e8eb;
+  --text-muted: #aab3bf;
+  --text-heading: #aae4f5;
+  --text-subtle: #c8d3ea;
+  --border: 1px solid #23272f;
+  --shadow-soft: 0 1px 12px 0 #0004;
+  --shadow-focus: 0 0 0 3px #20b6ef66;
+  --glow-blue: 0 0 12px 2px #20b6ef66;
+  --glow-magenta: 0 0 12px 2px #e347ff66;
+  --blur: blur(12px);
+  --font-base: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Cascadia Mono', 'Roboto Mono', 'Source Code Pro', 'Consolas', 'Monaco', 'Liberation Mono', monospace;
+  --font-heading: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', Roboto, sans-serif;
+  --font-code-weight: 450; /* Slightly heavier for better readability */
+  --font-code-size: 0.9rem; /* Optimized size for code */
+  --font-code-line-height: 1.6; /* Better line spacing */
+  --motion-quick: 120ms;
+
+  /* Glass Panel Variables */
+  --glass-bg-light: rgba(255, 255, 255, 0.06);
+  --glass-bg-medium: rgba(255, 255, 255, 0.08);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.12);
+  --glass-border-light: rgba(255, 255, 255, 0.1);
+  --glass-border-medium: rgba(255, 255, 255, 0.12);
+  --glass-border-heavy: rgba(255, 255, 255, 0.15);
+  --glass-blur-light: blur(8px);
+  --glass-blur-medium: blur(12px);
+  --glass-blur-heavy: blur(20px);
+
+  /* Purple/Violet Theme Variables */
+  --purple-primary: #8b5cf6;
+  --purple-secondary: #a855f7;
+  --purple-tertiary: #9333ea;
+  --purple-light: #c084fc;
+  --purple-dark: #7c3aed;
+  --purple-glass: rgba(139, 92, 246, 0.12);
+  --purple-glass-light: rgba(139, 92, 246, 0.08);
+  --purple-glass-heavy: rgba(139, 92, 246, 0.16);
+  --purple-border-light: rgba(139, 92, 246, 0.25);
+  --purple-border-medium: rgba(139, 92, 246, 0.35);
+  --purple-border-heavy: rgba(139, 92, 246, 0.45);
+  --purple-glow: 0 0 12px rgba(139, 92, 246, 0.2);
+  --purple-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
+
+  /* Enhanced Typography Variables */
+  --font-code-enhanced: 'JetBrains Mono', 'Fira Code', 'Victor Mono', 'Cascadia Code', 'SF Mono', 'Source Code Pro', 'Consolas', monospace;
+  --font-text-enhanced: 'Inter Variable', 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-display-enhanced: 'Inter Variable', 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  
+  /* Enhanced Code Typography */
+  --code-font-size: 0.9rem;
+  --code-font-weight: 500;
+  --code-line-height: 1.65;
+  --code-letter-spacing: 0.01em;
+
+  /* Blue Accent Variables */
+  --blue-primary: #42a5f5;
+  --blue-primary-dark: #2986b9;
+  --blue-bg-light: rgba(66, 165, 245, 0.1);
+  --blue-bg-medium: rgba(66, 165, 245, 0.15);
+  --blue-bg-heavy: rgba(66, 165, 245, 0.25);
+  --blue-border-light: rgba(66, 165, 245, 0.3);
+  --blue-border-medium: rgba(66, 165, 245, 0.4);
+  --blue-border-heavy: rgba(66, 165, 245, 0.5);
+
+  /* Green/Turquoise AI Response Variables */
+  --ai-primary: #20d4aa;
+  --ai-primary-dark: #1ba688;
+  --ai-secondary: #37f593;
+  --ai-tertiary: #30ffe2;
+  --ai-bg-light: rgba(32, 212, 170, 0.08);
+  --ai-bg-medium: rgba(32, 212, 170, 0.12);
+  --ai-bg-heavy: rgba(32, 212, 170, 0.18);
+  --ai-border-light: rgba(32, 212, 170, 0.25);
+  --ai-border-medium: rgba(32, 212, 170, 0.35);
+  --ai-border-heavy: rgba(32, 212, 170, 0.45);
+  --ai-glow: 0 0 20px rgba(32, 212, 170, 0.3);
+  --ai-text-primary: #e8fdf7;
+  --ai-text-secondary: #c8f5e8;
+  --ai-text-accent: #7ee3c7;
+
+  /* Dark Panel Variables */
+  --dark-panel-bg: rgba(20, 23, 31, 0.9);
+  --dark-panel-bg-heavy: rgba(15, 17, 24, 0.85);
+
+  /* Danger/Red Variables */
+  --danger-bg-light: rgba(239, 68, 68, 0.15);
+  --danger-bg-medium: rgba(239, 68, 68, 0.25);
+  --danger-bg-heavy: rgba(239, 68, 68, 0.35);
+  --danger-border-light: rgba(239, 68, 68, 0.3);
+  --danger-border-medium: rgba(239, 68, 68, 0.5);
+  --danger-border-heavy: rgba(239, 68, 68, 0.7);
+
+  /* Success/Green Variables */
+  --success-bg-light: rgba(76, 175, 80, 0.15);
+  --success-border-light: rgba(76, 175, 80, 0.3);
+}
+
+/* 2. Reset & Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-main);
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-base);
+  font-size: 18px;
+  overscroll-behavior: contain;
+  overflow: hidden;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-main);
+  position: relative;
+}
+
+/* 3. Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  color: var(--text-heading);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.3em;
+}
+
+.text-muted,
+[disabled],
+.muted {
+  color: var(--text-muted) !important;
+  opacity: 0.6 !important;
+}
+
+/* 4. Global Button Base (minimal) */
+button {
+  font-family: var(--font-base);
+  cursor: pointer;
+  outline: none;
+}
+
+/* 5. Global Input Base (minimal) */
+input,
+select,
+textarea {
+  font-family: var(--font-base);
+  outline: none;
+}
+
+/* 6. Button Component Classes */
+
+.btn-primary {
+  background: var(--glass-bg-medium);
+  border: 1px solid var(--glass-border-heavy);
+  color: var(--text-main);
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-family: var(--font-base);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--glass-bg-heavy);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  background: var(--glass-bg-medium);
+  border-color: var(--glass-border-heavy);
+  color: rgba(232, 234, 237, 0.5);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.btn-secondary {
+  background: var(--glass-bg-medium);
+  border: 1px solid var(--glass-border-heavy);
+  color: var(--text-main);
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-family: var(--font-base);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.btn-secondary:hover {
+  background: var(--glass-bg-heavy);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-family: var(--font-base);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: translateY(-1px);
+}
+
+/* 7. Input Component Classes */
+.select-glass {
+  background: var(--glass-bg-medium);
+  backdrop-filter: var(--glass-blur-light);
+  border: 1px solid var(--glass-border-heavy);
+  border-radius: 0.5rem;
+  color: var(--text-main);
+  padding: 0.75rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.select-glass:focus {
+  border-color: var(--blue-border-heavy);
+  background: var(--glass-bg-heavy);
+  box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+}
+
+.select-glass:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.select-glass option {
+  background: rgba(20, 23, 31, 0.95);
+  color: var(--text-main);
+}
+
+/* 8. Glass Panel Extended Patterns */
+.glass-panel-primary {
+  background: var(--dark-panel-bg-heavy);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 1rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+
+.glass-panel-secondary {
+  background: var(--dark-panel-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border-medium);
+  border-radius: 1rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  position: relative;
+  z-index: 100;
+}
+
+/* 9. Enhanced Button System */
+.btn-glass-icon {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  color: #e6e8eb;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1rem;
+}
+
+.btn-glass-icon:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-glass-icon-small {
+  width: 30px;
+  height: 30px;
+  font-size: 0.9rem;
+}
+
+.btn-glass-icon-large {
+  width: 42px;
+  height: 42px;
+  font-size: 1.2rem;
+}
+
+/* General Utility Classes */
+/* Essential utilities only - components handle their own styling with scoped CSS */
