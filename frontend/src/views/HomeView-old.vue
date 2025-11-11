@@ -8,20 +8,44 @@
     <!-- Main Content Area -->
     <section class="main-area">
       <h1 class="main-title">Project Luna</h1>
-      <div class="intro-block">
+            <div class="intro-block">
         <div class="quotes-container">
           <div v-if="currentQuote.text" class="daily-quote">
+
             <div class="quote-icon">✨</div>
-            <blockquote class="quote-text">
-              "{{ currentQuote.text }}"
-            </blockquote>
-            <div class="quote-author">
-              — {{ currentQuote.author }}
-            </div>
-            <button @click="refreshQuote" class="new-quote-btn" title="Get new quote">
-              🔄
-            </button>
-          </div>
+
+            <li>
+              <span class="emoji">🧘</span>
+              <div class="feature-content">
+                <strong>Mindfulness Practices</strong>
+                <span class="feature-desc">Guided meditation, breathing exercises, and grounding techniques.</span>
+              </div>
+            </li>
+
+            <li>
+              <span class="emoji">�️</span>
+              <div class="feature-content">
+                <strong>Coping Strategies</strong>
+                <span class="feature-desc">Evidence-based tools from DBT, CBT, and mindfulness traditions.</span>
+              </div>
+            </li>
+
+            <li>
+              <span class="emoji">📚</span>
+              <div class="feature-content">
+                <strong>Recovery Resources</strong>
+                <span class="feature-desc">Access to AA/NA literature, CBT/DBT materials, and crisis support.</span>
+              </div>
+            </li>
+
+            <li>
+              <span class="emoji">🔒</span>
+              <div class="feature-content">
+                <strong>Private and Local</strong>
+                <span class="feature-desc">All data stored locally. Complete privacy for your mental health journey.</span>
+              </div>
+            </li>
+          </ul>
         </div>
         <div class="cta-section">
           <p class="cta-text">Begin Your Wellness Journey</p>
@@ -144,8 +168,36 @@ onMounted(() => {
   transition: background 0.2s;
 }
 
-/* Quotes container styles */
-.quotes-container {
+/* Intro hero section */
+.intro-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  width: 100%;
+}
+
+.intro-headline {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #d4e7fd;
+  margin: 0;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 12px rgba(16, 22, 45, 0.4);
+}
+
+.intro-tagline {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: #b8cfe8;
+  margin: 0;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Features container styles */
+.features-container {
   background: rgba(8, 10, 14, 0.75);
   border: 1.5px solid var(--color-border);
   border-radius: 0.75em;
@@ -156,67 +208,67 @@ onMounted(() => {
   -webkit-backdrop-filter: blur(8px) saturate(140%);
   color: var(--color-text);
   font-family: var(--font-family);
-  padding: 2.5em 2em;
+  padding: 1.8em 2em;
   width: 100%;
-  text-align: center;
-  position: relative;
 }
 
-.daily-quote {
+.features-heading {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #c5dbf5;
+  margin: 0 0 1.2em 0;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+/* Feature list styles */
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 1.2em;
-  max-width: 650px;
-  margin: 0 auto;
 }
 
-.quote-icon {
-  font-size: 2.5em;
-  color: #8b5cf6;
-  opacity: 0.9;
-  margin-bottom: 0.5em;
-}
-
-.quote-text {
-  font-size: 1.4rem;
-  line-height: 1.6;
-  font-style: italic;
-  color: #e4ecf7;
-  margin: 0;
-  font-weight: 400;
-  text-align: center;
-}
-
-.quote-author {
-  font-size: 1.1rem;
-  color: #9fb5d4;
-  font-weight: 500;
-  margin-top: 0.5em;
-}
-
-.new-quote-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(139, 92, 246, 0.2);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 50%;
-  width: 2.5rem;
-  height: 2.5rem;
+/* Feature list item styles */
+.feature-list li {
+  color: #d2e7fc;
+  font-size: 1rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 1.1rem;
-  color: #e4ecf7;
+  align-items: flex-start;
+  gap: 1em;
+  padding: 0;
 }
 
-.new-quote-btn:hover {
-  background: rgba(139, 92, 246, 0.3);
-  border-color: rgba(139, 92, 246, 0.5);
-  transform: rotate(180deg);
+/* Emoji styles */
+.emoji {
+  font-size: 1.8em;
+  flex-shrink: 0;
+  opacity: 0.95;
+  margin-top: 2px;
+  color: #76f1d8;
+  filter: none;
+}
+
+.feature-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  flex: 1;
+}
+
+.feature-content strong {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #e4ecf7;
+  display: block;
+}
+
+.feature-desc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #9fb5d4;
 }
 
 /* CTA Section */
@@ -276,6 +328,19 @@ onMounted(() => {
   transform: translateY(-2px);
 }
 
+.btn-secondary {
+  background: rgba(8, 85, 148, 0.76);
+  color: #d4e7fd;
+  border-color: rgba(66, 72, 110, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.btn-secondary:hover {
+  background: rgba(50, 58, 86, 0.7);
+  border-color: rgba(90, 123, 199, 0.5);
+  transform: translateY(-2px);
+}
+
 /* ================================================================ */
 /* Mobile Styles - Tablets (Portrait and Landscape)                */
 /* ================================================================ */
@@ -297,16 +362,32 @@ onMounted(() => {
     margin-top: 2rem;
   }
 
-  .quotes-container {
-    padding: 2em 1.8em;
+  .intro-headline {
+    font-size: 1.7rem;
   }
 
-  .quote-text {
+  .intro-tagline {
+    font-size: 1.05rem;
+  }
+
+  .features-container {
+    padding: 1.6em 1.8em;
+  }
+
+  .features-heading {
     font-size: 1.2rem;
   }
 
-  .quote-author {
-    font-size: 1rem;
+  .feature-list {
+    gap: 1em;
+  }
+
+  .feature-list li {
+    gap: 0.9em;
+  }
+
+  .feature-content strong {
+    font-size: 1.05rem;
   }
 
   .cta-buttons {
@@ -342,27 +423,42 @@ onMounted(() => {
     margin-bottom: 1.5em;
   }
 
-  .quotes-container {
-    padding: 1.8em 1.6em;
+  .intro-headline {
+    font-size: 1.5rem;
   }
 
-  .quote-icon {
-    font-size: 2rem;
-  }
-
-  .quote-text {
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
-
-  .quote-author {
-    font-size: 0.95rem;
-  }
-
-  .new-quote-btn {
-    width: 2.2rem;
-    height: 2.2rem;
+  .intro-tagline {
     font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .features-container {
+    padding: 1.4em 1.6em;
+  }
+
+  .features-heading {
+    font-size: 1.15rem;
+    margin-bottom: 1em;
+  }
+
+  .feature-list {
+    gap: 0.9em;
+  }
+
+  .feature-list li {
+    gap: 0.8em;
+  }
+
+  .emoji {
+    font-size: 1.6em;
+  }
+
+  .feature-content strong {
+    font-size: 1rem;
+  }
+
+  .feature-desc {
+    font-size: 0.9rem;
   }
 
   .cta-text {
@@ -397,30 +493,43 @@ onMounted(() => {
     border-radius: 1em;
   }
 
-  .quotes-container {
-    padding: 1.5em 1.4em;
+  .intro-headline {
+    font-size: 1.3rem;
+  }
+
+  .intro-tagline {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .features-container {
+    padding: 1.2em 1.4em;
     border-radius: 0.6em;
   }
 
-  .quote-icon {
-    font-size: 1.8rem;
+  .features-heading {
+    font-size: 1.05rem;
+    margin-bottom: 0.9em;
   }
 
-  .quote-text {
-    font-size: 1rem;
-    line-height: 1.4;
+  .feature-list {
+    gap: 0.8em;
   }
 
-  .quote-author {
-    font-size: 0.9rem;
+  .feature-list li {
+    gap: 0.7em;
   }
 
-  .new-quote-btn {
-    width: 2rem;
-    height: 2rem;
-    font-size: 0.9rem;
-    top: 0.8rem;
-    right: 0.8rem;
+  .emoji {
+    font-size: 1.5em;
+  }
+
+  .feature-content strong {
+    font-size: 0.95rem;
+  }
+
+  .feature-desc {
+    font-size: 0.85rem;
   }
 
   .cta-text {
@@ -449,26 +558,31 @@ onMounted(() => {
     margin-bottom: 1em;
   }
 
-  .quotes-container {
+  .intro-headline {
+    font-size: 1.2rem;
+  }
+
+  .intro-tagline {
+    font-size: 0.9rem;
+  }
+
+  .features-container {
     padding: 1.2em 1.4em;
   }
 
-  .quote-icon {
-    font-size: 1.5rem;
+  .features-heading {
+    font-size: 1rem;
   }
 
-  .quote-text {
-    font-size: 0.95rem;
-    line-height: 1.3;
+  .feature-list {
+    gap: 0.7em;
   }
 
-  .quote-author {
-    font-size: 0.85rem;
+  .feature-content strong {
+    font-size: 0.9rem;
   }
 
-  .new-quote-btn {
-    width: 1.8rem;
-    height: 1.8rem;
+  .feature-desc {
     font-size: 0.8rem;
   }
 
