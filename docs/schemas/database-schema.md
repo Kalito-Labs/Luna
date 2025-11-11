@@ -23,6 +23,11 @@ erDiagram
         TEXT relationship
         TEXT gender
         TEXT phone
+        TEXT city
+        TEXT state
+        TEXT occupation
+        TEXT occupation_description
+        TEXT languages
         TEXT emergency_contact_name
         TEXT emergency_contact_phone
         TEXT primary_doctor

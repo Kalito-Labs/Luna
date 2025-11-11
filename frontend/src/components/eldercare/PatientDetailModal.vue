@@ -32,10 +32,6 @@
             <label>Name:</label>
             <span>{{ patient.name }}</span>
           </div>
-          <div class="info-item" v-if="patient.relationship">
-            <label>Relationship:</label>
-            <span>{{ formatRelationship(patient.relationship) }}</span>
-          </div>
           <div class="info-item" v-if="patient.date_of_birth">
             <label>Age:</label>
             <span>{{ calculateAge(patient.date_of_birth) }} years old</span>
@@ -48,17 +44,17 @@
             <label>Phone:</label>
             <span>{{ patient.phone }}</span>
           </div>
-          <div class="info-item" v-if="primaryDoctorName">
-            <label>Primary Doctor:</label>
-            <span>{{ primaryDoctorName }}</span>
+          <div class="info-item" v-if="patient.city || patient.state">
+            <label>Location:</label>
+            <span>{{ [patient.city, patient.state].filter(Boolean).join(', ') }}</span>
           </div>
-          <div class="info-item" v-if="patient.insurance_provider">
-            <label>Insurance:</label>
-            <span>{{ patient.insurance_provider }}</span>
+          <div class="info-item" v-if="patient.occupation">
+            <label>Occupation:</label>
+            <span>{{ patient.occupation }}</span>
           </div>
-          <div class="info-item" v-if="patient.emergency_contact_name">
-            <label>Emergency Contact:</label>
-            <span>{{ patient.emergency_contact_name }}</span>
+          <div class="info-item" v-if="patient.languages">
+            <label>Languages:</label>
+            <span>{{ patient.languages }}</span>
           </div>
         </div>
         
@@ -90,18 +86,6 @@
                 </div>
                 
                 <div class="form-group">
-                  <label for="edit-relationship">Relationship</label>
-                  <select id="edit-relationship" v-model="editForm.relationship">
-                    <option value="">Select relationship</option>
-                    <option value="mother">Mother</option>
-                    <option value="father">Father</option>
-                    <option value="spouse">Spouse</option>
-                    <option value="self">Self</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                
-                <div class="form-group">
                   <label for="edit-gender">Gender</label>
                   <select id="edit-gender" v-model="editForm.gender">
                     <option value="">Select gender</option>
@@ -127,53 +111,61 @@
                   />
                 </div>
               </div>
-            </div>
-            
-            <div class="form-section">
-              <h4>Medical Information</h4>
               
               <div class="form-row">
                 <div class="form-group">
-                  <label for="edit-insurance_provider">Insurance Provider</label>
+                  <label for="edit-city">City</label>
                   <input 
-                    id="edit-insurance_provider"
-                    v-model="editForm.insurance_provider" 
+                    id="edit-city"
+                    v-model="editForm.city" 
                     type="text" 
-                    placeholder="Enter insurance provider"
+                    placeholder="Enter city"
                   />
                 </div>
                 
                 <div class="form-group">
-                  <label for="edit-insurance_id">Insurance ID</label>
+                  <label for="edit-state">State</label>
                   <input 
-                    id="edit-insurance_id"
-                    v-model="editForm.insurance_id" 
+                    id="edit-state"
+                    v-model="editForm.state" 
                     type="text" 
-                    placeholder="Enter insurance ID"
+                    placeholder="Enter state"
                   />
                 </div>
               </div>
+            </div>
+            
+            <div class="form-section">
+              <h4>Professional & Languages</h4>
               
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="edit-emergency_contact_name">Emergency Contact Name</label>
-                  <input 
-                    id="edit-emergency_contact_name"
-                    v-model="editForm.emergency_contact_name" 
-                    type="text" 
-                    placeholder="Enter emergency contact name"
-                  />
-                </div>
-                
-                <div class="form-group">
-                  <label for="edit-emergency_contact_phone">Emergency Contact Phone</label>
-                  <input 
-                    id="edit-emergency_contact_phone"
-                    v-model="editForm.emergency_contact_phone" 
-                    type="tel" 
-                    placeholder="Enter emergency contact phone"
-                  />
-                </div>
+              <div class="form-group">
+                <label for="edit-occupation">Occupation</label>
+                <input 
+                  id="edit-occupation"
+                  v-model="editForm.occupation" 
+                  type="text" 
+                  placeholder="Enter your occupation"
+                />
+              </div>
+              
+              <div class="form-group">
+                <label for="edit-occupation_description">Occupation Description</label>
+                <textarea 
+                  id="edit-occupation_description"
+                  v-model="editForm.occupation_description" 
+                  rows="3" 
+                  placeholder="Describe your job, responsibilities, work environment..."
+                ></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="edit-languages">Languages</label>
+                <input 
+                  id="edit-languages"
+                  v-model="editForm.languages" 
+                  type="text" 
+                  placeholder="e.g., English, Spanish"
+                />
               </div>
             </div>
             
@@ -189,6 +181,11 @@
               </div>
             </div>
           </form>
+        </div>
+        
+        <div v-if="patient.occupation_description && !isEditing" class="notes-section">
+          <label>Occupation Details:</label>
+          <p>{{ patient.occupation_description }}</p>
         </div>
         
         <div v-if="patient.notes && !isEditing" class="notes-section">
@@ -221,7 +218,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import MedicationsList from './MedicationsList.vue'
 import PrintablePatientReport from './PrintablePatientReport.vue'
 
@@ -232,6 +229,11 @@ interface Patient {
   relationship?: string
   gender?: string
   phone?: string
+  city?: string
+  state?: string
+  occupation?: string
+  occupation_description?: string
+  languages?: string
   primary_doctor_id?: string
   insurance_provider?: string
   insurance_id?: string
@@ -292,23 +294,6 @@ const editForm = ref<Patient>({
 })
 
 const printComponent = ref<InstanceType<typeof PrintablePatientReport> | null>(null)
-
-const primaryDoctorName = computed(() => {
-  if (!props.patient.primary_doctor_id) return null
-  const doctor = props.providers.find(p => p.id === props.patient.primary_doctor_id)
-  return doctor ? `${doctor.name}${doctor.specialty ? ` - ${doctor.specialty}` : ''}` : null
-})
-
-function formatRelationship(relationship: string): string {
-  const relationships: Record<string, string> = {
-    'mother': 'Mother',
-    'father': 'Father',
-    'spouse': 'Spouse',
-    'self': 'Self',
-    'other': 'Other'
-  }
-  return relationships[relationship] || relationship
-}
 
 function calculateAge(dateOfBirth: string): number {
   if (!dateOfBirth) return 0
