@@ -1,69 +1,11 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import fs from 'fs'
 
 export default defineConfig({
   plugins: [
-    vue(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
-      manifest: {
-        name: 'Kalito Space',
-        short_name: 'Kalito',
-        description: 'Your family\'s AI command center - self-hosted AI chat with comprehensive life management tools',
-        theme_color: '#1a1a2e',
-        background_color: '#0f0f1e',
-        display: 'standalone',
-        start_url: '/',
-        scope: '/',
-        icons: [
-          {
-            src: '/favicon_io/android-chrome-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/favicon_io/android-chrome-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: '/favicon_io/android-chrome-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable'
-          }
-        ]
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^\/api\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 // 24 hours
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          }
-        ]
-      },
-      devOptions: {
-        enabled: true,
-        type: 'module'
-      }
-    })
+    vue()
   ],
   resolve: {
     alias: {
@@ -71,7 +13,7 @@ export default defineConfig({
     },
   },
   server: {
-    host: '0.0.0.0', // Allow network access for PWA testing on mobile devices
+    host: '0.0.0.0', // Allow network access for testing on mobile devices
     https: {
       key: fs.readFileSync(path.resolve(__dirname, '.certs/key.pem')),
       cert: fs.readFileSync(path.resolve(__dirname, '.certs/cert.pem')),
@@ -81,7 +23,7 @@ export default defineConfig({
       interval: 150,
     },
     proxy: {
-      '/api': 'http://localhost:3000',
+      '/api': 'http://localhost:3001',
     },
   },
 })

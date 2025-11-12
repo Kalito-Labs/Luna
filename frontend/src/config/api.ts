@@ -3,10 +3,10 @@ import { Capacitor } from '@capacitor/core'
 /**
  * Determine the API base URL based on the platform
  * - Android app: Direct connection to laptop server
- * - Web browser: Use Vite proxy (/api → http://localhost:3000)
+ * - Web browser: Use Vite proxy (/api → http://localhost:3001)
  */
 export const API_BASE_URL = Capacitor.isNativePlatform()
-  ? 'http://192.168.1.96:3000' // Android app → laptop server (no /api suffix)
+  ? 'http://192.168.1.96:3001' // Android app → laptop server (no /api suffix)
   : '' // Web browser → Vite dev server proxy (no prefix needed)
 
 /**

@@ -132,7 +132,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { parseMessage } from '../../utils/syntaxHighlighter'
+import { parseMessage } from '../../utils/textFormatter'
 
 const router = useRouter()
 
@@ -161,13 +161,13 @@ const processedMessages = ref<Map<string, string>>(new Map())
 // Watch for message changes and parse them
 watch(
   () => props.chatMessages,
-  async (newMessages) => {
+  (newMessages) => {
     for (const msg of newMessages) {
       if (msg.text && 
           (msg.text.includes('```') || msg.text.includes('**') || msg.text.includes('`')) &&
           !processedMessages.value.has(msg.text)) {
         try {
-          const parsed = await parseMessage(msg.text)
+          const parsed = parseMessage(msg.text)
           processedMessages.value.set(msg.text, parsed)
           processedMessages.value = new Map(processedMessages.value)
         } catch (error) {

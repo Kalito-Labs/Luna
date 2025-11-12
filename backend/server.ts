@@ -50,7 +50,7 @@ import {
 import { logger } from './utils/logger'
 
 const app = express()
-const PORT = Number(process.env.PORT) || 3000
+const PORT = Number(process.env.PORT) || 3001
 const HOST = process.env.HOST || '0.0.0.0' // Bind to all network interfaces
 
 // If running behind a reverse proxy (nginx, fly.io, render, etc.)

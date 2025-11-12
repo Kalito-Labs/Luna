@@ -15,10 +15,8 @@
   "dependencies": {
     "@capacitor/android": "^6.2.0",
     "@capacitor/core": "^6.2.0",
-    "shiki": "^3.9.2",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.1",
-    "workbox-window": "^7.3.0"
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
@@ -30,7 +28,6 @@
     "@vueuse/core": "^13.6.0",
     "eslint-plugin-vue": "^10.3.0",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5",
-    "vite-plugin-pwa": "^1.0.2"
+    "vite": "^6.3.5"
   }
 }

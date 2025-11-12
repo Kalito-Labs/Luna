@@ -525,7 +525,7 @@ SELECT * FROM patients;  # Query data
 ```
 
 ### Development Workflow
-1. Backend runs on `http://localhost:3000`
+1. Backend runs on `http://localhost:3001`
 2. Frontend runs on `http://localhost:5173`
 3. Frontend proxies API requests to backend
 4. Database auto-initializes on first backend start
@@ -575,10 +575,10 @@ pnpm run build    # Rebuild (auto-creates schema)
 ```
 
 **Port Conflicts**
-- Backend default: port 3000
+- Backend default: port 3001
 - Frontend default: port 5173
 - Ollama default: port 11434
-- Check ports are available: `lsof -i :3000`
+- Check ports are available: `lsof -i :3001`
 - Kill process: `kill -9 <PID>`
 
 **AI Features Not Working**
