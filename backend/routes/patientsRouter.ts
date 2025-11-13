@@ -13,7 +13,6 @@ const router = Router()
 const createPatientSchema = z.object({
   name: z.string().min(1).max(200),
   date_of_birth: z.string().nullable().optional(),
-  relationship: z.string().nullable().optional(),
   gender: z.string().nullable().optional(),
   phone: z.string().nullable().optional(),
   city: z.string().nullable().optional(),
@@ -21,18 +20,12 @@ const createPatientSchema = z.object({
   occupation: z.string().nullable().optional(),
   occupation_description: z.string().nullable().optional(),
   languages: z.string().nullable().optional(),
-  emergency_contact_name: z.string().nullable().optional(),
-  emergency_contact_phone: z.string().nullable().optional(),
-  primary_doctor_id: z.string().nullable().optional(),
-  insurance_provider: z.string().nullable().optional(),
-  insurance_id: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
 })
 
 const updatePatientSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   date_of_birth: z.string().nullable().optional(),
-  relationship: z.string().nullable().optional(),
   gender: z.string().nullable().optional(),
   phone: z.string().nullable().optional(),
   city: z.string().nullable().optional(),
@@ -40,11 +33,6 @@ const updatePatientSchema = z.object({
   occupation: z.string().nullable().optional(),
   occupation_description: z.string().nullable().optional(),
   languages: z.string().nullable().optional(),
-  emergency_contact_name: z.string().nullable().optional(),
-  emergency_contact_phone: z.string().nullable().optional(),
-  primary_doctor_id: z.string().nullable().optional(),
-  insurance_provider: z.string().nullable().optional(),
-  insurance_id: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
   active: z.number().min(0).max(1).optional(),
 }).strict()
@@ -96,24 +84,23 @@ router.post('/', async (req, res) => {
     
     const insertPatient = db.prepare(`
       INSERT INTO patients (
-        id, name, date_of_birth, relationship, gender, phone,
-        emergency_contact_name, emergency_contact_phone, primary_doctor_id,
-        insurance_provider, insurance_id, notes, active, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+        id, name, date_of_birth, gender, phone, city, state,
+        occupation, occupation_description, languages, notes, 
+        active, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
     `)
 
     insertPatient.run(
       patientId,
       validatedData.name,
       validatedData.date_of_birth || null,
-      validatedData.relationship || null,
       validatedData.gender || null,
       validatedData.phone || null,
-      validatedData.emergency_contact_name || null,
-      validatedData.emergency_contact_phone || null,
-      validatedData.primary_doctor_id || null,
-      validatedData.insurance_provider || null,
-      validatedData.insurance_id || null,
+      validatedData.city || null,
+      validatedData.state || null,
+      validatedData.occupation || null,
+      validatedData.occupation_description || null,
+      validatedData.languages || null,
       validatedData.notes || null,
       now,
       now

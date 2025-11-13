@@ -1,8 +1,12 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 
-// Adjust path to your database location
-const dbPath = path.resolve(__dirname, 'db/kalito.db');
+// Use consistent path resolution logic matching the application
+const currentDir = process.cwd();
+const isInBackendDir = currentDir.endsWith('/backend');
+const dbPath = isInBackendDir 
+  ? path.resolve(currentDir, 'db/kalito.db')
+  : path.resolve(currentDir, 'backend/db/kalito.db');
 const db = new Database(dbPath);
 
 console.log('='.repeat(80));
