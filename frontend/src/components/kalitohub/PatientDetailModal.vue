@@ -225,7 +225,6 @@ interface Patient {
   id: string
   name: string
   date_of_birth?: string
-  relationship?: string
   gender?: string
   phone?: string
   city?: string
@@ -233,12 +232,10 @@ interface Patient {
   occupation?: string
   occupation_description?: string
   languages?: string
-  primary_doctor_id?: string
-  insurance_provider?: string
-  insurance_id?: string
-  emergency_contact_name?: string
-  emergency_contact_phone?: string
   notes?: string
+  active?: number
+  created_at?: string
+  updated_at?: string
 }
 
 interface Medication {
@@ -273,14 +270,13 @@ const editForm = ref<Patient>({
   id: '',
   name: '',
   date_of_birth: '',
-  relationship: '',
   gender: '',
   phone: '',
-  primary_doctor_id: '',
-  insurance_provider: '',
-  insurance_id: '',
-  emergency_contact_name: '',
-  emergency_contact_phone: '',
+  city: '',
+  state: '',
+  occupation: '',
+  occupation_description: '',
+  languages: '',
   notes: ''
 })
 
