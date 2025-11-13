@@ -26,6 +26,15 @@
             <p>Track medications & dosages</p>
           </div>
         </button>
+        
+        <!-- Appointments -->
+        <button @click="activeView = 'appointments'" class="action-btn appointments-btn" :class="{ active: activeView === 'appointments' }">
+          <div class="btn-icon">📅</div>
+          <div class="btn-content">
+            <h3>Appointments</h3>
+            <p>Doctor visits & checkups</p>
+          </div>
+        </button>
       </div>
     </div>
 
@@ -42,6 +51,16 @@
       />
     </div>
 
+    <!-- Appointments Overview -->
+    <div v-if="activeView === 'appointments'" class="content-section">
+      <AppointmentsList 
+        :appointments="allAppointments"
+        @add-appointment="showAppointmentForm = true"
+        @edit-appointment="editAppointment"
+        @delete-appointment="deleteAppointment"
+      />
+    </div>
+
     <!-- Modals -->
     <!-- Medication Form Modal -->
     <div v-if="showMedicationForm" class="modal-overlay">
@@ -51,6 +70,18 @@
         :patients="patients"
         @save="saveMedication"
         @cancel="closeMedicationForm"
+        @click.stop
+      />
+    </div>
+    
+    <!-- Appointment Form Modal -->
+    <div v-if="showAppointmentForm" class="modal-overlay">
+      <AppointmentForm 
+        :patients="patients"
+        :appointment="editingAppointment"
+        :isEditing="!!editingAppointment"
+        @save="saveAppointment"
+        @cancel="closeAppointmentForm"
         @click.stop
       />
     </div>
@@ -82,8 +113,10 @@ import { ref, onMounted } from 'vue'
 import { apiUrl } from '../config/api'
 import HamburgerMenu from '../components/HamburgerMenu.vue'
 import MedicationForm from '../components/kalitohub/MedicationForm.vue'
+import AppointmentForm from '../components/kalitohub/AppointmentForm.vue'
 import PatientDetailModal from '../components/kalitohub/PatientDetailModal.vue'
 import MedicationsList from '../components/kalitohub/MedicationsList.vue'
+import AppointmentsList from '../components/kalitohub/AppointmentsList.vue'
 
 interface Patient {
   id: string
@@ -105,16 +138,20 @@ const providers = ref<Provider[]>([])
 const caregiver = ref<any>(null)
 
 const showMedicationForm = ref(false)
+const showAppointmentForm = ref(false)
 const showPatientDetail = ref(false)
 
-const activeView = ref<'patients' | 'medications'>('medications')
+const activeView = ref<'patients' | 'medications' | 'appointments'>('medications')
 
 const editingMedication = ref<any | null>(null)
+const editingAppointment = ref<any | null>(null)
 const selectedPatient = ref<Patient | null>(null)
 const patientMedications = ref<any[]>([])
+const patientAppointments = ref<any[]>([])
 
 // Global data for all tabs
 const allMedications = ref<any[]>([])
+const allAppointments = ref<any[]>([])
 
 const message = ref('')
 const messageType = ref<'success' | 'error'>('success')
@@ -122,6 +159,7 @@ const messageType = ref<'success' | 'error'>('success')
 onMounted(async () => {
   await loadPatients()
   await loadAllMedications()
+  await loadAllAppointments()
 })
 
 async function loadPatients() {
@@ -149,6 +187,18 @@ async function loadAllMedications() {
   }
 }
 
+async function loadAllAppointments() {
+  try {
+    const response = await fetch(apiUrl('/api/appointments'))
+    if (response.ok) {
+      const result = await response.json()
+      allAppointments.value = result.data || []
+    }
+  } catch (error) {
+    console.error('Failed to load appointments:', error)
+  }
+}
+
 async function loadAllVitals() {
   try {
     const response = await fetch(apiUrl('/api/vitals'))
@@ -164,6 +214,7 @@ async function loadAllVitals() {
 async function viewPatientDetails(patient: Patient) {
   // Reset data arrays first to prevent stale data
   patientMedications.value = []
+  patientAppointments.value = []
   
   // Load patient data BEFORE showing modal
   await loadPatientData(patient.id)
@@ -203,8 +254,11 @@ async function openMyProfile() {
 
 async function loadPatientData(patientId: string) {
   try {
-    // Load patient's medications
-    const medicationsRes = await fetch(apiUrl(`/api/medications?patient_id=${patientId}`))
+    // Load patient's medications and appointments
+    const [medicationsRes, appointmentsRes] = await Promise.all([
+      fetch(apiUrl(`/api/medications?patient_id=${patientId}`)),
+      fetch(apiUrl(`/api/appointments?patient_id=${patientId}`))
+    ])
 
     if (medicationsRes.ok) {
       const data = await medicationsRes.json()
@@ -212,10 +266,18 @@ async function loadPatientData(patientId: string) {
     } else {
       patientMedications.value = []
     }
+    
+    if (appointmentsRes.ok) {
+      const data = await appointmentsRes.json()
+      patientAppointments.value = data.data || []
+    } else {
+      patientAppointments.value = []
+    }
   } catch (error) {
     console.error('Failed to load patient data:', error)
     // Set empty arrays as fallback
     patientMedications.value = []
+    patientAppointments.value = []
   }
 }
 
@@ -316,6 +378,44 @@ async function saveMedication(medicationData: any) {
   } catch (error) {
     console.error('Error saving medication:', error)
     showMessage('Failed to save medication. Please try again.', 'error')
+  }
+}
+
+// saveVitals function removed
+
+async function saveAppointment(appointmentData: any) {
+  try {
+    const url = editingAppointment.value 
+      ? `/api/appointments/${editingAppointment.value.id}` 
+      : '/api/appointments'
+    const method = editingAppointment.value ? 'PUT' : 'POST'
+    
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(appointmentData)
+    })
+    
+    if (response.ok) {
+      await loadAllAppointments()
+      if (selectedPatient.value) {
+        await loadPatientData(selectedPatient.value.id)
+      }
+      closeAppointmentForm()
+      showMessage(
+        editingAppointment.value 
+          ? 'Appointment updated successfully!' 
+          : 'Appointment scheduled successfully!', 
+        'success'
+      )
+    } else {
+      throw new Error('Failed to save appointment')
+    }
+  } catch (error) {
+    console.error('Error saving appointment:', error)
+    showMessage('Failed to save appointment. Please try again.', 'error')
   }
 }
 
@@ -432,10 +532,55 @@ async function deleteMedication(medication: any) {
   }
 }
 
+// closeVitalsForm removed
+
+function closeAppointmentForm() {
+  showAppointmentForm.value = false
+  editingAppointment.value = null
+}
+
+function editAppointment(appointment: any) {
+  editingAppointment.value = appointment
+  showAppointmentForm.value = true
+}
+
+async function deleteAppointment(appointment: any) {
+  if (!confirm('Are you sure you want to delete this appointment?')) {
+    return
+  }
+  
+  try {
+    const response = await fetch(apiUrl(`/api/appointments/${appointment.id}`), {
+      method: 'DELETE'
+    })
+    
+    if (response.ok) {
+      showMessage('Appointment deleted successfully!', 'success')
+      
+      // Reload appropriate data based on context
+      if (selectedPatient.value) {
+        // If viewing patient detail, reload patient data
+        await loadPatientData(selectedPatient.value.id)
+      } else if (activeView.value === 'appointments') {
+        // If viewing appointments tab, reload all appointments
+        await loadAllAppointments()
+      }
+    } else {
+      throw new Error('Failed to delete appointment')
+    }
+  } catch (error) {
+    console.error('Error deleting appointment:', error)
+    showMessage('Failed to delete appointment. Please try again.', 'error')
+  }
+}
+
+// editVital and deleteVital removed
+
 function closePatientDetail() {
   showPatientDetail.value = false
   selectedPatient.value = null
   patientMedications.value = []
+  patientAppointments.value = []
 }
 
 function closeCaregiverProfile() {

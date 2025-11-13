@@ -7,9 +7,9 @@ This document visualizes the current database structure for Project Luna - a sin
 ```mermaid
 erDiagram
     patients ||--o{ medications : "has"
+    patients ||--o{ appointments : "schedules"
     patients ||--o{ sessions : "creates"
     patients ||--o{ semantic_pins : "relates to"
-    patients ||--o{ vitals : "tracks"
     
     sessions ||--o{ messages : "contains"
     sessions ||--o{ conversation_summaries : "summarizes"
@@ -23,6 +23,11 @@ erDiagram
         TEXT relationship
         TEXT gender
         TEXT phone
+        TEXT city
+        TEXT state
+        TEXT occupation
+        TEXT occupation_description
+        TEXT languages
         TEXT emergency_contact_name
         TEXT emergency_contact_phone
         TEXT primary_doctor
@@ -32,14 +37,6 @@ erDiagram
         INTEGER active
         TEXT created_at
         TEXT updated_at
-        TEXT doctor_address
-        TEXT doctor_phone
-        TEXT primary_doctor_id
-        TEXT city
-        TEXT state
-        TEXT occupation
-        TEXT occupation_description
-        TEXT languages
     }
 
     medications {
@@ -58,6 +55,24 @@ erDiagram
         INTEGER active
         TEXT created_at
         TEXT updated_at
+    }
+
+    appointments {
+        TEXT id PK
+        TEXT patient_id FK
+        TEXT provider_id
+        TEXT appointment_date
+        TEXT appointment_time
+        TEXT appointment_type
+        TEXT location
+        TEXT notes
+        TEXT preparation_notes
+        TEXT status
+        TEXT outcome_summary
+        INTEGER follow_up_required
+        TEXT created_at
+        TEXT updated_at
+        TEXT provider_name
     }
 
     sessions {
@@ -130,19 +145,6 @@ erDiagram
         TEXT patient_id FK
         TEXT urgency_level
     }
-
-    vitals {
-        TEXT id PK
-        TEXT patient_id FK
-        REAL weight_lbs
-        INTEGER glucose_am
-        INTEGER glucose_pm
-        TEXT recorded_date
-        TEXT notes
-        INTEGER active
-        TEXT created_at
-        TEXT updated_at
-    }
 ```
 
 ## Table Descriptions
@@ -150,7 +152,7 @@ erDiagram
 ### Core User Data
 - **patients**: Single user profile (Caleb Sanchez) with personal and health information
 - **medications**: Tracks medications with dosage, frequency, and prescription details
-- **vitals**: Records health vitals like weight and glucose readings
+- **appointments**: Manages upcoming and past appointments with providers
 
 ### AI Chat System
 - **sessions**: Chat sessions with AI companions, can be linked to patient records
@@ -163,22 +165,18 @@ erDiagram
 
 ## Recent Changes
 
-**Updated (November 12, 2025):**
-- Added `doctor_address`, `doctor_phone`, and `primary_doctor_id` fields to `patients` table
-- Confirmed `vitals` table is still present in the database
-- **REMOVED `appointments` table** - Feature no longer needed
-
 **Removed Tables (November 11, 2025):**
 - `caregivers` - Multi-user eldercare concept (not needed for single-user app)
 - `healthcare_providers` - Eldercare-specific provider management
 - `medication_logs` - Medication adherence tracking (user decided not to track)
+- `vitals` - Health vitals tracking (eldercare-specific, not needed for mental health focus)
 
 ## Current Record Counts
 - patients: 1
 - medications: 3
+- appointments: 1
 - sessions: 0
 - messages: 0
 - personas: 2
 - conversation_summaries: 0
 - semantic_pins: 0
-- vitals: 0

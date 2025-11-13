@@ -4,17 +4,11 @@ import * as fs from 'fs'
 import { db } from './db' // Import the shared database connection
 
 // Use the same path resolution as db.ts for consistency
-// FIXED: Single source of truth - always use backend/db/kalito.db from project root
-// This eliminates the dual database issue documented in docs/database.fix.md
-const findProjectRoot = () => {
-  const cwd = process.cwd()
-  // If we're in the backend directory, go up one level to project root
-  if (cwd.endsWith('/backend')) {
-    return path.dirname(cwd)
-  }
-  return cwd
-}
-const dbPath = path.resolve(findProjectRoot(), 'backend/db/kalito.db')
+const currentDir = process.cwd()
+const isInBackendDir = currentDir.endsWith('/backend')
+const dbPath = isInBackendDir 
+  ? path.resolve(currentDir, 'db/kalito.db')
+  : path.resolve(currentDir, 'backend/db/kalito.db')
 
 // Create DB file if it doesn't exist
 if (!fs.existsSync(dbPath)) {

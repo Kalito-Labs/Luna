@@ -8,7 +8,8 @@ import type { LLMAdapter } from './modelRegistry'
 import { db } from '../db/db'
 import { MemoryManager } from './memoryManager'
 import { EldercareContextService } from './eldercareContextService'
-import { detectQueryType, extractPatientReference } from './queryRouter'
+import { StructuredAppointmentService } from './structuredAppointmentService'
+import { detectQueryType, extractPatientReference, containsPronounReference } from './queryRouter'
 import { AVAILABLE_TOOLS, executeToolCall } from './tools'
 import type { AgentRequest } from '../types/agent'
 import type { Persona as _Persona } from '../types/personas'
@@ -20,6 +21,9 @@ const memoryManager = new MemoryManager()
 
 // Initialize EldercareContextService for eldercare data integration
 const eldercareContextService = new EldercareContextService()
+
+// Initialize structured validation services
+const structuredAppointmentService = new StructuredAppointmentService()
 
 type RunAgentParams = AgentRequest & {
   stream?: boolean // new: enable streaming mode
@@ -336,6 +340,74 @@ export async function runAgent(
   console.log(`[Agent] Query type detected: ${queryType}`)
 
   // Route to structured validation services for database queries
+  if (queryType === 'APPOINTMENTS') {
+    console.log('[Agent] 📅 Routing to structured appointment validation')
+    
+    // Get patient from session or query
+    let patientId: string | null = null
+    let patientSource = 'unknown'
+    
+    // Priority 1: Check if query contains pronouns AND session has patient
+    if (containsPronounReference(input) && sessionId) {
+      const session = db.prepare('SELECT patient_id FROM sessions WHERE id = ?').get(sessionId) as { patient_id: string | null } | undefined
+      if (session?.patient_id) {
+        patientId = session.patient_id
+        patientSource = 'session-pronoun'
+        console.log(`[Agent] Pronoun detected ("she"/"he"), using session patient_id: ${patientId}`)
+      }
+    }
+    
+    // Priority 2: Extract explicit patient reference from query
+    if (!patientId) {
+      const patientRef = extractPatientReference(input)
+      console.log(`[Agent] Extracted patient reference: ${patientRef}`)
+      if (patientRef) {
+        const patient = eldercareContextService.findPatientByReference(patientRef)
+        patientId = patient?.id || null
+        patientSource = 'query-explicit'
+        console.log(`[Agent] Resolved patient: ${patient?.name} (${patientId})`)
+      }
+    }
+    
+    // Priority 3: Use session patient if available
+    if (!patientId && sessionId) {
+      const session = db.prepare('SELECT patient_id FROM sessions WHERE id = ?').get(sessionId) as { patient_id: string | null } | undefined
+      patientId = session?.patient_id || null
+      patientSource = 'session-fallback'
+      console.log(`[Agent] Using session patient_id as fallback: ${patientId}`)
+    }
+    
+    if (!patientId) {
+      console.log('[Agent] ❌ No patient identified for appointment query')
+      return {
+        reply: "I need to know which patient you're asking about. Please specify the patient's name.",
+        tokenUsage: null
+      }
+    }
+    
+    console.log(`[Agent] Patient resolved via: ${patientSource}`)
+    
+    // Get structured appointment data from database
+    const appointmentData = structuredAppointmentService.getAppointmentsStructured(patientId)
+    
+    if (!appointmentData) {
+      console.log('[Agent] ❌ No patient found in database')
+      return {
+        reply: "I couldn't find patient information in the database.",
+        tokenUsage: null
+      }
+    }
+    
+    // Return definitive ground truth - no AI generation needed
+    const reply = structuredAppointmentService.formatAppointmentsAsText(appointmentData)
+    console.log(`[Agent] ✅ Appointment query answered with database ground truth (${appointmentData.upcoming_count} appointments)`)
+    
+    return {
+      reply,
+      tokenUsage: null
+    }
+  }
+
   // Build a clean system prompt without any special instructions
   // Let Ollama handle the conversation naturally
   const finalSystemPrompt = buildSystemPrompt(adapter, input, personaId, systemPrompt, fileIds, sessionId)
@@ -440,6 +512,71 @@ export async function* runAgentStream(
   const queryType = detectQueryType(input)
   console.log(`[Agent Stream] Query type detected: ${queryType}`)
 
+  // Route to structured validation services for database queries
+  if (queryType === 'APPOINTMENTS') {
+    console.log('[Agent Stream] 📅 Routing to structured appointment validation')
+    
+    let patientId: string | null = null
+    let patientSource = 'unknown'
+    
+    // Priority 1: Check if query contains pronouns AND session has patient
+    if (containsPronounReference(input) && sessionId) {
+      const session = db.prepare('SELECT patient_id FROM sessions WHERE id = ?').get(sessionId) as { patient_id: string | null } | undefined
+      if (session?.patient_id) {
+        patientId = session.patient_id
+        patientSource = 'session-pronoun'
+        console.log(`[Agent Stream] Pronoun detected, using session patient_id: ${patientId}`)
+      }
+    }
+    
+    // Priority 2: Extract explicit patient reference
+    if (!patientId) {
+      const patientRef = extractPatientReference(input)
+      if (patientRef) {
+        const patient = eldercareContextService.findPatientByReference(patientRef)
+        patientId = patient?.id || null
+        patientSource = 'query-explicit'
+        console.log(`[Agent Stream] Resolved patient: ${patient?.name} (${patientId})`)
+      }
+    }
+    
+    // Priority 3: Use session patient fallback
+    if (!patientId && sessionId) {
+      const session = db.prepare('SELECT patient_id FROM sessions WHERE id = ?').get(sessionId) as { patient_id: string | null } | undefined
+      patientId = session?.patient_id || null
+      patientSource = 'session-fallback'
+      console.log(`[Agent Stream] Using session patient_id as fallback: ${patientId}`)
+    }
+    
+    if (!patientId) {
+      const reply = "I need to know which patient you're asking about. Please specify the patient's name."
+      yield { delta: reply }
+      yield { delta: '', done: true }
+      return
+    }
+    
+    console.log(`[Agent Stream] Patient resolved via: ${patientSource}`)
+    
+    const appointmentData = structuredAppointmentService.getAppointmentsStructured(patientId)
+    
+    if (!appointmentData) {
+      const reply = "I couldn't find patient information in the database."
+      yield { delta: reply }
+      yield { delta: '', done: true }
+      return
+    }
+    
+    const reply = structuredAppointmentService.formatAppointmentsAsText(appointmentData)
+    console.log(`[Agent Stream] ✅ Appointment query answered (${appointmentData.upcoming_count} appointments)`)
+    
+    // Stream the response character by character for better UX
+    for (const char of reply) {
+      yield { delta: char }
+    }
+    yield { delta: '', done: true }
+    return
+  }
+    
   // Build the system prompt without special instructions
   const finalSystemPrompt = buildSystemPrompt(adapter, input, personaId, systemPrompt, fileIds, sessionId)
 
