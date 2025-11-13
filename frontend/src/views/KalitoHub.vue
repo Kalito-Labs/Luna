@@ -127,15 +127,7 @@ interface Patient {
   primary_doctor?: string
 }
 
-interface Provider {
-  id: string
-  name: string
-  specialty: string
-}
-
 const patients = ref<Patient[]>([])
-const providers = ref<Provider[]>([])
-const caregiver = ref<any>(null)
 
 const showMedicationForm = ref(false)
 const showAppointmentForm = ref(false)
@@ -196,18 +188,6 @@ async function loadAllAppointments() {
     }
   } catch (error) {
     console.error('Failed to load appointments:', error)
-  }
-}
-
-async function loadAllVitals() {
-  try {
-    const response = await fetch(apiUrl('/api/vitals'))
-    if (response.ok) {
-      const result = await response.json()
-      allVitals.value = result.data || []
-    }
-  } catch (error) {
-    console.error('Failed to load vitals:', error)
   }
 }
 
@@ -381,8 +361,6 @@ async function saveMedication(medicationData: any) {
   }
 }
 
-// saveVitals function removed
-
 async function saveAppointment(appointmentData: any) {
   try {
     const url = editingAppointment.value 
@@ -429,79 +407,6 @@ function closeMedicationForm() {
   editingMedication.value = null
 }
 
-function editVital(vital: any) {
-  editingVital.value = vital
-  showVitalsForm.value = true
-}
-
-function closeVitalsForm() {
-  showVitalsForm.value = false
-  editingVital.value = null
-}
-
-async function saveVital(vitalData: any) {
-  try {
-    const url = editingVital.value ? `/api/vitals/${editingVital.value.id}` : '/api/vitals'
-    const method = editingVital.value ? 'PUT' : 'POST'
-    
-    const response = await fetch(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(vitalData)
-    })
-    
-    if (response.ok) {
-      closeVitalsForm()
-      showMessage(
-        editingVital.value ? 'Vital record updated successfully!' : 'Vital record added successfully!',
-        'success'
-      )
-      await loadAllVitals()
-      // Reload patient data if we're viewing a patient detail
-      if (selectedPatient.value) {
-        await loadPatientData(selectedPatient.value.id)
-      }
-    } else {
-      throw new Error('Failed to save vital record')
-    }
-  } catch (error) {
-    console.error('Error saving vital record:', error)
-    showMessage('Failed to save vital record. Please try again.', 'error')
-  }
-}
-
-async function deleteVital(vital: any) {
-  if (!confirm('Are you sure you want to delete this vital record?')) {
-    return
-  }
-  
-  try {
-    const response = await fetch(apiUrl(`/api/vitals/${vital.id}`), {
-      method: 'DELETE'
-    })
-    
-    if (response.ok) {
-      showMessage('Vital record deleted successfully!', 'success')
-      
-      // Reload appropriate data based on context
-      if (selectedPatient.value) {
-        // If viewing patient detail, reload patient data
-        await loadPatientData(selectedPatient.value.id)
-      } else if (activeView.value === 'vitals') {
-        // If viewing vitals tab, reload all vitals
-        await loadAllVitals()
-      }
-    } else {
-      throw new Error('Failed to delete vital record')
-    }
-  } catch (error) {
-    console.error('Error deleting vital record:', error)
-    showMessage('Failed to delete vital record. Please try again.', 'error')
-  }
-}
-
 async function deleteMedication(medication: any) {
   if (!confirm(`Are you sure you want to delete ${medication.name}?`)) {
     return
@@ -531,8 +436,6 @@ async function deleteMedication(medication: any) {
     showMessage('Failed to delete medication. Please try again.', 'error')
   }
 }
-
-// closeVitalsForm removed
 
 function closeAppointmentForm() {
   showAppointmentForm.value = false
@@ -574,126 +477,11 @@ async function deleteAppointment(appointment: any) {
   }
 }
 
-// editVital and deleteVital removed
-
 function closePatientDetail() {
   showPatientDetail.value = false
   selectedPatient.value = null
   patientMedications.value = []
   patientAppointments.value = []
-}
-
-function closeCaregiverProfile() {
-  showCaregiverProfile.value = false
-}
-
-async function loadCaregiver() {
-  try {
-    const response = await fetch(apiUrl('/api/caregiver'))
-    if (response.ok) {
-      const result = await response.json()
-      // Get the singleton caregiver profile
-      if (result.data) {
-        caregiver.value = result.data
-        console.log('Loaded caregiver profile:', result.data)
-      }
-    } else if (response.status === 404) {
-      // No profile exists yet, that's fine
-      caregiver.value = null
-      console.log('No caregiver profile found')
-    }
-  } catch (error) {
-    console.error('Error loading caregiver:', error)
-  }
-}
-
-async function saveCaregiver(caregiverData: any) {
-  try {
-    // Always use PUT - backend handles create or update automatically
-    const response = await fetch(apiUrl('/api/caregiver'), {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(caregiverData)
-    })
-    
-    if (response.ok) {
-      await loadCaregiver() // Refresh the caregiver data
-      showMessage('Caregiver profile saved successfully!', 'success')
-      // Don't close the form - keep it open so user can see their saved data
-    } else {
-      const errorData = await response.json()
-      showMessage(errorData.message || 'Failed to save caregiver profile', 'error')
-    }
-  } catch (error) {
-    console.error('Error saving caregiver:', error)
-    showMessage('Failed to save caregiver profile', 'error')
-  }
-}
-
-// Provider Management Functions
-function editProvider(provider: any) {
-  editingProvider.value = provider
-  showProviderForm.value = true
-}
-
-function closeProviderForm() {
-  showProviderForm.value = false
-  editingProvider.value = null
-}
-
-async function saveProvider(providerData: any) {
-  try {
-    const url = editingProvider.value 
-      ? `/api/providers/${editingProvider.value.id}` 
-      : '/api/providers'
-    const method = editingProvider.value ? 'PUT' : 'POST'
-    
-    const response = await fetch(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(providerData)
-    })
-    
-    if (response.ok) {
-      closeProviderForm()
-      showMessage(
-        editingProvider.value 
-          ? 'Provider updated successfully!' 
-          : 'Provider added successfully!', 
-        'success'
-      )
-    } else {
-      throw new Error('Failed to save provider')
-    }
-  } catch (error) {
-    console.error('Error saving provider:', error)
-    showMessage('Failed to save provider. Please try again.', 'error')
-  }
-}
-
-async function deleteProvider(provider: any) {
-  if (!confirm(`Are you sure you want to delete ${provider.name}?`)) {
-    return
-  }
-  
-  try {
-    const response = await fetch(apiUrl(`/api/providers/${provider.id}`), {
-      method: 'DELETE'
-    })
-    
-    if (response.ok) {
-      showMessage('Provider deleted successfully!', 'success')
-    } else {
-      throw new Error('Failed to delete provider')
-    }
-  } catch (error) {
-    console.error('Error deleting provider:', error)
-    showMessage('Failed to delete provider. Please try again.', 'error')
-  }
 }
 
 function showMessage(text: string, type: 'success' | 'error') {

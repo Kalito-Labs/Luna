@@ -208,19 +208,6 @@ if (duplicateProviders.length > 0) {
   console.log('');
 }
 
-// 6. CAREGIVERS
-console.log('6. CAREGIVERS TABLE');
-console.log('─'.repeat(80));
-const caregivers = db.prepare('SELECT * FROM caregivers ORDER BY name').all();
-console.log(`Total caregivers: ${caregivers.length}\n`);
-
-caregivers.forEach((c: any, idx: number) => {
-  console.log(`${idx + 1}. ${c.name}`);
-  console.log(`   Relationship: ${c.relationship || '(none)'}`);
-  console.log(`   Phone: ${c.phone || '(none)'}`);
-  console.log('');
-});
-
 // SUMMARY
 console.log('=== AUDIT SUMMARY ===');
 console.log('─'.repeat(80));
@@ -229,7 +216,6 @@ console.log(`✓ Medications: ${allMeds.length}`);
 console.log(`✓ Appointments: ${appointments.length}`);
 console.log(`✓ Vitals: ${vitals.length}`);
 console.log(`✓ Providers: ${providers.length}`);
-console.log(`✓ Caregivers: ${caregivers.length}`);
 console.log('');
 
 // Issues found
