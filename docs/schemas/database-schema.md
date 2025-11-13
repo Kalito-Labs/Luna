@@ -7,7 +7,6 @@ This document visualizes the current database structure for Project Luna - a sin
 ```mermaid
 erDiagram
     patients ||--o{ medications : "has"
-    patients ||--o{ appointments : "schedules"
     patients ||--o{ sessions : "creates"
     patients ||--o{ semantic_pins : "relates to"
     patients ||--o{ vitals : "tracks"
@@ -59,24 +58,6 @@ erDiagram
         INTEGER active
         TEXT created_at
         TEXT updated_at
-    }
-
-    appointments {
-        TEXT id PK
-        TEXT patient_id FK
-        TEXT provider_id
-        TEXT appointment_date
-        TEXT appointment_time
-        TEXT appointment_type
-        TEXT location
-        TEXT notes
-        TEXT preparation_notes
-        TEXT status
-        TEXT outcome_summary
-        INTEGER follow_up_required
-        TEXT created_at
-        TEXT updated_at
-        TEXT provider_name
     }
 
     sessions {
@@ -169,7 +150,6 @@ erDiagram
 ### Core User Data
 - **patients**: Single user profile (Caleb Sanchez) with personal and health information
 - **medications**: Tracks medications with dosage, frequency, and prescription details
-- **appointments**: Manages upcoming and past appointments with providers
 - **vitals**: Records health vitals like weight and glucose readings
 
 ### AI Chat System
@@ -186,6 +166,7 @@ erDiagram
 **Updated (November 12, 2025):**
 - Added `doctor_address`, `doctor_phone`, and `primary_doctor_id` fields to `patients` table
 - Confirmed `vitals` table is still present in the database
+- **REMOVED `appointments` table** - Feature no longer needed
 
 **Removed Tables (November 11, 2025):**
 - `caregivers` - Multi-user eldercare concept (not needed for single-user app)
@@ -195,7 +176,6 @@ erDiagram
 ## Current Record Counts
 - patients: 1
 - medications: 3
-- appointments: 1
 - sessions: 0
 - messages: 0
 - personas: 2

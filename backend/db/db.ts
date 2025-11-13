@@ -3,13 +3,18 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { logError } from '../utils/logger'
 
-// Path to your SQLite file - works whether run from project root or backend directory
-// This works consistently in both dev (ts-node) and production (compiled) modes
-const currentDir = process.cwd()
-const isInBackendDir = currentDir.endsWith('/backend')
-const dbFile = isInBackendDir 
-  ? path.resolve(currentDir, 'db/kalito.db')
-  : path.resolve(currentDir, 'backend/db/kalito.db')
+// Path to your SQLite file - FIXED: Single source of truth approach
+// Always resolves from project root, immune to execution context changes
+// This eliminates the dual database issue documented in docs/database.fix.md
+const findProjectRoot = () => {
+  const cwd = process.cwd()
+  // If we're in the backend directory, go up one level to project root
+  if (cwd.endsWith('/backend')) {
+    return path.dirname(cwd)
+  }
+  return cwd
+}
+const dbFile = path.resolve(findProjectRoot(), 'backend/db/kalito.db')
 
 // Ensure the directory exists
 const dbDir = path.dirname(dbFile)
