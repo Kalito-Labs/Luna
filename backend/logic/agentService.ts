@@ -7,7 +7,7 @@ import { getModelAdapter } from './modelRegistry'
 import type { LLMAdapter } from './modelRegistry'
 import { db } from '../db/db'
 import { MemoryManager } from './memoryManager'
-import { EldercareContextService } from './eldercareContextService'
+import { LunaContextService } from './lunaContextService'
 import { StructuredAppointmentService } from './structuredAppointmentService'
 import { detectQueryType, extractPatientReference, containsPronounReference } from './queryRouter'
 import { AVAILABLE_TOOLS, executeToolCall } from './tools'
@@ -19,8 +19,8 @@ import type { ChatCompletionTool } from 'openai/resources'
 // Initialize MemoryManager for enhanced context building
 const memoryManager = new MemoryManager()
 
-// Initialize EldercareContextService for eldercare data integration
-const eldercareContextService = new EldercareContextService()
+// Initialize LunaContextService for Luna data integration
+const lunaContextService = new LunaContextService()
 
 // Initialize structured validation services
 const structuredAppointmentService = new StructuredAppointmentService()
@@ -289,12 +289,12 @@ function buildSystemPrompt(
   const customPrompt = customSystemPrompt?.trim() || ''
   
   // Get eldercare context based on user query and model capabilities
-  const eldercareContext = eldercareContextService.generateContextualPrompt(adapter, userInput, sessionId)
+  const lunaContext = lunaContextService.generateContextualPrompt(adapter, userInput, sessionId)
   
   // Add stronger and more explicit instructions to focus on current query only
   const focusInstructions = "CRITICAL INSTRUCTION: You MUST address ONLY the user's CURRENT QUESTION. Previous conversation is provided SOLELY as background context. You MUST NOT: 1) Answer questions from previous exchanges, 2) Refer to previous topics unless explicitly asked, 3) Provide information not directly relevant to the current question. Treat the current question as if it were asked in isolation, while using context only to enhance your understanding of what the user is currently asking."
 
-  const parts = [personaPrompt, documentContext, eldercareContext, customPrompt, focusInstructions].filter(Boolean)
+  const parts = [personaPrompt, documentContext, lunaContext, customPrompt, focusInstructions].filter(Boolean)
   return parts.join('\n\n')
 }
 
@@ -324,8 +324,8 @@ export async function runAgent(
   if (sessionId) {
     const patientRef = extractPatientReference(input)
     if (patientRef) {
-      // Use eldercareContextService to properly resolve patient reference
-      const patient = eldercareContextService.findPatientByReference(patientRef)
+      // Use lunaContextService to properly resolve patient reference
+      const patient = lunaContextService.findPatientByReference(patientRef)
       
       if (patient) {
         // Update session to track patient focus
@@ -362,7 +362,7 @@ export async function runAgent(
       const patientRef = extractPatientReference(input)
       console.log(`[Agent] Extracted patient reference: ${patientRef}`)
       if (patientRef) {
-        const patient = eldercareContextService.findPatientByReference(patientRef)
+        const patient = lunaContextService.findPatientByReference(patientRef)
         patientId = patient?.id || null
         patientSource = 'query-explicit'
         console.log(`[Agent] Resolved patient: ${patient?.name} (${patientId})`)
@@ -500,7 +500,7 @@ export async function* runAgentStream(
   if (sessionId) {
     const patientRef = extractPatientReference(input)
     if (patientRef) {
-      const patient = eldercareContextService.findPatientByReference(patientRef)
+      const patient = lunaContextService.findPatientByReference(patientRef)
       if (patient) {
         db.prepare('UPDATE sessions SET patient_id = ? WHERE id = ?').run(patient.id, sessionId)
         console.log(`[Agent Stream] 👤 Session patient context set: ${patient.name} (${patient.id})`)
@@ -533,7 +533,7 @@ export async function* runAgentStream(
     if (!patientId) {
       const patientRef = extractPatientReference(input)
       if (patientRef) {
-        const patient = eldercareContextService.findPatientByReference(patientRef)
+        const patient = lunaContextService.findPatientByReference(patientRef)
         patientId = patient?.id || null
         patientSource = 'query-explicit'
         console.log(`[Agent Stream] Resolved patient: ${patient?.name} (${patientId})`)

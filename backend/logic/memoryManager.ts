@@ -16,7 +16,7 @@ import type {
 export class MemoryManager {
   private readonly DEFAULT_CONTEXT_LIMIT = 10
   private readonly DEFAULT_TOKEN_LIMIT = 3000
-  private readonly SUMMARY_THRESHOLD = 15 // Messages before auto-summarization
+  private readonly SUMMARY_THRESHOLD = 8 // Messages before auto-summarization (optimized for therapy sessions)
 
   // Query result caching for performance optimization
   private messageCountCache = new Map<string, { count: number; timestamp: number }>()
@@ -24,7 +24,7 @@ export class MemoryManager {
     string,
     { messages: MessageWithImportance[]; timestamp: number }
   >()
-  private readonly CACHE_TTL = 5000 // 5 seconds cache TTL
+  private readonly CACHE_TTL = 30000 // 30 seconds cache TTL (longer for therapeutic conversations)
 
   /**
    * Get the model used by a session (for intelligent summarization)
@@ -65,8 +65,8 @@ export class MemoryManager {
       return sessionModel
     }
     
-    // Fallback to cloud model for consistency (existing behavior)
-    return 'gpt-4.1-mini'
+    // Fallback to Luna's preferred cloud model
+    return 'gpt-4.1-nano'
   }
 
   /**
@@ -220,6 +220,7 @@ export class MemoryManager {
 
   /**
    * Score message importance based on content and context
+   * Tailored for Luna mental health practice
    */
   scoreMessageImportance(message: MessageWithImportance): number {
     let score = 0.5 // Base score
@@ -236,9 +237,64 @@ export class MemoryManager {
       score += 0.2
     }
 
-    // Higher importance for code blocks or technical content
-    if (text.includes('```') || text.includes('function') || text.includes('class')) {
+    // MENTAL HEALTH: High importance for therapeutic content
+    if (
+      text.includes('feeling') ||
+      text.includes('mood') ||
+      text.includes('depression') ||
+      text.includes('anxiety') ||
+      text.includes('stress') ||
+      text.includes('worried') ||
+      text.includes('overwhelmed') ||
+      text.includes('therapy') ||
+      text.includes('counseling')
+    ) {
+      score += 0.25 // Higher than technical content
+    }
+
+    // MENTAL HEALTH: Medication and treatment discussions
+    if (
+      text.includes('medication') ||
+      text.includes('prescription') ||
+      text.includes('dosage') ||
+      text.includes('side effect') ||
+      text.includes('treatment') ||
+      text.includes('doctor') ||
+      text.includes('appointment')
+    ) {
+      score += 0.2
+    }
+
+    // MENTAL HEALTH: Family and caregiver content (specific to Caleb's situation)
+    if (
+      text.includes('mom') ||
+      text.includes('mother') ||
+      text.includes('aurora') ||
+      text.includes('dad') ||
+      text.includes('father') ||
+      text.includes('basilio') ||
+      text.includes('caregiver') ||
+      text.includes('family')
+    ) {
       score += 0.15
+    }
+
+    // MENTAL HEALTH: Crisis or urgent content
+    if (
+      text.includes('crisis') ||
+      text.includes('emergency') ||
+      text.includes('urgent') ||
+      text.includes('help me') ||
+      text.includes('can\'t cope') ||
+      text.includes('suicidal') ||
+      text.includes('self-harm')
+    ) {
+      score += 0.3 // Highest priority
+    }
+
+    // Higher importance for code blocks or technical content (lower priority in therapy context)
+    if (text.includes('```') || text.includes('function') || text.includes('class')) {
+      score += 0.1 // Reduced from 0.15
     }
 
     // Higher importance for error messages or issues
@@ -352,7 +408,7 @@ export class MemoryManager {
           return null // Not enough messages yet
         }
 
-        // Take the first 15 messages for initial summary
+        // Take the first 8 messages for initial summary (therapy session optimized)
         const messagesToSummarize = allMessages.slice(0, this.SUMMARY_THRESHOLD)
         const firstMessageId = messagesToSummarize[0].id.toString()
         const lastMessageId = messagesToSummarize[messagesToSummarize.length - 1].id.toString()
@@ -418,21 +474,23 @@ export class MemoryManager {
       // Prepare conversation text for summarization
       const conversationText = messages.map(msg => `${msg.role}: ${msg.text}`).join('\n')
 
-      // Enhanced prompts - especially improved for local models
+      // Enhanced prompts - especially improved for local models and mental health context
       const systemPrompt = isLocal 
         ? `TASK: Create a brief summary of the conversation below. Focus ONLY on what was discussed, not generating new content.
 
 FORMAT: 1-2 sentences describing the key topics and outcomes.
-EXAMPLE: "User asked about poetry types, discussed sonnets and free verse, then collaborated on writing original poems with simple themes."
+MENTAL HEALTH CONTEXT: This is a therapy/mental health discussion. Include emotional states, treatment topics, and family concerns when relevant.
+EXAMPLE: "User discussed feeling overwhelmed with caregiving responsibilities for mother Aurora, mentioned medication side effects, and explored coping strategies."
 
-DO NOT: Create new poems, stories, or content. Only summarize what was already discussed.`
-        : `You are a conversation summarizer. Create a concise summary of the following conversation that preserves:
-1. Key topics discussed
-2. Important decisions made
-3. Facts or information shared
-4. Current context/state
+DO NOT: Create new content. Only summarize what was already discussed.`
+        : `You are a conversation summarizer for Luna mental health practice. Create a concise summary that preserves:
+1. Key mental health topics discussed (mood, anxiety, depression, etc.)
+2. Treatment-related information (medications, therapy, appointments)
+3. Family and caregiving concerns
+4. Important therapeutic insights or breakthroughs
+5. Current emotional state and coping strategies
 
-Keep the summary under 200 words and focus on what's most relevant for continuing the conversation.`
+Focus on therapeutic relevance and maintain patient confidentiality. Keep under 300 words.`
 
       const input = isLocal 
         ? `Conversation to summarize:\n${conversationText}\n\nProvide only the summary:`
@@ -485,36 +543,38 @@ Keep the summary under 200 words and focus on what's most relevant for continuin
 
   /**
    * Validate that AI summary is actually a summary and not generated content
-   * Particularly important for local models that may generate poems/stories
+   * Modified for Luna: Allow therapeutic emotional expressions and narrative work
    */
   private isInvalidSummary(summary: string, originalMessages: MessageWithImportance[]): boolean {
     // Check for common invalid patterns that indicate content generation
+    // BUT allow therapeutic expressions, emotional content, and narrative work
     const invalidPatterns = [
       /^(Here's|Certainly|Let me|I'll create|I can)/i,  // AI response starters
       /```/,                                            // Code blocks
-      /^Title:/i,                                       // Poem/story titles
-      /^In fields where|^Once upon|^There was/i,        // Story/poem beginnings
-      /\*\*[A-Z][^*]+\*\*/,                            // Markdown headings (titles)
-      /^Chapter|^Scene|^Act [IVX]+/i,                  // Story structure
-      /^\d+\./,                                         // Numbered lists (often creative content)
-      /^[A-Z][a-z]+ [A-Z][a-z]+:$/m,                   // Character names with colons
+      // REMOVED: Poetry/story patterns - allow therapeutic narrative
+      // REMOVED: Markdown headings - allow therapeutic structure  
+      /^Chapter|^Scene|^Act [IVX]+/i,                  // Formal story structure (still block)
+      // MODIFIED: Allow numbered lists for therapy (treatment plans, goals, etc.)
+      // REMOVED: Character names - allow in therapy context
     ]
     
     // Check if summary is too long (likely generated content)
-    if (summary.length > 300) {
+    // INCREASED threshold for therapy sessions which can be more detailed
+    if (summary.length > 500) {
       console.warn(`Summary too long (${summary.length} chars), likely generated content`)
       return true
     }
     
     // Check if summary is much longer than it should be compared to conversation
+    // RELAXED ratio for therapy - emotional content can be verbose
     const conversationLength = originalMessages.reduce((acc, msg) => acc + msg.text.length, 0)
     const summaryRatio = summary.length / conversationLength
-    if (summaryRatio > 0.3) { // Summary shouldn't be more than 30% of original
+    if (summaryRatio > 0.5) { // Increased from 30% to 50% for therapy context
       console.warn(`Summary ratio too high (${(summaryRatio * 100).toFixed(1)}%), likely generated content`)
       return true
     }
     
-    // Check for invalid patterns
+    // Check for remaining invalid patterns
     for (const pattern of invalidPatterns) {
       if (pattern.test(summary)) {
         console.warn(`Invalid summary pattern detected: ${pattern}`)
@@ -524,6 +584,7 @@ Keep the summary under 200 words and focus on what's most relevant for continuin
     
     // Check if summary contains quotes from the original conversation (good)
     // vs generating entirely new content (bad)
+    // RELAXED for therapy - emotional language may not directly quote
     const summaryWords = summary.toLowerCase().split(/\s+/)
     const conversationText = originalMessages.map(msg => msg.text).join(' ').toLowerCase()
     let matchingWords = 0
@@ -535,7 +596,7 @@ Keep the summary under 200 words and focus on what's most relevant for continuin
     }
     
     const matchRatio = matchingWords / summaryWords.length
-    if (matchRatio < 0.1) { // Less than 10% word overlap suggests generated content
+    if (matchRatio < 0.05) { // Reduced from 10% to 5% - allow therapeutic paraphrasing
       console.warn(`Low word overlap (${(matchRatio * 100).toFixed(1)}%), likely generated content`)
       return true
     }
@@ -565,33 +626,61 @@ Keep the summary under 200 words and focus on what's most relevant for continuin
 
   /**
    * Extract key topics from user messages for fallback summaries
+   * Tailored for Luna mental health practice
    */
   private extractTopics(messages: MessageWithImportance[]): string[] {
     const userMessages = messages.filter(m => m.role === 'user')
     const topics = new Set<string>()
     
-    // Simple keyword extraction for common topics
+    // Mental health topics (highest priority)
     userMessages.forEach(msg => {
       const text = msg.text.toLowerCase()
       
-      // Technical topics
-      if (text.includes('code') || text.includes('programming') || text.includes('function')) topics.add('programming')
-      if (text.includes('database') || text.includes('sql') || text.includes('table')) topics.add('database')
-      if (text.includes('api') || text.includes('endpoint') || text.includes('request')) topics.add('API')
+      // Emotional and mental health states
+      if (text.includes('depression') || text.includes('sad') || text.includes('down') || text.includes('hopeless')) topics.add('depression')
+      if (text.includes('anxiety') || text.includes('anxious') || text.includes('worried') || text.includes('panic')) topics.add('anxiety')
+      if (text.includes('stress') || text.includes('overwhelmed') || text.includes('pressure')) topics.add('stress management')
+      if (text.includes('mood') || text.includes('feeling') || text.includes('emotion')) topics.add('mood discussion')
+      
+      // Treatment and therapy
+      if (text.includes('therapy') || text.includes('counseling') || text.includes('therapist')) topics.add('therapy')
+      if (text.includes('medication') || text.includes('prescription') || text.includes('dosage') || text.includes('side effect')) topics.add('medication management')
+      if (text.includes('treatment') || text.includes('plan') || text.includes('goal')) topics.add('treatment planning')
+      
+      // Family and caregiving (specific to Caleb's situation)
+      if (text.includes('mom') || text.includes('mother') || text.includes('aurora')) topics.add('mother care')
+      if (text.includes('dad') || text.includes('father') || text.includes('basilio')) topics.add('father care')
+      if (text.includes('family') || text.includes('caregiver') || text.includes('caring for')) topics.add('family caregiving')
+      
+      // Health and appointments
+      if (text.includes('appointment') || text.includes('doctor') || text.includes('visit')) topics.add('healthcare appointments')
+      if (text.includes('symptom') || text.includes('side effect') || text.includes('reaction')) topics.add('symptom tracking')
+      
+      // Coping and wellness
+      if (text.includes('coping') || text.includes('strategy') || text.includes('technique')) topics.add('coping strategies')
+      if (text.includes('sleep') || text.includes('insomnia') || text.includes('tired')) topics.add('sleep issues')
+      if (text.includes('exercise') || text.includes('activity') || text.includes('routine')) topics.add('wellness activities')
+      
+      // Crisis or urgent situations
+      if (text.includes('crisis') || text.includes('emergency') || text.includes('urgent')) topics.add('crisis support')
+      
+      // Technical topics (lower priority in therapy context)
+      if (text.includes('code') || text.includes('programming') || text.includes('function')) topics.add('technical discussion')
+      if (text.includes('database') || text.includes('sql') || text.includes('table')) topics.add('database work')
+      if (text.includes('api') || text.includes('endpoint') || text.includes('request')) topics.add('API development')
       if (text.includes('bug') || text.includes('error') || text.includes('fix')) topics.add('troubleshooting')
       
-      // Creative topics  
-      if (text.includes('poetry') || text.includes('poem') || text.includes('verse')) topics.add('poetry')
-      if (text.includes('story') || text.includes('narrative') || text.includes('character')) topics.add('creative writing')
-      if (text.includes('song') || text.includes('lyrics') || text.includes('music')) topics.add('music')
+      // Creative and expressive topics (important for therapy)
+      if (text.includes('poetry') || text.includes('poem') || text.includes('verse')) topics.add('creative expression')
+      if (text.includes('story') || text.includes('narrative') || text.includes('journal')) topics.add('narrative therapy')
+      if (text.includes('song') || text.includes('lyrics') || text.includes('music')) topics.add('music therapy')
       
-      // General topics
-      if (text.includes('help') || text.includes('how to') || text.includes('explain')) topics.add('help/explanation')
-      if (text.includes('project') || text.includes('build') || text.includes('create')) topics.add('project work')
-      if (text.includes('question') || text.includes('what is') || text.includes('why')) topics.add('Q&A')
+      // General support topics
+      if (text.includes('help') || text.includes('how to') || text.includes('explain')) topics.add('seeking help')
+      if (text.includes('question') || text.includes('what is') || text.includes('why')) topics.add('information seeking')
     })
     
-    return Array.from(topics).slice(0, 3) // Limit to top 3 topics
+    return Array.from(topics).slice(0, 4) // Increased from 3 to 4 topics for richer mental health context
   }
 
   private storeSummary(summary: ConversationSummary): void {

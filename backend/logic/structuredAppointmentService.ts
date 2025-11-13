@@ -11,8 +11,6 @@ export interface StructuredAppointment {
   appointment_date: string
   appointment_time?: string
   appointment_type?: string
-  provider_name?: string
-  provider_specialty?: string
   location?: string
   status: string
 }
@@ -23,6 +21,22 @@ export interface AppointmentListResponse {
   upcoming_count: number
   upcoming_appointments: StructuredAppointment[]
   has_appointments: boolean
+}
+
+/**
+ * Enhanced appointment interface for LunaContextService with additional fields
+ */
+export interface LunaAppointment {
+  id: string
+  appointment_date: string
+  appointment_time?: string
+  appointment_type?: string
+  location?: string
+  status: string
+  preparation_notes?: string
+  notes?: string
+  outcome_summary?: string
+  follow_up_required?: boolean
 }
 
 export class StructuredAppointmentService {
@@ -48,11 +62,8 @@ export class StructuredAppointmentService {
           a.appointment_time,
           a.appointment_type,
           a.location,
-          a.status,
-          p.name as provider_name,
-          p.specialty as provider_specialty
+          a.status
         FROM appointments a
-        LEFT JOIN healthcare_providers p ON a.provider_id = p.id
         WHERE a.patient_id = ?
         AND a.appointment_date >= ?
         ORDER BY a.appointment_date ASC, a.appointment_time ASC
@@ -62,16 +73,12 @@ export class StructuredAppointmentService {
         appointment_type: string | null
         location: string | null
         status: string
-        provider_name: string | null
-        provider_specialty: string | null
       }>
 
       const appointments: StructuredAppointment[] = appointmentRows.map(row => ({
         appointment_date: row.appointment_date,
         appointment_time: row.appointment_time || undefined,
         appointment_type: row.appointment_type || undefined,
-        provider_name: row.provider_name || undefined,
-        provider_specialty: row.provider_specialty || undefined,
         location: row.location || undefined,
         status: row.status
       }))
@@ -109,13 +116,6 @@ export class StructuredAppointmentService {
       if (apt.appointment_type) {
         text += `   • Type: ${apt.appointment_type}\n`
       }
-      if (apt.provider_name) {
-        text += `   • Provider: ${apt.provider_name}`
-        if (apt.provider_specialty) {
-          text += ` (${apt.provider_specialty})`
-        }
-        text += `\n`
-      }
       if (apt.location) {
         text += `   • Location: ${apt.location}\n`
       }
@@ -124,5 +124,64 @@ export class StructuredAppointmentService {
     })
 
     return text.trim()
+  }
+
+  /**
+   * Get recent appointments for LunaContextService (both past and upcoming within date range)
+   * @param patientId - Optional patient ID, if not provided returns for all patients
+   * @param maxRecentDays - Number of days back to include (default 30)
+   */
+  public getRecentAppointmentsForContext(patientId?: string, maxRecentDays: number = 30): LunaAppointment[] {
+    try {
+      const cutoffDate = new Date()
+      cutoffDate.setDate(cutoffDate.getDate() - maxRecentDays)
+      const cutoffDateStr = cutoffDate.toISOString().split('T')[0]
+
+      let query = `
+        SELECT a.id, a.patient_id, a.appointment_date, a.appointment_time, 
+               a.appointment_type, a.location, a.status,
+               a.preparation_notes, a.notes, a.outcome_summary, a.follow_up_required
+        FROM appointments a
+        WHERE a.appointment_date >= ?
+      `
+
+      const params: (string | number)[] = [cutoffDateStr]
+      if (patientId) {
+        query += ` AND a.patient_id = ?`
+        params.push(patientId)
+      }
+
+      query += ` ORDER BY a.appointment_date ASC LIMIT 20`
+
+      const rows = db.prepare(query).all(...params) as Array<{
+        id: string
+        patient_id: string
+        appointment_date: string
+        appointment_time: string | null
+        appointment_type: string | null
+        location: string | null
+        status: string
+        preparation_notes: string | null
+        notes: string | null
+        outcome_summary: string | null
+        follow_up_required: number
+      }>
+
+      return rows.map(row => ({
+        id: row.id,
+        appointment_date: row.appointment_date,
+        appointment_time: row.appointment_time || undefined,
+        appointment_type: row.appointment_type || undefined,
+        status: row.status,
+        location: row.location || undefined,
+        preparation_notes: row.preparation_notes || undefined,
+        notes: row.notes || undefined,
+        outcome_summary: row.outcome_summary || undefined,
+        follow_up_required: row.follow_up_required === 1,
+      }))
+    } catch (error) {
+      console.error('[StructuredAppointmentService] Error fetching recent appointments for context:', error)
+      return []
+    }
   }
 }

@@ -61,6 +61,9 @@ export function extractPatientReference(query: string): string | null {
   const lowerQuery = query.toLowerCase()
   
   // Check for specific names
+  if (lowerQuery.includes('caleb')) {
+    return 'caleb'
+  }
   if (lowerQuery.includes('aurora')) {
     return 'aurora'
   }
