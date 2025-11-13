@@ -10,6 +10,7 @@ erDiagram
     patients ||--o{ appointments : "schedules"
     patients ||--o{ sessions : "creates"
     patients ||--o{ semantic_pins : "relates to"
+    patients ||--o{ vitals : "tracks"
     
     sessions ||--o{ messages : "contains"
     sessions ||--o{ conversation_summaries : "summarizes"
@@ -23,11 +24,6 @@ erDiagram
         TEXT relationship
         TEXT gender
         TEXT phone
-        TEXT city
-        TEXT state
-        TEXT occupation
-        TEXT occupation_description
-        TEXT languages
         TEXT emergency_contact_name
         TEXT emergency_contact_phone
         TEXT primary_doctor
@@ -37,6 +33,14 @@ erDiagram
         INTEGER active
         TEXT created_at
         TEXT updated_at
+        TEXT doctor_address
+        TEXT doctor_phone
+        TEXT primary_doctor_id
+        TEXT city
+        TEXT state
+        TEXT occupation
+        TEXT occupation_description
+        TEXT languages
     }
 
     medications {
@@ -145,6 +149,19 @@ erDiagram
         TEXT patient_id FK
         TEXT urgency_level
     }
+
+    vitals {
+        TEXT id PK
+        TEXT patient_id FK
+        REAL weight_lbs
+        INTEGER glucose_am
+        INTEGER glucose_pm
+        TEXT recorded_date
+        TEXT notes
+        INTEGER active
+        TEXT created_at
+        TEXT updated_at
+    }
 ```
 
 ## Table Descriptions
@@ -153,6 +170,7 @@ erDiagram
 - **patients**: Single user profile (Caleb Sanchez) with personal and health information
 - **medications**: Tracks medications with dosage, frequency, and prescription details
 - **appointments**: Manages upcoming and past appointments with providers
+- **vitals**: Records health vitals like weight and glucose readings
 
 ### AI Chat System
 - **sessions**: Chat sessions with AI companions, can be linked to patient records
@@ -165,11 +183,14 @@ erDiagram
 
 ## Recent Changes
 
+**Updated (November 12, 2025):**
+- Added `doctor_address`, `doctor_phone`, and `primary_doctor_id` fields to `patients` table
+- Confirmed `vitals` table is still present in the database
+
 **Removed Tables (November 11, 2025):**
 - `caregivers` - Multi-user eldercare concept (not needed for single-user app)
 - `healthcare_providers` - Eldercare-specific provider management
 - `medication_logs` - Medication adherence tracking (user decided not to track)
-- `vitals` - Health vitals tracking (eldercare-specific, not needed for mental health focus)
 
 ## Current Record Counts
 - patients: 1
@@ -180,3 +201,4 @@ erDiagram
 - personas: 2
 - conversation_summaries: 0
 - semantic_pins: 0
+- vitals: 0
