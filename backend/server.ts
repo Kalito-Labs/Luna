@@ -26,7 +26,6 @@ import patientsRouter from './routes/patientsRouter'
 import providersRouter from './routes/providersRouter'
 import medicationsRouter from './routes/medicationsRouter'
 import vitalsRouter from './routes/vitalsRouter'
-import { appointmentsRouter } from './routes/appointmentsRouter'
 import caregiversRouter from './routes/caregiversRouter'
 import { searchRouter } from './routes/searchRouter'
 
@@ -140,12 +139,11 @@ app.use('/api/models', modelsRouter)
 // Memory system (context, pins, summaries)
 app.use('/api/memory', memoryRouter)
 
-// KalitoHub management (user profile, medications, appointments)
+// KalitoHub management (user profile, medications, vitals)
 app.use('/api/patients', patientsRouter)
 app.use('/api/providers', providersRouter)
 app.use('/api/medications', medicationsRouter)
 app.use('/api/vitals', vitalsRouter)
-app.use('/api/appointments', appointmentsRouter)
 app.use('/api/caregiver', caregiversRouter)
 app.use('/api/search', searchRouter)
 
