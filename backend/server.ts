@@ -23,7 +23,6 @@ import personasRouter from './routes/personasRouter'
 import modelsRouter from './routes/modelsRouter'
 import memoryRouter from './routes/memoryRouter'
 import patientsRouter from './routes/patientsRouter'
-import providersRouter from './routes/providersRouter'
 import medicationsRouter from './routes/medicationsRouter'
 import vitalsRouter from './routes/vitalsRouter'
 import { appointmentsRouter } from './routes/appointmentsRouter'
@@ -141,7 +140,6 @@ app.use('/api/memory', memoryRouter)
 
 // KalitoHub management (user profile, medications, appointments)
 app.use('/api/patients', patientsRouter)
-app.use('/api/providers', providersRouter)
 app.use('/api/medications', medicationsRouter)
 app.use('/api/vitals', vitalsRouter)
 app.use('/api/appointments', appointmentsRouter)

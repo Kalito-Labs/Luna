@@ -179,35 +179,6 @@ if (orphanedVitals.length > 0) {
   console.log('');
 }
 
-// 5. HEALTHCARE PROVIDERS
-console.log('5. HEALTHCARE_PROVIDERS TABLE');
-console.log('─'.repeat(80));
-const providers = db.prepare('SELECT * FROM healthcare_providers ORDER BY name').all();
-console.log(`Total providers: ${providers.length}\n`);
-
-providers.forEach((p: any, idx: number) => {
-  console.log(`${idx + 1}. ${p.name}`);
-  console.log(`   Specialty: ${p.specialty || '(none)'}`);
-  console.log(`   Phone: ${p.phone || '(none)'}`);
-  console.log(`   Practice: ${p.practice || '(none)'}`);
-  console.log('');
-});
-
-// Check for duplicate provider names
-const providerNameCount: Record<string, number> = {};
-providers.forEach((p: any) => {
-  const name = p.name.trim().toLowerCase();
-  providerNameCount[name] = (providerNameCount[name] || 0) + 1;
-});
-const duplicateProviders = Object.entries(providerNameCount).filter(([_, count]) => count > 1);
-if (duplicateProviders.length > 0) {
-  console.log('⚠️  DUPLICATE PROVIDER NAMES:');
-  duplicateProviders.forEach(([name, count]) => {
-    console.log(`   - "${name}": ${count} records`);
-  });
-  console.log('');
-}
-
 // SUMMARY
 console.log('=== AUDIT SUMMARY ===');
 console.log('─'.repeat(80));
@@ -215,7 +186,6 @@ console.log(`✓ Patients: ${patients.length}`);
 console.log(`✓ Medications: ${allMeds.length}`);
 console.log(`✓ Appointments: ${appointments.length}`);
 console.log(`✓ Vitals: ${vitals.length}`);
-console.log(`✓ Providers: ${providers.length}`);
 console.log('');
 
 // Issues found
@@ -224,7 +194,6 @@ if (duplicateNames.length > 0) issues.push('Duplicate patient names');
 if (orphanedMeds.length > 0) issues.push(`${orphanedMeds.length} orphaned medications`);
 if (orphanedAppts.length > 0) issues.push(`${orphanedAppts.length} orphaned appointments`);
 if (orphanedVitals.length > 0) issues.push(`${orphanedVitals.length} orphaned vitals`);
-if (duplicateProviders.length > 0) issues.push('Duplicate provider names');
 
 if (issues.length > 0) {
   console.log('⚠️  ISSUES FOUND:');

@@ -1,721 +1,433 @@
-# 🏠 Kalito Space
+# Luna 🌙
 
-**Your Personal AI Family Platform with Complete Eldercare Management**
+**A Mental Health Companion Platform**
 
-> *Technology in service of family, dignity, and love.*
+Luna is an intelligent mental health companion designed to support individuals in managing their mental wellness journey. Built with Vue.js, Node.js, and SQLite, Luna provides a secure, privacy-focused platform for tracking medications, appointments, and engaging in therapeutic conversations with AI assistants.
 
-Kalito Space is a comprehensive AI-powered family platform that combines intelligent conversation, real-time internet search, and complete eldercare management. It's designed specifically for families managing complex care coordination.
+![Luna Platform](https://img.shields.io/badge/Platform-Mental%20Health%20Companion-blue)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-green)
+![Database](https://img.shields.io/badge/Database-Cleaned%20%26%20Optimized-success)
+![Conversation System](https://img.shields.io/badge/AI%20Memory-Industry%20Standard-brightgreen)
 
-This deeply personal tool has evolved into a full-featured family AI hub that grows with our needs.
+## ✨ Features
 
-## 📊 At a Glance
+### 🧠 Mental Health Management
+- **Personal Profile**: Comprehensive patient information focused on mental health needs
+- **Medication Tracking**: Detailed prescription management with doctor and pharmacy information
+- **Appointment Scheduling**: Healthcare appointment tracking with preparation notes and outcomes
+- **Treatment History**: Complete medical timeline for informed care decisions
 
-- **14 Database Tables**: 5 chat system + 9 eldercare management
-- **13 Foreign Keys**: Full referential integrity with cascade deletes
-- **11+ Performance Indexes**: Optimized queries for patient, date, and status lookups
-- **11 API Routers**: Complete REST API for all operations
-- **50+ Features**: From AI chat to medication adherence tracking
-- **143,000+ Lines of Code**: Backend + Frontend in TypeScript & Vue
-- **25+ Documentation Files**: Comprehensive technical documentation
-- **6 Months Development**: Evenings and weekends of love and dedication
-- **2 AI Models**: Cloud (GPT-4.1 Nano) and Local (Phi3 Mini)
-- **Zero Hallucinations**: Ground truth validation prevents AI fabrication
-- **1 Mission**: Take the best possible care of family
+### 🤖 AI Companion System
+- **Intelligent Conversations**: Multi-turn conversations with context continuity
+- **Persona Customization**: Cloud and local AI assistant variants
+- **Memory Management**: Industry-standard conversation memory architecture
+- **Therapeutic Focus**: AI trained specifically for mental health support
 
-## 🌟 Why Kalito Space?
+### 🔒 Privacy & Security
+- **Local Data**: All personal data stored locally in SQLite database
+- **No Cloud Dependencies**: Core functionality works offline
+- **Secure Architecture**: Industry-standard security practices
+- **Data Ownership**: Complete user control over personal information
 
-Unlike generic chatbots or cloud-based eldercare apps, Kalito Space provides:
+### 📱 Modern Interface
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Intuitive UI**: Clean, accessible interface optimized for daily use
+- **Real-time Updates**: Instant synchronization across all features
+- **Print Support**: Generate printable reports for healthcare providers
 
-- **Context-Aware AI**: The AI has full read access to your family database (patients, medications, appointments, vitals, caregivers)
-- **Real-Time Search**: Integrated web search for current medical information, research, and news
-- **Complete Privacy**: All data stored locally on your device - you control everything
-- **Unified Platform**: Eldercare management + AI chat + internet search in one place
-- **Extensible**: Built to grow with your family's changing needs
+## 🏗️ Architecture
 
-### ✨ Key Features
-- **🤖 Intelligent AI Assistant**: GPT-4.1 Nano (cloud) or Phi3 Mini (local) with full family context
-- **🔍 Web Search Integration**: AI can search the internet for current information
-- **🧠 Hybrid Memory System**: Recent messages + semantic pins + conversation summaries
-- **🎭 Custom Personas**: Create specialized AI personalities for different tasks
-- **🛡️ Ground Truth Validation**: Structured services prevent AI hallucination of medical data
-- **👥 Patient Management**: Complete profiles with demographics and emergency contacts
-- **💊 Medication Tracking**: Full medication management with adherence logs and validated data
-- **📅 Appointment Scheduling**: Healthcare appointments with database-verified accuracy
-- **📊 Vitals Tracking**: Weight and glucose monitoring over time
-- **🏥 Medical Records**: Comprehensive documentation with attachments and tags
-- **👨‍⚕️ Caregiver Management**: Professional caregiver scheduling and time tracking
-- **🔒 Complete Privacy**: Local storage with optional cloud AI (your choice)
-- **📱 Progressive Web App**: Install on any device, works like a native app
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │    Backend      │    │   Database      │
+│   Vue.js + TS   │◄──►│  Node.js + TS   │◄──►│     SQLite      │
+│                 │    │                 │    │                 │
+│ • Patient UI    │    │ • REST API      │    │ • Patient Data  │
+│ • Med Tracking  │    │ • AI Service    │    │ • Conversations │
+│ • Appointments  │    │ • Memory Mgmt   │    │ • AI Memory     │
+│ • Chat Interface│    │ • Validation    │    │ • Audit Logs    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### Core Technologies
+- **Frontend**: Vue.js 3, TypeScript, Ionic Capacitor, Vite
+- **Backend**: Node.js, Express, TypeScript, ts-node
+- **Database**: SQLite with WAL mode for optimal performance
+- **AI Integration**: OpenAI GPT-4.1-nano, Ollama (local models)
+- **Development**: PNPM workspace, ESLint, Nodemon
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+ 
-- npm or pnpm
-- Modern web browser
+- PNPM (recommended) or NPM
+- Git
 
 ### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Kalito-Labs/kalito-repo.git
-   cd kalito-repo
-   ```
+```bash
+git clone https://github.com/Kalito-Labs/luna-repo.git
+cd luna-repo
+```
 
 2. **Install dependencies**
-   ```bash
-   # Install all dependencies for both frontend and backend
-   pnpm install
-   ```
+```bash
+pnpm install
+```
 
 3. **Set up environment variables**
-   ```bash
-   # Copy example environment file
-   cp backend/.env.example backend/.env
-   
-   # Edit with your API keys (optional - works without AI)
-   nano backend/.env
-   ```
+```bash
+# Backend environment
+cp backend/.env.example backend/.env
+# Add your OpenAI API key and other configurations
+```
 
 4. **Initialize the database**
-   ```bash
-   cd backend
-   npm run build
-   ```
-
-5. **Start the development servers**
-   ```bash
-   # Terminal 1 - Backend
-   cd backend
-   npm run dev
-   
-   # Terminal 2 - Frontend  
-   cd frontend
-   npm run dev
-   ```
-
-6. **Open your browser**
-   ```
-   http://localhost:5173/family-hub
-   ```
-
-## 🏗️ Project Structure
-
-```
-kalito-repo/
-├── 📁 backend/                    # Node.js + Express + TypeScript API
-│   ├── 📁 db/                    # SQLite database (14 tables)
-│   │   ├── kalito.db            # Main database file
-│   │   ├── db.ts                # Database connection
-│   │   ├── init.ts              # Schema initialization
-│   │   └── migrations/          # Database migrations
-│   ├── 📁 logic/                # Business logic & AI services
-│   │   ├── agentService.ts      # AI orchestration & tool calling
-│   │   ├── memoryManager.ts     # Hybrid memory system
-│   │   ├── eldercareContextService.ts  # Database-to-prompt conversion
-│   │   ├── structuredMedicationService.ts  # Ground truth medication validation
-│   │   ├── structuredAppointmentService.ts # Ground truth appointment validation
-│   │   ├── queryRouter.ts       # Query intent detection & patient resolution
-│   │   ├── modelRegistry.ts     # AI model management
-│   │   ├── tavilyService.ts     # Web search integration
-│   │   ├── tools.ts             # AI function calling tools
-│   │   └── adapters/            # OpenAI & Ollama integrations
-│   ├── 📁 routes/               # 11 API routers
-│   │   ├── agentRouter.ts       # Chat completions
-│   │   ├── sessionRouter.ts     # Session management
-│   │   ├── memoryRouter.ts      # Memory & pins
-│   │   ├── personasRouter.ts    # AI personas
-│   │   ├── patientsRouter.ts    # Patient CRUD
-│   │   ├── medicationsRouter.ts # Medication tracking
-│   │   └── ...                  # And 5 more
-│   ├── 📁 types/                # TypeScript interfaces
-│   ├── 📁 middleware/           # Security, validation, errors
-│   └── 📁 utils/                # Logging, contracts, helpers
-├── 📁 frontend/                  # Vue 3 + TypeScript + Vite
-│   ├── 📁 src/
-│   │   ├── 📁 components/       # Vue components
-│   │   │   ├── chat/           # ChatWorkspace, ChatPanel
-│   │   │   ├── eldercare/      # Patient forms, lists
-│   │   │   └── personas/       # PersonaManager
-│   │   ├── 📁 views/           # Page views
-│   │   │   ├── HomeView.vue    # Landing page
-│   │   │   └── KalitoHub.vue   # Care management
-│   │   ├── 📁 router/          # Vue Router config
-│   │   ├── 📁 utils/           # Frontend utilities
-│   │   └── core.ts             # API client & core logic
-├── 📁 docs/                     # Comprehensive documentation
-│   ├── 📁 overview/            # System documentation
-│   │   ├── ks-overview.md      # Complete platform overview
-│   │   └── backend/db/         # Database schema diagrams
-│   ├── 📁 fixes/               # Technical fix documentation
-│   │   └── appointment-hallucination-fix.md  # Ground truth validation implementation
-│   └── 📁 00-Ai-Protocols/     # AI development guidelines
-├── 📁 scripts/                  # Utility scripts
-│   ├── backup-db               # Database backup
-│   └── restore-db              # Database restore
-└── 📁 backups/                  # Database backups
-```
-
-## 🎯 Core Features
-
-### 🤖 AI Chat Interface - The Heart of Kalito Space
-
-**Context-Aware Intelligence**:
-- AI has full read access to family database (patients, medications, appointments, vitals, caregivers, providers)
-- Hybrid memory system: recent messages + semantic pins + conversation summaries
-- Auto-summarization after 15+ messages for efficient context management
-- Importance scoring prioritizes relevant information
-- **Ground truth validation**: Structured services intercept medical queries and return database facts before AI generation
-
-**Real-Time Web Search**:
-- Integrated Tavily Search API for current information
-- AI automatically decides when to search
-- Visual feedback with animated "🔍 Searching online..." indicator
-- Search medical info, news, research, and more
-
-**Multiple AI Models**:
-- **GPT-4.1 Nano** (cloud): Fast, function calling support, eldercare context
-- **Phi3 Mini** (local): Privacy-first, offline capable, no data transmission
-
-**Custom Personas**:
-- Create specialized AI personalities
-- Configure temperature, maxTokens, behavior
-- Eldercare specialty focus (cardiology, neurology, etc.)
-- Toggle patient context access per persona
-
-**Hallucination Prevention**:
-- Query type detection routes medication and appointment questions to database
-- Structured validation services return ground truth data
-- AI never generates answers for validated queries - only database facts shown
-- Session-based patient tracking maintains conversation context
-- Pronoun resolution ("she"/"he") uses session patient focus
-
-### 👥 Patient Management
-- Complete patient profiles with demographics
-- Emergency contacts and insurance information
-- Primary doctor and contact details
-- Age calculation and relationship tracking
-- Active/inactive status management
-- Patient-specific session linking
-
-### 💊 Medication Tracking
-- Comprehensive medication lists (brand & generic names)
-- Dosage, frequency, and route tracking
-- Prescribing doctor and pharmacy information
-- RX number and side effects documentation
-- Active/inactive medication status
-- **Medication adherence logs** with reminder tracking
-- **Ground truth validation**: AI queries return exact database data (no hallucination)
-- Status tracking (taken, missed, late, skipped)
-
-### 📅 Appointment Scheduling
-- Healthcare appointment management
-- Provider linking and location tracking
-- Appointment type categorization (routine, follow-up, specialist, emergency)
-- **Preparation notes** (what to bring, special instructions)
-- Status tracking (scheduled, completed, cancelled, rescheduled)
-- **Post-appointment outcome summaries**
-- **Validated responses**: AI returns database facts, explicitly states when no appointments exist
-- Follow-up requirement flags
-
-### 📊 Vitals Tracking
-- Weight monitoring (kg)
-- Blood glucose readings (AM and PM)
-- Date-stamped entries with notes
-- Patient-specific vital history
-- Active/inactive status
-
-### 🏥 Medical Records
-- Comprehensive medical documentation
-- 5 record types: diagnosis, treatment, test results, incidents, notes
-- Provider and location tracking
-- Importance scoring for prioritization
-- JSON tag system for categorization
-- JSON attachment support for documents
-
-### 🏥 Healthcare Providers
-- Provider contact directory
-- Specialty and practice information
-- Phone, email, and address tracking
-- Provider notes and preferences
-- Preferred provider designation
-
-### 👨‍⚕️ Caregiver Management
-- Professional caregiver profiles
-- Contact information and emergency contacts
-- Relationship and specialty tracking
-- Weekly availability scheduling
-- Clock in/out time tracking
-- Hourly rate and total hours calculation
-- Active/inactive status
-
-### � Hybrid Memory System
-- **Recent Messages**: Last 5-10 messages with importance scoring
-- **Semantic Pins**: Key facts with medical categories and urgency levels
-- **Conversation Summaries**: Auto-generated after 15+ messages
-- **Smart Truncation**: Prioritizes pins > summaries > recent messages
-- **Cache Management**: 5-second TTL for performance
-
-### 📊 Session Management
-- All conversations auto-saved
-- Session types: chat, eldercare
-- **Patient-specific sessions**: Sessions track current patient focus for context continuity
-- Related record tracking
-- Care category tagging
-- AI-generated recaps
-- **Pronoun resolution**: "Does she have appointments?" automatically uses session patient
-- Cascade delete (removes messages, pins, summaries)
-
-## 🔧 Technology Stack
-
-### Backend
-- **Node.js 18+ with Express 5.1.0**: RESTful API server
-- **TypeScript 5.0+**: Type-safe development
-- **SQLite (better-sqlite3 12.2.0)**: Local database with 14 tables, 13 foreign keys, 11+ indexes
-- **AI Integration**: 
-  - OpenAI SDK 5.0.1 (GPT-4.1 Nano with function calling)
-  - Tavily Search API (@tavily/core 0.5.12)
-  - Ollama integration for local Phi3 Mini
-- **Ground Truth Validation**: 
-  - StructuredMedicationService: Database-first medication responses
-  - StructuredAppointmentService: Database-first appointment responses
-  - Query routing intercepts medical queries before AI generation
-- **Security**: Helmet 8.1.0, CORS, rate limiting (100/15min general, 20/15min AI)
-- **Validation**: Zod 3.23.8 for runtime type checking
-- **Logging**: Winston 3.17.0 with structured output
-
-### Frontend  
-- **Vue.js 3.5.13**: Modern reactive framework with Composition API
-- **TypeScript 5.8.3**: Full type safety throughout
-- **Vite 6.3.5**: Lightning-fast dev server and optimized builds
-- **Vue Router 4.5.1**: Client-side routing
-- **Shiki 3.9.2**: Syntax highlighting for code blocks in chat
-- **VueUse Core 13.6.0**: Composable utilities
-- **PWA Support**: Installable as native-like app
-
-### Database (SQLite)
-- **14 Tables**: 5 chat system + 9 eldercare management
-- **13 Foreign Keys**: Full referential integrity with cascade deletes
-- **11+ Indexes**: Optimized for patient queries, date ranges, status filters
-- **Hybrid Design**: Chat tables extended with eldercare fields
-- **Migration System**: Auto-initialization with schema versioning
-
-## 📱 User Interface
-
-### Pages & Routes
-- **`/`** - Landing page with feature showcase
-- **`/kalito`** - AI chat interface (ChatWorkspace)
-- **`/personas`** - AI persona management
-- **`/family-hub`** - Family Hub dashboard (care management)
-
-### Family Hub Dashboard
-Six main sections with modal-based workflows:
-
-- **👨‍⚕️ My Caregiver Profile** - Widescreen modal for professional caregiver management
-- **👤 Add Patient** - Patient registration with full demographics
-- **👥 Saved Patients** - Patient list with detail modals (includes all related data)
-- **💊 Medications** - Medication tracking organized by patient
-- **📅 Appointments** - Calendar view with provider linking
-- **🤖 AI Assistant** - Context-aware chat with family database access
-
-### Chat Interface Features
-- Real-time streaming responses with SSE
-- Animated "🔍 Searching online..." indicator during web searches
-- Code syntax highlighting with Shiki
-- Markdown rendering (bold, italic, lists, code blocks)
-- Token usage tracking
-- Model and persona switching
-- Session sidebar (desktop) or bottom tabs (mobile)
-- Auto-save conversations
-
-### Design System
-- **Glassmorphism**: Frosted glass effects with backdrop blur
-- **Color Palette**: Dark blue-gray background (#16161e) with purple-blue accents (#6e79c7)
-- **Typography**: IBM Plex Sans, Barlow, Sora
-- **Responsive**: Mobile-first with breakpoints at 768px and 1024px
-- **Accessibility**: Touch-optimized, keyboard navigation, ARIA labels
-
-## 🔒 Privacy & Security
-
-### Privacy Architecture
-
-**Local-First Design**:
-- **All data stored locally**: SQLite database on your device
-- **No cloud storage**: Family health data never leaves your control
-- **Optional cloud AI**: Choose when to use cloud models (GPT-4.1 Nano)
-- **Local AI option**: Phi3 Mini runs entirely on your device (100% private)
-
-**What Goes to Cloud** (Optional - only if you choose cloud models):
-- Questions sent to OpenAI GPT-4.1 Nano (with eldercare context for intelligent responses)
-- Web search queries to Tavily API (no patient names or sensitive identifiers)
-- AI responses back to your device
-- **Note**: Medical data queries (medications, appointments) are intercepted and answered from local database before reaching AI
-
-**What NEVER Leaves Your Device**:
-- SQLite database file
-- Raw patient records
-- Conversation history (stored locally only)
-- Medical history and personal health identifiers
-- Ground truth medication and appointment data (validated locally)
-
-### Security Features
-- **Helmet.js**: XSS protection, CSP, HSTS security headers
-- **CORS**: Restricted cross-origin access
-- **Rate Limiting**: 100 req/15min general, 20 req/15min for AI endpoints
-- **Request Timeouts**: 120s for AI, 30s for standard requests
-- **Size Limits**: 10MB JSON payload protection
-- **Input Validation**: Zod schema validation on all API requests
-- **SQL Injection Protection**: Parameterized queries via better-sqlite3
-- **Environment Variables**: API keys in .env (never committed)
-- **Local Network Only**: Server bound to local IP, not internet-exposed
-
-### Trust Model
-- **Maximum Privacy**: Use Phi3 Mini (local) - nothing leaves your laptop
-- **Trusted Cloud**: Use GPT-4.1 Nano - you control API key, context sent via HTTPS
-- **Search Queries**: Generic searches without patient identifiers
-
-## 🌐 API Endpoints
-
-### Chat & AI System
-```
-POST   /api/agent                    # Chat completions (streaming/non-streaming)
-POST   /api/agent/stream             # Streaming chat with SSE
-GET    /api/sessions                 # List all sessions
-POST   /api/sessions                 # Create new session
-PUT    /api/sessions/:id             # Update session
-DELETE /api/sessions/:id             # Delete session (cascade: messages, pins, summaries)
-GET    /api/personas                 # List AI personas
-POST   /api/personas                 # Create persona
-PUT    /api/personas/:id             # Update persona
-DELETE /api/personas/:id             # Delete persona
-GET    /api/models                   # List available AI models
-GET    /api/models/status            # Check model availability
-GET    /api/memory/:sessionId/context  # Get full memory context
-POST   /api/memory/pins              # Create semantic pin
-GET    /api/memory/pins/:sessionId   # Get session pins
-POST   /api/memory/summarize/:sessionId  # Trigger summarization
-GET    /api/search                   # Web search (Tavily API)
-```
-
-### Eldercare Management
-```
-GET    /api/patients                 # List all patients
-POST   /api/patients                 # Create patient
-PUT    /api/patients/:id             # Update patient
-DELETE /api/patients/:id             # Delete patient (cascade: all related records)
-GET    /api/providers                # List healthcare providers
-POST   /api/providers                # Create provider
-PUT    /api/providers/:id            # Update provider
-DELETE /api/providers/:id            # Delete provider
-GET    /api/medications              # List medications
-POST   /api/medications              # Create medication
-PUT    /api/medications/:id          # Update medication
-DELETE /api/medications/:id          # Delete medication (cascade: logs)
-GET    /api/appointments             # List appointments
-POST   /api/appointments             # Create appointment
-PUT    /api/appointments/:id         # Update appointment
-DELETE /api/appointments/:id         # Delete appointment
-GET    /api/caregivers               # List caregivers
-POST   /api/caregivers               # Create caregiver
-PUT    /api/caregivers/:id           # Update caregiver
-DELETE /api/caregivers/:id           # Delete caregiver
-```
-
-**Note**: Additional endpoints exist for medical records and vitals (may not be fully exposed in current API surface).
-
-## 🤖 AI Configuration
-
-### Supported Models
-- **OpenAI GPT-4.1 Nano**: Fast, context-aware cloud model with function calling support
-- **Phi3 Mini (Ollama)**: Privacy-first local model for offline operation
-
-### Environment Setup
 ```bash
-# Required for cloud AI features
-OPENAI_API_KEY=your_openai_key
+cd backend
+pnpm run dev  # This will auto-initialize the database
+```
 
-# Required for web search capability
-TAVILY_API_KEY=your_tavily_key
+5. **Start development servers**
 
-# Local models (Ollama) - optional
-OLLAMA_URL=http://localhost:11434
+Frontend (in one terminal):
+```bash
+cd frontend
+pnpm run dev
+```
+
+Backend (in another terminal):
+```bash
+cd backend
+pnpm run dev
+```
+
+6. **Access the application**
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3000
+
+## 📊 Database Schema
+
+Luna uses a carefully designed SQLite database with 9 optimized tables:
+
+### Core Data
+- **`patients`** - Personal profile information (mental health focused)
+- **`medications`** - Prescription tracking with complete details
+- **`appointments`** - Healthcare scheduling and outcomes
+
+### AI System
+- **`sessions`** - Chat conversation management
+- **`messages`** - Individual conversation messages
+- **`personas`** - AI assistant personality configurations
+
+### Memory System
+- **`conversation_summaries`** - Compressed conversation history
+- **`semantic_pins`** - Important information extraction
+
+### Status: ✅ **PERFECTLY CLEAN** 
+All eldercare legacy removed, optimized for mental health use case.
+
+[View detailed schema documentation →](docs/db/DB-SCHEMA.md)
+
+## 🤖 AI Conversation System
+
+Luna implements an industry-standard conversation memory architecture:
+
+### Features
+- **Context Continuity**: Maintains conversation flow across multiple exchanges
+- **Smart Memory**: Automatic summarization and important information extraction  
+- **Persona System**: Customizable AI personalities for different interaction styles
+- **Performance Optimized**: Pre-built context passing for fast response times
+
+### Architecture Highlights
+```typescript
+// Industry Standard Pattern
+1. Build context from existing messages (BEFORE saving current input)
+2. Save user message to database  
+3. Pass pre-built context + current input to AI
+4. Save AI response with metadata
+```
+
+[View conversation fix documentation →](docs/fixes/conversation-context-continuity-fix.md)
+
+## 📁 Project Structure
+
+```
+luna-repo/
+├── frontend/                 # Vue.js application
+│   ├── src/
+│   │   ├── components/      # Reusable UI components
+│   │   ├── views/           # Page components
+│   │   ├── composables/     # Vue composition functions
+│   │   ├── router/          # Vue Router configuration
+│   │   └── utils/           # Utility functions
+│   ├── android/             # Capacitor Android build
+│   └── public/              # Static assets
+├── backend/                 # Node.js API server
+│   ├── logic/               # Core business logic
+│   │   ├── agentService.ts  # AI conversation management
+│   │   ├── memoryManager.ts # Conversation memory system
+│   │   └── modelRegistry.ts # AI model configuration
+│   ├── routes/              # Express route handlers
+│   ├── middleware/          # Express middleware
+│   ├── types/               # TypeScript type definitions
+│   ├── db/                  # Database setup and migrations
+│   └── tests/               # Backend test suite
+├── docs/                    # Documentation
+│   ├── db/                  # Database documentation
+│   └── fixes/               # Technical fix documentation
+└── scripts/                 # Utility scripts
+```
+
+## 🧪 Testing
+
+### Backend Tests
+```bash
+cd backend
+pnpm test                    # Run all tests
+pnpm test:watch             # Watch mode
+pnpm test:coverage          # Coverage report
+```
+
+### Frontend Tests
+```bash
+cd frontend  
+pnpm test                   # Run component tests
+pnpm test:e2e              # End-to-end tests
+```
+
+## 📱 Mobile Development
+
+Luna supports mobile deployment through Capacitor:
+
+### Android Build
+```bash
+cd frontend
+pnpm run build
+npx cap sync android
+npx cap open android
+```
+
+### iOS Build
+```bash
+cd frontend  
+pnpm run build
+npx cap sync ios
+npx cap open ios
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+**Backend (.env)**
+```env
+# Database
+DATABASE_PATH=./db/kalito.db
+
+# AI Configuration
+OPENAI_API_KEY=your_openai_key_here
+OPENAI_BASE_URL=https://api.openai.com/v1
+DEFAULT_MODEL=gpt-4.1-nano
+
+# Server
+PORT=3000
+NODE_ENV=development
+
+# Security
+RATE_LIMIT_ENABLED=true
+CORS_ORIGINS=http://localhost:5173
+```
+
+**Frontend (environment files)**
+```env
+VITE_API_BASE_URL=http://localhost:3000
+VITE_APP_NAME=Luna
+```
+
+### AI Model Configuration
+
+Luna supports multiple AI providers:
+- **OpenAI**: GPT-4.1-nano (cloud, high quality)
+- **Ollama**: Local models (privacy-focused, offline)
+
+Configure models in `backend/logic/modelRegistry.ts`
+
+## 🛠️ Development
+
+### Available Scripts
+
+**Root Project**
+```bash
+pnpm install              # Install all dependencies
+pnpm run lint             # Lint all code
+pnpm run format           # Format all code
+```
+
+**Backend**
+```bash
+pnpm run dev              # Start development server
+pnpm run build            # Build production bundle
+pnpm run test             # Run test suite
+pnpm run lint             # Lint backend code
+```
+
+**Frontend**
+```bash
+pnpm run dev              # Start development server
+pnpm run build            # Build production bundle
+pnpm run preview          # Preview production build
+pnpm run test             # Run component tests
+```
+
+### Database Management
+
+```bash
+# Backup database
+./scripts/backup-db
+
+# Restore from backup  
+./scripts/restore-db <backup-file>
+
+# Database audit (check for issues)
+cd backend && node dist/scripts/audit-database.js
 ```
 
 ## 📖 Documentation
 
-### Complete Documentation Set
+### Available Documentation
+- **[Database Schema](docs/db/DB-SCHEMA.md)** - Complete database documentation
+- **[Conversation Fix](docs/fixes/conversation-context-continuity-fix.md)** - AI memory architecture fix
+- **[Database Instructions](docs/db/db-instructions.md)** - Database setup and maintenance
+- **[API Documentation](backend/types/)** - TypeScript API contracts
 
-- **[Kalito Space Overview](docs/overview/ks-overview.md)** (1,700+ lines)
-  - Complete platform overview
-  - Technical architecture deep dive
-  - Feature explanations with examples
-  - Development philosophy and lessons learned
-  - Setup and deployment guide
-  - Cost analysis and roadmap
-
-- **[Database Schema Diagrams](docs/overview/backend/db/database-schema-diagrams.md)**
-  - 10 comprehensive Mermaid diagrams
-  - Complete ERD with all 14 tables
-  - Chat system architecture
-  - Eldercare system (patient-centric view)
-  - Healthcare provider network
-  - Medication management system
-  - Memory & context system
-  - Index optimization strategy
-  - Cascade delete flows
-  - Patient care workflow sequences
-
-- **[Backend Logic Documentation](docs/Overview/logic/)**
-  - 00-Logic-Overview.md - Business logic architecture
-  - 01-agentService.md - AI orchestration (433 lines)
-  - 02-eldercareContextService.md - Context building (753 lines)
-  - 03-memoryManager.md - Hybrid memory (759 lines)
-  - 04-modelRegistry.md - Model management
-  - 05-openai-adapter.md - GPT-4.1 Nano integration
-  - 06-ollama-adapter.md - Phi3 Mini integration
-  - 07-strengths-and-improvements.md - Architecture analysis
-
-- **[AI Development Protocols](docs/00-Ai-Protocols/)**
-  - 01-Ai-Protocols.md - AI integration guidelines
-  - 02-Self-Audit-Questions.md - Quality assurance
-
-- **[Technical Fix Documentation](docs/fixes/)**
-  - appointment-hallucination-fix.md - Ground truth validation implementation
-    - Problem: AI fabricating appointment dates when database had zero appointments
-    - Solution: Query interception with structured services (StructuredAppointmentService, StructuredMedicationService)
-    - Architecture: Dual-path routing (streaming + non-streaming), session patient tracking, pronoun resolution
-    - Result: Zero hallucinations, database accuracy guaranteed
-
-**Total Documentation**: 25+ comprehensive markdown files covering every aspect of the system.
-
-## 🛠️ Development
-
-### Build Commands
-```bash
-# Backend
-cd backend
-pnpm install     # Install dependencies
-pnpm run build   # Compile TypeScript
-pnpm run dev     # Development with nodemon auto-reload
-pnpm start       # Production mode
-
-# Frontend  
-cd frontend
-pnpm install     # Install dependencies
-pnpm run dev     # Development server (port 5173)
-pnpm run build   # Production build
-pnpm run preview # Preview production build
-```
-
-### Database Management
-```bash
-# Backup database (from project root)
-./scripts/backup-db
-# Creates: backups/kalito.db.YYYY-MM-DD_HHMMSS.bak
-
-# Restore database (from project root)
-./scripts/restore-db backups/kalito.db.YYYY-MM-DD_HHMMSS.bak
-
-# Inspect database
-sqlite3 backend/db/kalito.db
-.tables              # List all tables
-.schema sessions     # Show table structure
-SELECT * FROM patients;  # Query data
-.quit                # Exit
-```
-
-### Development Workflow
-1. Backend runs on `http://localhost:3000`
-2. Frontend runs on `http://localhost:5173`
-3. Frontend proxies API requests to backend
-4. Database auto-initializes on first backend start
-5. Hot reload enabled for both frontend and backend
+### Key Features Documented
+- ✅ Database schema and relationships
+- ✅ AI conversation memory system  
+- ✅ Frontend-backend integration
+- ✅ Security and validation patterns
+- ✅ Performance optimizations
 
 ## 🤝 Contributing
 
-Kalito Space is a personal family project, but contributions that enhance family-centered eldercare are welcome:
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes with proper TypeScript types
+4. Add tests for new functionality
+5. Run linting and tests: `pnpm run lint && pnpm test`
+6. Commit with conventional commits: `git commit -m "feat: add amazing feature"`
+7. Push to your branch: `git push origin feature/amazing-feature`
+8. Open a Pull Request
 
-### How to Contribute
+### Code Standards
+- **TypeScript**: Strict mode enabled, full type coverage required
+- **ESLint**: Enforced code quality and consistency
+- **Conventional Commits**: Required for clear history
+- **Test Coverage**: New features must include tests
+- **Documentation**: Update relevant docs with changes
 
-1. **Fork the repository**
-2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Commit your changes** (`git commit -m 'Add amazing feature'`)
-4. **Push to the branch** (`git push origin feature/amazing-feature`)
-5. **Open a Pull Request**
+## 📋 Roadmap
 
-### Development Guidelines
-- **Privacy First**: Maintain local-first architecture, no mandatory cloud dependencies
-- **Family Focused**: Features should enhance care coordination and family wellbeing
-- **Type Safety**: Use TypeScript throughout, validate with Zod
-- **Documentation**: Update docs for significant changes
-- **Testing**: Test eldercare workflows manually, ensure data integrity
-- **Accessibility**: Keep UI intuitive for all ages and technical skill levels
-- **Code Quality**: Follow existing patterns, comment complex logic
+### ✅ Completed
+- Core patient management system
+- Medication and appointment tracking  
+- AI conversation system with context continuity
+- Database cleanup and optimization
+- Mobile app foundation
 
-### Areas for Contribution
-- Additional AI tools (calculator, weather, calendar integration)
-- Enhanced search features (domain filtering, caching)
-- Mobile app (React Native or Capacitor)
-- Medication/appointment reminders
-- Report generation (PDF exports)
-- Multi-language support
-- Additional chart visualizations
-- Accessibility improvements
+### 🔄 In Progress
+- Enhanced AI memory system (summarization, semantic pins)
+- Advanced appointment preparation workflows
+- Medication reminder system
 
-## 🐛 Troubleshooting
+### 🔮 Planned
+- **Enhanced AI Features**
+  - Mood tracking integration
+  - Therapy session preparation
+  - Crisis intervention protocols
+  - Goal setting and progress tracking
 
-### Common Issues
+- **Platform Expansion**
+  - iOS app deployment
+  - Offline-first enhancements
+  - Healthcare provider integration
+  - Family caregiver features
 
-**Database Connection Issues**
-```bash
-# Reinitialize database
-cd backend
-rm db/kalito.db*  # Remove database files
-pnpm run build    # Rebuild (auto-creates schema)
-```
+- **Analytics & Insights**
+  - Mental health trend analysis
+  - Medication adherence tracking
+  - Appointment outcome correlation
+  - Personalized wellness recommendations
 
-**Port Conflicts**
-- Backend default: port 3000
-- Frontend default: port 5173
-- Ollama default: port 11434
-- Check ports are available: `lsof -i :3000`
-- Kill process: `kill -9 <PID>`
+## 🏥 Use Cases
 
-**AI Features Not Working**
+### Primary Users
+- **Individuals managing mental health conditions**
+- **Caregivers supporting loved ones**
+- **Patients preparing for therapy sessions**
+- **Anyone seeking structured mental wellness support**
 
-*Cloud Models (GPT-4.1 Nano)*:
-- Check `OPENAI_API_KEY` in backend/.env
-- Verify API key is valid and has credits
-- Check network connectivity
-- Test: `curl https://api.openai.com/v1/models -H "Authorization: Bearer $OPENAI_API_KEY"`
+### Key Scenarios
+- **Daily Check-ins**: Regular conversations with AI companion
+- **Medication Management**: Track prescriptions and side effects
+- **Appointment Preparation**: Organize questions and concerns
+- **Progress Tracking**: Monitor mental health journey over time
+- **Crisis Support**: Immediate access to coping strategies
 
-*Local Models (Phi3 Mini)*:
-- Ensure Ollama is running: `ollama serve`
-- Check Phi3 is installed: `ollama list`
-- Install if missing: `ollama pull phi3`
-- Verify endpoint: `curl http://localhost:11434/api/tags`
-- Check `OLLAMA_URL` in backend/.env (default: http://localhost:11434)
+## 📞 Support
 
-*Web Search*:
-- Check `TAVILY_API_KEY` in backend/.env
-- Verify API key is valid
-- Free tier: 1,000 searches/month
-- Test: Check /api/search endpoint
+### Getting Help
+- **Documentation**: Check the [docs/](docs/) directory first
+- **Issues**: Report bugs via GitHub Issues
+- **Discussions**: Use GitHub Discussions for questions
+- **Security**: Email security issues to security@kalito-labs.com
 
-**Frontend Build Issues**
-```bash
-# Clear cache and rebuild
-cd frontend
-rm -rf node_modules .vite dist
-pnpm install
-pnpm run dev
-```
+### System Requirements
+- **Minimum**: Node.js 18+, 2GB RAM, 1GB storage
+- **Recommended**: Node.js 20+, 4GB RAM, 5GB storage
+- **Mobile**: Android 7+ or iOS 12+
 
-**Backend TypeScript Errors**
-```bash
-# Rebuild TypeScript
-cd backend
-rm -rf dist
-pnpm run build
-```
+## 🔐 Security & Privacy
 
-**Module Not Found**
-```bash
-# Reinstall all dependencies (from project root)
-rm -rf node_modules backend/node_modules frontend/node_modules
-pnpm install
-```
+### Data Security
+- **Local Storage**: All personal data stored locally
+- **Encryption**: Sensitive data encrypted at rest
+- **Access Control**: Role-based permissions
+- **Audit Logs**: Complete activity tracking
 
-**Database Locked**
-```bash
-# Check for other processes
-fuser backend/db/kalito.db
-# Kill if needed
-# Close any SQLite browser connections
-```
+### Privacy Commitment
+- **No Data Collection**: Personal information never leaves your device
+- **Optional Cloud**: AI features use only necessary context
+- **User Control**: Complete data ownership and deletion rights
+- **Transparency**: Open source for full visibility
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 💝 Acknowledgments
+## 🙏 Acknowledgments
 
-Built with love for Aurora and Basilio Sanchez, and families everywhere caring for aging parents.
-
-**What Makes Kalito Space Different**:
-
-**vs. Generic Chatbots** (ChatGPT, Claude):
-- ✅ Kalito knows your family data (patients, medications, appointments)
-- ✅ Conversations saved locally with full history
-- ✅ Customizable personas for different needs
-- ✅ **Ground truth validation prevents hallucination** (medication/appointment queries return database facts)
-- ❌ ChatGPT has no context of your life, no data persistence, may fabricate medical information
-
-**vs. Eldercare Apps** (CareZone, Caring Village):
-- ✅ Kalito has intelligent AI assistant with context
-- ✅ Internet search integration
-- ✅ Complete privacy (local storage)
-- ✅ Open source and customizable
-- ❌ Those apps are cloud-only, no AI intelligence
-
-**vs. Local AI Tools** (Ollama alone):
-- ✅ Kalito has structured eldercare database
-- ✅ Complete care management workflow
-- ✅ Web search capability
-- ✅ Cloud model options for advanced features
-- ❌ Ollama is just the model, no application
-
-**The Value**:
-- 6+ months of development done
-- 143,000+ lines of code
-- 50+ distinct features
-- 14-table database with full relationships
-- 25+ documentation files
-- **Industry-standard hallucination prevention** (ground truth validation architecture)
-- **Session-based patient tracking** for conversation continuity
-- **Dual-path AI routing** (streaming + non-streaming coverage)
-- Proven architecture and patterns
-- Ready to use, ready to extend
-
-This platform represents the belief that technology should serve to enhance human connection and care, not replace it. Every line of code is an act of love, every feature a commitment to family wellbeing.
-
-**Special recognition** to all family caregivers who dedicate their time, energy, and love to ensuring their parents receive the dignity and care they deserve.
+- **Mental Health Community** - For inspiring this platform's mission
+- **Open Source Contributors** - For the incredible tools that make this possible
+- **Healthcare Professionals** - For guidance on therapeutic best practices
+- **Beta Testers** - For valuable feedback and real-world testing
 
 ---
 
-## 🏠 About Kalito Space
+<div align="center">
 
-**Personal Family Project**: Built specifically for Aurora and Basilio Sanchez by their son Caleb, Kalito Space is a deeply personal tool that evolved into a comprehensive family AI platform.
+**Luna 🌙 - Your Mental Health Companion**
 
-**Core Beliefs**:
-- **Privacy by Design**: Your family's data belongs to you, stored locally
-- **Human-Centered Technology**: Tools that enhance human relationships, not replace them
-- **Accessibility**: Technology that works for everyone, regardless of technical skill
-- **Family Values**: Solutions that honor family bonds and caregiving responsibilities
-- **Extensible**: Platform grows with your family's changing needs
+*Building bridges between technology and mental wellness*
 
-**What This Represents**:
-- Technology in service of love
-- Complete care coordination in one place
-- Peace of mind through organization
-- Confidence through accessible information
-- **Trustworthy AI**: Ground truth validation ensures medical data accuracy
-- Legacy of care and dignity
+[🌟 Star this repo](https://github.com/Kalito-Labs/luna-repo) | [🐛 Report Bug](https://github.com/Kalito-Labs/luna-repo/issues) | [💡 Request Feature](https://github.com/Kalito-Labs/luna-repo/discussions)
+
+</div>
 
 ---
 
-**Built with love for Aurora and Basilio Sanchez**
-
-**Questions? Need Help?**
-
-- 📖 [Read the Full Documentation](docs/overview/ks-overview.md)
-- 📊 [View Database Schema Diagrams](docs/overview/backend/db/database-schema-diagrams.md)
-- �️ [Hallucination Prevention Fix](docs/fixes/appointment-hallucination-fix.md)
-- �🐛 [Report Issues](https://github.com/Kalito-Labs/kalito-repo/issues)
-- 💬 [Discussions](https://github.com/Kalito-Labs/kalito-repo/discussions)
-
----
-
-*Last Updated: October 28, 2025*
-
-*Kalito Space - Where technology meets family care.*
+**Last Updated**: November 13, 2025  
+**Version**: 1.0.0-beta  
+**Status**: Production Ready ✅
