@@ -19,16 +19,27 @@
             <label>Gender:</label>
             <span>{{ patient.gender }}</span>
           </div>
-          <div class="detail-item" v-if="patient.relationship">
-            <label>Relationship:</label>
-            <span>{{ formatRelationship(patient.relationship) }}</span>
+          <div class="detail-item" v-if="patient.phone">
+            <label>Phone:</label>
+            <span>{{ patient.phone }}</span>
           </div>
         </div>
 
         <div class="detail-row">
-          <div class="detail-item" v-if="patient.phone">
-            <label>Phone:</label>
-            <span>{{ patient.phone }}</span>
+          <div class="detail-item" v-if="patient.city || patient.state">
+            <label>Location:</label>
+            <span>{{ [patient.city, patient.state].filter(Boolean).join(', ') }}</span>
+          </div>
+          <div class="detail-item" v-if="patient.occupation">
+            <label>Occupation:</label>
+            <span>{{ patient.occupation }}</span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-item" v-if="patient.languages">
+            <label>Languages:</label>
+            <span>{{ patient.languages }}</span>
           </div>
           <div class="detail-item" v-if="primaryDoctorName">
             <label>Primary Doctor:</label>
@@ -36,26 +47,9 @@
           </div>
         </div>
 
-        <div class="detail-row">
-          <div class="detail-item" v-if="patient.insurance_provider">
-            <label>Insurance Provider:</label>
-            <span>{{ patient.insurance_provider }}</span>
-          </div>
-          <div class="detail-item" v-if="patient.insurance_id">
-            <label>Insurance ID:</label>
-            <span>{{ patient.insurance_id }}</span>
-          </div>
-        </div>
-
-        <div class="detail-row">
-          <div class="detail-item" v-if="patient.emergency_contact_name">
-            <label>Emergency Contact:</label>
-            <span>{{ patient.emergency_contact_name }}</span>
-          </div>
-          <div class="detail-item" v-if="patient.emergency_contact_phone">
-            <label>Emergency Phone:</label>
-            <span>{{ patient.emergency_contact_phone }}</span>
-          </div>
+        <div v-if="patient.occupation_description" class="occupation-section">
+          <label>Occupation Details:</label>
+          <p class="occupation-text">{{ patient.occupation_description }}</p>
         </div>
 
         <div v-if="patient.notes" class="notes-section">
@@ -133,15 +127,18 @@ interface Patient {
   id: string
   name: string
   date_of_birth?: string
-  relationship?: string
   gender?: string
   phone?: string
-  primary_doctor_id?: string
-  insurance_provider?: string
-  insurance_id?: string
-  emergency_contact_name?: string
-  emergency_contact_phone?: string
+  city?: string
+  state?: string
+  occupation?: string
+  occupation_description?: string
+  languages?: string
   notes?: string
+  active?: number
+  created_at?: string
+  updated_at?: string
+  primary_doctor_id?: string
 }
 
 interface Medication {
@@ -195,17 +192,6 @@ const sortedAppointments = computed(() => {
     new Date(a.appointment_date).getTime() - new Date(b.appointment_date).getTime()
   )
 })
-
-function formatRelationship(relationship: string): string {
-  const relationships: Record<string, string> = {
-    'mother': 'Mother',
-    'father': 'Father',
-    'spouse': 'Spouse',
-    'self': 'Self',
-    'other': 'Other'
-  }
-  return relationships[relationship] || relationship
-}
 
 function calculateAge(dateOfBirth: string): number {
   if (!dateOfBirth) return 0
@@ -356,6 +342,24 @@ defineExpose({
   }
 
   .notes-text {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .occupation-section {
+    clear: both;
+    margin-top: 10pt;
+    padding-top: 10pt;
+    border-top: 1px solid #ccc;
+  }
+
+  .occupation-section label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5pt;
+  }
+
+  .occupation-text {
     margin: 0;
     line-height: 1.5;
   }

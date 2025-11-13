@@ -12,7 +12,6 @@ const router = Router()
 
 const createAppointmentSchema = z.object({
   patient_id: z.string().min(1),
-  provider_id: z.string().optional(), // Optional - can be free text via provider_name
   provider_name: z.string().optional(), // Free text provider name
   appointment_type: z.string().optional(),
   appointment_date: z.string().min(1),
@@ -99,16 +98,15 @@ router.post('/', async (req, res) => {
     
     const insertAppointment = db.prepare(`
       INSERT INTO appointments (
-        id, patient_id, provider_id, provider_name, appointment_type, appointment_date,
+        id, patient_id, provider_name, appointment_type, appointment_date,
         appointment_time, status, location, notes, preparation_notes,
         outcome_summary, follow_up_required, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `)
     
     insertAppointment.run(
       appointmentId,
       validatedData.patient_id,
-      validatedData.provider_id || null,
       validatedData.provider_name || null,
       validatedData.appointment_type || null,
       validatedData.appointment_date,
