@@ -110,6 +110,30 @@ agentRouter.post(
       return err(res, 500, 'INTERNAL', 'Failed to initialize session')
     }
 
+    // Industry Standard: Get conversation history BEFORE saving current message
+    let conversationHistory: Array<{ role: string; content: string }> = []
+    try {
+      // Build context from existing messages (excludes current input which isn't saved yet)
+      const memoryContext = await memoryManager.buildContext(usedSessionId, 3000)
+      
+      console.log(`[Debug] Pre-save context for session ${usedSessionId}:`, {
+        existingMessages: memoryContext.recentMessages.length,
+        summaries: memoryContext.summaries.length,
+        pins: memoryContext.semanticPins.length
+      })
+      
+      // Convert to conversation format - these are ALL previous messages
+      conversationHistory = memoryContext.recentMessages.map(msg => ({
+        role: msg.role,
+        content: msg.text
+      }))
+      
+    } catch (contextErr) {
+      logError('Failed to build conversation context', contextErr as Error, { sessionId: usedSessionId })
+      // Continue with empty history rather than failing
+      conversationHistory = []
+    }
+
     // Save the user message with intelligent importance scoring
     try {
       const userMessage = {
@@ -125,6 +149,9 @@ agentRouter.post(
 
       const importanceScore = memoryManager.scoreMessageImportance(userMessage)
 
+      console.log(`[Debug] Saving user message to session: ${usedSessionId}`)
+      console.log(`[Debug] User message: "${String(input ?? '').trim()}"`)
+      
       db.prepare(
         `
         INSERT INTO messages (session_id, role, text, model_id, importance_score, created_at)
@@ -138,6 +165,11 @@ agentRouter.post(
         importanceScore,
         new Date().toISOString()
       )
+
+      console.log(`[Debug] User message saved successfully`)
+      
+      // Invalidate cache after saving user message so next request gets fresh data
+      memoryManager.invalidateSessionCache(usedSessionId)
 
       // touch session.updated_at
       db.prepare(`UPDATE sessions SET updated_at = ? WHERE id = ?`).run(
@@ -174,6 +206,7 @@ agentRouter.post(
           fileIds,
           sessionId: usedSessionId,
           personaId,
+          conversationHistory, // Pass pre-built conversation history
         })) {
           if (chunk.delta) {
             agentReply += chunk.delta
@@ -198,6 +231,9 @@ agentRouter.post(
               }
               const importanceScore = memoryManager.scoreMessageImportance(assistantMessage)
 
+              console.log(`[Debug] Saving assistant response to session: ${usedSessionId}`)
+              console.log(`[Debug] Assistant response: "${agentReply.slice(0, 100)}..."`)
+
               db.prepare(
                 `
                 INSERT INTO messages (session_id, role, text, model_id, token_usage, importance_score, created_at)
@@ -212,6 +248,11 @@ agentRouter.post(
                 importanceScore,
                 new Date().toISOString()
               )
+
+              console.log(`[Debug] Assistant message saved successfully`)
+              
+              // Invalidate memory cache after saving assistant message
+              memoryManager.invalidateSessionCache(usedSessionId)
 
               // touch session.updated_at
               db.prepare(`UPDATE sessions SET updated_at = ? WHERE id = ?`).run(
@@ -261,6 +302,7 @@ agentRouter.post(
         fileIds,
         sessionId: usedSessionId,
         personaId,
+        conversationHistory, // Pass pre-built conversation history
       })
 
       // Save assistant message

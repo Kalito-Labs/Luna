@@ -29,6 +29,7 @@ type RunAgentParams = AgentRequest & {
   stream?: boolean // new: enable streaming mode
   personaId?: string // new: persona selection
   sessionId?: string // new: session ID for conversation history retrieval
+  conversationHistory?: Array<{ role: string; content: string }> // new: pre-built conversation history
 }
 
 /**
@@ -149,19 +150,29 @@ function getDocumentContext(_fileIds: string[] = []): string {
  * Returns the enhanced context excluding the most recent message (current user input).
  */
 async function getConversationHistory(sessionId?: string, maxTokens: number = 3000): Promise<Array<{ role: string; content: string }>> {
-  if (!sessionId) return []
+  if (!sessionId) {
+    console.log('[Debug] No sessionId provided, returning empty history')
+    return []
+  }
 
   try {
+    console.log(`[Debug] Building conversation history for session: ${sessionId}`)
     const memoryContext = await memoryManager.buildContext(sessionId, maxTokens)
+    
+    console.log(`[Debug] Memory context retrieved:`, {
+      recentMessagesCount: memoryContext.recentMessages.length,
+      summariesCount: memoryContext.summaries.length,
+      pinsCount: memoryContext.semanticPins.length
+    })
     
     // Create a simple history array with alternating user/assistant messages
     // This matches Ollama's native format for optimal context handling
     const history: Array<{ role: string; content: string }> = []
     
-    // Add stronger directive for how the model should use the conversation history
+    // Add natural conversation context instructions
     history.push({
       role: 'system',
-      content: 'CRITICAL INSTRUCTION: The following is REFERENCE material from previous conversation. Use it ONLY for contextual understanding. You MUST FOCUS EXCLUSIVELY on responding to the CURRENT QUESTION. DO NOT address any previous topics or questions unless the current question EXPLICITLY requests information about them. Previous exchanges should be treated as background information only.'
+      content: 'The following messages show your recent conversation with this user. Use this context to understand the ongoing discussion and provide continuity in your responses.'
     })
     
     // Include summaries as a single system message if available (useful context)
@@ -172,7 +183,7 @@ async function getConversationHistory(sessionId?: string, maxTokens: number = 30
       
       history.push({
         role: 'system',
-        content: `REFERENCE ONLY - Background context: ${summariesText} [NOTE: This is background information only. Do not directly respond to any of these topics unless explicitly asked in the current question.]`
+        content: `Previous conversation context: ${summariesText}`
       })
     }
     
@@ -184,12 +195,17 @@ async function getConversationHistory(sessionId?: string, maxTokens: number = 30
       
       history.push({
         role: 'system', 
-        content: `REFERENCE MATERIAL - Important information: ${pinsText} [Use this information only if directly relevant to the current question.]`
+        content: `Key information to remember: ${pinsText}`
       })
     }
     
-    // Get messages but exclude the last one (current query)
-    const messages = memoryContext.recentMessages.slice(0, -1)
+    // Messages are already filtered at database level (OFFSET 1) - no need to exclude current message
+    const messages = memoryContext.recentMessages
+    
+    console.log(`[Debug] Recent messages (database filtered):`, {
+      totalMessages: memoryContext.recentMessages.length,
+      messages: messages.map(m => ({ role: m.role, preview: m.text.slice(0, 50) + '...' }))
+    })
     
     // Divide messages into "recent" and "earlier" groups
     const totalMessages = messages.length;
@@ -217,15 +233,15 @@ async function getConversationHistory(sessionId?: string, maxTokens: number = 30
             
           history.push({
             role: 'system',
-            content: `HISTORICAL REFERENCE ONLY: ${combinedOlderMessages}\n\n[NOTE: These are older messages provided only for background context. DO NOT respond to any questions or requests in this historical content.]`
+            content: `Earlier conversation context:\n${combinedOlderMessages}`
           });
         }
       }
       
-      // Add a separator for clarity
+      // Add recent conversation context
       history.push({
         role: 'system',
-        content: '--- RECENT CONVERSATION ---'
+        content: '--- Recent Conversation ---'
       });
     }
     
@@ -239,17 +255,18 @@ async function getConversationHistory(sessionId?: string, maxTokens: number = 30
         continue;
       }
       
-      // Add a prefix to distinguish this as a recent message but not the current one
+      // Add recent messages naturally without confusing labels
       history.push({
         role: message.role,
-        content: `RECENT EXCHANGE: ${message.text}\n[This is from the recent conversation, not the current question.]`
+        content: message.text
       });
     }
     
     return history
   } catch (error) {
-    console.error('Error building enhanced conversation history:', error)
+    console.error('[Debug] Error building enhanced conversation history:', error)
     try {
+      console.log(`[Debug] Falling back to basic history for session: ${sessionId}`)
       const rows = db
         .prepare(`
           SELECT * FROM (
@@ -261,13 +278,17 @@ async function getConversationHistory(sessionId?: string, maxTokens: number = 30
         `)
         .all(sessionId) as { role: string; text: string }[]
 
+      console.log(`[Debug] Fallback query returned ${rows.length} messages`)
+      
       const trimmed = rows.slice(0, -1)
+      console.log(`[Debug] After excluding current message: ${trimmed.length} messages`)
+      
       return trimmed.map(msg => ({
         role: msg.role,
         content: msg.text
       }))
     } catch (fallbackError) {
-      console.error('Error in fallback conversation history:', fallbackError)
+      console.error('[Debug] Error in fallback conversation history:', fallbackError)
       return []
     }
   }
@@ -291,10 +312,10 @@ function buildSystemPrompt(
   // Get eldercare context based on user query and model capabilities
   const lunaContext = lunaContextService.generateContextualPrompt(adapter, userInput, sessionId)
   
-  // Add stronger and more explicit instructions to focus on current query only
-  const focusInstructions = "CRITICAL INSTRUCTION: You MUST address ONLY the user's CURRENT QUESTION. Previous conversation is provided SOLELY as background context. You MUST NOT: 1) Answer questions from previous exchanges, 2) Refer to previous topics unless explicitly asked, 3) Provide information not directly relevant to the current question. Treat the current question as if it were asked in isolation, while using context only to enhance your understanding of what the user is currently asking."
+  // Add balanced instructions that allow natural conversation flow
+  const conversationInstructions = "You are engaged in a natural conversation with the user. Use the conversation history to understand context and maintain continuity, while primarily focusing on addressing the user's current question or request. Remember previous topics when relevant and build upon them naturally in your responses."
 
-  const parts = [personaPrompt, documentContext, lunaContext, customPrompt, focusInstructions].filter(Boolean)
+  const parts = [personaPrompt, documentContext, lunaContext, customPrompt, conversationInstructions].filter(Boolean)
   return parts.join('\n\n')
 }
 
@@ -306,7 +327,7 @@ function buildSystemPrompt(
 export async function runAgent(
   payload: RunAgentParams
 ): Promise<{ reply: string; tokenUsage: number | null }> {
-  const { modelName, settings, input, systemPrompt = '', fileIds = [], personaId, sessionId } = payload
+  const { modelName, settings, input, systemPrompt = '', fileIds = [], personaId, sessionId, conversationHistory } = payload
   const adapter = getModelAdapter(modelName)
   if (!adapter) throw new Error(`Adapter for model "${modelName}" not found.`)
 
@@ -419,8 +440,12 @@ export async function runAgent(
   }
   
   // Add conversation history in its natural format
-  // This matches how Ollama expects conversations to be structured
-  if (sessionId) {
+  // Use pre-built conversation history if provided, otherwise build from scratch
+  if (conversationHistory) {
+    console.log(`[Debug] Using pre-built conversation history: ${conversationHistory.length} messages`)
+    conversationHistory.forEach(msg => messages.push({ role: msg.role, content: msg.content }))
+  } else if (sessionId) {
+    console.log(`[Debug] Building conversation history from scratch for session: ${sessionId}`)
     const history = await getConversationHistory(sessionId, 3000)
     history.forEach(msg => messages.push({ role: msg.role, content: msg.content }))
   }
@@ -489,7 +514,7 @@ export async function runAgent(
 export async function* runAgentStream(
   payload: RunAgentParams
 ): AsyncGenerator<{ delta: string; done?: boolean; tokenUsage?: number }> {
-  const { modelName, settings, input, systemPrompt = '', fileIds = [], personaId, sessionId } = payload
+  const { modelName, settings, input, systemPrompt = '', fileIds = [], personaId, sessionId, conversationHistory } = payload
   const adapter = getModelAdapter(modelName)
   if (!adapter) throw new Error(`Adapter for model "${modelName}" not found.`)
 
@@ -585,7 +610,12 @@ export async function* runAgentStream(
     messages.push({ role: 'system', content: finalSystemPrompt.trim() })
   }
   
-  if (sessionId) {
+  // Use pre-built conversation history if provided, otherwise build from scratch
+  if (conversationHistory) {
+    console.log(`[Debug] Streaming: Using pre-built conversation history: ${conversationHistory.length} messages`)
+    conversationHistory.forEach(msg => messages.push({ role: msg.role, content: msg.content }))
+  } else if (sessionId) {
+    console.log(`[Debug] Streaming: Building conversation history from scratch for session: ${sessionId}`)
     const history = await getConversationHistory(sessionId, 3000)
     history.forEach(msg => messages.push({ role: msg.role, content: msg.content }))
   }

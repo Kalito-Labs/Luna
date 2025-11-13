@@ -153,39 +153,35 @@ if (!columnExists('patients', 'primary_doctor_id')) {
   db.transaction(() => {
     db.pragma('foreign_keys = OFF')
 
-    // Create new patients table with correct schema
+    // Create new patients table with correct schema - only editable fields from frontend
     db.exec(`
       CREATE TABLE IF NOT EXISTS patients_new (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         date_of_birth TEXT,
-        relationship TEXT,
         gender TEXT,
         phone TEXT,
-        emergency_contact_name TEXT,
-        emergency_contact_phone TEXT,
-        primary_doctor_id TEXT,
-        insurance_provider TEXT,
-        insurance_id TEXT,
+        city TEXT,
+        state TEXT,
+        occupation TEXT,
+        occupation_description TEXT,
+        languages TEXT,
         notes TEXT,
         active INTEGER DEFAULT 1,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (primary_doctor_id) REFERENCES providers(id)
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
       );
     `)
 
-    // Copy data from old table (excluding the manual doctor fields)
+    // Copy data from old table (only editable fields from frontend)
     db.exec(`
       INSERT INTO patients_new (
-        id, name, date_of_birth, relationship, gender, phone,
-        emergency_contact_name, emergency_contact_phone,
-        insurance_provider, insurance_id, notes, active, created_at, updated_at
+        id, name, date_of_birth, gender, phone, city, state,
+        occupation, occupation_description, languages, notes, active, created_at, updated_at
       )
       SELECT 
-        id, name, date_of_birth, relationship, gender, phone,
-        emergency_contact_name, emergency_contact_phone,
-        insurance_provider, insurance_id, notes, active, created_at, updated_at
+        id, name, date_of_birth, gender, phone, city, state,
+        occupation, occupation_description, languages, notes, active, created_at, updated_at
       FROM patients;
     `)
 

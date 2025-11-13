@@ -14,7 +14,7 @@
           <div class="btn-icon">�</div>
           <div class="btn-content">
             <h3>My Profile</h3>
-            <p>Personal information & health records</p>
+            <p>Personal Information</p>
           </div>
         </button>
         
@@ -122,9 +122,17 @@ interface Patient {
   id: string
   name: string
   date_of_birth?: string
-  relationship?: string
+  gender?: string
   phone?: string
-  primary_doctor?: string
+  city?: string
+  state?: string
+  occupation?: string
+  occupation_description?: string
+  languages?: string
+  notes?: string
+  active?: number
+  created_at?: string
+  updated_at?: string
 }
 
 const patients = ref<Patient[]>([])
@@ -191,19 +199,6 @@ async function loadAllAppointments() {
   }
 }
 
-async function viewPatientDetails(patient: Patient) {
-  // Reset data arrays first to prevent stale data
-  patientMedications.value = []
-  patientAppointments.value = []
-  
-  // Load patient data BEFORE showing modal
-  await loadPatientData(patient.id)
-  
-  // Now set the patient and show modal
-  selectedPatient.value = patient
-  showPatientDetail.value = true
-}
-
 async function openMyProfile() {
   // Load or create a default patient for single-user mode
   if (patients.value.length === 0) {
@@ -212,9 +207,7 @@ async function openMyProfile() {
       id: '1',
       name: 'My Profile',
       date_of_birth: '',
-      relationship: 'Self',
-      phone: '',
-      primary_doctor: ''
+      phone: ''
     }
     patients.value = [defaultPatient]
     selectedPatient.value = defaultPatient
@@ -268,11 +261,10 @@ async function savePatient(patientData: any) {
     const url = isEditing ? apiUrl(`/api/patients/${patientData.id}`) : apiUrl('/api/patients')
     const method = isEditing ? 'PUT' : 'POST'
     
-    // Only send fields that the API accepts (strip out id, created_at, updated_at, etc.)
+    // Only send fields that are actually editable in PatientDetailModal.vue
     const allowedFields = {
       name: patientData.name,
       date_of_birth: patientData.date_of_birth,
-      relationship: patientData.relationship,
       gender: patientData.gender,
       phone: patientData.phone,
       city: patientData.city,
@@ -280,13 +272,7 @@ async function savePatient(patientData: any) {
       occupation: patientData.occupation,
       occupation_description: patientData.occupation_description,
       languages: patientData.languages,
-      emergency_contact_name: patientData.emergency_contact_name,
-      emergency_contact_phone: patientData.emergency_contact_phone,
-      primary_doctor_id: patientData.primary_doctor_id,
-      insurance_provider: patientData.insurance_provider,
-      insurance_id: patientData.insurance_id,
-      notes: patientData.notes,
-      active: patientData.active
+      notes: patientData.notes
     }
     
     console.log('Sending patient data:', JSON.stringify(allowedFields, null, 2))

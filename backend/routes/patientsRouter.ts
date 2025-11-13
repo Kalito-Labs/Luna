@@ -20,7 +20,6 @@ const createPatientSchema = z.object({
   occupation: z.string().nullable().optional(),
   occupation_description: z.string().nullable().optional(),
   languages: z.string().nullable().optional(),
-  primary_doctor_id: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
 })
 
@@ -34,9 +33,7 @@ const updatePatientSchema = z.object({
   occupation: z.string().nullable().optional(),
   occupation_description: z.string().nullable().optional(),
   languages: z.string().nullable().optional(),
-  primary_doctor_id: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
-  active: z.number().min(0).max(1).optional(),
 }).strict()
 
 /* ------------------------------- Routes ---------------------------------- */
@@ -87,9 +84,9 @@ router.post('/', async (req, res) => {
     const insertPatient = db.prepare(`
       INSERT INTO patients (
         id, name, date_of_birth, gender, phone, city, state,
-        occupation, occupation_description, languages, primary_doctor_id, 
+        occupation, occupation_description, languages, 
         notes, active, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
     `)
 
     insertPatient.run(
@@ -103,7 +100,6 @@ router.post('/', async (req, res) => {
       validatedData.occupation || null,
       validatedData.occupation_description || null,
       validatedData.languages || null,
-      validatedData.primary_doctor_id || null,
       validatedData.notes || null,
       now,
       now

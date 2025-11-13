@@ -117,7 +117,7 @@ export class MemoryManager {
 
   /**
    * Get recent messages with importance scores (cached for performance)
-   * NOTE: OFFSET 1 excludes the newest row (current user input) to avoid echoing it.
+   * Industry standard: Return ALL recent messages - filtering happens at application level
    */
   private getRecentMessages(sessionId: string, limit: number): MessageWithImportance[] {
     // Check cache first
@@ -125,24 +125,45 @@ export class MemoryManager {
     const cached = this.recentMessagesCache.get(cacheKey)
     const now = Date.now()
 
+    console.log(`[Debug] Cache check for ${cacheKey}:`, {
+      hasCached: !!cached,
+      cacheAge: cached ? now - cached.timestamp : 'N/A',
+      cacheTTL: this.CACHE_TTL
+    })
+
     if (cached && now - cached.timestamp < this.CACHE_TTL) {
+      console.log(`[Debug] Using cached messages for ${cacheKey}`)
       return cached.messages
     }
 
+    console.log(`[Debug] Cache miss or expired for ${cacheKey}, querying database`)
+
+    // Simple query: get recent messages in chronological order
     const query = `
       SELECT * FROM (
         SELECT id, session_id, role, text, model_id, token_usage, created_at, importance_score
         FROM messages
         WHERE session_id = ?
         ORDER BY created_at DESC
-        LIMIT ? OFFSET 1
+        LIMIT ?
       ) ORDER BY created_at ASC
     `
 
     const messages = db.prepare(query).all(sessionId, limit) as MessageWithImportance[]
+    
+    console.log(`[Debug] MemoryManager.getRecentMessages for session ${sessionId}:`, {
+      limit,
+      foundMessages: messages.length,
+      messages: messages.map(m => ({ 
+        role: m.role, 
+        text: m.text.slice(0, 50) + '...', 
+        created_at: m.created_at 
+      }))
+    })
 
     // Cache the result
     this.recentMessagesCache.set(cacheKey, { messages, timestamp: now })
+    console.log(`[Debug] Cached ${messages.length} messages for ${cacheKey}`)
 
     return messages
   }
@@ -179,6 +200,7 @@ export class MemoryManager {
    * Invalidate cache when new messages are added (public method)
    */
   public invalidateSessionCache(sessionId: string): void {
+    console.log(`[Debug] Invalidating cache for session: ${sessionId}`)
     this.invalidateCache(sessionId)
   }
 
@@ -186,15 +208,21 @@ export class MemoryManager {
    * Invalidate cache when new messages are added
    */
   private invalidateCache(sessionId: string): void {
+    console.log(`[Debug] Clearing caches for session: ${sessionId}`)
+    
     // Clear message count cache for this session
     this.messageCountCache.delete(sessionId)
 
     // Clear recent messages cache for this session (all limits)
+    let deletedKeys = 0
     for (const key of this.recentMessagesCache.keys()) {
       if (key.startsWith(`${sessionId}:`)) {
         this.recentMessagesCache.delete(key)
+        deletedKeys++
       }
     }
+    
+    console.log(`[Debug] Cleared ${deletedKeys} cache keys for session ${sessionId}`)
   }
 
   /**
