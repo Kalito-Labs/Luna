@@ -72,6 +72,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePatient } from '../composables/usePatient'
+import { apiUrl } from '../config/api'
 import JournalPreviewCard from '../components/journal/JournalPreviewCard.vue'
 import type { JournalEntry } from '../types/journal'
 
@@ -93,7 +94,7 @@ const fetchRecentEntries = async () => {
     loading.value = true
     // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split('T')[0]
-    const response = await fetch(`/api/journal/patient/${patientId.value}?startDate=${today}&endDate=${today}`)
+    const response = await fetch(apiUrl(`/api/journal/patient/${patientId.value}?startDate=${today}&endDate=${today}`))
     
     if (!response.ok) {
       throw new Error('Failed to fetch entries')

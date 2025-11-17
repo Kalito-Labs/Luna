@@ -103,6 +103,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePatient } from '../composables/usePatient'
+import { apiUrl } from '../config/api'
 import DayEntriesModal from '../components/journal/DayEntriesModal.vue'
 import type { MoodType, JournalEntry } from '../types/journal'
 
@@ -217,17 +218,6 @@ const selectedDayEntries = computed(() => {
   return getEntriesForDate(selectedDate.value)
 })
 
-const selectedDateFormatted = computed(() => {
-  if (!selectedDate.value) return ''
-  const date = new Date(selectedDate.value)
-  return date.toLocaleDateString('default', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  })
-})
-
 const monthStats = computed(() => {
   const entriesInMonth = calendarEntries.value.filter(entry => {
     const entryDate = new Date(entry.entry_date)
@@ -249,7 +239,7 @@ const monthStats = computed(() => {
 // Methods
 const formatDate = (year: number, month: number, day: number): string => {
   const date = new Date(year, month, day)
-  return date.toISOString().split('T')[0]
+  return date.toISOString().split('T')[0] ?? ''
 }
 
 const getEntriesForDate = (date: string): JournalEntry[] => {
@@ -260,7 +250,7 @@ const loadCalendarData = async () => {
   loading.value = true
   
   try {
-    const url = `/api/journal/calendar/${patientId.value}/${currentYear.value}/${currentMonth.value + 1}`
+    const url = apiUrl(`/api/journal/calendar/${patientId.value}/${currentYear.value}/${currentMonth.value + 1}`)
     console.log('Loading calendar data from:', url)
     
     const response = await fetch(url)

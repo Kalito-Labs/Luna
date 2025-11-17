@@ -84,6 +84,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { usePatient } from '../composables/usePatient'
+import { apiUrl } from '../config/api'
 import type { MoodType, JournalEntry, CreateJournalEntryRequest } from '../types/journal'
 
 const router = useRouter()
@@ -225,7 +226,7 @@ const createEntry = async () => {
     journal_type: 'free'
   }
 
-  const response = await fetch('/api/journal', {
+  const response = await fetch(apiUrl('/api/journal'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -245,7 +246,7 @@ const updateEntry = async () => {
     mood: entry.value.mood
   }
 
-  const response = await fetch(`/api/journal/${entryId.value}`, {
+  const response = await fetch(apiUrl(`/api/journal/${entryId.value}`), {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -260,7 +261,7 @@ const updateEntry = async () => {
 
 const loadEntry = async (id: string) => {
   try {
-    const response = await fetch(`/api/journal/${id}`)
+    const response = await fetch(apiUrl(`/api/journal/${id}`))
     
     if (!response.ok) {
       throw new Error('Failed to load entry')
@@ -295,7 +296,7 @@ const deleteEntry = async () => {
   }
 
   try {
-    const response = await fetch(`/api/journal/${entryId.value}`, {
+    const response = await fetch(apiUrl(`/api/journal/${entryId.value}`), {
       method: 'DELETE'
     })
 
