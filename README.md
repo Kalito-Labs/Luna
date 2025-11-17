@@ -2,7 +2,7 @@
 
 **A Mental Health Companion Platform**
 
-Luna is an intelligent mental health companion designed to support individuals in managing their mental wellness journey. Built with Vue.js, Node.js, and SQLite, Luna provides a secure, privacy-focused platform for tracking medications, appointments, and engaging in therapeutic conversations with AI assistants.
+Luna is a personal mental health companion designed to support individuals in managing their mental wellness journey. Built with Vue.js, Node.js, and SQLite, Luna provides a secure, privacy-focused platform for tracking medications, appointments, and engaging in therapeutic conversations with AI assistants.
 
 ![Luna Platform](https://img.shields.io/badge/Platform-Mental%20Health%20Companion-blue)
 ![Status](https://img.shields.io/badge/Status-Production%20Ready-green)

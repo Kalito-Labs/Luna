@@ -100,6 +100,43 @@ CREATE TABLE IF NOT EXISTS semantic_pins (
 );
 `)
 
+// Journal entries table
+db.exec(`
+CREATE TABLE IF NOT EXISTS journal_entries (
+  id TEXT PRIMARY KEY,
+  patient_id TEXT NOT NULL,
+  session_id TEXT,
+  title TEXT,
+  content TEXT NOT NULL,
+  entry_date TEXT NOT NULL,
+  entry_time TEXT,
+  mood TEXT,
+  emotions TEXT,
+  journal_type TEXT DEFAULT 'free',
+  prompt_used TEXT,
+  privacy_level TEXT DEFAULT 'private',
+  favorite INTEGER DEFAULT 0,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+  FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
+);
+`)
+
+// Create indexes for journal entries
+db.exec(`
+CREATE INDEX IF NOT EXISTS idx_journal_entries_patient_date 
+  ON journal_entries(patient_id, entry_date DESC);
+`)
+db.exec(`
+CREATE INDEX IF NOT EXISTS idx_journal_entries_mood 
+  ON journal_entries(patient_id, mood);
+`)
+db.exec(`
+CREATE INDEX IF NOT EXISTS idx_journal_entries_favorite 
+  ON journal_entries(patient_id, favorite);
+`)
+
 // ---------------------------------------------------------------------
 // Migrations
 // ---------------------------------------------------------------------

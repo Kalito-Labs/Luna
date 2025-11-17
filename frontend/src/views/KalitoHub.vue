@@ -111,12 +111,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { apiUrl } from '../config/api'
+import { usePatient } from '../composables/usePatient'
 import HamburgerMenu from '../components/HamburgerMenu.vue'
 import MedicationForm from '../components/kalitohub/MedicationForm.vue'
 import AppointmentForm from '../components/kalitohub/AppointmentForm.vue'
 import PatientDetailModal from '../components/kalitohub/PatientDetailModal.vue'
 import MedicationsList from '../components/kalitohub/MedicationsList.vue'
 import AppointmentsList from '../components/kalitohub/AppointmentsList.vue'
+
+const { setPatient } = usePatient()
 
 interface Patient {
   id: string
@@ -169,6 +172,11 @@ async function loadPatients() {
       const result = await response.json()
       patients.value = result.data || []
       console.log('Loaded patients:', patients.value)
+      
+      // Set the first patient as the current patient for the app
+      if (patients.value.length > 0 && patients.value[0]) {
+        setPatient(patients.value[0])
+      }
     }
   } catch (error) {
     console.error('Failed to load patients:', error)

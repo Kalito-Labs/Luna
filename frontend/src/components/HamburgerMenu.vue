@@ -15,6 +15,10 @@
           Home
         </button>
         <button class="menu-item" @click="goToChat">Luna Ai</button>
+        <button class="menu-item" @click="goToJournal">
+          <span class="menu-icon">📓</span>
+          Journal
+        </button>
         <button class="menu-item" @click="goToPersonas">
           <span class="menu-icon">👤</span>
           Personas
@@ -44,6 +48,11 @@ function goToHome() {
 function goToChat() {
   open.value = false
   router.push({ name: 'chat' })
+}
+
+function goToJournal() {
+  open.value = false
+  router.push({ name: 'journal' })
 }
 
 function goToPersonas() {

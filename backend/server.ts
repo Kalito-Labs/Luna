@@ -25,6 +25,7 @@ import memoryRouter from './routes/memoryRouter'
 import patientsRouter from './routes/patientsRouter'
 import medicationsRouter from './routes/medicationsRouter'
 import vitalsRouter from './routes/vitalsRouter'
+import journalRouter from './routes/journalRouter'
 import { appointmentsRouter } from './routes/appointmentsRouter'
 import { searchRouter } from './routes/searchRouter'
 
@@ -138,11 +139,16 @@ app.use('/api/models', modelsRouter)
 // Memory system (context, pins, summaries)
 app.use('/api/memory', memoryRouter)
 
-// KalitoHub management (user profile, medications, appointments)
+// Patient management routes
 app.use('/api/patients', patientsRouter)
 app.use('/api/medications', medicationsRouter)
 app.use('/api/vitals', vitalsRouter)
 app.use('/api/appointments', appointmentsRouter)
+
+// Journal and mood tracking
+app.use('/api/journal', journalRouter)
+
+// Search
 app.use('/api/search', searchRouter)
 
 // --- 404 handler ---
