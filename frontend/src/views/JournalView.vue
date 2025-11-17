@@ -93,7 +93,7 @@ const fetchRecentEntries = async () => {
     loading.value = true
     // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split('T')[0]
-    const response = await fetch(`/api/journal/patient/${patientId.value}/date/${today}`)
+    const response = await fetch(`/api/journal/patient/${patientId.value}?startDate=${today}&endDate=${today}`)
     
     if (!response.ok) {
       throw new Error('Failed to fetch entries')
@@ -139,16 +139,19 @@ onMounted(async () => {
 <style scoped>
 .journal-home {
   min-height: 100vh;
-  background: linear-gradient(135deg, #7dd3c0 0%, #7ba3e3 100%);
+  background: linear-gradient(135deg, 
+    rgba(15, 23, 42, 0.95) 0%, 
+    rgba(30, 41, 59, 0.95) 100%);
   padding: 2rem 1.5rem 5rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Header */
 .journal-header {
-  color: white;
+  color: rgba(255, 255, 255, 0.95);
   margin-bottom: 1rem;
 }
 
@@ -156,6 +159,7 @@ onMounted(async () => {
   font-size: 1.5rem;
   font-weight: 400;
   margin: 0 0 0.5rem 0;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .prompt-message {
@@ -163,6 +167,7 @@ onMounted(async () => {
   font-weight: 600;
   margin: 0;
   line-height: 1.2;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 /* Action Buttons */
@@ -178,24 +183,26 @@ onMounted(async () => {
   justify-content: center;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
-  border: none;
-  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   font-size: 1.1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .primary-btn {
-  background: rgba(255, 255, 255, 0.95);
-  color: #2c3e50;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .primary-btn:hover {
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(59, 130, 246, 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
 }
 
 .btn-icon {
@@ -206,10 +213,12 @@ onMounted(async () => {
 
 /* Insights Section */
 .insights-section {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   border-radius: 1.5rem;
   padding: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -227,13 +236,13 @@ onMounted(async () => {
 .section-icon {
   width: 24px;
   height: 24px;
-  color: #7ba3e3;
+  color: rgba(59, 130, 246, 0.8);
 }
 
 .section-header h3 {
   margin: 0;
   font-size: 1.25rem;
-  color: #2c3e50;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Loading & Empty States */
@@ -245,14 +254,14 @@ onMounted(async () => {
   justify-content: center;
   padding: 3rem 1rem;
   text-align: center;
-  color: #6c757d;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #e9ecef;
-  border-top-color: #7ba3e3;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: rgba(59, 130, 246, 0.8);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -266,6 +275,7 @@ onMounted(async () => {
   font-size: 0.9rem;
   margin-top: 0.5rem;
   opacity: 0.7;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* Entries Grid */
@@ -278,32 +288,36 @@ onMounted(async () => {
   padding-right: 0.5rem;
 }
 
-/* Custom scrollbar for entries grid */
+/* Custom scrollbar for entries grid - Dark theme */
 .entries-grid::-webkit-scrollbar {
-  width: 6px;
+  width: 10px;
 }
 
 .entries-grid::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(30, 30, 35, 0.4);
   border-radius: 10px;
 }
 
 .entries-grid::-webkit-scrollbar-thumb {
-  background: #7ba3e3;
+  background: linear-gradient(180deg, rgba(60, 60, 70, 0.9), rgba(80, 80, 90, 0.9));
   border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.3s ease;
 }
 
 .entries-grid::-webkit-scrollbar-thumb:hover {
-  background: #6a93d3;
+  background: linear-gradient(180deg, rgba(90, 90, 100, 0.95), rgba(110, 110, 120, 0.95));
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 }
 
 .view-all-btn {
   width: 100%;
   margin-top: 1rem;
   padding: 0.75rem;
-  border: 2px solid #7ba3e3;
-  background: transparent;
-  color: #7ba3e3;
+  border: 2px solid rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.1);
+  color: rgba(59, 130, 246, 0.9);
   border-radius: 0.75rem;
   font-size: 1rem;
   font-weight: 500;
@@ -312,8 +326,9 @@ onMounted(async () => {
 }
 
 .view-all-btn:hover {
-  background: #7ba3e3;
+  background: rgba(59, 130, 246, 0.8);
   color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 /* Bottom Navigation */
@@ -322,12 +337,14 @@ onMounted(async () => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-around;
   align-items: center;
   padding: 0.75rem 0;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
   z-index: 100;
 }
 
@@ -337,7 +354,7 @@ onMounted(async () => {
   align-items: center;
   gap: 0.25rem;
   padding: 0.5rem;
-  color: #6c757d;
+  color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
   font-size: 0.75rem;
   transition: color 0.3s ease;
@@ -352,11 +369,11 @@ onMounted(async () => {
 }
 
 .nav-item.active {
-  color: #7ba3e3;
+  color: rgba(59, 130, 246, 0.9);
 }
 
 .nav-item:hover {
-  color: #7ba3e3;
+  color: rgba(59, 130, 246, 0.9);
 }
 
 /* Responsive */
