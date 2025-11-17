@@ -342,7 +342,9 @@ watch(() => route.params.id, (newId) => {
 <style scoped>
 .journal-entry-view {
   min-height: 100vh;
-  background: linear-gradient(135deg, #7dd3c0 0%, #7ba3e3 100%);
+  background: linear-gradient(135deg, 
+    rgba(15, 23, 42, 0.95) 0%, 
+    rgba(30, 41, 59, 0.95) 100%);
   display: flex;
   flex-direction: column;
 }
@@ -353,8 +355,10 @@ watch(() => route.params.id, (newId) => {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   gap: 1rem;
 }
 
@@ -378,7 +382,7 @@ watch(() => route.params.id, (newId) => {
 
 .close-btn {
   background: transparent;
-  color: #6c757d;
+  color: rgba(255, 255, 255, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -391,12 +395,13 @@ watch(() => route.params.id, (newId) => {
 }
 
 .close-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .delete-btn {
   background: transparent;
-  color: #dc3545;
+  color: #ef4444;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -409,24 +414,25 @@ watch(() => route.params.id, (newId) => {
 }
 
 .delete-btn:hover {
-  background: rgba(220, 53, 69, 0.1);
+  background: rgba(239, 68, 68, 0.2);
 }
 
 .entry-title {
   margin: 0;
   font-size: 1.25rem;
-  color: #2c3e50;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .save-btn {
-  background: linear-gradient(135deg, #7dd3c0 0%, #7ba3e3 100%);
+  background: rgba(59, 130, 246, 0.8);
   color: white;
   min-width: 80px;
 }
 
 .save-btn:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 1);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .save-btn:disabled {
@@ -445,17 +451,25 @@ watch(() => route.params.id, (newId) => {
 
 .title-input {
   padding: 0.75rem 1rem;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
   font-size: 1.125rem;
   font-weight: 500;
-  color: #2c3e50;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
 }
 
 .title-input::placeholder {
-  color: #adb5bd;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.title-input:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 /* Emotion Selector */
@@ -467,55 +481,84 @@ watch(() => route.params.id, (newId) => {
 
 .emotion-label {
   font-size: 0.9rem;
-  color: #495057;
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
   padding-left: 0.25rem;
 }
 
 .emotion-dropdown {
   padding: 0.75rem 1rem;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
   font-size: 1rem;
-  color: #2c3e50;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .emotion-dropdown:focus {
   outline: none;
-  box-shadow: 0 4px 12px rgba(123, 163, 227, 0.3);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .emotion-dropdown option {
   padding: 0.5rem;
+  background: rgba(30, 41, 59, 0.95);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .content-area {
   flex: 1;
   padding: 1.5rem;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
   font-size: 1rem;
   line-height: 1.6;
-  color: #2c3e50;
+  color: rgba(255, 255, 255, 0.95);
   resize: none;
   font-family: inherit;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   min-height: 300px;
+  transition: all 0.3s ease;
 }
 
 .content-area::placeholder {
-  color: #adb5bd;
+  color: rgba(255, 255, 255, 0.5);
 }
 
-.content-area:focus,
-.title-input:focus {
+.content-area:focus {
   outline: none;
-  box-shadow: 0 4px 12px rgba(123, 163, 227, 0.3);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Custom scrollbar for content area */
+.content-area::-webkit-scrollbar {
+  width: 10px;
+}
+
+.content-area::-webkit-scrollbar-track {
+  background: rgba(30, 30, 35, 0.4);
+  border-radius: 10px;
+}
+
+.content-area::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(60, 60, 70, 0.9), rgba(80, 80, 90, 0.9));
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.3s ease;
+}
+
+.content-area::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(90, 90, 100, 0.95), rgba(110, 110, 120, 0.95));
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Metadata */
@@ -524,10 +567,12 @@ watch(() => route.params.id, (newId) => {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   border-radius: 0.75rem;
   font-size: 0.875rem;
-  color: #6c757d;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .metadata-left,
@@ -542,11 +587,14 @@ watch(() => route.params.id, (newId) => {
   bottom: 2rem;
   right: 2rem;
   padding: 0.75rem 1.25rem;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.9);
   border-radius: 0.5rem;
   font-size: 0.875rem;
   z-index: 1001;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Transitions */

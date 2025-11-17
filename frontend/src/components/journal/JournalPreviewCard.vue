@@ -65,18 +65,21 @@ const formattedDate = computed(() => {
 
 <style scoped>
 .journal-card {
-  background: white;
+  background: rgba(30, 41, 59, 0.6);
   border-radius: 1rem;
   padding: 1.25rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid #e9ecef;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .journal-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #7ba3e3;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(30, 41, 59, 0.8);
 }
 
 .card-header {
@@ -91,7 +94,7 @@ const formattedDate = computed(() => {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: rgba(255, 255, 255, 0.9);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -100,13 +103,13 @@ const formattedDate = computed(() => {
 
 .card-date {
   font-size: 0.875rem;
-  color: #6c757d;
+  color: rgba(255, 255, 255, 0.6);
   white-space: nowrap;
 }
 
 .card-preview {
   margin: 0 0 1rem 0;
-  color: #495057;
+  color: rgba(255, 255, 255, 0.7);
   line-height: 1.5;
   font-size: 0.95rem;
 }
@@ -120,7 +123,7 @@ const formattedDate = computed(() => {
 
 .word-count {
   font-size: 0.875rem;
-  color: #6c757d;
+  color: rgba(255, 255, 255, 0.5);
   margin-left: auto;
 }
 
