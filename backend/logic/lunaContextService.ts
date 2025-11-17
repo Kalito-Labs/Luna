@@ -2,7 +2,7 @@
  * LunaContextService
  * 
  * Provides AI context integration for Luna mental health practice.
- * Enables AI models to reference patient data, medications, and appointments.
+ * Enables AI models to reference patient data, medications, appointments, and journal entries.
  * 
  * Uses structured services for consistent data validation and error handling.
  * Security: Read-only operations only. AI cannot modify patient data.
@@ -58,10 +58,25 @@ export interface AppointmentContext {
   followUpRequired?: boolean
 }
 
+export interface JournalContext {
+  id: string
+  patientId: string
+  patientName?: string
+  title?: string
+  content: string
+  entryDate: string
+  entryTime?: string
+  mood?: string
+  emotions?: string[]
+  journalType?: string
+  wordCount: number
+}
+
 export type LunaContext = {
   patients: PatientContext[];
   medications: MedicationContext[];
   recentAppointments: AppointmentContext[];
+  journalEntries: JournalContext[];
   summary: string;
 };
 
@@ -232,6 +247,82 @@ export class LunaContextService {
     }
   }
 
+  /**
+   * Get recent journal entries for AI context
+   * Returns entries from the past 30 days to provide emotional/mental health insights
+   */
+  private getRecentJournalEntries(patientId?: string, maxEntries: number = 10): JournalContext[] {
+    try {
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - this.MAX_RECENT_DAYS)
+      const dateThreshold = thirtyDaysAgo.toISOString().split('T')[0]
+
+      let query = `
+        SELECT 
+          j.id, j.patient_id, j.title, j.content, j.entry_date, j.entry_time,
+          j.mood, j.emotions, j.journal_type,
+          p.name as patient_name
+        FROM journal_entries j
+        LEFT JOIN patients p ON j.patient_id = p.id
+        WHERE j.entry_date >= ?
+      `
+      
+      const params: (string | number)[] = [dateThreshold]
+      
+      if (patientId) {
+        query += ' AND j.patient_id = ?'
+        params.push(patientId)
+      }
+      
+      query += ' ORDER BY j.entry_date DESC, j.entry_time DESC LIMIT ?'
+      params.push(maxEntries)
+
+      const rows = db.prepare(query).all(...params) as Array<{
+        id: string
+        patient_id: string
+        patient_name: string | null
+        title: string | null
+        content: string
+        entry_date: string
+        entry_time: string | null
+        mood: string | null
+        emotions: string | null
+        journal_type: string | null
+      }>
+
+      return rows.map(row => {
+        // Parse emotions if present
+        let emotionsArray: string[] | undefined
+        if (row.emotions) {
+          try {
+            emotionsArray = JSON.parse(row.emotions) as string[]
+          } catch {
+            emotionsArray = undefined
+          }
+        }
+
+        const wordCount = row.content.trim().split(/\s+/).length
+
+        return {
+          id: row.id,
+          patientId: row.patient_id,
+          patientName: row.patient_name || undefined,
+          title: row.title || undefined,
+          content: row.content,
+          entryDate: row.entry_date,
+          entryTime: row.entry_time || undefined,
+          mood: row.mood || undefined,
+          emotions: emotionsArray,
+          journalType: row.journal_type || undefined,
+          wordCount,
+        }
+      })
+    } catch (error) {
+      console.error('Error fetching journal entries for context:', error)
+      return []
+    }
+  }
+
 
 
   /**
@@ -316,6 +407,55 @@ export class LunaContextService {
       summary += `- Do not fabricate or suggest appointment dates\n`;
       summary += `- If asked about appointments, clearly state that none are scheduled\n\n`;
     }
+
+    // Recent journal entries - provides emotional context and mental health insights
+    if (context.journalEntries.length > 0) {
+      summary += `### Recent Journal Entries (Last 30 Days: ${context.journalEntries.length} entries)\n\n`;
+      
+      // Group journal entries by patient
+      const journalByPatient = new Map<string, JournalContext[]>();
+      context.journalEntries.forEach((entry: JournalContext) => {
+        const patientName = entry.patientName || 'Unknown Patient';
+        if (!journalByPatient.has(patientName)) {
+          journalByPatient.set(patientName, []);
+        }
+        journalByPatient.get(patientName)!.push(entry);
+      });
+      
+      // Display journal entries grouped by patient
+      journalByPatient.forEach((entries, patientName) => {
+        summary += `**${patientName} (${entries.length} recent entr${entries.length !== 1 ? 'ies' : 'y'})**\n`;
+        entries.forEach((entry: JournalContext) => {
+          summary += `- ${entry.entryDate}`;
+          if (entry.entryTime) summary += ` ${entry.entryTime}`;
+          if (entry.title) summary += `: "${entry.title}"`;
+          summary += `\n`;
+          
+          // Show mood/emotions if present
+          if (entry.mood || (entry.emotions && entry.emotions.length > 0)) {
+            summary += `  Emotional state: `;
+            if (entry.mood) summary += entry.mood;
+            if (entry.emotions && entry.emotions.length > 0) {
+              summary += ` (also feeling: ${entry.emotions.join(', ')})`;
+            }
+            summary += '\n';
+          }
+          
+          // Show content preview (first 150 characters)
+          const contentPreview = entry.content.length > 150 
+            ? entry.content.substring(0, 150) + '...' 
+            : entry.content;
+          summary += `  Content: ${contentPreview}\n`;
+          summary += `  (${entry.wordCount} words)\n`;
+        });
+        summary += '\n';
+      });
+    } else {
+      summary += `### Recent Journal Entries\n`;
+      summary += `**NO RECENT JOURNAL ENTRIES**\n`;
+      summary += `- No journal entries found in the last 30 days\n\n`;
+    }
+
     return summary;
   }
 
@@ -330,11 +470,13 @@ export class LunaContextService {
     const patients = this.getPatients()
     const medications = this.getMedications(patientId)
     const recentAppointments = this.getRecentAppointments(patientId)
+    const journalEntries = this.getRecentJournalEntries(patientId)
 
     const context: LunaContext = {
       patients,
       medications,
       recentAppointments,
+      journalEntries,
       summary: '',
     }
 
@@ -478,6 +620,8 @@ export class LunaContextService {
     contextPrompt += "- **PATIENT CONFIDENTIALITY**: Treat all patient information as strictly confidential\n"
     contextPrompt += "- **ACCURATE REPORTING**: When discussing patient information, use only the data shown above\n"
     contextPrompt += "- **NO HALLUCINATION**: Do not invent or assume patient details not explicitly provided\n"
+    contextPrompt += "- **JOURNAL INSIGHTS**: Use journal entries to understand emotional state, concerns, and therapy progress\n"
+    contextPrompt += "- **THERAPEUTIC SUPPORT**: Help identify patterns in mood, emotions, and themes from journal entries\n"
     contextPrompt += "- **PROFESSIONAL CONTEXT**: This is for Caleb's mental health practice management\n"
     contextPrompt += "- Focus on supporting therapeutic goals and treatment planning\n"
 

@@ -15,13 +15,15 @@ Luna is a personal mental health companion designed to support individuals in ma
 - **Personal Profile**: Comprehensive patient information focused on mental health needs
 - **Medication Tracking**: Detailed prescription management with doctor and pharmacy information
 - **Appointment Scheduling**: Healthcare appointment tracking with preparation notes and outcomes
+- **Journal System**: Daily journaling with mood and emotion tracking for therapeutic insights
 - **Treatment History**: Complete medical timeline for informed care decisions
 
 ### 🤖 AI Companion System
 - **Intelligent Conversations**: Multi-turn conversations with context continuity
 - **Persona Customization**: Cloud and local AI assistant variants
 - **Memory Management**: Industry-standard conversation memory architecture
-- **Therapeutic Focus**: AI trained specifically for mental health support
+- **Full Context Access**: AI has access to patient data, medications, appointments, and journal entries
+- **Therapeutic Focus**: AI trained specifically for mental health support with journaling insights
 
 ### 🔒 Privacy & Security
 - **Local Data**: All personal data stored locally in SQLite database
@@ -45,7 +47,8 @@ Luna is a personal mental health companion designed to support individuals in ma
 │ • Patient UI    │    │ • REST API      │    │ • Patient Data  │
 │ • Med Tracking  │    │ • AI Service    │    │ • Conversations │
 │ • Appointments  │    │ • Memory Mgmt   │    │ • AI Memory     │
-│ • Chat Interface│    │ • Validation    │    │ • Audit Logs    │
+│ • Journaling    │    │ • Validation    │    │ • Journal Data  │
+│ • Chat Interface│    │ • Context Gen   │    │ • Audit Logs    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
@@ -109,12 +112,13 @@ pnpm run dev
 
 ## 📊 Database Schema
 
-Luna uses a carefully designed SQLite database with 9 optimized tables:
+Luna uses a carefully designed SQLite database with 10 optimized tables:
 
 ### Core Data
 - **`patients`** - Personal profile information (mental health focused)
 - **`medications`** - Prescription tracking with complete details
 - **`appointments`** - Healthcare scheduling and outcomes
+- **`journal_entries`** - Daily journaling with mood and emotion tracking
 
 ### AI System
 - **`sessions`** - Chat conversation management
@@ -126,7 +130,7 @@ Luna uses a carefully designed SQLite database with 9 optimized tables:
 - **`semantic_pins`** - Important information extraction
 
 ### Status: ✅ **PERFECTLY CLEAN** 
-All eldercare legacy removed, optimized for mental health use case.
+All eldercare legacy removed, optimized for mental health use case with integrated journaling system.
 
 [View detailed schema documentation →](docs/db/DB-SCHEMA.md)
 
@@ -136,7 +140,10 @@ Luna implements an industry-standard conversation memory architecture:
 
 ### Features
 - **Context Continuity**: Maintains conversation flow across multiple exchanges
-- **Smart Memory**: Automatic summarization and important information extraction  
+- **Smart Memory**: Automatic summarization and important information extraction
+- **Full Patient Context**: AI has access to medications, appointments, and journal entries
+- **Journal Integration**: AI can discuss and provide insights on your journal entries
+- **Mood Pattern Recognition**: AI identifies emotional patterns from journaling history
 - **Persona System**: Customizable AI personalities for different interaction styles
 - **Performance Optimized**: Pre-built context passing for fast response times
 
@@ -332,7 +339,9 @@ cd backend && node dist/scripts/audit-database.js
 
 ### ✅ Completed
 - Core patient management system
-- Medication and appointment tracking  
+- Medication and appointment tracking
+- **Journal system with mood and emotion tracking**
+- **AI context integration with journal entries**
 - AI conversation system with context continuity
 - Database cleanup and optimization
 - Mobile app foundation
@@ -341,13 +350,15 @@ cd backend && node dist/scripts/audit-database.js
 - Enhanced AI memory system (summarization, semantic pins)
 - Advanced appointment preparation workflows
 - Medication reminder system
+- Journal analytics and insights dashboard
 
 ### 🔮 Planned
 - **Enhanced AI Features**
-  - Mood tracking integration
+  - Advanced mood tracking analytics
   - Therapy session preparation
   - Crisis intervention protocols
   - Goal setting and progress tracking
+  - Journal sentiment analysis
 
 - **Platform Expansion**
   - iOS app deployment
@@ -356,7 +367,7 @@ cd backend && node dist/scripts/audit-database.js
   - Family caregiver features
 
 - **Analytics & Insights**
-  - Mental health trend analysis
+  - Mental health trend analysis from journal patterns
   - Medication adherence tracking
   - Appointment outcome correlation
   - Personalized wellness recommendations
@@ -371,9 +382,11 @@ cd backend && node dist/scripts/audit-database.js
 
 ### Key Scenarios
 - **Daily Check-ins**: Regular conversations with AI companion
+- **Journaling**: Track moods, emotions, and thoughts with calendar view
+- **AI Reflection**: Discuss journal entries with AI for therapeutic insights
 - **Medication Management**: Track prescriptions and side effects
 - **Appointment Preparation**: Organize questions and concerns
-- **Progress Tracking**: Monitor mental health journey over time
+- **Progress Tracking**: Monitor mental health journey over time through journaling
 - **Crisis Support**: Immediate access to coping strategies
 
 ## 📞 Support
@@ -428,6 +441,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Last Updated**: November 13, 2025  
-**Version**: 1.0.0-beta  
+**Last Updated**: November 17, 2025  
+**Version**: 1.1.0-beta  
 **Status**: Production Ready ✅
