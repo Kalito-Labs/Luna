@@ -543,7 +543,7 @@ function showMessage(text: string, type: 'success' | 'error') {
   border-bottom: var(--border);
 }
 
-.dashboard-header :deep(.hamburger-menu) {
+.dashboard-header :deep(.hamburger-container) {
   position: absolute;
   top: 0;
   left: 0;
