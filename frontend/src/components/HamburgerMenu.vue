@@ -8,6 +8,7 @@
     >
       <span /><span /><span />
     </button>
+    
     <transition name="menu-fade">
       <div v-if="open" class="hamburger-menu">
         <button class="menu-item" @click="goToHome">
@@ -70,11 +71,17 @@ function handleClickOutside(event: MouseEvent) {
     open.value = false
   }
 }
+
 onMounted(() => document.addEventListener('click', handleClickOutside))
 onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 </script>
 
 <style scoped>
+.hamburger-container {
+  position: relative;
+  display: inline-block;
+}
+
 .hamburger-button {
   width: 35px;
   height: 35px;
@@ -232,9 +239,8 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
 .hamburger-menu {
   position: absolute;
-  top: 112%;
+  top: calc(100% + 0.5rem);
   left: 0;
-  margin-top: 0.5rem;
   min-width: 200px;
   max-width: 450px;
   /* Enhanced glass/frosted style with teal accents */
@@ -258,8 +264,6 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   gap: 0.5rem;
   z-index: 1001;
   font-family: var(--font-base);
-  overflow: visible;
-  position: relative;
   animation: menuGlow 3s ease-in-out infinite alternate;
 }
 

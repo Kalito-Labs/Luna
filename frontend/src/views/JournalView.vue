@@ -1,7 +1,10 @@
 <template>
   <div class="journal-home">
-    <!-- Header Section -->
+    <!-- Header Section with Hamburger Menu -->
     <header class="journal-header">
+      <div class="header-top">
+        <HamburgerMenu />
+      </div>
       <h1 class="welcome-message">Welcome, {{ patientName }}</h1>
       <h2 class="prompt-message">Is there something on your mind?</h2>
     </header>
@@ -13,6 +16,13 @@
           <path d="M12 5v14M5 12h14" />
         </svg>
         <span>Start a new entry</span>
+      </button>
+      
+      <button @click="goToInsights" class="action-btn secondary-btn">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3v18h18M7 16l4-4 4 4 6-6" />
+        </svg>
+        <span>View Insights</span>
       </button>
     </div>
 
@@ -48,23 +58,6 @@
         View All Entries
       </button>
     </section>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-      <button @click="goHome" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-        </svg>
-        <span>Home</span>
-      </button>
-
-      <button @click="goToInsights" class="nav-item active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 3v18h18M7 16l4-4 4 4 6-6" />
-        </svg>
-        <span>Insights</span>
-      </button>
-    </nav>
   </div>
 </template>
 
@@ -74,6 +67,7 @@ import { useRouter } from 'vue-router'
 import { usePatient } from '../composables/usePatient'
 import { apiUrl } from '../config/api'
 import JournalPreviewCard from '../components/journal/JournalPreviewCard.vue'
+import HamburgerMenu from '../components/HamburgerMenu.vue'
 import type { JournalEntry } from '../types/journal'
 
 const router = useRouter()
@@ -120,10 +114,6 @@ const viewAllEntries = () => {
   router.push('/journal/calendar')
 }
 
-const goHome = () => {
-  router.push('/')
-}
-
 const goToInsights = () => {
   router.push('/journal/calendar')
 }
@@ -143,7 +133,7 @@ onMounted(async () => {
   background: linear-gradient(135deg, 
     rgba(15, 23, 42, 0.95) 0%, 
     rgba(30, 41, 59, 0.95) 100%);
-  padding: 2rem 1.5rem 5rem;
+  padding: 2rem 1.5rem 2rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -154,6 +144,12 @@ onMounted(async () => {
 .journal-header {
   color: rgba(255, 255, 255, 0.95);
   margin-bottom: 1rem;
+}
+
+.header-top {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1.5rem;
 }
 
 .welcome-message {
@@ -204,6 +200,20 @@ onMounted(async () => {
   border-color: rgba(59, 130, 246, 0.5);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+.secondary-btn {
+  color: rgba(61, 153, 153, 0.9);
+  border-color: rgba(61, 153, 153, 0.3);
+  background: rgba(61, 153, 153, 0.05);
+}
+
+.secondary-btn:hover {
+  background: rgba(61, 153, 153, 0.1);
+  border-color: rgba(61, 153, 153, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(61, 153, 153, 0.3);
+  color: rgba(61, 153, 153, 1);
 }
 
 .btn-icon {
@@ -332,55 +342,10 @@ onMounted(async () => {
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
-/* Bottom Navigation */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(30, 41, 59, 0.95);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 0.75rem 0;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-  z-index: 100;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.5rem;
-  color: rgba(255, 255, 255, 0.6);
-  text-decoration: none;
-  font-size: 0.75rem;
-  transition: color 0.3s ease;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.nav-item svg {
-  width: 24px;
-  height: 24px;
-}
-
-.nav-item.active {
-  color: rgba(59, 130, 246, 0.9);
-}
-
-.nav-item:hover {
-  color: rgba(59, 130, 246, 0.9);
-}
-
 /* Responsive */
 @media (max-width: 640px) {
   .journal-home {
-    padding: 1.5rem 1rem 5rem;
+    padding: 1.5rem 1rem 2rem;
   }
 
   .welcome-message {
