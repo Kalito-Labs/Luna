@@ -37,6 +37,6 @@ export const apiUrl = (endpoint: string): string => {
 
 // Log platform information
 // eslint-disable-next-line no-console
-console.info(`[Kalito Space] Running on: ${getPlatform()}`)
+console.info(`[Luna] Running on: ${getPlatform()}`)
 // eslint-disable-next-line no-console
-console.info(`[Kalito Space] API Base URL: ${API_BASE_URL}`)
+console.info(`[Luna] API Base URL: ${API_BASE_URL}`)

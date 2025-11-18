@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Kalito Space',
-        short_name: 'Kalito',
+        name: 'Luna',
+        short_name: 'Luna',
         description: 'Your family\'s AI command center - self-hosted AI chat with comprehensive life management tools',
         theme_color: '#1a1a2e',
         background_color: '#0f0f1e',

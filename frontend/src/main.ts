@@ -27,9 +27,9 @@ async function bootstrap() {
 
     // Info: Using localStorage for browser persistence
     // eslint-disable-next-line no-console
-    console.info('Kalito Space web/PWA build ready.')
+    console.info('Luna web/PWA build ready.')
 
-    // Mount Kalito Space app
+    // Mount Luna app
     const app = createApp(App)
 
     app.use(router)
@@ -41,19 +41,19 @@ async function bootstrap() {
     console.info(`Running on ${isNative() ? 'native platform' : 'web/PWA'}`)
     if (isDev) {
       // eslint-disable-next-line no-console
-      console.info('⚙️ Kalito Space is running in dev mode.')
+      console.info('⚙️ Luna is running in dev mode.')
     }
 
     // Expose dev flags for debugging
     if (isDev) {
-      // Add Kalito environment info to window
+      // Add Luna environment info to window
       Object.assign(window, {
-        __KALITOSPACE_ENV__: { isDev, isNative: isNative },
+        __LUNA_ENV__: { isDev, isNative: isNative },
       })
     }
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Failed to bootstrap Kalito Space:', error)
+    console.error('Failed to bootstrap Luna:', error)
   }
 }
 
