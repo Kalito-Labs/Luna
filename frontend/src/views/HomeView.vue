@@ -27,9 +27,9 @@
               <span class="btn-icon">🌙</span>
               Luna AI
             </router-link>
-            <router-link to="/kalito-hub" class="btn btn-secondary">
-              <span class="btn-icon">🏠</span>
-              Kalito Hub
+            <router-link to="/journal" class="btn btn-secondary">
+              <span class="btn-icon">📓</span>
+              Journal
             </router-link>
           </div>
         </div>
@@ -249,19 +249,19 @@ onMounted(() => {
 }
 
 .btn-secondary {
-  background: rgba(20, 25, 40, 0.8);
-  color: #e4ecf7;
-  box-shadow: 0 4px 16px rgba(20, 25, 40, 0.6);
-  border-color: rgba(110, 121, 199, 0.4);
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.4);
+  border-color: rgba(255, 255, 255, 0.1);
   font-size: 1.1rem;
   padding: 1em 2.2em;
 }
 
 .btn-secondary:hover {
-  background: rgba(30, 35, 50, 0.9);
-  box-shadow: 0 6px 20px rgba(110, 121, 199, 0.5);
+  background: linear-gradient(135deg, #38bdf8 0%, #22d3ee 100%);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5);
   transform: translateY(-2px);
-  border-color: rgba(110, 121, 199, 0.6);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* ================================================================ */
