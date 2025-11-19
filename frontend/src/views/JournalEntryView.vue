@@ -50,6 +50,45 @@
         </select>
       </div>
 
+      <!-- Mood Scale Slider -->
+      <div class="mood-scale-section">
+        <label for="mood-scale" class="mood-scale-label">
+          Overall mood today
+          <span v-if="entry.mood_scale" class="mood-value">({{ entry.mood_scale }}/10)</span>
+        </label>
+        <div class="mood-scale-container">
+          <span class="mood-scale-min">1</span>
+          <input 
+            id="mood-scale"
+            type="range"
+            min="1"
+            max="10"
+            v-model.number="entry.mood_scale"
+            class="mood-slider"
+          />
+          <span class="mood-scale-max">10</span>
+        </div>
+        <div class="mood-scale-labels">
+          <span class="mood-label-low">Low</span>
+          <span class="mood-label-high">Great</span>
+        </div>
+      </div>
+
+      <!-- Sleep Tracking -->
+      <div class="sleep-tracking-section">
+        <label for="sleep-hours" class="sleep-label">Hours of sleep last night</label>
+        <input 
+          id="sleep-hours"
+          type="number"
+          min="0"
+          max="24"
+          step="0.5"
+          v-model.number="entry.sleep_hours"
+          placeholder="8"
+          class="sleep-input"
+        />
+      </div>
+
       <!-- Main Content Area -->
       <textarea
         v-model="entry.content"
@@ -96,12 +135,16 @@ const entry = ref<{
   title: string
   content: string
   mood: MoodType | undefined
+  mood_scale: number | undefined
+  sleep_hours: number | undefined
   entry_date: string
   entry_time: string
 }>({
   title: '',
   content: '',
   mood: undefined,
+  mood_scale: undefined,
+  sleep_hours: undefined,
   entry_date: new Date().toISOString().substring(0, 10),
   entry_time: new Date().toTimeString().substring(0, 5)
 })
@@ -223,6 +266,8 @@ const createEntry = async () => {
     entry_date: entry.value.entry_date,
     entry_time: entry.value.entry_time,
     mood: entry.value.mood,
+    mood_scale: entry.value.mood_scale,
+    sleep_hours: entry.value.sleep_hours,
     journal_type: 'free'
   }
 
@@ -243,7 +288,9 @@ const updateEntry = async () => {
   const payload = {
     title: entry.value.title || undefined,
     content: entry.value.content,
-    mood: entry.value.mood
+    mood: entry.value.mood,
+    mood_scale: entry.value.mood_scale,
+    sleep_hours: entry.value.sleep_hours
   }
 
   const response = await fetch(apiUrl(`/api/journal/${entryId.value}`), {
@@ -273,6 +320,8 @@ const loadEntry = async (id: string) => {
       title: data.title || '',
       content: data.content,
       mood: data.mood,
+      mood_scale: data.mood_scale,
+      sleep_hours: data.sleep_hours,
       entry_date: data.entry_date,
       entry_time: data.entry_time || new Date().toTimeString().slice(0, 5)
     }
@@ -510,6 +559,134 @@ watch(() => route.params.id, (newId) => {
   padding: 0.5rem;
   background: rgba(30, 41, 59, 0.95);
   color: rgba(255, 255, 255, 0.95);
+}
+
+/* Mood Scale Slider */
+.mood-scale-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(10px);
+}
+
+.mood-scale-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mood-value {
+  color: rgba(59, 130, 246, 0.9);
+  font-weight: 600;
+}
+
+.mood-scale-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mood-scale-min,
+.mood-scale-max {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  min-width: 1rem;
+}
+
+.mood-slider {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  -webkit-appearance: none;
+  transition: all 0.3s ease;
+}
+
+.mood-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(96, 165, 250, 0.9));
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+  transition: all 0.3s ease;
+}
+
+.mood-slider::-webkit-slider-thumb:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 1), rgba(96, 165, 250, 1));
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
+  transform: scale(1.1);
+}
+
+.mood-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(96, 165, 250, 0.9));
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+}
+
+.mood-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 0 0.5rem;
+}
+
+/* Sleep Tracking */
+.sleep-tracking-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(10px);
+}
+
+.sleep-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  padding-left: 0.25rem;
+}
+
+.sleep-input {
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  max-width: 120px;
+}
+
+.sleep-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.sleep-input:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .content-area {
