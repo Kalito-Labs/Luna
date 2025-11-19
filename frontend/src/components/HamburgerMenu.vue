@@ -15,7 +15,10 @@
           <span class="menu-icon">🏠</span>
           Home
         </button>
-        <button class="menu-item" @click="goToChat">Luna Ai</button>
+        <button class="menu-item" @click="goToChat">
+          <span class="menu-icon">🤖</span>
+          Luna AI
+        </button>
         <button class="menu-item" @click="goToJournal">
           <span class="menu-icon">📓</span>
           Journal
