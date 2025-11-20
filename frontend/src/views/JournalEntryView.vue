@@ -403,12 +403,13 @@ watch(() => route.params.id, (newId) => {
 
 <style scoped>
 .journal-entry-view {
-  min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(135deg, 
     rgba(15, 23, 42, 0.95) 0%, 
     rgba(30, 41, 59, 0.95) 100%);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* Header */
@@ -509,6 +510,30 @@ watch(() => route.params.id, (newId) => {
   flex-direction: column;
   padding: 1.5rem;
   gap: 1.5rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Custom scrollbar for entry form */
+.entry-form::-webkit-scrollbar {
+  width: 8px;
+}
+
+.entry-form::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 10px;
+}
+
+.entry-form::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(60, 60, 70, 0.7), rgba(80, 80, 90, 0.7));
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.3s ease;
+}
+
+.entry-form::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(90, 90, 100, 0.8), rgba(110, 110, 120, 0.8));
 }
 
 .form-section {
