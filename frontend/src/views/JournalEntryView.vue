@@ -24,69 +24,81 @@
 
     <!-- Entry Form -->
     <div class="entry-form">
-      <!-- Optional Title -->
-      <input 
-        v-model="entry.title" 
-        placeholder="Entry title (optional)"
-        class="title-input"
-      />
-
-      <!-- Emotion Selector -->
-      <div class="emotion-selector">
-        <label for="emotion-select" class="emotion-label">How are you feeling?</label>
-        <select 
-          id="emotion-select"
-          v-model="entry.mood" 
-          class="emotion-dropdown"
-        >
-          <option :value="undefined">Select an emotion (optional)</option>
-          <option 
-            v-for="mood in availableMoods" 
-            :key="mood.id" 
-            :value="mood.id"
-          >
-            {{ mood.icon }} {{ mood.label }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Mood Scale Slider -->
-      <div class="mood-scale-section">
-        <label for="mood-scale" class="mood-scale-label">
-          Overall mood today
-          <span v-if="entry.mood_scale" class="mood-value">({{ entry.mood_scale }}/10)</span>
-        </label>
-        <div class="mood-scale-container">
-          <span class="mood-scale-min">1</span>
-          <input 
-            id="mood-scale"
-            type="range"
-            min="1"
-            max="10"
-            v-model.number="entry.mood_scale"
-            class="mood-slider"
-          />
-          <span class="mood-scale-max">10</span>
-        </div>
-        <div class="mood-scale-labels">
-          <span class="mood-label-low">Low</span>
-          <span class="mood-label-high">Great</span>
-        </div>
-      </div>
-
-      <!-- Sleep Tracking -->
-      <div class="sleep-tracking-section">
-        <label for="sleep-hours" class="sleep-label">Hours of sleep last night</label>
+      <!-- Entry Title -->
+      <div class="form-section title-section">
         <input 
-          id="sleep-hours"
-          type="number"
-          min="0"
-          max="24"
-          step="0.5"
-          v-model.number="entry.sleep_hours"
-          placeholder="8"
-          class="sleep-input"
+          v-model="entry.title" 
+          placeholder="Entry title (optional)"
+          class="title-input"
         />
+      </div>
+
+      <!-- Mental Health Tracking Card -->
+      <div class="form-section mental-health-card">
+        <h3 class="section-title">How are you today?</h3>
+        
+        <div class="tracking-grid">
+          <!-- Emotion Selector -->
+          <div class="tracking-item emotion-item">
+            <label for="emotion-select" class="item-label">Feeling</label>
+            <select 
+              id="emotion-select"
+              v-model="entry.mood" 
+              class="emotion-dropdown"
+            >
+              <option :value="undefined">Select emotion</option>
+              <option 
+                v-for="mood in availableMoods" 
+                :key="mood.id" 
+                :value="mood.id"
+              >
+                {{ mood.icon }} {{ mood.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Mood Scale -->
+          <div class="tracking-item mood-item">
+            <label for="mood-scale" class="item-label">
+              Mood Scale
+              <span v-if="entry.mood_scale" class="mood-value">{{ entry.mood_scale }}/10</span>
+            </label>
+            <div class="mood-scale-container">
+              <span class="scale-label">1</span>
+              <input 
+                id="mood-scale"
+                type="range"
+                min="1"
+                max="10"
+                v-model.number="entry.mood_scale"
+                class="mood-slider"
+              />
+              <span class="scale-label">10</span>
+            </div>
+            <div class="mood-scale-labels">
+              <span class="mood-label-low">Low</span>
+              <span class="mood-label-high">Great</span>
+            </div>
+          </div>
+
+          <!-- Sleep Hours -->
+          <div class="tracking-item sleep-item">
+            <label for="sleep-hours" class="item-label">Sleep Hours</label>
+            <div class="sleep-input-container">
+              <input 
+                id="sleep-hours"
+                type="number"
+                min="0"
+                max="24"
+                step="0.5"
+                v-model.number="entry.sleep_hours"
+                placeholder="8"
+                class="sleep-input"
+              />
+              <span class="sleep-unit">hrs</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Main Content Area -->
@@ -391,12 +403,13 @@ watch(() => route.params.id, (newId) => {
 
 <style scoped>
 .journal-entry-view {
-  min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(135deg, 
     rgba(15, 23, 42, 0.95) 0%, 
     rgba(30, 41, 59, 0.95) 100%);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* Header */
@@ -496,20 +509,63 @@ watch(() => route.params.id, (newId) => {
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
-  gap: 1rem;
+  gap: 1.5rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Custom scrollbar for entry form */
+.entry-form::-webkit-scrollbar {
+  width: 8px;
+}
+
+.entry-form::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 10px;
+}
+
+.entry-form::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(60, 60, 70, 0.7), rgba(80, 80, 90, 0.7));
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.3s ease;
+}
+
+.entry-form::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(90, 90, 100, 0.8), rgba(110, 110, 120, 0.8));
+}
+
+.form-section {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.form-section:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Title Section */
+.title-section {
+  padding: 1rem;
 }
 
 .title-input {
+  width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(10px);
+  border: none;
+  border-radius: 0.5rem;
+  background: rgba(15, 23, 42, 0.4);
   font-size: 1.125rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
+  outline: none;
 }
 
 .title-input::placeholder {
@@ -517,88 +573,99 @@ watch(() => route.params.id, (newId) => {
 }
 
 .title-input:focus {
-  outline: none;
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  background: rgba(15, 23, 42, 0.6);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
 }
 
-/* Emotion Selector */
-.emotion-selector {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+/* Mental Health Tracking Card */
+.mental-health-card {
+  padding: 1.5rem;
 }
 
-.emotion-label {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-  padding-left: 0.25rem;
+.section-title {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
 }
 
-.emotion-dropdown {
-  padding: 0.75rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(10px);
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  transition: all 0.3s ease;
+.tracking-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
 }
 
-.emotion-dropdown:focus {
-  outline: none;
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+@media (min-width: 768px) {
+  .tracking-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 2rem;
+  }
+  
+  .mood-item {
+    grid-column: 1 / -1;
+  }
 }
 
-.emotion-dropdown option {
-  padding: 0.5rem;
-  background: rgba(30, 41, 59, 0.95);
-  color: rgba(255, 255, 255, 0.95);
-}
-
-/* Mood Scale Slider */
-.mood-scale-section {
+.tracking-item {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 1rem;
-  background: rgba(30, 41, 59, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
-  backdrop-filter: blur(10px);
 }
 
-.mood-scale-label {
+.item-label {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
+/* Emotion Dropdown */
+.emotion-dropdown {
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  background: rgba(15, 23, 42, 0.4);
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.emotion-dropdown:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.emotion-dropdown option {
+  background: rgba(15, 23, 42, 0.95);
+  color: rgba(255, 255, 255, 0.95);
+  padding: 0.5rem;
+}
+
+/* Mood Scale */
 .mood-value {
   color: rgba(59, 130, 246, 0.9);
   font-weight: 600;
+  font-size: 0.85rem;
 }
 
 .mood-scale-container {
   display: flex;
   align-items: center;
   gap: 1rem;
+  padding: 0.5rem 0;
 }
 
-.mood-scale-min,
-.mood-scale-max {
-  font-size: 0.875rem;
+.scale-label {
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
   min-width: 1rem;
+  text-align: center;
 }
 
 .mood-slider {
@@ -614,8 +681,8 @@ watch(() => route.params.id, (newId) => {
 .mood-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(96, 165, 250, 0.9));
   cursor: pointer;
@@ -629,54 +696,32 @@ watch(() => route.params.id, (newId) => {
   transform: scale(1.1);
 }
 
-.mood-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(96, 165, 250, 0.9));
-  cursor: pointer;
-  border: none;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
-}
-
 .mood-scale-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
   padding: 0 0.5rem;
 }
 
-/* Sleep Tracking */
-.sleep-tracking-section {
+/* Sleep Input */
+.sleep-input-container {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 0.5rem;
-  padding: 1rem;
-  background: rgba(30, 41, 59, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
-  backdrop-filter: blur(10px);
-}
-
-.sleep-label {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-  padding-left: 0.25rem;
 }
 
 .sleep-input {
+  flex: 1;
   padding: 0.75rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 0.5rem;
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(10px);
-  font-size: 1rem;
+  background: rgba(15, 23, 42, 0.4);
+  font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
-  max-width: 120px;
+  outline: none;
+  max-width: 100px;
 }
 
 .sleep-input::placeholder {
@@ -684,9 +729,14 @@ watch(() => route.params.id, (newId) => {
 }
 
 .sleep-input:focus {
-  outline: none;
   border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.sleep-unit {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
 }
 
 .content-area {
