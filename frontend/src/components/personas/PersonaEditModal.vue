@@ -8,9 +8,33 @@
         <button class="close-button" @click="$emit('close')">✕</button>
       </div>
 
+      <!-- Tabs Navigation -->
+      <div class="tabs-nav">
+        <button
+          type="button"
+          class="tab-button"
+          :class="{ active: activeTab === 'details' }"
+          @click="activeTab = 'details'"
+        >
+          <ion-icon name="person-outline"></ion-icon>
+          Details
+        </button>
+        <button
+          v-if="isEditing"
+          type="button"
+          class="tab-button"
+          :class="{ active: activeTab === 'datasets' }"
+          @click="activeTab = 'datasets'"
+        >
+          <ion-icon name="documents-outline"></ion-icon>
+          Datasets
+        </button>
+      </div>
+
       <!-- Modal Content -->
       <div class="modal-content">
-        <form @submit.prevent="handleSubmit">
+        <!-- Details Tab -->
+        <form v-show="activeTab === 'details'" @submit.prevent="handleSubmit">
           <!-- Persona Details -->
           <div class="form-section">
             <h3>Persona Details</h3>
@@ -266,6 +290,15 @@
             </button>
           </div>
         </form>
+
+        <!-- Datasets Tab -->
+        <div v-show="activeTab === 'datasets'" class="datasets-tab">
+          <DatasetManager
+            v-if="isEditing && editingPersona"
+            :persona-id="editingPersona.id"
+            @updated="$emit('datasetsUpdated')"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -274,6 +307,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue'
 import type { Persona, PersonaCategory } from '../../../../backend/types/personas'
+import DatasetManager from '../datasets/DatasetManager.vue'
 
 // Props
 const props = defineProps<{
@@ -303,10 +337,12 @@ const emit = defineEmits<{
       repeatPenalty: number
     }>
   }]
+  datasetsUpdated: []
 }>()
 
 // State
 const submitting = ref(false)
+const activeTab = ref<'details' | 'datasets'>('details')
 
 // Form data
 const formData = reactive({
@@ -516,6 +552,51 @@ watch(() => props.show, (newShow) => {
 
 .close-button:active {
   transform: translateY(0);
+}
+
+/* Tabs Navigation */
+.tabs-nav {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--bg-glass, rgba(255, 255, 255, 0.03));
+  border-bottom: 1px solid var(--border-light, rgba(255, 255, 255, 0.08));
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  color: var(--text-muted, rgba(255, 255, 255, 0.6));
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-button ion-icon {
+  font-size: 1.1rem;
+}
+
+.tab-button:hover {
+  background: var(--bg-panel, rgba(255, 255, 255, 0.05));
+  color: var(--text-main, #fff);
+}
+
+.tab-button.active {
+  background: var(--accent-blue, #4a90e2);
+  color: white;
+  border-color: var(--accent-blue, #4a90e2);
+}
+
+/* Datasets Tab */
+.datasets-tab {
+  padding: 1.5rem;
+  min-height: 400px;
 }
 
 /* Scrollable Content */
