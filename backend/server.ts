@@ -28,6 +28,8 @@ import vitalsRouter from './routes/vitalsRouter'
 import journalRouter from './routes/journalRouter'
 import { appointmentsRouter } from './routes/appointmentsRouter'
 import { searchRouter } from './routes/searchRouter'
+import datasetsRouter from './routes/datasetsRouter'
+import { vectorSearchRouter } from './routes/vectorSearchRouter'
 
 // Initialize / migrate DB (creates tables, columns, triggers, indexes, seeds personas, etc.)
 import './db/init'
@@ -132,6 +134,12 @@ app.use('/api/sessions', sessionRouter)
 
 // Persona management (CRUD + defaults)
 app.use('/api/personas', personasRouter)
+
+// Document datasets for RAG (upload, processing, linking)
+app.use('/api/datasets', datasetsRouter)
+
+// Vector search for RAG (semantic search, context retrieval)
+app.use('/api/vector-search', vectorSearchRouter)
 
 // Model registry / availability
 app.use('/api/models', modelsRouter)
