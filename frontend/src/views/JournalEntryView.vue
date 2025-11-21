@@ -405,11 +405,13 @@ watch(() => route.params.id, (newId) => {
 .journal-entry-view {
   height: 100vh;
   background: linear-gradient(135deg, 
-    rgba(15, 23, 42, 0.95) 0%, 
-    rgba(30, 41, 59, 0.95) 100%);
+    rgba(15, 23, 42, 0.98) 0%, 
+    rgba(30, 41, 59, 0.95) 50%,
+    rgba(67, 56, 202, 0.08) 100%);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 }
 
 /* Header */
@@ -417,12 +419,26 @@ watch(() => route.params.id, (newId) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
-  background: rgba(30, 41, 59, 0.8);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  padding: 1.25rem 1.5rem;
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(25px);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   gap: 1rem;
+  position: relative;
+}
+
+.entry-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(139, 92, 246, 0.6), 
+    transparent);
 }
 
 .header-actions {
@@ -458,26 +474,33 @@ watch(() => route.params.id, (newId) => {
 }
 
 .close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.95);
+  transform: scale(1.05);
 }
 
 .delete-btn {
   background: transparent;
-  color: #ef4444;
+  color: rgba(239, 68, 68, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
 }
 
 .delete-btn svg {
   width: 20px;
   height: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .delete-btn:hover {
   background: rgba(239, 68, 68, 0.2);
+  color: rgba(239, 68, 68, 1);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .entry-title {
@@ -487,20 +510,34 @@ watch(() => route.params.id, (newId) => {
 }
 
 .save-btn {
-  background: rgba(59, 130, 246, 0.8);
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.85) 0%, 
+    rgba(124, 58, 237, 0.9) 100%);
   color: white;
-  min-width: 80px;
+  min-width: 88px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
 }
 
 .save-btn:hover:not(:disabled) {
-  background: rgba(59, 130, 246, 1);
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 1) 0%, 
+    rgba(124, 58, 237, 1) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.save-btn:active:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .save-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* Entry Form */
@@ -537,17 +574,21 @@ watch(() => route.params.id, (newId) => {
 }
 
 .form-section {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(25px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .form-section:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
 }
 
 /* Title Section */
@@ -573,21 +614,38 @@ watch(() => route.params.id, (newId) => {
 }
 
 .title-input:focus {
-  background: rgba(15, 23, 42, 0.6);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  background: rgba(15, 23, 42, 0.7);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.6), 
+              0 4px 12px rgba(139, 92, 246, 0.2);
+  transform: translateY(-1px);
 }
 
 /* Mental Health Tracking Card */
 .mental-health-card {
-  padding: 1.5rem;
+  padding: 1.75rem;
+  position: relative;
+}
+
+.mental-health-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(139, 92, 246, 0.4), 
+    transparent);
 }
 
 .section-title {
-  margin: 0 0 1.5rem 0;
-  font-size: 1.125rem;
+  margin: 0 0 1.75rem 0;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   text-align: center;
+  letter-spacing: -0.01em;
 }
 
 .tracking-grid {
@@ -636,8 +694,10 @@ watch(() => route.params.id, (newId) => {
 }
 
 .emotion-dropdown:focus {
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25), 
+              0 4px 12px rgba(139, 92, 246, 0.15);
+  transform: translateY(-1px);
 }
 
 .emotion-dropdown option {
@@ -648,9 +708,10 @@ watch(() => route.params.id, (newId) => {
 
 /* Mood Scale */
 .mood-value {
-  color: rgba(59, 130, 246, 0.9);
-  font-weight: 600;
-  font-size: 0.85rem;
+  color: rgba(139, 92, 246, 0.95);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .mood-scale-container {
@@ -675,25 +736,32 @@ watch(() => route.params.id, (newId) => {
   background: rgba(255, 255, 255, 0.1);
   outline: none;
   -webkit-appearance: none;
+  appearance: none;
   transition: all 0.3s ease;
 }
 
 .mood-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(96, 165, 250, 0.9));
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.95) 0%, 
+    rgba(196, 181, 253, 0.9) 100%);
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
-  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(139, 92, 246, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .mood-slider::-webkit-slider-thumb:hover {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 1), rgba(96, 165, 250, 1));
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
-  transform: scale(1.1);
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 1) 0%, 
+    rgba(196, 181, 253, 1) 100%);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.6);
+  transform: scale(1.15);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .mood-scale-labels {
@@ -729,8 +797,10 @@ watch(() => route.params.id, (newId) => {
 }
 
 .sleep-input:focus {
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25), 
+              0 4px 12px rgba(139, 92, 246, 0.15);
+  transform: translateY(-1px);
 }
 
 .sleep-unit {
@@ -762,8 +832,10 @@ watch(() => route.params.id, (newId) => {
 
 .content-area:focus {
   outline: none;
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.25);
+  transform: translateY(-2px);
+  background: rgba(30, 41, 59, 0.75);
 }
 
 /* Custom scrollbar for content area */
@@ -813,16 +885,20 @@ watch(() => route.params.id, (newId) => {
 .auto-save-indicator {
   position: fixed;
   bottom: 2rem;
-  right: 2rem;
-  padding: 0.75rem 1.25rem;
+  left: 2rem;
+  padding: 0.875rem 1.5rem;
   background: rgba(30, 41, 59, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  color: rgba(255, 255, 255, 0.9);
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  backdrop-filter: blur(20px);
+  color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
   z-index: 1001;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* Transitions */

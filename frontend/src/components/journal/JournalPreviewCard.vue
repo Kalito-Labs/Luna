@@ -65,53 +65,76 @@ const formattedDate = computed(() => {
 
 <style scoped>
 .journal-card {
-  background: rgba(30, 41, 59, 0.6);
-  border-radius: 1rem;
-  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  backdrop-filter: blur(25px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.journal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(139, 92, 246, 0.08), 
+    transparent);
+  transition: left 0.6s ease;
+}
+
+.journal-card:hover::before {
+  left: 100%;
 }
 
 .journal-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  border-color: rgba(59, 130, 246, 0.5);
-  background: rgba(30, 41, 59, 0.8);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
   gap: 1rem;
 }
 
 .card-title {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 
 .card-date {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(196, 181, 253, 0.75);
   white-space: nowrap;
+  font-weight: 500;
 }
 
 .card-preview {
-  margin: 0 0 1rem 0;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.5;
+  margin: 0 0 1.25rem 0;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
   font-size: 0.95rem;
+  font-weight: 400;
 }
 
 .card-footer {
@@ -119,17 +142,27 @@ const formattedDate = computed(() => {
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .word-count {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(196, 181, 253, 0.7);
   margin-left: auto;
+  font-weight: 500;
 }
 
 .favorite-icon {
-  width: 18px;
-  height: 18px;
-  color: #ff6b6b;
+  width: 20px;
+  height: 20px;
+  color: rgba(239, 68, 68, 0.9);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+}
+
+.journal-card:hover .favorite-icon {
+  color: rgba(239, 68, 68, 1);
+  transform: scale(1.1);
 }
 </style>
