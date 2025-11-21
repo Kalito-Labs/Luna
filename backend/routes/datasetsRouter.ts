@@ -204,16 +204,47 @@ router.delete('/:id', async (req: Request, res: Response) => {
       return err(res, 404, 'NOT_FOUND', `Dataset with ID ${id} not found`)
     }
 
-    // TODO: Implement dataset deletion
-    // This should:
-    // 1. Remove file from filesystem
-    // 2. Delete from database (cascades to chunks and persona links)
-    // 3. Clean up any vector embeddings
+    const result = await documentProcessor.deleteDataset(id)
     
-    return err(res, 501, 'INTERNAL', 'Dataset deletion not yet implemented')
+    return okItem(res, {
+      success: true,
+      dataset_id: id,
+      chunks_deleted: result.chunks_deleted,
+      message: `Dataset "${dataset.name}" and ${result.chunks_deleted} chunks deleted successfully`
+    })
 
   } catch (error) {
     return handleRouterError(res, error, 'delete_dataset')
+  }
+})
+
+/**
+ * GET /api/datasets/:id/chunks
+ * Get chunks for a dataset
+ */
+router.get('/:id/chunks', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params
+    const limit = parseInt(req.query.limit as string) || 50
+    
+    const dataset = await documentProcessor.getDataset(id)
+    
+    if (!dataset) {
+      return err(res, 404, 'NOT_FOUND', `Dataset with ID ${id} not found`)
+    }
+
+    const chunks = await documentProcessor.getDatasetChunks(id, limit)
+    
+    return okItem(res, {
+      dataset_id: id,
+      dataset_name: dataset.name,
+      total_chunks: dataset.chunk_count,
+      returned_chunks: chunks.length,
+      chunks: chunks
+    })
+
+  } catch (error) {
+    return handleRouterError(res, error, 'get_dataset_chunks')
   }
 })
 
