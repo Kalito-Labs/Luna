@@ -67,6 +67,14 @@ export interface DatasetRecord {
   metadata: string
 }
 
+export interface DatasetWithLink extends DatasetRecord {
+  enabled: boolean
+  weight: number
+  access_level: string
+  last_used_at?: string
+  usage_count: number
+}
+
 export interface PersonaDatasetLink {
   id: string
   persona_id: string
@@ -419,7 +427,7 @@ export class DocumentProcessor {
   /**
    * Get datasets for persona
    */
-  async getPersonaDatasets(persona_id: string): Promise<DatasetRecord[]> {
+  async getPersonaDatasets(persona_id: string): Promise<DatasetWithLink[]> {
     const stmt = db.prepare(`
       SELECT 
         d.*,
@@ -434,7 +442,135 @@ export class DocumentProcessor {
       ORDER BY pd.created_at DESC
     `)
     
-    return stmt.all(persona_id) as DatasetRecord[]
+    return stmt.all(persona_id) as DatasetWithLink[]
+  }
+
+  /**
+   * Get chunks from a dataset
+   */
+  async getDatasetChunks(dataset_id: string, limit: number = 50): Promise<any[]> {
+    const stmt = db.prepare(`
+      SELECT id, chunk_index, content, chunk_type, section_title,
+             page_number, char_start, char_end, token_count,
+             therapeutic_tags, created_at
+      FROM document_chunks
+      WHERE dataset_id = ?
+      ORDER BY chunk_index ASC
+      LIMIT ?
+    `)
+    
+    return stmt.all(dataset_id, limit)
+  }
+
+  /**
+   * Delete dataset and all associated data
+   */
+  async deleteDataset(dataset_id: string): Promise<{ success: boolean; chunks_deleted: number }> {
+    const dataset = await this.getDataset(dataset_id)
+    
+    if (!dataset) {
+      throw new Error(`Dataset ${dataset_id} not found`)
+    }
+
+    // Delete file from filesystem
+    if (dataset.file_path && fs.existsSync(dataset.file_path)) {
+      try {
+        fs.unlinkSync(dataset.file_path)
+      } catch (err) {
+        console.error(`Failed to delete file ${dataset.file_path}:`, err)
+      }
+    }
+
+    // Count chunks before deletion
+    const chunkCount = db.prepare(`SELECT COUNT(*) as count FROM document_chunks WHERE dataset_id = ?`).get(dataset_id) as { count: number }
+
+    // Delete chunks (foreign key will cascade persona_datasets)
+    const deleteChunks = db.prepare(`DELETE FROM document_chunks WHERE dataset_id = ?`)
+    deleteChunks.run(dataset_id)
+
+    // Delete dataset
+    const deleteDataset = db.prepare(`DELETE FROM datasets WHERE id = ?`)
+    deleteDataset.run(dataset_id)
+
+    return {
+      success: true,
+      chunks_deleted: chunkCount.count
+    }
+  }
+
+  /**
+   * Link dataset to persona
+   */
+  async linkDatasetToPersona(dataset_id: string, persona_id: string, options?: {
+    enabled?: boolean
+    weight?: number
+    access_level?: string
+  }): Promise<void> {
+    const stmt = db.prepare(`
+      INSERT OR REPLACE INTO persona_datasets 
+        (id, persona_id, dataset_id, enabled, weight, access_level, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `)
+
+    const id = `${persona_id}-${dataset_id}`
+    stmt.run(
+      id,
+      persona_id,
+      dataset_id,
+      options?.enabled !== undefined ? (options.enabled ? 1 : 0) : 1,
+      options?.weight || 1.0,
+      options?.access_level || 'read',
+      new Date().toISOString()
+    )
+  }
+
+  /**
+   * Unlink dataset from persona
+   */
+  async unlinkDatasetFromPersona(dataset_id: string, persona_id: string): Promise<void> {
+    const stmt = db.prepare(`
+      DELETE FROM persona_datasets 
+      WHERE persona_id = ? AND dataset_id = ?
+    `)
+    
+    stmt.run(persona_id, dataset_id)
+  }
+
+  /**
+   * Update persona-dataset link settings
+   */
+  async updatePersonaDatasetLink(dataset_id: string, persona_id: string, updates: {
+    enabled?: boolean
+    weight?: number
+    access_level?: string
+  }): Promise<void> {
+    const sets: string[] = []
+    const params: any[] = []
+
+    if (updates.enabled !== undefined) {
+      sets.push('enabled = ?')
+      params.push(updates.enabled ? 1 : 0)
+    }
+    if (updates.weight !== undefined) {
+      sets.push('weight = ?')
+      params.push(updates.weight)
+    }
+    if (updates.access_level !== undefined) {
+      sets.push('access_level = ?')
+      params.push(updates.access_level)
+    }
+
+    if (sets.length === 0) return
+
+    params.push(persona_id, dataset_id)
+
+    const stmt = db.prepare(`
+      UPDATE persona_datasets 
+      SET ${sets.join(', ')}
+      WHERE persona_id = ? AND dataset_id = ?
+    `)
+
+    stmt.run(...params)
   }
 
   /**

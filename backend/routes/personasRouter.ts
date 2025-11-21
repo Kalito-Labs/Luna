@@ -520,4 +520,204 @@ router.post('/from-template', (req, res) => {
   }
 })
 
+/* -------------------------------- Persona-Dataset Linking -------------------------------- */
+
+/**
+ * GET /api/personas/:id/datasets
+ * Get all datasets linked to a persona
+ */
+router.get('/:id/datasets', async (req, res) => {
+  try {
+    const { id } = req.params
+    const { documentProcessor } = await import('../logic/documentProcessor')
+
+    // Check persona exists
+    const persona = db.prepare('SELECT * FROM personas WHERE id = ?').get(id) as any
+    if (!persona) {
+      return err(res, 404, 'NOT_FOUND', `Persona with ID ${id} not found`)
+    }
+
+    const datasets = await documentProcessor.getPersonaDatasets(id)
+
+    // Get builtin data access
+    const builtinDataAccess = persona.builtin_data_access 
+      ? JSON.parse(persona.builtin_data_access)
+      : {}
+
+    return okItem(res, {
+      persona: {
+        id: persona.id,
+        name: persona.name,
+        specialty: persona.specialty
+      },
+      datasets: datasets.map(d => ({
+        dataset: {
+          id: d.id,
+          name: d.name,
+          description: d.description,
+          file_name: d.file_name,
+          file_type: d.file_type,
+          file_size: d.file_size,
+          chunk_count: d.chunk_count,
+          therapeutic_category: d.therapeutic_category,
+          created_at: d.created_at
+        },
+        enabled: Boolean(d.enabled),
+        weight: d.weight,
+        access_level: d.access_level,
+        last_used_at: d.last_used_at,
+        usage_count: d.usage_count
+      })),
+      builtin_data_access: builtinDataAccess,
+      summary: {
+        total_datasets: datasets.length,
+        enabled_datasets: datasets.filter(d => d.enabled).length,
+        total_chunks: datasets.reduce((sum, d) => sum + (d.chunk_count || 0), 0)
+      }
+    })
+  } catch (error) {
+    return handleRouterError(res, error, 'get persona datasets')
+  }
+})
+
+/**
+ * POST /api/personas/:id/datasets/:datasetId
+ * Link a dataset to a persona
+ */
+router.post('/:id/datasets/:datasetId', async (req, res) => {
+  try {
+    const { id: persona_id, datasetId: dataset_id } = req.params
+    const { documentProcessor } = await import('../logic/documentProcessor')
+
+    // Validate request body
+    const linkSchema = z.object({
+      enabled: z.boolean().optional(),
+      weight: z.number().min(0.1).max(2.0).optional(),
+      access_level: z.enum(['read', 'summary', 'reference_only']).optional()
+    })
+
+    const options = linkSchema.parse(req.body)
+
+    // Check persona exists
+    const persona = db.prepare('SELECT * FROM personas WHERE id = ?').get(persona_id) as any
+    if (!persona) {
+      return err(res, 404, 'NOT_FOUND', `Persona with ID ${persona_id} not found`)
+    }
+
+    // Check dataset exists
+    const dataset = await documentProcessor.getDataset(dataset_id)
+    if (!dataset) {
+      return err(res, 404, 'NOT_FOUND', `Dataset with ID ${dataset_id} not found`)
+    }
+
+    // Link dataset to persona
+    await documentProcessor.linkDatasetToPersona(dataset_id, persona_id, options)
+
+    return okItem(res, {
+      persona_id,
+      dataset_id,
+      linked: true,
+      settings: {
+        enabled: options.enabled !== undefined ? options.enabled : true,
+        weight: options.weight || 1.0,
+        access_level: options.access_level || 'read'
+      },
+      message: `Dataset "${dataset.name}" linked to persona "${persona.name}"`
+    }, 201)
+  } catch (error) {
+    return handleRouterError(res, error, 'link dataset to persona')
+  }
+})
+
+/**
+ * PUT /api/personas/:id/datasets/:datasetId
+ * Update persona-dataset link settings
+ */
+router.put('/:id/datasets/:datasetId', async (req, res) => {
+  try {
+    const { id: persona_id, datasetId: dataset_id } = req.params
+    const { documentProcessor } = await import('../logic/documentProcessor')
+
+    // Validate request body
+    const updateSchema = z.object({
+      enabled: z.boolean().optional(),
+      weight: z.number().min(0.1).max(2.0).optional(),
+      access_level: z.enum(['read', 'summary', 'reference_only']).optional()
+    })
+
+    const updates = updateSchema.parse(req.body)
+
+    // Check link exists
+    const link = db.prepare(`
+      SELECT * FROM persona_datasets 
+      WHERE persona_id = ? AND dataset_id = ?
+    `).get(persona_id, dataset_id) as any
+
+    if (!link) {
+      return err(res, 404, 'NOT_FOUND', `Dataset ${dataset_id} is not linked to persona ${persona_id}`)
+    }
+
+    // Update settings
+    await documentProcessor.updatePersonaDatasetLink(dataset_id, persona_id, updates)
+
+    // Get updated link
+    const updatedLink = db.prepare(`
+      SELECT * FROM persona_datasets 
+      WHERE persona_id = ? AND dataset_id = ?
+    `).get(persona_id, dataset_id) as any
+
+    return okItem(res, {
+      persona_id,
+      dataset_id,
+      previous_settings: {
+        enabled: Boolean(link.enabled),
+        weight: link.weight,
+        access_level: link.access_level
+      },
+      new_settings: {
+        enabled: Boolean(updatedLink.enabled),
+        weight: updatedLink.weight,
+        access_level: updatedLink.access_level
+      },
+      message: 'Dataset link settings updated successfully'
+    })
+  } catch (error) {
+    return handleRouterError(res, error, 'update persona dataset link')
+  }
+})
+
+/**
+ * DELETE /api/personas/:id/datasets/:datasetId
+ * Unlink a dataset from a persona
+ */
+router.delete('/:id/datasets/:datasetId', async (req, res) => {
+  try {
+    const { id: persona_id, datasetId: dataset_id } = req.params
+    const { documentProcessor } = await import('../logic/documentProcessor')
+
+    // Check link exists
+    const link = db.prepare(`
+      SELECT * FROM persona_datasets 
+      WHERE persona_id = ? AND dataset_id = ?
+    `).get(persona_id, dataset_id) as any
+
+    if (!link) {
+      return err(res, 404, 'NOT_FOUND', `Dataset ${dataset_id} is not linked to persona ${persona_id}`)
+    }
+
+    // Unlink
+    await documentProcessor.unlinkDatasetFromPersona(dataset_id, persona_id)
+
+    return okItem(res, {
+      persona_id,
+      dataset_id,
+      unlinked: true,
+      message: 'Dataset unlinked from persona successfully'
+    })
+  } catch (error) {
+    return handleRouterError(res, error, 'unlink dataset from persona')
+  }
+})
+
 export default router
+
