@@ -6,6 +6,22 @@
         <HamburgerMenu />
       </div>
       <h1 class="page-title">Persona Manager</h1>
+      <div class="header-actions">
+        <button 
+          class="primary-button"
+          @click="showTemplateModal = true"
+        >
+          <span class="plus-icon">⚡</span>
+          Create from Template
+        </button>
+        <button 
+          class="secondary-button"
+          @click="showCreateModal = true"
+        >
+          <span class="plus-icon">✨</span>
+          Create Custom
+        </button>
+      </div>
     </div>
 
     <div class="personas-grid" v-if="personas.length > 0">
@@ -16,15 +32,25 @@
         :class="{ 'is-default': isDefaultPersona(persona.id) }"
       >
         <div class="persona-header">
-          <div class="persona-icon">{{ persona.icon || '🤖' }}</div>
+          <div class="persona-icon" :style="{ background: persona.color_theme || '#6366f1' }">
+            {{ persona.icon || '🤖' }}
+          </div>
           <div class="persona-info">
             <div class="persona-title">
               <h3 class="persona-name">{{ persona.name }}</h3>
-              <span v-if="getPersonaBadge(persona.id)" class="default-badge">
-                {{ getPersonaBadge(persona.id) }}
-              </span>
+              <div class="persona-badges">
+                <span v-if="getPersonaBadge(persona.id)" class="default-badge">
+                  {{ getPersonaBadge(persona.id) }}
+                </span>
+                <span v-if="persona.specialty" class="specialty-badge">
+                  {{ persona.specialty }}
+                </span>
+              </div>
             </div>
             <p class="persona-id">ID: {{ persona.id }}</p>
+            <p v-if="persona.therapeutic_focus" class="therapeutic-focus">
+              {{ truncateText(persona.therapeutic_focus, 80) }}
+            </p>
           </div>
           <div class="persona-actions">
             <button
@@ -33,6 +59,14 @@
               :title="`Edit ${persona.name}`"
             >
               ✏️
+            </button>
+            <button
+              v-if="!isDefaultPersona(persona.id)"
+              class="action-button delete"
+              @click="confirmDeletePersona(persona)"
+              :title="`Delete ${persona.name}`"
+            >
+              🗑️
             </button>
           </div>
         </div>
@@ -83,6 +117,107 @@
       @save="handlePersonaSave"
     />
 
+    <!-- Create Modal -->
+    <PersonaEditModal
+      :show="showCreateModal"
+      :isEditing="false"
+      :editingPersona="null"
+      @close="handleCreateModalClose"
+      @save="handlePersonaCreate"
+    />
+
+    <!-- Template Browser Modal -->
+    <div v-if="showTemplateModal" class="modal-overlay" @click="handleTemplateModalClose">
+      <div class="modal modal-wide" @click.stop>
+        <div class="modal-header">
+          <h2>Choose a Therapeutic Template</h2>
+          <button class="close-button" @click="handleTemplateModalClose">✕</button>
+        </div>
+        
+        <div class="modal-content">
+          <p class="modal-description">
+            Select a pre-configured therapeutic persona template to get started quickly with specialized mental health support.
+          </p>
+          
+          <div v-if="templates.length > 0" class="template-grid">
+            <div 
+              v-for="template in templates" 
+              :key="template.id"
+              class="template-card"
+              :class="{ selected: selectedTemplate?.id === template.id }"
+              @click="selectedTemplate = template"
+            >
+              <div class="template-icon" :style="{ background: template.color_theme }">
+                {{ template.icon }}
+              </div>
+              <h3 class="template-name">{{ template.name }}</h3>
+              <p class="template-specialty">{{ template.specialty }}</p>
+              <p class="template-description">{{ template.description }}</p>
+              <div class="template-tags" v-if="template.tags">
+                <span 
+                  v-for="tag in JSON.parse(template.tags || '[]').slice(0, 3)" 
+                  :key="tag"
+                  class="tag"
+                >
+                  {{ tag }}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div v-else-if="!loading" class="empty-templates">
+            <p>No therapeutic templates available.</p>
+          </div>
+          
+          <div v-if="loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading templates...</p>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button class="secondary-button" @click="handleTemplateModalClose">
+            Cancel
+          </button>
+          <button 
+            class="primary-button" 
+            :disabled="!selectedTemplate || submitting"
+            @click="createFromSelectedTemplate"
+          >
+            {{ submitting ? 'Creating...' : 'Create Persona' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteModal" class="modal-overlay" @click="handleDeleteModalClose">
+      <div class="modal modal-small" @click.stop>
+        <div class="modal-header">
+          <h2>Delete Persona</h2>
+          <button class="close-button" @click="handleDeleteModalClose">✕</button>
+        </div>
+        
+        <div class="modal-content">
+          <p>Are you sure you want to delete <strong>{{ personaToDelete?.name }}</strong>?</p>
+          <p class="warning-text">This action cannot be undone.</p>
+        </div>
+        
+        <div class="form-actions">
+          <button class="secondary-button" @click="handleDeleteModalClose">
+            Cancel
+          </button>
+          <button 
+            class="danger-button" 
+            :disabled="submitting"
+            @click="handlePersonaDelete"
+          >
+            {{ submitting ? 'Deleting...' : 'Delete Persona' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast notifications -->
     <div v-if="notification" class="toast" :class="notification.type">
       {{ notification.message }}
@@ -94,18 +229,23 @@
 import { ref, onMounted } from 'vue'
 import HamburgerMenu from '../HamburgerMenu.vue'
 import PersonaEditModal from './PersonaEditModal.vue'
-import type { Persona, PersonaCategory } from '../../../../backend/types/personas'
+import type { Persona, PersonaCategory, PersonaTemplate } from '../../../../backend/types/personas'
 import { usePersonaStore } from '../../composables/usePersonaStore'
 
 const personaStore = usePersonaStore()
 
 // State
-const { personas, loading, error } = personaStore
+const { personas, templates, loading, error } = personaStore
 const submitting = ref(false)
 
 // Modals
 const showEditModal = ref(false)
+const showCreateModal = ref(false)
+const showTemplateModal = ref(false)
+const showDeleteModal = ref(false)
 const personaToEdit = ref<Persona | null>(null)
+const personaToDelete = ref<Persona | null>(null)
+const selectedTemplate = ref<PersonaTemplate | null>(null)
 
 // Notification system
 const notification = ref<{ type: 'success' | 'error'; message: string } | null>(null)
@@ -147,6 +287,10 @@ function getCategoryLabel(category?: PersonaCategory): string {
       return '🚀 High Performance (Cloud Models)'
     case 'local':
       return '⚡ Fast & Private (Local Models)'
+    case 'therapy':
+      return '🧠 Therapeutic Assistant'
+    case 'general':
+      return '💬 General Purpose'
     default:
       return '🚀 High Performance (Cloud Models)'
   }
@@ -216,9 +360,105 @@ function handleModalClose() {
   personaToEdit.value = null
 }
 
+function handleCreateModalClose() {
+  showCreateModal.value = false
+}
+
+function handleTemplateModalClose() {
+  showTemplateModal.value = false
+  selectedTemplate.value = null
+}
+
+// Create new persona from scratch
+async function handlePersonaCreate(payload: PersonaPayload) {
+  submitting.value = true
+  try {
+    // Generate a unique ID for the new persona
+    const timestamp = Date.now()
+    const personaId = `persona-${timestamp}`
+    
+    const createPayload = {
+      id: personaId,
+      ...payload
+    }
+    await personaStore.createPersona(createPayload)
+    await personaStore.loadPersonas()
+
+    showNotification('success', 'Persona created successfully!')
+  } catch (error) {
+    console.error('Error creating persona:', error)
+    showNotification('error', error instanceof Error ? error.message : 'Failed to create persona')
+  } finally {
+    submitting.value = false
+    showCreateModal.value = false
+  }
+}
+
+// Create persona from selected template
+async function createFromSelectedTemplate() {
+  if (!selectedTemplate.value) return
+  
+  submitting.value = true
+  try {
+    // Generate a unique ID for the new persona
+    const timestamp = Date.now()
+    const personaId = `${selectedTemplate.value.id}-${timestamp}`
+    
+    const templateRequest = {
+      template_id: selectedTemplate.value.id,
+      persona_id: personaId
+    }
+    
+    await personaStore.createFromTemplate(templateRequest)
+    await personaStore.loadPersonas()
+
+    showNotification('success', `Created "${selectedTemplate.value.name}" persona successfully!`)
+  } catch (error) {
+    console.error('Error creating persona from template:', error)
+    showNotification('error', error instanceof Error ? error.message : 'Failed to create persona from template')
+  } finally {
+    submitting.value = false
+    showTemplateModal.value = false
+    selectedTemplate.value = null
+  }
+}
+
+// Delete confirmation and handling
+function confirmDeletePersona(persona: Persona) {
+  personaToDelete.value = persona
+  showDeleteModal.value = true
+}
+
+function handleDeleteModalClose() {
+  showDeleteModal.value = false
+  personaToDelete.value = null
+}
+
+async function handlePersonaDelete() {
+  if (!personaToDelete.value) return
+  
+  submitting.value = true
+  try {
+    await personaStore.deletePersona(personaToDelete.value.id)
+    await personaStore.loadPersonas()
+
+    showNotification('success', `Deleted "${personaToDelete.value.name}" successfully!`)
+  } catch (error) {
+    console.error('Error deleting persona:', error)
+    showNotification('error', error instanceof Error ? error.message : 'Failed to delete persona')
+  } finally {
+    submitting.value = false
+    showDeleteModal.value = false
+    personaToDelete.value = null
+  }
+}
+
 // Lifecycle
 onMounted(async () => {
-  await personaStore.loadPersonas()
+  await Promise.all([
+    personaStore.loadPersonas(),
+    personaStore.loadTemplates()
+  ])
 })
 </script>
 
@@ -239,6 +479,13 @@ onMounted(async () => {
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: var(--border);
+}
+
+.header-actions {
+  grid-column: 3;
+  justify-self: end;
+  display: flex;
+  gap: 0.75rem;
 }
 
 /* Hamburger menu in header */
@@ -353,9 +600,16 @@ onMounted(async () => {
 
 .persona-title {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  justify-content: space-between;
   margin-bottom: 0.25rem;
+}
+
+.persona-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
 }
 
 .default-badge {
@@ -367,6 +621,23 @@ onMounted(async () => {
   border-radius: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.specialty-badge {
+  background: var(--accent-teal);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.75rem;
+}
+
+.therapeutic-focus {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin: 0.25rem 0 0 0;
+  line-height: 1.3;
 }
 
 .persona-actions {
@@ -431,6 +702,18 @@ onMounted(async () => {
   background: var(--accent-green);
   border-color: var(--accent-green);
   color: var(--bg-main);
+}
+
+.category-therapy {
+  background: var(--accent-teal);
+  border-color: var(--accent-teal);
+  color: white;
+}
+
+.category-general {
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+  color: white;
 }
 
 .persona-description {
@@ -689,5 +972,102 @@ onMounted(async () => {
     left: 1rem;
     bottom: 1rem;
   }
+}
+
+/* Template Browser Styles */
+.modal-description {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.template-card {
+  background: var(--bg-glass);
+  border: var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.template-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-blue);
+  box-shadow: var(--shadow-soft);
+}
+
+.template-card.selected {
+  border-color: var(--accent-blue);
+  background: color-mix(in oklab, var(--bg-panel) 80%, var(--accent-blue) 20%);
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.template-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  border-radius: 50%;
+  margin: 0 auto 0.75rem;
+  color: white;
+  background: var(--accent-blue);
+}
+
+.template-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin: 0 0 0.5rem;
+}
+
+.template-specialty {
+  font-size: 0.85rem;
+  color: var(--accent-blue);
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.template-description {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0 0 1rem;
+}
+
+.template-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+.tag {
+  background: var(--accent-blue);
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.empty-templates {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.modal-wide {
+  width: 900px;
+  max-width: calc(100vw - 48px);
 }
 </style>

@@ -53,7 +53,57 @@
               >
                 <option value="cloud">🚀 Cloud Models</option>
                 <option value="local">⚡ Local Models</option>
+                <option value="therapy">🧠 Therapeutic Assistant</option>
+                <option value="general">💬 General Purpose</option>
               </select>
+            </div>
+
+            <!-- Therapeutic Specialty (when category is therapy) -->
+            <div v-if="formData.category === 'therapy'" class="form-group">
+              <label for="persona-specialty">Therapeutic Specialty</label>
+              <select
+                id="persona-specialty"
+                v-model="formData.specialty"
+                class="form-select"
+              >
+                <option value="">Select specialty...</option>
+                <option value="Cognitive Behavioral Therapy">Cognitive Behavioral Therapy (CBT)</option>
+                <option value="Dialectical Behavior Therapy">Dialectical Behavior Therapy (DBT)</option>
+                <option value="Mindfulness & Meditation">Mindfulness & Meditation</option>
+                <option value="Trauma-Informed Care">Trauma-Informed Care</option>
+                <option value="General Mental Health">General Mental Health</option>
+              </select>
+            </div>
+
+            <!-- Therapeutic Focus -->
+            <div v-if="formData.category === 'therapy'" class="form-group">
+              <label for="persona-focus">Therapeutic Focus</label>
+              <textarea
+                id="persona-focus"
+                v-model.trim="formData.therapeutic_focus"
+                placeholder="Describe the specific therapeutic focus and approach..."
+                class="form-textarea"
+                rows="2"
+              />
+            </div>
+
+            <!-- Color Theme -->
+            <div class="form-group">
+              <label for="persona-color">Color Theme</label>
+              <div class="color-picker-group">
+                <input
+                  id="persona-color"
+                  v-model="formData.color_theme"
+                  type="color"
+                  class="color-input"
+                />
+                <input
+                  v-model="formData.color_theme"
+                  type="text"
+                  placeholder="#6366f1"
+                  class="form-input color-text"
+                />
+              </div>
             </div>
 
             <div class="form-group">
@@ -241,6 +291,11 @@ const emit = defineEmits<{
     category: PersonaCategory
     description: string
     prompt: string
+    // Enhanced fields
+    specialty?: string
+    therapeutic_focus?: string
+    color_theme?: string
+    tags?: string
     settings?: Partial<{
       temperature: number
       maxTokens: number
@@ -260,6 +315,12 @@ const formData = reactive({
   category: 'cloud' as PersonaCategory,
   description: '',
   prompt: '',
+  // Enhanced therapeutic fields
+  specialty: '',
+  therapeutic_focus: '',
+  color_theme: '#6366f1',
+  tags: '',
+  // Model settings
   temperature: null as number | null,
   maxTokens: null as number | null,
   topP: null as number | null,
@@ -292,6 +353,10 @@ function resetForm() {
     category: 'cloud' as PersonaCategory,
     description: '',
     prompt: '',
+    specialty: '',
+    therapeutic_focus: '',
+    color_theme: '#6366f1',
+    tags: '',
     temperature: null as number | null,
     maxTokens: null as number | null,
     topP: null as number | null,
@@ -320,6 +385,11 @@ async function handleSubmit() {
       category: formData.category,
       description: formData.description.trim(),
       prompt: formData.prompt.trim(),
+      // Enhanced therapeutic fields
+      ...(formData.specialty && { specialty: formData.specialty }),
+      ...(formData.therapeutic_focus && { therapeutic_focus: formData.therapeutic_focus.trim() }),
+      ...(formData.color_theme && { color_theme: formData.color_theme }),
+      ...(formData.tags && { tags: formData.tags.trim() }),
       ...(Object.keys(settings).length > 0 && { settings })
     }
 
@@ -342,6 +412,10 @@ watch(() => props.show, (newShow) => {
         category: (p.category || 'cloud') as PersonaCategory,
         description: p.description || '',
         prompt: p.prompt,
+        specialty: p.specialty || '',
+        therapeutic_focus: p.therapeutic_focus || '',
+        color_theme: p.color_theme || '#6366f1',
+        tags: p.tags || '',
         temperature: p.settings?.temperature ?? null,
         maxTokens: p.settings?.maxTokens ?? null,
         topP: p.settings?.topP ?? null,
@@ -703,6 +777,29 @@ watch(() => props.show, (newShow) => {
 .setting-description {
   color: var(--text-muted);
   font-size: 12px;
+}
+
+/* Color Picker */
+.color-picker-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.color-input {
+  width: 50px;
+  height: 40px;
+  border: var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+}
+
+.color-text {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 13px;
 }
 
 /* Stop Sequences */

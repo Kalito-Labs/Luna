@@ -3,7 +3,7 @@
 import { Router } from 'express'
 import { z } from 'zod'
 import { db } from '../db/db'
-import type { Persona } from '../types/personas'
+import type { Persona, PersonaTemplate } from '../types/personas'
 import { okList, okItem, err } from '../utils/apiContract'
 import { handleRouterError } from '../utils/routerHelpers'
 
@@ -17,7 +17,15 @@ const createPersonaSchema = z.object({
   prompt: z.string().min(1),
   description: z.string().optional(),
   icon: z.string().optional(),
-  category: z.enum(['cloud', 'local']).optional(),
+  category: z.enum(['cloud', 'local', 'general', 'therapy']).optional(),
+  // Enhanced therapeutic fields
+  specialty: z.string().optional(),
+  therapeutic_focus: z.string().optional(),
+  template_id: z.string().optional(),
+  created_from: z.enum(['template', 'duplicate', 'manual']).optional(),
+  tags: z.string().optional(), // JSON array
+  color_theme: z.string().optional(),
+  builtin_data_access: z.string().optional(), // JSON object
   settings: z.object({
     temperature: z.number().min(0.1).max(2.0).optional(),
     maxTokens: z.number().min(50).max(4000).optional(),
@@ -31,12 +39,36 @@ const updatePersonaSchema = z.object({
   prompt: z.string().min(1).optional(),
   description: z.string().optional(),
   icon: z.string().optional(),
-  category: z.enum(['cloud', 'local']).optional(),
+  category: z.enum(['cloud', 'local', 'general', 'therapy']).optional(),
+  // Enhanced therapeutic fields
+  specialty: z.string().optional(),
+  therapeutic_focus: z.string().optional(),
+  tags: z.string().optional(),
+  color_theme: z.string().optional(),
+  is_favorite: z.boolean().optional(),
+  builtin_data_access: z.string().optional(),
   settings: z.object({
     temperature: z.number().min(0.1).max(2.0).optional(),
     maxTokens: z.number().min(50).max(4000).optional(),
     topP: z.number().min(0.0).max(1.0).optional(),
     repeatPenalty: z.number().min(0.8).max(2.0).optional(),
+  }).optional(),
+})
+
+const createFromTemplateSchema = z.object({
+  template_id: z.string().min(1),
+  persona_id: z.string().min(1).max(50),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  customizations: z.object({
+    prompt_modifications: z.string().optional(),
+    temperature: z.number().min(0.1).max(2.0).optional(),
+    maxTokens: z.number().min(50).max(4000).optional(),
+    topP: z.number().min(0.0).max(1.0).optional(),
+    repeatPenalty: z.number().min(0.8).max(2.0).optional(),
+    color_theme: z.string().optional(),
+    tags: z.string().optional(),
+    builtin_data_access: z.string().optional(),
   }).optional(),
 })
 
@@ -51,6 +83,17 @@ function toPersonaWithSettings(row: any) {
     icon: row.icon,
     category: row.category,
     is_default: !!row.is_default,
+    // Enhanced therapeutic fields
+    specialty: row.specialty,
+    therapeutic_focus: row.therapeutic_focus,
+    template_id: row.template_id,
+    created_from: row.created_from,
+    tags: row.tags,
+    color_theme: row.color_theme,
+    is_favorite: !!row.is_favorite,
+    usage_count: row.usage_count || 0,
+    last_used_at: row.last_used_at,
+    builtin_data_access: row.builtin_data_access,
     settings: {
       temperature: row.temperature ?? 0.7,
       maxTokens: row.maxTokens ?? 1000,
@@ -83,6 +126,8 @@ router.get('/', (_req, res) => {
     const raw = db.prepare(
       `
       SELECT id, name, prompt, description, icon, category, is_default,
+             specialty, therapeutic_focus, template_id, created_from,
+             tags, color_theme, is_favorite, usage_count, last_used_at, builtin_data_access,
              temperature, maxTokens, topP, repeatPenalty, created_at, updated_at
       FROM personas
       ORDER BY created_at ASC
@@ -96,6 +141,110 @@ router.get('/', (_req, res) => {
   }
 })
 
+// GET /api/personas/templates - List all available persona templates
+router.get('/templates', (_req, res) => {
+  try {
+    const templates = db.prepare(`
+      SELECT id, name, description, icon, color_theme, specialty, therapeutic_focus,
+             category, prompt_template, temperature, maxTokens, topP, repeatPenalty,
+             tags, key_features, best_for, therapeutic_approaches, 
+             is_system, is_active, usage_count, created_at, updated_at
+      FROM persona_templates 
+      WHERE is_active = 1
+      ORDER BY is_system DESC, name ASC
+    `).all() as PersonaTemplate[]
+
+    return okList(res, templates)
+  } catch (error) {
+    return handleRouterError(res, error, 'list persona templates')
+  }
+})
+
+// POST /api/personas/from-template - Create a persona from a template
+router.post('/from-template', (req, res) => {
+  try {
+    const data = createFromTemplateSchema.parse(req.body)
+    
+    // Get the template
+    const template = db.prepare(`
+      SELECT * FROM persona_templates WHERE id = ? AND is_active = 1
+    `).get(data.template_id) as PersonaTemplate | undefined
+
+    if (!template) {
+      return err(res, 404, 'NOT_FOUND', 'Template not found')
+    }
+
+    // Check if persona ID already exists
+    const existing = db.prepare('SELECT id FROM personas WHERE id = ?').get(data.persona_id)
+    if (existing) {
+      return err(res, 409, 'CONFLICT', 'Persona with this ID already exists')
+    }
+
+    // Build the persona from template with customizations
+    const customizations = data.customizations || {}
+    const personaName = data.name || template.name
+    const personaDescription = data.description || template.description
+    
+    // Apply prompt modifications if provided
+    let finalPrompt = template.prompt_template
+    if (customizations.prompt_modifications) {
+      finalPrompt += '\\n\\n' + customizations.prompt_modifications
+    }
+
+    // Create persona with template data + customizations
+    const now = new Date().toISOString()
+    const insertResult = db.prepare(`
+      INSERT INTO personas (
+        id, name, prompt, description, icon, category,
+        temperature, maxTokens, topP, repeatPenalty,
+        specialty, therapeutic_focus, template_id, created_from,
+        tags, color_theme, builtin_data_access,
+        created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      data.persona_id,
+      personaName,
+      finalPrompt,
+      personaDescription,
+      template.icon,
+      template.category,
+      customizations.temperature || template.temperature,
+      customizations.maxTokens || template.maxTokens,
+      customizations.topP || template.topP,
+      customizations.repeatPenalty || template.repeatPenalty,
+      template.specialty,
+      template.therapeutic_focus,
+      template.id,
+      'template',
+      customizations.tags || template.tags,
+      customizations.color_theme || template.color_theme,
+      customizations.builtin_data_access || '{"journal_entries": true, "mood_data": false}',
+      now,
+      now
+    )
+
+    // Update template usage count
+    db.prepare('UPDATE persona_templates SET usage_count = usage_count + 1 WHERE id = ?')
+      .run(template.id)
+
+    // Fetch the created persona
+    const createdPersona = db.prepare(`
+      SELECT id, name, prompt, description, icon, category, is_default,
+             specialty, therapeutic_focus, template_id, created_from,
+             tags, color_theme, is_favorite, usage_count, last_used_at, builtin_data_access,
+             temperature, maxTokens, topP, repeatPenalty, created_at, updated_at
+      FROM personas WHERE id = ?
+    `).get(data.persona_id)
+
+    return okItem(res, {
+      persona: toPersonaWithSettings(createdPersona),
+      template: template
+    })
+  } catch (error) {
+    return handleRouterError(res, error, 'create persona from template')
+  }
+})
+
 // GET /api/personas/:id - Get a specific persona
 router.get('/:id', (req, res) => {
   const { id } = req.params
@@ -103,6 +252,8 @@ router.get('/:id', (req, res) => {
     const row = db.prepare(
       `
       SELECT id, name, prompt, description, icon, category, is_default,
+             specialty, therapeutic_focus, template_id, created_from,
+             tags, color_theme, is_favorite, usage_count, last_used_at, builtin_data_access,
              temperature, maxTokens, topP, repeatPenalty, created_at, updated_at
       FROM personas
       WHERE id = ?
@@ -260,6 +411,112 @@ router.delete('/:id', (req, res) => {
     }
   } catch (error) {
     return handleRouterError(res, error, 'delete persona', { id })
+  }
+})
+
+/* -------------------------- Template Routes ------------------------- */
+
+// GET /api/personas/templates - List all available persona templates
+router.get('/templates', (_req, res) => {
+  try {
+    const templates = db.prepare(`
+      SELECT id, name, description, icon, color_theme, specialty, therapeutic_focus,
+             category, prompt_template, temperature, maxTokens, topP, repeatPenalty,
+             tags, key_features, best_for, therapeutic_approaches, 
+             is_system, is_active, usage_count, created_at, updated_at
+      FROM persona_templates 
+      WHERE is_active = 1
+      ORDER BY is_system DESC, name ASC
+    `).all() as PersonaTemplate[]
+
+    return okList(res, templates)
+  } catch (error) {
+    return handleRouterError(res, error, 'list persona templates')
+  }
+})
+
+// POST /api/personas/from-template - Create a persona from a template
+router.post('/from-template', (req, res) => {
+  try {
+    const data = createFromTemplateSchema.parse(req.body)
+    
+    // Get the template
+    const template = db.prepare(`
+      SELECT * FROM persona_templates WHERE id = ? AND is_active = 1
+    `).get(data.template_id) as PersonaTemplate | undefined
+
+    if (!template) {
+      return err(res, 404, 'NOT_FOUND', 'Template not found')
+    }
+
+    // Check if persona ID already exists
+    const existing = db.prepare('SELECT id FROM personas WHERE id = ?').get(data.persona_id)
+    if (existing) {
+      return err(res, 409, 'CONFLICT', 'Persona with this ID already exists')
+    }
+
+    // Build the persona from template with customizations
+    const customizations = data.customizations || {}
+    const personaName = data.name || template.name
+    const personaDescription = data.description || template.description
+    
+    // Apply prompt modifications if provided
+    let finalPrompt = template.prompt_template
+    if (customizations.prompt_modifications) {
+      finalPrompt += '\\n\\n' + customizations.prompt_modifications
+    }
+
+    // Create persona with template data + customizations
+    const now = new Date().toISOString()
+    const insertResult = db.prepare(`
+      INSERT INTO personas (
+        id, name, prompt, description, icon, category,
+        temperature, maxTokens, topP, repeatPenalty,
+        specialty, therapeutic_focus, template_id, created_from,
+        tags, color_theme, builtin_data_access,
+        created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      data.persona_id,
+      personaName,
+      finalPrompt,
+      personaDescription,
+      template.icon,
+      template.category,
+      customizations.temperature || template.temperature,
+      customizations.maxTokens || template.maxTokens,
+      customizations.topP || template.topP,
+      customizations.repeatPenalty || template.repeatPenalty,
+      template.specialty,
+      template.therapeutic_focus,
+      template.id,
+      'template',
+      customizations.tags || template.tags,
+      customizations.color_theme || template.color_theme,
+      customizations.builtin_data_access || '{"journal_entries": true, "mood_data": false}',
+      now,
+      now
+    )
+
+    // Update template usage count
+    db.prepare('UPDATE persona_templates SET usage_count = usage_count + 1 WHERE id = ?')
+      .run(template.id)
+
+    // Fetch the created persona
+    const createdPersona = db.prepare(`
+      SELECT id, name, prompt, description, icon, category, is_default,
+             specialty, therapeutic_focus, template_id, created_from,
+             tags, color_theme, builtin_data_access,
+             temperature, maxTokens, topP, repeatPenalty, created_at, updated_at
+      FROM personas WHERE id = ?
+    `).get(data.persona_id)
+
+    return okItem(res, {
+      persona: toPersonaWithSettings(createdPersona),
+      template: template
+    })
+  } catch (error) {
+    return handleRouterError(res, error, 'create persona from template')
   }
 })
 
