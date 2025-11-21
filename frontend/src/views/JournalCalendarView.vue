@@ -377,13 +377,16 @@ onMounted(() => {
 
 <style scoped>
 .calendar-view {
-  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
   background: linear-gradient(135deg, 
-    rgba(15, 23, 42, 0.95) 0%, 
-    rgba(30, 41, 59, 0.95) 100%);
+    rgba(15, 23, 42, 0.98) 0%, 
+    rgba(30, 41, 59, 0.95) 50%,
+    rgba(67, 56, 202, 0.08) 100%);
   display: flex;
   flex-direction: column;
-  padding-bottom: 2rem;
+  overflow: hidden;
+  position: relative;
 }
 
 /* Header */
@@ -391,17 +394,33 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
-  background: rgba(30, 41, 59, 0.8);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.25rem 1.5rem;
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(25px);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
   color: rgba(255, 255, 255, 0.95);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.calendar-header::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(139, 92, 246, 0.6), 
+    transparent);
 }
 
 .calendar-header h2 {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 500;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .close-btn {
@@ -418,30 +437,38 @@ onMounted(() => {
 }
 
 .close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
 }
 
 .close-btn svg {
   width: 24px;
   height: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .today-btn {
-  background: rgba(59, 130, 246, 0.2);
-  border: 1px solid rgba(59, 130, 246, 0.5);
-  color: rgba(255, 255, 255, 0.9);
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.2) 0%, 
+    rgba(124, 58, 237, 0.25) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  color: rgba(255, 255, 255, 0.95);
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
 }
 
 .today-btn:hover {
-  background: rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.35) 0%, 
+    rgba(124, 58, 237, 0.4) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+  border-color: rgba(139, 92, 246, 0.6);
 }
 
 /* Month Navigation */
@@ -450,12 +477,14 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem;
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  backdrop-filter: blur(25px);
   margin: 1rem 1.5rem;
-  border-radius: 1rem;
+  border-radius: 1.25rem;
   color: rgba(255, 255, 255, 0.95);
+  flex-shrink: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .current-month {
@@ -465,21 +494,23 @@ onMounted(() => {
 }
 
 .nav-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: rgba(255, 255, 255, 0.95);
   cursor: pointer;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
+  padding: 0.875rem;
+  border-radius: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
+  background: rgba(139, 92, 246, 0.25);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .nav-btn svg {
@@ -489,15 +520,25 @@ onMounted(() => {
 
 /* Calendar Container */
 .calendar-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 0 1.5rem;
   margin-bottom: 1rem;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .weekday-headers {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0.75rem;
+  padding: 0.75rem 0.5rem;
+  border: 1px solid rgba(139, 92, 246, 0.1);
 }
 
 .weekday {
@@ -505,18 +546,24 @@ onMounted(() => {
   padding: 0.5rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(196, 181, 253, 0.85);
+  letter-spacing: 0.02em;
 }
 
 .calendar-grid {
+  flex: 1;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
   gap: 0.5rem;
-  background: rgba(30, 41, 59, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 0.5rem;
-  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  backdrop-filter: blur(25px);
+  padding: 1rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .calendar-day {
@@ -544,18 +591,21 @@ onMounted(() => {
 }
 
 .calendar-day.today {
-  border-color: rgba(59, 130, 246, 0.8);
-  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.8);
+  background: rgba(139, 92, 246, 0.2);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .calendar-day.has-entry {
-  background: rgba(59, 130, 246, 0.15);
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
 }
 
 .calendar-day.selected {
-  border-color: rgba(59, 130, 246, 0.9);
-  background: rgba(59, 130, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.9);
+  background: rgba(139, 92, 246, 0.3);
   transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
 }
 
 .day-number {
@@ -567,19 +617,23 @@ onMounted(() => {
 .check-indicator {
   position: absolute;
   bottom: 0.25rem;
-  width: 16px;
-  height: 16px;
-  background: rgba(59, 130, 246, 0.8);
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.9) 0%, 
+    rgba(124, 58, 237, 0.95) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4);
 }
 
 .check-indicator svg {
   width: 12px;
   height: 12px;
   color: white;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 
 /* Selected Day Panel */
@@ -638,30 +692,61 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  padding: 0 1.5rem;
+  padding: 0 1.5rem 1.5rem;
+  flex-shrink: 0;
 }
 
 .stat-card {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 1.25rem;
-  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  backdrop-filter: blur(25px);
+  padding: 1.5rem;
+  border-radius: 1.25rem;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(139, 92, 246, 0.4), 
+    transparent);
+}
+
+.stat-card:hover {
+  border-color: rgba(139, 92, 246, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
 .stat-value {
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.95);
-  margin-bottom: 0.25rem;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(196, 181, 253, 0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
 }
 
 .stat-label {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
+  font-size: 0.875rem;
+  color: rgba(196, 181, 253, 0.75);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* Loading Overlay */
@@ -689,6 +774,30 @@ onMounted(() => {
   to { transform: rotate(360deg); }
 }
 
+/* Enhanced scrollbar for calendar grid */
+.calendar-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.calendar-grid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.calendar-grid::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, 
+    rgba(139, 92, 246, 0.6), 
+    rgba(124, 58, 237, 0.7));
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.calendar-grid::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, 
+    rgba(139, 92, 246, 0.8), 
+    rgba(124, 58, 237, 0.9));
+}
+
 /* Custom scrollbar for selected day panel */
 .selected-day-panel::-webkit-scrollbar {
   width: 10px;
@@ -714,8 +823,28 @@ onMounted(() => {
 
 /* Responsive */
 @media (max-width: 640px) {
+  .calendar-container {
+    padding: 0 1rem;
+  }
+
   .calendar-grid {
     gap: 0.25rem;
+    padding: 0.75rem;
+    grid-template-rows: repeat(6, minmax(40px, 1fr));
+  }
+
+  .weekday-headers {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .weekday {
+    font-size: 0.8rem;
+    padding: 0.375rem;
+  }
+
+  .calendar-day {
+    min-height: 40px;
   }
 
   .day-number {
@@ -724,10 +853,16 @@ onMounted(() => {
 
   .monthly-stats {
     grid-template-columns: 1fr;
+    padding: 0 1rem 1.5rem;
   }
 
   .current-month {
     font-size: 1.25rem;
+  }
+
+  .month-navigation {
+    margin: 0.75rem 1rem;
+    padding: 1.25rem;
   }
 }
 </style>

@@ -127,7 +127,7 @@ onMounted(() => {
   margin-bottom: 1.7em;
   width: 100%;
   max-width: 900px;
-  gap: 1.5em;
+  gap: 1em;
   background: rgba(12, 14, 18, 0.54);
   border-radius: 1.15em;
   box-shadow:
@@ -136,7 +136,7 @@ onMounted(() => {
   backdrop-filter: blur(10px) saturate(160%);
   -webkit-backdrop-filter: blur(10px) saturate(160%);
   border: 1.5px solid rgba(66, 72, 110, 0.18);
-  padding: 2.8em 3em;
+  padding: 1em 1em;
   transition: background 0.2s;
 }
 
@@ -152,7 +152,7 @@ onMounted(() => {
   -webkit-backdrop-filter: blur(8px) saturate(140%);
   color: var(--color-text);
   font-family: var(--font-family);
-  padding: 2.5em 2em;
+  padding: 1em 2em;
   width: 100%;
   text-align: center;
   position: relative;

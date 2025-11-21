@@ -165,16 +165,30 @@ const getMoodEmoji = (mood: MoodType): string => {
 /* Modal Container */
 .modal-container {
   background: rgba(30, 41, 59, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-radius: 1.5rem;
-  max-width: 600px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  backdrop-filter: blur(30px);
+  border-radius: 1.75rem;
+  max-width: 650px;
   width: 100%;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
   overflow: hidden;
+  position: relative;
+}
+
+.modal-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(139, 92, 246, 0.6), 
+    transparent);
 }
 
 /* Modal Header */
@@ -182,33 +196,40 @@ const getMoodEmoji = (mood: MoodType): string => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(59, 130, 246, 0.15);
+  padding: 1.75rem;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.12) 0%, 
+    rgba(124, 58, 237, 0.08) 100%);
   color: rgba(255, 255, 255, 0.95);
+  position: relative;
 }
 
 .modal-header h3 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 .close-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .close-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .close-btn svg {
@@ -237,20 +258,40 @@ const getMoodEmoji = (mood: MoodType): string => {
 
 /* Entry Card */
 .entry-card {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 1rem;
-  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  backdrop-filter: blur(20px);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.entry-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(139, 92, 246, 0.1), 
+    transparent);
+  transition: left 0.5s ease;
+}
+
+.entry-card:hover::before {
+  left: 100%;
 }
 
 .entry-card:hover {
-  background: rgba(15, 23, 42, 0.8);
-  border-color: rgba(59, 130, 246, 0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 
 .entry-header {
@@ -288,18 +329,26 @@ const getMoodEmoji = (mood: MoodType): string => {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .mood-tag {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.25rem 0.75rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
+  padding: 0.375rem 0.875rem;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 1.25rem;
   font-size: 0.85rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.entry-card:hover .mood-tag {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
 }
 
 .mood-emoji {
@@ -314,7 +363,8 @@ const getMoodEmoji = (mood: MoodType): string => {
 
 .word-count {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(196, 181, 253, 0.7);
+  font-weight: 500;
 }
 
 /* Modal Footer */
@@ -329,22 +379,29 @@ const getMoodEmoji = (mood: MoodType): string => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  background: rgba(59, 130, 246, 0.2);
-  border: 1px solid rgba(59, 130, 246, 0.5);
-  color: rgba(255, 255, 255, 0.9);
-  border-radius: 0.75rem;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.2) 0%, 
+    rgba(124, 58, 237, 0.25) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  color: rgba(255, 255, 255, 0.95);
+  border-radius: 1rem;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  letter-spacing: 0.01em;
 }
 
 .btn-new-entry:hover {
-  background: rgba(59, 130, 246, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.35) 0%, 
+    rgba(124, 58, 237, 0.4) 100%);
+  border-color: rgba(139, 92, 246, 0.6);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.4);
 }
 
 .btn-new-entry svg {
