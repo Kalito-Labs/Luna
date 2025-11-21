@@ -9,7 +9,19 @@ import {
 } from './api'
 
 /** Persona categories map 1:1 with model families you expose in UI */
-export type PersonaCategory = 'cloud' | 'local'
+export type PersonaCategory = 'cloud' | 'local' | 'general' | 'therapy'
+
+/** Therapeutic specialties for mental health personas */
+export type TherapeuticSpecialty = 
+  | 'Cognitive Behavioral Therapy'
+  | 'Dialectical Behavior Therapy'
+  | 'Mindfulness & Meditation'
+  | 'Trauma-Informed Care'
+  | 'General Mental Health'
+  | 'General AI Assistant'
+
+/** How a persona was created - tracking origin for better UX */
+export type PersonaCreatedFrom = 'template' | 'duplicate' | 'manual'
 
 /** Tuning knobs your adapters understand (kept sparse/optional) */
 export interface PersonaSettings {
@@ -34,10 +46,41 @@ export interface PromptTemplate {
 }
 
 /**
+ * PersonaTemplate - therapeutic templates for creating specialized personas
+ * These are pre-configured therapeutic personas that users can instantiate
+ */
+export interface PersonaTemplate {
+  id: string
+  name: string
+  description: string
+  icon: string
+  color_theme: string
+  specialty: TherapeuticSpecialty
+  therapeutic_focus?: string
+  category: PersonaCategory
+  prompt_template: string
+  temperature: number
+  maxTokens: number
+  topP: number
+  repeatPenalty: number
+  tags?: string // JSON array
+  key_features?: string // JSON array of key features
+  best_for?: string // Description of ideal use cases
+  therapeutic_approaches?: string // JSON array
+  example_datasets?: string // JSON array of recommended document types
+  is_system: boolean // System template vs user-created
+  is_active: boolean // Template availability
+  usage_count: number // How many personas created from this
+  created_at: string
+  updated_at: string
+}
+
+/**
  * Canonical Persona record (DB + API)
  * - `category` is REQUIRED
  * - `is_default` flags system defaults (one per category, enforced by DB index)
  * - timestamps are required on the wire for consistency
+ * - Enhanced with therapeutic specialization and user experience fields
  */
 export interface Persona {
   id: string
@@ -50,6 +93,28 @@ export interface Persona {
   is_default: boolean
   created_at: string
   updated_at: string
+  
+  // === THERAPEUTIC ENHANCEMENT FIELDS ===
+  /** Therapeutic specialty (CBT, DBT, etc.) */
+  specialty?: TherapeuticSpecialty
+  /** Detailed therapeutic focus description */
+  therapeutic_focus?: string
+  /** Reference to the template this was created from */
+  template_id?: string
+  /** How this persona was created */
+  created_from?: PersonaCreatedFrom
+  /** JSON array of searchable tags */
+  tags?: string
+  /** UI theme color for this persona */
+  color_theme?: string
+  /** User favorite flag */
+  is_favorite?: boolean
+  /** Number of times this persona has been used */
+  usage_count?: number
+  /** Last interaction timestamp */
+  last_used_at?: string
+  /** JSON object defining what user data this persona can access */
+  builtin_data_access?: string
 }
 
 /** Client → Server: create request (ID is provided by UI) */
@@ -62,6 +127,15 @@ export interface CreatePersonaRequest {
   /** If omitted, backend may infer from active model; prefer sending explicitly */
   category?: PersonaCategory
   settings?: PersonaSettings
+  
+  // === ENHANCED FIELDS FOR PERSONA CREATION ===
+  specialty?: TherapeuticSpecialty
+  therapeutic_focus?: string
+  template_id?: string // If created from a template
+  created_from?: PersonaCreatedFrom
+  tags?: string
+  color_theme?: string
+  builtin_data_access?: string
 }
 
 /** Client → Server: update request (sparse/partial) */
@@ -72,6 +146,32 @@ export interface UpdatePersonaRequest {
   icon?: string
   category?: PersonaCategory
   settings?: PersonaSettings
+  
+  // === ENHANCED FIELDS FOR PERSONA UPDATES ===
+  specialty?: TherapeuticSpecialty
+  therapeutic_focus?: string
+  tags?: string
+  color_theme?: string
+  is_favorite?: boolean
+  builtin_data_access?: string
+}
+
+/** Client → Server: create persona from template */
+export interface CreateFromTemplateRequest {
+  template_id: string
+  persona_id: string
+  name?: string // Override template name
+  description?: string // Override template description
+  customizations?: {
+    prompt_modifications?: string
+    temperature?: number
+    maxTokens?: number
+    topP?: number
+    repeatPenalty?: number
+    color_theme?: string
+    tags?: string
+    builtin_data_access?: string
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -80,10 +180,21 @@ export interface UpdatePersonaRequest {
 
 export type PersonaItemResponse = ApiSuccessItem<Persona>
 export type PersonaListResponse = ApiSuccessList<Persona>
+export type PersonaTemplateItemResponse = ApiSuccessItem<PersonaTemplate>
+export type PersonaTemplateListResponse = ApiSuccessList<PersonaTemplate>
 
 export interface PersonaDeletedResponse {
   version: typeof API_CONTRACT_VERSION
   ok: true
+}
+
+export interface PersonaFromTemplateResponse {
+  version: typeof API_CONTRACT_VERSION
+  ok: true
+  data: {
+    persona: Persona
+    template: PersonaTemplate
+  }
 }
 
 /* ------------------------------------------------------------------ */

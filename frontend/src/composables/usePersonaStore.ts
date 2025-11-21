@@ -1,15 +1,20 @@
 import { ref } from 'vue'
 import type {
   Persona,
+  PersonaTemplate,
   CreatePersonaRequest,
   UpdatePersonaRequest,
+  CreateFromTemplateRequest,
   PersonaListResponse,
+  PersonaTemplateListResponse,
+  PersonaFromTemplateResponse,
 } from '../../../backend/types/personas'
 import type { ApiErrorResponse } from '../../../backend/types/api'
 import { apiUrl } from '../config/api'
 
 // Global persona state
 const personas = ref<Persona[]>([])
+const templates = ref<PersonaTemplate[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
@@ -87,15 +92,54 @@ export function usePersonaStore() {
     return personas.value.find(p => p.id === id)
   }
 
+  // Load persona templates from API
+  async function loadTemplates(): Promise<void> {
+    try {
+      const res = await fetch(apiUrl('/api/personas/templates'))
+      const json = await res.json()
+
+      if (!res.ok || 'error' in json) {
+        throw new Error(json.error?.message || 'Failed to load templates')
+      }
+
+      if ('data' in json && Array.isArray(json.data)) {
+        templates.value = json.data
+      }
+    } catch (err) {
+      console.error('Failed to load persona templates:', err)
+      error.value = err instanceof Error ? err.message : 'Unknown error'
+      templates.value = []
+    }
+  }
+
+  // Create persona from template
+  async function createFromTemplate(templateRequest: CreateFromTemplateRequest): Promise<void> {
+    const res = await fetch(apiUrl('/api/personas/from-template'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(templateRequest),
+    })
+    const json = await res.json()
+
+    if (!res.ok || 'error' in json) {
+      throw new Error(json.error?.message || 'Failed to create persona from template')
+    }
+
+    await loadPersonas() // Refresh the personas list
+  }
+
   return {
     // State
     personas,
+    templates,
     loading,
     error,
 
     // Actions
     loadPersonas,
+    loadTemplates,
     createPersona,
+    createFromTemplate,
     updatePersona,
     deletePersona,
     getPersonaById,
