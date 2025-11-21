@@ -75,12 +75,6 @@
         </div>
         <h3>Your journal awaits</h3>
         <p>Start your first entry to begin tracking your thoughts and moods</p>
-        <button @click="startNewEntry" class="empty-cta">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-          Create your first entry
-        </button>
       </div>
 
       <div v-else class="entries-grid">
@@ -347,8 +341,8 @@ onMounted(async () => {
 /* Floating Action Button */
 .fab {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: 3rem;
+  right: 3rem;
   width: 64px;
   height: 64px;
   background: linear-gradient(135deg, 
@@ -666,8 +660,10 @@ onMounted(async () => {
 /* Enhanced Responsive */
 @media (max-width: 640px) {
   .journal-home {
-    padding: 1rem;
-    gap: 1.25rem;
+    width: 100vw;
+    max-width: 100vw;
+    margin: 0 auto;
+    padding: 2rem;
   }
 
   .header-content {
