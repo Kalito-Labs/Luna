@@ -6,11 +6,13 @@ import KalitoHub from '../views/KalitoHub.vue'
 import JournalView from '../views/JournalView.vue'
 import JournalEntryView from '../views/JournalEntryView.vue'
 import JournalCalendarView from '../views/JournalCalendarView.vue'
+import LibraryView from '../views/LibraryView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
   { path: '/kalito', name: 'chat', component: ChatWorkspace },
   { path: '/personas', name: 'personas', component: PersonaManager },
+  { path: '/library', name: 'library', component: LibraryView },
   { path: '/kalito-hub', name: 'kalito-hub', component: KalitoHub },
   { path: '/journal', name: 'journal', component: JournalView },
   { path: '/journal/new', name: 'journal-new', component: JournalEntryView },

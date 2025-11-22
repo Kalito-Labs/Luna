@@ -9,7 +9,7 @@ import {
 } from './api'
 
 /** Persona categories map 1:1 with model families you expose in UI */
-export type PersonaCategory = 'cloud' | 'local' | 'general' | 'therapy'
+export type PersonaCategory = 'cloud' | 'local'
 
 /** Therapeutic specialties for mental health personas */
 export type TherapeuticSpecialty = 

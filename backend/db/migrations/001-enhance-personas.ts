@@ -252,7 +252,7 @@ Always ask permission before suggesting techniques. Respect boundaries completel
         color_theme: '#6366f1',
         specialty: 'General Mental Health',
         therapeutic_focus: 'Providing empathetic support, active listening, and general mental wellness guidance',
-        category: 'general',
+        category: 'cloud',
         prompt_template: `You are a warm, empathetic mental health companion. You provide supportive conversation, active listening, and general wellness guidance without adhering to a specific therapeutic modality.
 
 Your approach:

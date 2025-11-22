@@ -68,40 +68,33 @@
             </div>
 
             <div class="form-group">
-              <label for="persona-category">Category *</label>
+              <label for="persona-category">Model Type *</label>
               <select
                 id="persona-category"
                 v-model="formData.category"
                 class="form-select"
                 required
               >
-                <option value="cloud">🚀 Cloud Models</option>
-                <option value="local">⚡ Local Models</option>
-                <option value="therapy">🧠 Therapeutic Assistant</option>
-                <option value="general">💬 General Purpose</option>
+                <option value="cloud">☁️ Cloud Models</option>
+                <option value="local">💻 Local Models</option>
               </select>
             </div>
 
-            <!-- Therapeutic Specialty (when category is therapy) -->
-            <div v-if="formData.category === 'therapy'" class="form-group">
-              <label for="persona-specialty">Therapeutic Specialty</label>
-              <select
+            <!-- Therapeutic Specialty (optional for all personas) -->
+            <div class="form-group">
+              <label for="persona-specialty">Specialty (Optional)</label>
+              <input
                 id="persona-specialty"
-                v-model="formData.specialty"
-                class="form-select"
-              >
-                <option value="">Select specialty...</option>
-                <option value="Cognitive Behavioral Therapy">Cognitive Behavioral Therapy (CBT)</option>
-                <option value="Dialectical Behavior Therapy">Dialectical Behavior Therapy (DBT)</option>
-                <option value="Mindfulness & Meditation">Mindfulness & Meditation</option>
-                <option value="Trauma-Informed Care">Trauma-Informed Care</option>
-                <option value="General Mental Health">General Mental Health</option>
-              </select>
+                v-model.trim="formData.specialty"
+                type="text"
+                placeholder="e.g., CBT, DBT, Mindfulness..."
+                class="form-input"
+              />
             </div>
 
-            <!-- Therapeutic Focus -->
-            <div v-if="formData.category === 'therapy'" class="form-group">
-              <label for="persona-focus">Therapeutic Focus</label>
+            <!-- Therapeutic Focus (optional for all personas) -->
+            <div class="form-group">
+              <label for="persona-focus">Therapeutic Focus (Optional)</label>
               <textarea
                 id="persona-focus"
                 v-model.trim="formData.therapeutic_focus"
@@ -293,11 +286,22 @@
 
         <!-- Datasets Tab -->
         <div v-show="activeTab === 'datasets'" class="datasets-tab">
-          <DatasetManager
+          <DatasetLinkManager
             v-if="isEditing && editingPersona"
             :persona-id="editingPersona.id"
-            @updated="$emit('datasetsUpdated')"
+            @updated="handleDatasetsUpdated"
           />
+          
+          <!-- Datasets Tab Actions -->
+          <div class="datasets-actions">
+            <div class="datasets-info">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span>Changes are saved automatically</span>
+            </div>
+            <button type="button" class="primary-button" @click="$emit('close')">
+              Done
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -307,7 +311,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue'
 import type { Persona, PersonaCategory } from '../../../../backend/types/personas'
-import DatasetManager from '../datasets/DatasetManager.vue'
+import DatasetLinkManager from '../datasets/DatasetLinkManager.vue'
 
 // Props
 const props = defineProps<{
@@ -435,6 +439,10 @@ async function handleSubmit() {
   } finally {
     submitting.value = false
   }
+}
+
+function handleDatasetsUpdated() {
+  emit('datasetsUpdated')
 }
 
 // Watchers
@@ -597,9 +605,36 @@ watch(() => props.show, (newShow) => {
 .datasets-tab {
   padding: 1.5rem;
   min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-/* Scrollable Content */
+.datasets-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: auto;
+  background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.08));
+  border-radius: 0 0 12px 12px;
+}
+
+.datasets-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.datasets-info ion-icon {
+  font-size: 1.25rem;
+  color: #10b981;
+}
+
+/* Sections */
 .modal-content {
   padding: 18px;
   overflow: auto;

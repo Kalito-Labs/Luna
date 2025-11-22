@@ -31,6 +31,10 @@
           <span class="menu-icon">👤</span>
           Personas
         </button>
+        <button class="menu-item" @click="goToLibrary">
+          <span class="menu-icon">📚</span>
+          Library
+        </button>
       </div>
     </transition>
   </div>
@@ -62,6 +66,11 @@ function goToJournal() {
 function goToPersonas() {
   open.value = false
   router.push({ name: 'personas' })
+}
+
+function goToLibrary() {
+  open.value = false
+  router.push({ name: 'library' })
 }
 
 function goToKalitoHub() {
