@@ -544,11 +544,12 @@ function showMessage(text: string, type: 'success' | 'error') {
   margin-bottom: 48px;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px);
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 1.5rem;
   z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .dashboard-header :deep(.hamburger-container) {
@@ -663,7 +664,7 @@ function showMessage(text: string, type: 'success' | 'error') {
   align-items: center;
   padding: 24px;
   border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 16px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(30px);
   cursor: pointer;
@@ -672,7 +673,7 @@ function showMessage(text: string, type: 'success' | 'error') {
   min-height: 120px;
   width: 100%;
   box-sizing: border-box;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -710,16 +711,16 @@ function showMessage(text: string, type: 'success' | 'error') {
 
 /* Action button states */
 .action-btn:hover:not(:disabled) {
-  border-color: rgba(139, 92, 246, 0.5);
+  border-color: rgba(139, 92, 246, 0.3);
   transform: translateY(-3px);
-  box-shadow: 0 8px 40px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 12px 50px rgba(139, 92, 246, 0.25);
   background: rgba(255, 255, 255, 0.08);
 }
 
 .action-btn.active {
-  background: rgba(139, 92, 246, 0.15);
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 8px 40px rgba(139, 92, 246, 0.25);
 }
 
 .action-btn.active .btn-content h3 {
@@ -856,7 +857,7 @@ function showMessage(text: string, type: 'success' | 'error') {
   right: 0;
   bottom: 0;
   background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(30px) saturate(180%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -880,14 +881,14 @@ function showMessage(text: string, type: 'success' | 'error') {
 }
 
 .modal-content {
-  background: rgba(30, 41, 59, 0.98);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 20px;
+  border-radius: 24px;
   width: 70vw;
   max-width: 95vw;
   max-height: 90vh;
   overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(30px);
 }
 
@@ -914,11 +915,11 @@ function showMessage(text: string, type: 'success' | 'error') {
   top: 20px;
   right: 20px;
   padding: 12px 20px;
-  border-radius: 12px;
+  border-radius: 16px;
   font-weight: 500;
   z-index: 1001;
   backdrop-filter: blur(20px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .message.success {
@@ -939,17 +940,18 @@ function showMessage(text: string, type: 'success' | 'error') {
 
 .btn {
   padding: 10px 18px;
-  border-radius: 8px;
+  border-radius: 16px;
   font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.875rem;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   white-space: nowrap;
+  backdrop-filter: blur(20px);
 }
 
 .btn:disabled {
@@ -981,25 +983,25 @@ function showMessage(text: string, type: 'success' | 'error') {
   background: linear-gradient(135deg, 
     rgba(139, 92, 246, 1) 0%, 
     rgba(124, 58, 237, 1) 100%);
-  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.6);
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .btn-outline {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(255, 255, 255, 0.04);
   color: rgba(196, 181, 253, 0.95);
-  border: 2px solid rgba(139, 92, 246, 0.5);
-  box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
-  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.9), 
-    rgba(124, 58, 237, 0.95));
-  color: white;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 1);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.25);
+  transform: translateY(-3px);
 }
 
 .btn-danger {

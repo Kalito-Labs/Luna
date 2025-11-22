@@ -105,9 +105,9 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   gap: 5px;
   padding: 0;
   margin: 0;
-  background: rgba(30, 41, 59, 0.85);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
   cursor: pointer;
   backdrop-filter: blur(20px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -118,23 +118,23 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
 .hamburger-button:hover,
 .hamburger-button:focus {
-  background: rgba(30, 41, 59, 0.95);
-  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.25);
 }
 
 .hamburger-button.open {
-  background: rgba(139, 92, 246, 0.25);
-  border-color: rgba(139, 92, 246, 0.6);
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.25);
 }
 
 .hamburger-button.open:hover,
 .hamburger-button.open:focus {
-  background: rgba(139, 92, 246, 0.35);
-  border-color: rgba(139, 92, 246, 0.7);
-  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.3);
 }
 
 .hamburger-button span {
@@ -150,14 +150,14 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 
 .hamburger-button:hover span {
   background: linear-gradient(90deg, 
-    rgba(139, 92, 246, 0.9), 
+    rgba(196, 181, 253, 0.9), 
     rgba(196, 181, 253, 1));
 }
 
 .hamburger-button.open span:nth-child(1) {
   transform: translateY(7.5px) rotate(45deg);
   background: linear-gradient(90deg, 
-    rgba(139, 92, 246, 1), 
+    rgba(196, 181, 253, 0.9), 
     rgba(196, 181, 253, 1));
 }
 
@@ -169,7 +169,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 .hamburger-button.open span:nth-child(3) {
   transform: translateY(-7.5px) rotate(-45deg);
   background: linear-gradient(90deg, 
-    rgba(139, 92, 246, 1), 
+    rgba(196, 181, 253, 0.9), 
     rgba(196, 181, 253, 1));
 }
 
@@ -178,10 +178,10 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   top: calc(100% + 0.75rem);
   left: 0;
   min-width: 220px;
-  background: rgba(35, 44, 66, 0.95);
+  background: rgba(44, 45, 54, 0.979);
   backdrop-filter: blur(30px);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 16px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 20px;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
   padding: 0.75rem;
   display: flex;
@@ -193,9 +193,9 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 .menu-item {
   width: 100%;
   padding: 0.875rem 1rem;
-  background: rgba(46, 57, 75, 0.6);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 12px;
+  background: rgba(36, 38, 39, 0.89);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 16px;
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   display: flex;
@@ -208,11 +208,11 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 }
 
 .menu-item:hover {
-  background: rgba(139, 92, 246, 0.3);
-  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.3);
   color: rgba(255, 255, 255, 1);
   transform: translateX(4px);
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.25);
 }
 
 .menu-item:active {

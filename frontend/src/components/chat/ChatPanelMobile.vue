@@ -366,10 +366,10 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  background: rgba(15, 23, 42, 0.98);
-  backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
-  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(30px) saturate(180%);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1), 0 1px 4px rgba(139, 92, 246, 0.1);
   z-index: 100;
 }
 
@@ -378,9 +378,9 @@ onUnmounted(() => {
   height: 48px;
   min-width: 48px;
   min-height: 48px;
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 12px;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
   color: rgba(196, 181, 253, 1);
   font-size: 1.5rem;
   cursor: pointer;
@@ -392,13 +392,13 @@ onUnmounted(() => {
 }
 
 .header-btn:active {
-  background: rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.2);
   transform: scale(0.95);
 }
 
 .home-btn {
-  background: rgba(129, 140, 248, 0.15);
-  border-color: rgba(129, 140, 248, 0.3);
+  background: rgba(129, 140, 248, 0.12);
+  border-color: rgba(129, 140, 248, 0.2);
   color: rgba(129, 140, 248, 1);
 }
 
@@ -450,20 +450,21 @@ onUnmounted(() => {
 /* Agent Messages */
 .agent-message {
   position: relative;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(139, 92, 246, 0.04) 100%);
-  backdrop-filter: blur(20px) saturate(150%);
-  border-radius: 1rem 1rem 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(30px) saturate(150%);
+  border-radius: 20px 20px 12px 20px;
   padding: 1.25rem 1.5rem 3.5rem 1.5rem;
   font-size: 0.95rem;
   color: #f0f2f5;
   line-height: 1.7;
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.15);
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: pre-wrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(139, 92, 246, 0.1);
 }
 
 .recap-message .agent-message {
@@ -479,10 +480,10 @@ onUnmounted(() => {
   font-weight: 500;
   color: #f8f9fa;
   font-size: 0.95rem;
-  background: rgba(66, 165, 245, 0.12);
-  backdrop-filter: blur(16px) saturate(150%);
-  border: 1px solid rgba(66, 165, 245, 0.25);
-  border-radius: 0.5rem 1rem 1rem 1rem;
+  background: rgba(129, 140, 248, 0.12);
+  backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  border-radius: 12px 20px 20px 20px;
   padding: 1.25rem 1.5rem;
   max-width: 85%;
   width: fit-content;
@@ -493,7 +494,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  box-shadow: 0 4px 16px rgba(66, 165, 245, 0.15);
+  box-shadow: 0 4px 16px rgba(129, 140, 248, 0.12);
   align-self: flex-start;
   line-height: 1.6;
 }
@@ -612,10 +613,10 @@ onUnmounted(() => {
   height: 44px;
   min-width: 44px;
   min-height: 44px;
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 50%;
-  color: rgba(139, 92, 246, 0.8);
+  color: rgba(196, 181, 253, 1);
   font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -627,7 +628,7 @@ onUnmounted(() => {
 }
 
 .message-action-btn:active {
-  background: rgba(139, 92, 246, 0.25);
+  background: rgba(139, 92, 246, 0.2);
   transform: scale(0.95);
 }
 
@@ -636,11 +637,11 @@ onUnmounted(() => {
   bottom: 100%;
   right: 0;
   margin-bottom: 0.5rem;
-  background: rgba(14, 18, 26, 0.98);
-  backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 0.75rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(139, 92, 246, 0.15);
   overflow: hidden;
   min-width: 150px;
 }
@@ -666,7 +667,7 @@ onUnmounted(() => {
 }
 
 .message-menu button:active {
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(139, 92, 246, 0.12);
 }
 
 .menu-icon {
@@ -709,11 +710,12 @@ onUnmounted(() => {
 /* Chat Input Bar */
 .chat-input-bar {
   padding: 1rem;
-  background: rgba(14, 18, 26, 0.95);
-  backdrop-filter: blur(20px) saturate(180%);
-  border-top: 1px solid rgba(139, 92, 246, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(30px) saturate(180%);
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
   position: relative;
   z-index: 100;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1), 0 -1px 4px rgba(139, 92, 246, 0.1);
 }
 
 .input-container {
@@ -726,17 +728,17 @@ onUnmounted(() => {
 
 .chat-input {
   flex: 1;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px) saturate(150%);
   color: #f6f8fa;
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: 14px;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 16px;
   padding: 1rem;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 1rem;
   line-height: 1.5;
   outline: none;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   resize: none;
   min-height: 52px;
@@ -745,9 +747,9 @@ onUnmounted(() => {
 }
 
 .chat-input:focus {
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15), 0 8px 24px rgba(139, 92, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15), 0 4px 16px rgba(139, 92, 246, 0.2);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .chat-input::placeholder {
@@ -798,13 +800,13 @@ onUnmounted(() => {
 /* Code Blocks */
 .simple-code-block {
   background: rgba(8, 12, 20, 0.98);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 0.75rem;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 16px;
   margin: 1rem 0;
   max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(139, 92, 246, 0.1);
 }
 
 .simple-code-header {
@@ -871,14 +873,14 @@ onUnmounted(() => {
 
 /* Inline Code */
 .simple-inline-code {
-  background: rgba(139, 92, 246, 0.15);
-  color: rgba(139, 92, 246, 0.9);
+  background: rgba(139, 92, 246, 0.12);
+  color: rgba(196, 181, 253, 1);
   padding: 0.2rem 0.5rem;
-  border-radius: 0.4rem;
+  border-radius: 8px;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-size: 0.88em;
   font-weight: 500;
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 /* Bold Text */

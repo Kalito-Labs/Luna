@@ -229,17 +229,17 @@ async function submitForm() {
 
 <style scoped>
 .medication-form {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 50%, rgba(67, 56, 202, 0.1) 100%);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 24px;
   max-width: 1000px;
   width: 90vw;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(139, 92, 246, 0.2);
+  backdrop-filter: blur(30px);
 }
 
 .modal-header {
@@ -247,9 +247,9 @@ async function submitForm() {
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
 }
 
 .modal-header h2 {
@@ -274,12 +274,12 @@ async function submitForm() {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .close-btn:hover {
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 1);
   transform: rotate(90deg);
 }
@@ -291,18 +291,19 @@ async function submitForm() {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .form-section {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 20px;
   padding: 24px;
   margin-bottom: 0;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 .form-section::before {
@@ -318,8 +319,8 @@ async function submitForm() {
 
 .form-section:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.25);
 }
 
 .form-section h3 {
@@ -328,7 +329,7 @@ async function submitForm() {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
   padding-bottom: 12px;
   font-size: 1.25rem;
   font-weight: 600;
@@ -361,9 +362,9 @@ async function submitForm() {
 .form-group textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
   color: rgba(255, 255, 255, 0.9);
   font-size: 1rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -373,9 +374,9 @@ async function submitForm() {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: rgba(139, 92, 246, 0.6);
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
-  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .form-actions {
@@ -383,17 +384,18 @@ async function submitForm() {
   gap: 16px;
   justify-content: flex-end;
   padding-top: 20px;
-  border-top: 1px solid rgba(139, 92, 246, 0.2);
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .btn {
   padding: 12px 24px;
-  border-radius: 12px;
+  border-radius: 16px;
   font-weight: 600;
   cursor: pointer;
   border: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.95rem;
+  backdrop-filter: blur(20px);
 }
 
 .btn:disabled {
@@ -411,23 +413,23 @@ async function submitForm() {
 .btn-primary:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
   border-color: rgba(139, 92, 246, 0.8);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.5);
+  transform: translateY(-3px);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
   color: rgba(129, 140, 248, 1);
-  border: 1px solid rgba(129, 140, 248, 0.4);
+  border: 1px solid rgba(129, 140, 248, 0.3);
   box-shadow: 0 2px 8px rgba(129, 140, 248, 0.1);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%);
-  border-color: rgba(129, 140, 248, 0.6);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(129, 140, 248, 0.4);
   color: rgba(255, 255, 255, 1);
-  box-shadow: 0 4px 20px rgba(129, 140, 248, 0.3);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(129, 140, 248, 0.3);
+  transform: translateY(-3px);
 }
 
 /* Responsive Design */

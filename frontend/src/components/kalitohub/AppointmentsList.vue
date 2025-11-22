@@ -196,13 +196,13 @@ function formatTime(timeString: string): string {
 }
 
 .appointment-card {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 20px;
   padding: 24px;
   position: relative;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(139, 92, 246, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -218,9 +218,9 @@ function formatTime(timeString: string): string {
 }
 
 .appointment-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.3);
-  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(139, 92, 246, 0.25);
+  border-color: rgba(139, 92, 246, 0.3);
 }
 
 /* Responsive cards */
@@ -250,7 +250,7 @@ function formatTime(timeString: string): string {
   align-items: center;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .appt-header h4 {
@@ -284,10 +284,10 @@ function formatTime(timeString: string): string {
 }
 
 .status-badge.scheduled {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(139, 92, 246, 0.15);
   color: rgba(196, 181, 253, 1);
-  border: 1px solid rgba(139, 92, 246, 0.4);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
 }
 
 .status-badge.completed {
@@ -341,7 +341,7 @@ function formatTime(timeString: string): string {
   display: flex;
   gap: 12px;
   padding-top: 12px;
-  border-top: 1px solid rgba(139, 92, 246, 0.2);
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 /* Responsive actions */
@@ -356,10 +356,10 @@ function formatTime(timeString: string): string {
   text-align: center;
   padding: 60px 20px;
   color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 20px;
 }
 
 .empty-state p {
@@ -376,7 +376,7 @@ function formatTime(timeString: string): string {
 
 .btn {
   padding: 10px 18px;
-  border-radius: 12px;
+  border-radius: 16px;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -387,6 +387,7 @@ function formatTime(timeString: string): string {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.875rem;
   white-space: nowrap;
+  backdrop-filter: blur(20px);
 }
 
 .btn:disabled {
@@ -415,23 +416,23 @@ function formatTime(timeString: string): string {
 .btn-primary:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
   border-color: rgba(139, 92, 246, 0.8);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.5);
+  transform: translateY(-3px);
 }
 
 .btn-outline {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
   color: rgba(129, 140, 248, 1);
-  border: 1px solid rgba(129, 140, 248, 0.4);
+  border: 1px solid rgba(129, 140, 248, 0.3);
   box-shadow: 0 2px 8px rgba(129, 140, 248, 0.1);
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%);
-  border-color: rgba(129, 140, 248, 0.6);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(129, 140, 248, 0.4);
   color: rgba(255, 255, 255, 1);
-  box-shadow: 0 4px 20px rgba(129, 140, 248, 0.3);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(129, 140, 248, 0.3);
+  transform: translateY(-3px);
 }
 
 .btn-danger {
@@ -444,8 +445,8 @@ function formatTime(timeString: string): string {
 .btn-danger:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(239, 68, 68, 1) 0%, rgba(220, 38, 38, 1) 100%);
   border-color: rgba(239, 68, 68, 0.8);
-  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(239, 68, 68, 0.5);
+  transform: translateY(-3px);
 }
 
 /* Touch device improvements */

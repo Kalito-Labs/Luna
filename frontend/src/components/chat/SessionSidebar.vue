@@ -621,13 +621,13 @@ function formatDate(dateStr: string | undefined): string {
 .sidebar {
   width: 370px;
   min-width: 300px;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 50%, rgba(67, 56, 202, 0.08) 100%);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-right: 1px solid rgba(139, 92, 246, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-right: 1px solid rgba(139, 92, 246, 0.15);
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 20px rgba(139, 92, 246, 0.15);
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1), 1px 0 8px rgba(139, 92, 246, 0.1);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -637,8 +637,8 @@ function formatDate(dateStr: string | undefined): string {
   align-items: center;
   gap: 2rem;
   padding: 1rem;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(139, 92, 246, 0.04) 100%);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .sidebar-content {
@@ -661,9 +661,9 @@ function formatDate(dateStr: string | undefined): string {
   width: 32px;
   height: 32px;
   font-size: 1rem;
-  background: rgba(129, 140, 248, 0.15);
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  border-radius: 0.5rem;
+  background: rgba(129, 140, 248, 0.12);
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  border-radius: 12px;
   color: rgba(129, 140, 248, 1);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -671,10 +671,10 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .home-button:hover {
-  background: rgba(129, 140, 248, 0.25);
-  border-color: rgba(129, 140, 248, 0.5);
+  background: rgba(129, 140, 248, 0.2);
+  border-color: rgba(129, 140, 248, 0.4);
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(129, 140, 248, 0.3);
+  box-shadow: 0 4px 16px rgba(129, 140, 248, 0.25);
 }
 
 .home-icon {
@@ -729,15 +729,15 @@ function formatDate(dateStr: string | undefined): string {
   margin-bottom: 1rem;
   cursor: pointer;
   padding: 0.75rem;
-  border-radius: 0.75rem;
-  background: rgba(139, 92, 246, 0.08);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.15);
   transition: all 0.3s ease;
 }
 
 .section-header:hover {
-  background: rgba(139, 92, 246, 0.12);
-  border-color: rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.2);
   transform: translateY(-1px);
 }
 
@@ -782,20 +782,20 @@ function formatDate(dateStr: string | undefined): string {
 /* Token Usage */
 .token-display {
   padding: 1.25rem;
-  border-radius: 0.75rem;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, rgba(66, 165, 245, 0.08) 0%, rgba(66, 165, 245, 0.04) 100%);
-  border: 1px solid rgba(66, 165, 245, 0.2);
-  backdrop-filter: blur(16px) saturate(150%);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(66, 165, 245, 0.15);
+  backdrop-filter: blur(20px) saturate(150%);
   transition: all 0.3s ease;
 }
 
 .token-display:hover {
-  border-color: rgba(66, 165, 245, 0.3);
+  border-color: rgba(66, 165, 245, 0.25);
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(66, 165, 245, 0.15);
+  box-shadow: 0 4px 16px rgba(66, 165, 245, 0.12);
 }
 
 .token-info {
@@ -858,11 +858,11 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .select-glass {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(12px);
   color: #e8eaed;
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 0.75rem;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 12px;
   padding: 0.75rem 1rem;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 0.9rem;
@@ -872,14 +872,14 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .select-glass:focus {
-  border-color: rgba(139, 92, 246, 0.5);
+  border-color: rgba(139, 92, 246, 0.4);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .select-glass:hover {
-  border-color: rgba(139, 92, 246, 0.3);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.2);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .persona-selector {
@@ -895,9 +895,9 @@ function formatDate(dateStr: string | undefined): string {
 .btn-glass-icon-small {
   width: 32px;
   height: 32px;
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: 0.5rem;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 12px;
   color: rgba(139, 92, 246, 0.8);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -909,11 +909,11 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .btn-glass-icon-small:hover {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
   color: rgba(139, 92, 246, 1);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
 }
 
 /* Session Actions */
@@ -926,7 +926,7 @@ function formatDate(dateStr: string | undefined): string {
   border: 1px solid rgba(139, 92, 246, 0.5);
   color: #ffffff;
   padding: 0.875rem 1.5rem;
-  border-radius: 0.75rem;
+  border-radius: 16px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
@@ -940,8 +940,8 @@ function formatDate(dateStr: string | undefined): string {
 .btn-primary:hover {
   background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
   border-color: rgba(139, 92, 246, 0.8);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
-  transform: translateY(-1px);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-primary:active {
@@ -964,11 +964,11 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .btn-secondary {
-  background: rgba(129, 140, 248, 0.15);
-  border: 1px solid rgba(129, 140, 248, 0.4);
+  background: rgba(129, 140, 248, 0.12);
+  border: 1px solid rgba(129, 140, 248, 0.3);
   color: rgba(129, 140, 248, 1);
   padding: 0.75rem 1.25rem;
-  border-radius: 0.75rem;
+  border-radius: 16px;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -980,10 +980,10 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .btn-secondary:hover {
-  background: rgba(129, 140, 248, 0.25);
-  border-color: rgba(129, 140, 248, 0.6);
+  background: rgba(129, 140, 248, 0.2);
+  border-color: rgba(129, 140, 248, 0.4);
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(129, 140, 248, 0.3);
+  box-shadow: 0 4px 20px rgba(129, 140, 248, 0.25);
 }
 
 .btn-danger {
@@ -1047,25 +1047,25 @@ function formatDate(dateStr: string | undefined): string {
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1rem;
-  border-radius: 0.75rem;
+  border-radius: 16px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(139, 92, 246, 0.04) 100%);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  backdrop-filter: blur(16px) saturate(150%);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  backdrop-filter: blur(20px) saturate(150%);
 }
 
 .session-item:hover {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.08) 100%);
-  border-color: rgba(139, 92, 246, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(139, 92, 246, 0.25);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1), 0 3px 10px rgba(139, 92, 246, 0.15);
 }
 
 .session-item.active {
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0.08) 100%);
-  border-color: rgba(129, 140, 248, 0.4);
-  box-shadow: 0 4px 16px rgba(129, 140, 248, 0.25);
+  background: rgba(129, 140, 248, 0.12);
+  border-color: rgba(129, 140, 248, 0.3);
+  box-shadow: 0 4px 16px rgba(129, 140, 248, 0.2);
 }
 
 .session-item.has-content {

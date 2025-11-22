@@ -303,19 +303,40 @@ function getFileIcon(type: string): string {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
 }
 
 .modal-content {
-  background: white;
-  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 24px;
   padding: 2rem;
-  max-width: 600px;
+  max-width: 1200px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(139, 92, 246, 0.1);
+}
+
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: rgba(139, 92, 246, 0.05);
+  border-radius: 12px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  transition: background 0.3s ease;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
 }
 
 .modal-header {
@@ -326,12 +347,15 @@ function getFileIcon(type: string): string {
 
 .modal-header h2 {
   font-size: 1.75rem;
-  color: var(--text-primary, #1a1a1a);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 0.5rem;
 }
 
 .modal-header p {
-  color: var(--text-secondary, #666);
+  color: rgba(196, 181, 253, 0.8);
   font-size: 0.95rem;
 }
 
@@ -339,8 +363,8 @@ function getFileIcon(type: string): string {
   position: absolute;
   top: -0.5rem;
   right: -0.5rem;
-  background: var(--bg-light, #f5f5f5);
-  border: 1px solid var(--border-light, #e0e0e0);
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -350,12 +374,15 @@ function getFileIcon(type: string): string {
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 1.25rem;
+  color: rgba(239, 68, 68, 0.9);
+  backdrop-filter: blur(12px);
 }
 
 .close-btn:hover {
-  background: #ef4444;
+  background: rgba(239, 68, 68, 0.2);
   color: white;
-  border-color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
+  transform: scale(1.1);
 }
 
 .upload-area {
@@ -363,20 +390,22 @@ function getFileIcon(type: string): string {
 }
 
 .drop-zone {
-  border: 2px dashed var(--border-light, #e0e0e0);
-  border-radius: 1rem;
+  border: 2px dashed rgba(139, 92, 246, 0.25);
+  border-radius: 20px;
   padding: 3rem 2rem;
   text-align: center;
   transition: all 0.3s ease;
-  background: var(--bg-light, #f5f5f5);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
   cursor: pointer;
 }
 
 .upload-area.drag-active .drop-zone,
 .drop-zone:hover {
-  border-color: #8b5cf6;
-  background: rgba(139, 92, 246, 0.05);
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(139, 92, 246, 0.12);
   transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2);
 }
 
 .upload-icon {
@@ -388,35 +417,39 @@ function getFileIcon(type: string): string {
 
 .drop-zone h3 {
   font-size: 1.25rem;
-  color: var(--text-primary, #1a1a1a);
+  color: rgba(255, 255, 255, 0.92);
   margin-bottom: 0.5rem;
 }
 
 .drop-zone p {
-  color: var(--text-secondary, #666);
+  color: rgba(196, 181, 253, 0.8);
   margin-bottom: 1.5rem;
   font-size: 0.9rem;
 }
 
 .browse-btn {
-  background: #8b5cf6;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
   color: white;
-  border: none;
+  border: 1px solid rgba(139, 92, 246, 0.5);
   padding: 0.75rem 2rem;
-  border-radius: 0.75rem;
+  border-radius: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
 }
 
 .browse-btn:hover {
-  background: #7c3aed;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
 }
 
 .file-info {
-  background: var(--bg-light, #f5f5f5);
-  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 16px;
   padding: 1rem;
   margin-bottom: 1.5rem;
 }
@@ -440,12 +473,12 @@ function getFileIcon(type: string): string {
 
 .file-name {
   font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
+  color: rgba(255, 255, 255, 0.92);
   font-size: 0.95rem;
 }
 
 .file-size {
-  color: var(--text-secondary, #666);
+  color: rgba(196, 181, 253, 0.7);
   font-size: 0.85rem;
 }
 
@@ -473,7 +506,7 @@ function getFileIcon(type: string): string {
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: var(--text-primary, #1a1a1a);
+  color: rgba(139, 92, 246, 0.9);
   font-size: 0.95rem;
 }
 
@@ -482,17 +515,37 @@ function getFileIcon(type: string): string {
 .form-select {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid var(--border-light, #e0e0e0);
-  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 12px;
   font-size: 0.95rem;
-  transition: border-color 0.3s;
+  transition: all 0.3s;
+  color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: rgba(196, 181, 253, 0.5);
 }
 
 .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
   outline: none;
-  border-color: #8b5cf6;
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.form-select option {
+  background: rgba(15, 23, 42, 0.98);
+  color: rgba(255, 255, 255, 0.92);
+  padding: 0.5rem;
+}
+
+.form-select option:hover {
+  background: rgba(139, 92, 246, 0.2);
 }
 
 .radio-group {
@@ -505,15 +558,19 @@ function getFileIcon(type: string): string {
   display: flex;
   gap: 0.75rem;
   padding: 1rem;
-  border: 2px solid var(--border-light, #e0e0e0);
-  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(139, 92, 246, 0.15);
+  border-radius: 16px;
   cursor: pointer;
   transition: all 0.3s;
+  backdrop-filter: blur(12px);
 }
 
 .radio-option:hover {
-  border-color: #8b5cf6;
-  background: rgba(139, 92, 246, 0.05);
+  border-color: rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15);
 }
 
 .radio-option input[type='radio'] {
@@ -535,11 +592,12 @@ function getFileIcon(type: string): string {
   font-weight: 600;
   margin-bottom: 0.25rem;
   font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .radio-description {
   font-size: 0.85rem;
-  color: var(--text-secondary, #666);
+  color: rgba(196, 181, 253, 0.7);
   margin: 0;
 }
 
@@ -549,22 +607,23 @@ function getFileIcon(type: string): string {
 
 .progress-bar {
   height: 8px;
-  background: var(--bg-light, #f5f5f5);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
   overflow: hidden;
   margin-bottom: 0.5rem;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.9), rgba(124, 58, 237, 1));
   transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
 }
 
 .progress-text {
   text-align: center;
   font-size: 0.9rem;
-  color: var(--text-secondary, #666);
+  color: rgba(196, 181, 253, 0.8);
   margin: 0;
 }
 
@@ -573,11 +632,13 @@ function getFileIcon(type: string): string {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: #fee2e2;
-  color: #dc2626;
-  border-radius: 0.5rem;
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 12px;
   margin-bottom: 1.5rem;
   font-size: 0.9rem;
+  backdrop-filter: blur(12px);
 }
 
 .error-message ion-icon {
@@ -593,7 +654,7 @@ function getFileIcon(type: string): string {
 .btn-secondary,
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem;
+  border-radius: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
@@ -604,30 +665,36 @@ function getFileIcon(type: string): string {
 }
 
 .btn-secondary {
-  background: white;
-  border: 1px solid var(--border-light, #e0e0e0);
-  color: var(--text-primary, #1a1a1a);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: rgba(196, 181, 253, 0.9);
+  backdrop-filter: blur(12px);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: var(--bg-light, #f5f5f5);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.3);
+  transform: translateY(-1px);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  border: none;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.5);
   color: white;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
 }
 
 .btn-primary:disabled,
 .btn-secondary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .spinning {

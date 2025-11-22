@@ -623,8 +623,8 @@ function formatDate(dateStr: string | undefined): string {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -635,8 +635,8 @@ function formatDate(dateStr: string | undefined): string {
 .mobile-sidebar-modal {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(14, 18, 26, 0.98) 0%, rgba(20, 25, 35, 0.98) 100%);
-  backdrop-filter: blur(24px) saturate(180%);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(30px) saturate(180%);
   border-radius: 0;
   box-shadow: none;
   display: flex;
@@ -651,8 +651,8 @@ function formatDate(dateStr: string | undefined): string {
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-  background: linear-gradient(135deg, rgba(11, 7, 20, 0.08) 0%, rgba(139, 92, 246, 0.04) 100%);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .modal-title {
@@ -668,9 +668,9 @@ function formatDate(dateStr: string | undefined): string {
   height: 44px;
   min-width: 44px;
   min-height: 44px;
-  background: rgba(114, 63, 30, 0.253);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  border-radius: 40%;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 16px;
   color: rgba(239, 94, 68, 0.9);
   font-size: 2rem;
   font-weight: 300;
@@ -683,8 +683,8 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .close-button:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.3);
   transform: scale(1.05);
 }
 
@@ -730,15 +730,15 @@ function formatDate(dateStr: string | undefined): string {
   margin-bottom: 1rem;
   cursor: pointer;
   padding: 1rem;
-  border-radius: 0.75rem;
-  background: rgba(139, 92, 246, 0.08);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.15);
   transition: all 0.3s ease;
   min-height: 56px;
 }
 
 .section-header:active {
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(139, 92, 246, 0.1);
   transform: scale(0.98);
 }
 
@@ -773,13 +773,13 @@ function formatDate(dateStr: string | undefined): string {
 /* Token Display */
 .token-display {
   padding: 1.5rem;
-  border-radius: 0.75rem;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, rgba(66, 165, 245, 0.08) 0%, rgba(66, 165, 245, 0.04) 100%);
-  border: 1px solid rgba(66, 165, 245, 0.2);
-  backdrop-filter: blur(16px) saturate(150%);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(66, 165, 245, 0.15);
+  backdrop-filter: blur(20px) saturate(150%);
 }
 
 .token-info {
@@ -842,11 +842,11 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .select-glass {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(12px);
   color: #e8eaed;
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 0.75rem;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 16px;
   padding: 1rem;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 1rem;
@@ -857,9 +857,9 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .select-glass:focus {
-  border-color: rgba(139, 92, 246, 0.5);
+  border-color: rgba(139, 92, 246, 0.4);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .persona-selector {
@@ -877,9 +877,9 @@ function formatDate(dateStr: string | undefined): string {
   height: 56px;
   min-width: 56px;
   min-height: 56px;
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: 0.75rem;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
   color: rgba(139, 92, 246, 0.8);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -891,7 +891,7 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .btn-glass-icon-small:active {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(139, 92, 246, 0.15);
   transform: scale(0.95);
 }
 
@@ -902,9 +902,9 @@ function formatDate(dateStr: string | undefined): string {
 
 /* Action Confirmation (Start/Reset) */
 .action-confirmation {
-  background: rgba(139, 92, 246, 0.08);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: 0.75rem;
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -970,7 +970,7 @@ function formatDate(dateStr: string | undefined): string {
   border: 1px solid rgba(67, 56, 202, 0.4);
   color: #ffffff;
   padding: 1.25rem 1.5rem;
-  border-radius: 0.75rem;
+  border-radius: 16px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -1002,11 +1002,11 @@ function formatDate(dateStr: string | undefined): string {
 }
 
 .btn-secondary {
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   color: rgba(139, 92, 246, 0.9);
   padding: 1.25rem;
-  border-radius: 0.75rem;
+  border-radius: 16px;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -1040,23 +1040,23 @@ function formatDate(dateStr: string | undefined): string {
   align-items: flex-start;
   gap: 1rem;
   padding: 1.25rem;
-  border-radius: 0.75rem;
+  border-radius: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(139, 92, 246, 0.04) 100%);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  backdrop-filter: blur(16px) saturate(150%);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  backdrop-filter: blur(20px) saturate(150%);
   min-height: 80px;
 }
 
 .session-item:active {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+  background: rgba(255, 255, 255, 0.06);
   transform: scale(0.98);
 }
 
 .session-item.active {
-  background: linear-gradient(135deg, rgba(66, 165, 245, 0.12) 0%, rgba(66, 165, 245, 0.08) 100%);
-  border-color: rgba(66, 165, 245, 0.4);
+  background: rgba(129, 140, 248, 0.12);
+  border-color: rgba(129, 140, 248, 0.3);
 }
 
 .session-item.has-content {
@@ -1112,8 +1112,8 @@ function formatDate(dateStr: string | undefined): string {
   justify-content: center;
   font-size: 1.25rem;
   transition: all 0.3s ease;
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   color: rgba(139, 92, 246, 0.8);
   backdrop-filter: blur(12px);
 }
@@ -1194,9 +1194,9 @@ function formatDate(dateStr: string | undefined): string {
   text-align: center;
   padding: 3rem 1.5rem;
   color: #cbd5e1;
-  background: rgba(139, 92, 246, 0.06);
-  border: 1px solid rgba(139, 92, 246, 0.15);
-  border-radius: 0.75rem;
+  background: rgba(139, 92, 246, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.12);
+  border-radius: 16px;
   backdrop-filter: blur(12px);
 }
 

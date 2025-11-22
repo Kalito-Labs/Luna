@@ -379,11 +379,11 @@ onUnmounted(() => {
   overflow-y: auto;
   overflow-x: hidden;
   margin-bottom: .5rem;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 50%, rgba(67, 56, 202, 0.08) 100%);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(139, 92, 246, 0.1);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: #e8eaed;
 }
@@ -410,13 +410,13 @@ onUnmounted(() => {
 .chat-input-bar {
   width: 100%;
   padding: 1rem;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 20px;
   position: relative;
   z-index: 100;
-  box-shadow: 0 -4px 20px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(139, 92, 246, 0.15);
 }
 
 .input-container {
@@ -428,17 +428,17 @@ onUnmounted(() => {
 }
 
 .chat-input {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px) saturate(150%);
   color: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: 14px;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 16px;
   padding: 1rem 1.25rem;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 0.95rem;
   line-height: 1.5;
   outline: none;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   resize: none;
   min-height: 3rem;
@@ -448,10 +448,10 @@ onUnmounted(() => {
 }
 
 .chat-input:focus {
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15), 0 8px 24px rgba(139, 92, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15), 0 4px 16px rgba(139, 92, 246, 0.2);
   transform: translateY(-1px);
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .chat-input::placeholder {
@@ -475,8 +475,8 @@ onUnmounted(() => {
 
 .primary-button:hover {
   background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.5);
+  transform: translateY(-3px);
 }
 
 .primary-button:disabled {
@@ -511,14 +511,14 @@ onUnmounted(() => {
 .agent-message {
   position: relative;
   background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px) saturate(150%);
-  border-radius: 16px 16px 8px 16px;
+  backdrop-filter: blur(30px) saturate(150%);
+  border-radius: 20px 20px 12px 20px;
   padding: 1.5rem 2rem 3.5rem 2rem;
   font-size: 0.95rem;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.95);
   line-height: 1.7;
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  border: 1px solid rgba(139, 92, 246, 0.15);
   margin: 0.5rem 2.5%;
   width: 95%;
   max-width: 95%;
@@ -528,7 +528,7 @@ onUnmounted(() => {
   overflow-wrap: break-word;
   white-space: pre-wrap;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(139, 92, 246, 0.1);
 }
 
 .agent-message::before {
@@ -543,9 +543,9 @@ onUnmounted(() => {
 }
 
 .agent-message:hover {
-  border-color: rgba(139, 92, 246, 0.4);
+  border-color: rgba(139, 92, 246, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(139, 92, 246, 0.2);
 }
 
 .recap-message .agent-message {
@@ -561,10 +561,10 @@ onUnmounted(() => {
   font-weight: 500;
   color: rgba(255, 255, 255, 0.95);
   font-size: 0.95rem;
-  background: rgba(129, 140, 248, 0.15);
-  backdrop-filter: blur(16px) saturate(150%);
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  border-radius: 8px 16px 16px 16px;
+  background: rgba(129, 140, 248, 0.12);
+  backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  border-radius: 12px 20px 20px 20px;
   padding: 1.5rem 2rem;
   margin: 0.5rem 0;
   max-width: 75%;
@@ -577,7 +577,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  box-shadow: 0 4px 20px rgba(129, 140, 248, 0.2);
+  box-shadow: 0 4px 20px rgba(129, 140, 248, 0.15);
   align-self: flex-start;
   line-height: 1.6;
 }
@@ -625,11 +625,11 @@ onUnmounted(() => {
 
 /* Message Copy Button */
 .message-copy-btn {
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   color: rgba(196, 181, 253, 1);
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -638,20 +638,20 @@ onUnmounted(() => {
 }
 
 .message-copy-btn:hover {
-  background: rgba(139, 92, 246, 0.3);
-  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
   color: rgba(255, 255, 255, 1);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
 }
 
 /* Message Pin Button */
 .message-pin-btn {
-  background: rgba(129, 140, 248, 0.15);
-  border: 1px solid rgba(129, 140, 248, 0.3);
+  background: rgba(129, 140, 248, 0.12);
+  border: 1px solid rgba(129, 140, 248, 0.2);
   color: rgba(129, 140, 248, 1);
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -663,8 +663,8 @@ onUnmounted(() => {
 }
 
 .message-pin-btn:hover {
-  background: rgba(129, 140, 248, 0.3);
-  border-color: rgba(129, 140, 248, 0.6);
+  background: rgba(129, 140, 248, 0.2);
+  border-color: rgba(129, 140, 248, 0.4);
   color: rgba(255, 255, 255, 1);
   transform: translateY(-2px);
 }
@@ -780,13 +780,13 @@ onUnmounted(() => {
 /* Code Blocks - Let Shiki handle all syntax highlighting */
 .simple-code-block {
   background: rgba(8, 12, 20, 0.98);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 1rem;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 16px;
   margin: 1.5rem 0;
   max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(139, 92, 246, 0.1);
 }
 
 .simple-code-header {
@@ -868,20 +868,20 @@ onUnmounted(() => {
 
 /* Inline Code */
 .simple-inline-code {
-  background: rgba(139, 92, 246, 0.15);
-  color: rgba(139, 92, 246, 0.9);
+  background: rgba(139, 92, 246, 0.12);
+  color: rgba(196, 181, 253, 1);
   padding: 0.25rem 0.6rem;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-size: 0.88em;
   font-weight: 500;
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.15);
   transition: all 0.2s ease;
 }
 
 .simple-inline-code:hover {
-  background: rgba(139, 92, 246, 0.25);
-  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.3);
 }
 
 /* Bold Text */
