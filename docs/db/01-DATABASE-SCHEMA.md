@@ -15,10 +15,11 @@
 | **Database Type** | SQLite with WAL mode |
 | **Active Patients** | 1 (Kaleb) |
 | **Medications** | 4 active |
+| **Appointments** | 0 |
 | **Journal Entries** | 1 |
-| **Personas** | 2 (default cloud/local) |
-| **Sessions** | 0 (ready for use) |
-| **Messages** | 0 (ready for use) |
+| **Personas** | 2 (enhanced with therapeutic fields) |
+| **Sessions** | 1 active |
+| **Messages** | 4 conversation messages |
 
 ---
 
@@ -163,6 +164,16 @@ erDiagram
         REAL repeatPenalty
         TEXT stopSequences
         INTEGER is_default
+        TEXT specialty
+        TEXT therapeutic_focus
+        TEXT template_id
+        TEXT created_from
+        TEXT tags
+        TEXT color_theme
+        INTEGER is_favorite
+        INTEGER usage_count
+        TEXT last_used_at
+        TEXT builtin_data_access
         TEXT created_at
         TEXT updated_at
     }
@@ -227,21 +238,21 @@ erDiagram
 | conversation_summaries | sessions | session_id | CASCADE |
 | semantic_pins | sessions | session_id | CASCADE |
 
-**Note**: `sessions.persona_id` and `sessions.patient_id` do not have explicit foreign key constraints.
+**Note**: `sessions.persona_id` and `sessions.patient_id` are logical foreign keys without explicit database constraints for flexibility.
 
 ---
 
 ## Indexes (Performance Optimized)
 
 | Index Name | Table | Columns | Purpose |
-|------------|-------|---------|---------|
+|------------|-------|---------|---------|-------|
 | `idx_medications_patient` | medications | patient_id | Fast medication lookups |
 | `idx_medications_active` | medications | active | Filter active meds |
 | `idx_journal_entries_patient_date` | journal_entries | patient_id, entry_date DESC | Chronological journal queries |
 | `idx_journal_entries_mood` | journal_entries | patient_id, mood | Mood filtering |
 | `idx_journal_entries_favorite` | journal_entries | patient_id, favorite | Favorite entries |
 | `idx_messages_session_created` | messages | session_id, created_at DESC | Message history retrieval |
-| `idx_sessions_patient_type` | sessions | patient_id, session_type, updated_at DESC | Session queries |
+| `idx_sessions_patient_type` | sessions | patient_id, session_type, updated_at DESC | Session queries by type |
 | `idx_semantic_pins_patient_medical` | semantic_pins | patient_id, medical_category, importance_score DESC | Medical pin queries |
 
 ---
@@ -260,14 +271,22 @@ erDiagram
 3. **Hydroxizine** - 25mg, 2x daily (anxiolytic)
 4. **Naltrexone** - 50mg, 1x daily (addiction treatment)
 
+### Appointments (0)
+- No scheduled appointments
+
 ### Journal Entry (1)
 - **Date**: 2025-11-21
 - **Mood**: Relaxed
 - **Type**: Free journaling
 
-### Default Personas (2)
-- **default-cloud** - Cloud-based AI assistant
-- **default-local** - Privacy-focused local AI
+### Active Sessions (1)
+- **Messages**: 4 conversation messages
+- **Status**: Active conversation in progress
+
+### Enhanced Personas (2)
+- **default-cloud** - Cloud-based AI assistant with therapeutic enhancements
+- **default-local** - Privacy-focused local AI with specialized settings
+- **New Fields**: specialty, therapeutic_focus, tags, color themes, usage tracking
 
 ---
 
@@ -308,6 +327,6 @@ PRAGMA temp_store = MEMORY;
 
 ---
 
-**Documentation Generated**: AI Analysis on November 21, 2025  
+**Documentation Generated**: AI Analysis on November 22, 2025  
 **For**: Luna Mental Health Companion Platform  
-**Version**: 1.1.0-beta
+**Version**: 1.2.0-beta
