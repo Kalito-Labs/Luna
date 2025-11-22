@@ -2,7 +2,7 @@
   <div class="medications-list">
     <div class="list-header">
       <h3>Medications</h3>
-      <button @click="$emit('add-medication')" class="btn btn-sm btn-primary">
+      <button v-if="!readonly" @click="$emit('add-medication')" class="btn btn-sm btn-primary">
         Add Medication
       </button>
     </div>
@@ -60,7 +60,7 @@
           </p>
         </div>
         
-        <div class="med-actions">
+        <div v-if="!readonly" class="med-actions">
           <button @click="$emit('edit-medication', medication)" class="btn btn-xs btn-outline">
             Edit
           </button>
@@ -100,6 +100,7 @@ interface Patient {
 interface Props {
   medications: Medication[]
   patients: Patient[]
+  readonly?: boolean
 }
 
 const props = defineProps<Props>()

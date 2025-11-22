@@ -20,18 +20,15 @@
             </div>
           </div>
         </div>
-        <div class="cta-section">
-          <p class="cta-text">Begin Your Wellness Journey</p>
-          <div class="cta-buttons">
-            <router-link to="/kalito" class="btn btn-primary">
-              <span class="btn-icon">🌙</span>
-              Luna AI
-            </router-link>
-            <router-link to="/journal" class="btn btn-secondary">
-              <span class="btn-icon">📓</span>
-              Journal
-            </router-link>
-          </div>
+        <div class="cta-buttons">
+          <router-link to="/kalito" class="btn btn-primary">
+            <span class="btn-icon">🌙</span>
+            Luna AI
+          </router-link>
+          <router-link to="/journal" class="btn btn-secondary">
+            <span class="btn-icon">📓</span>
+            Journal
+          </router-link>
         </div>
       </div>
     </section>
@@ -212,24 +209,6 @@ onMounted(() => {
   margin-top: 0.5rem;
 }
 
-/* CTA Section */
-.cta-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  width: 100%;
-  padding-top: 1rem;
-}
-
-.cta-text {
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.85);
-  margin: 0;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-
 .cta-buttons {
   display: flex;
   gap: 1.25rem;
@@ -373,10 +352,6 @@ onMounted(() => {
     font-size: 1rem;
   }
 
-  .cta-text {
-    font-size: 1.1rem;
-  }
-
   .btn {
     padding: 0.875rem 1.75rem;
     font-size: 1rem;
@@ -421,10 +396,6 @@ onMounted(() => {
 
   .quote-author {
     font-size: 0.95rem;
-  }
-
-  .cta-text {
-    font-size: 1rem;
   }
 
   .btn {

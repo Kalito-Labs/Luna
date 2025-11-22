@@ -17,23 +17,23 @@
         </button>
         <button class="menu-item" @click="goToKalitoHub">
           <span class="menu-icon">🏥</span>
-          Kalito
+          Kalito Hub
         </button>
         <button class="menu-item" @click="goToJournal">
           <span class="menu-icon">📓</span>
           Journal
         </button>
-        <button class="menu-item" @click="goToChat">
-          <span class="menu-icon">🤖</span>
-          Luna AI
+        <button class="menu-item" @click="goToLibrary">
+          <span class="menu-icon">📚</span>
+          Library
         </button>
         <button class="menu-item" @click="goToPersonas">
           <span class="menu-icon">👤</span>
           Personas
         </button>
-        <button class="menu-item" @click="goToLibrary">
-          <span class="menu-icon">📚</span>
-          Library
+        <button class="menu-item" @click="goToChat">
+          <span class="menu-icon">🤖</span>
+          Luna AI
         </button>
       </div>
     </transition>
