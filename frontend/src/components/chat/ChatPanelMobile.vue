@@ -355,7 +355,7 @@ onUnmounted(() => {
   flex-direction: column;
   height: 97vh;
   width: 100%;
-  background: linear-gradient(135deg, #0c0e14 0%, #1a1d29 100%);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 50%, rgba(67, 56, 202, 0.1) 100%);
   overflow: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -366,10 +366,10 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  background: rgba(14, 18, 26, 0.95);
+  background: rgba(15, 23, 42, 0.98);
   backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.15);
   z-index: 100;
 }
 
@@ -378,13 +378,13 @@ onUnmounted(() => {
   height: 48px;
   min-width: 48px;
   min-height: 48px;
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: 0.75rem;
-  color: rgba(139, 92, 246, 0.9);
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  color: rgba(196, 181, 253, 1);
   font-size: 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
@@ -392,14 +392,14 @@ onUnmounted(() => {
 }
 
 .header-btn:active {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(139, 92, 246, 0.3);
   transform: scale(0.95);
 }
 
 .home-btn {
-  background: rgba(66, 165, 245, 0.12);
-  border-color: rgba(66, 165, 245, 0.25);
-  color: rgba(66, 165, 245, 0.9);
+  background: rgba(129, 140, 248, 0.15);
+  border-color: rgba(129, 140, 248, 0.3);
+  color: rgba(129, 140, 248, 1);
 }
 
 .header-title {
@@ -721,22 +721,23 @@ onUnmounted(() => {
   align-items: flex-end;
   gap: 0.75rem;
   width: 100%;
+  position: relative;
 }
 
 .chat-input {
   flex: 1;
-  background: rgba(16, 24, 34, 0.651);
-  backdrop-filter: blur(12px);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+  backdrop-filter: blur(20px) saturate(150%);
   color: #f6f8fa;
-  border: 1px solid rgba(51, 51, 51, 0.15);
-  border-radius: 0.75rem;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 14px;
   padding: 1rem;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 1rem;
   line-height: 1.5;
   outline: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   resize: none;
   min-height: 52px;
   max-height: 150px;
@@ -744,13 +745,13 @@ onUnmounted(() => {
 }
 
 .chat-input:focus {
-  border-color: rgba(66, 165, 245, 0.5);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 0 0 3px rgba(66, 165, 245, 0.15);
-  background: rgba(16, 24, 34, 0.8);
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15), 0 8px 24px rgba(139, 92, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
 }
 
 .chat-input::placeholder {
-  color: rgba(232, 234, 237, 0.5);
+  color: rgba(196, 181, 253, 0.4);
 }
 
 .send-btn {

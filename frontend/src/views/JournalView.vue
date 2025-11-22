@@ -2,13 +2,13 @@
   <div class="journal-home">
     <!-- Header Section with Hamburger Menu -->
     <header class="journal-header">
-      <div class="header-top">
-        <HamburgerMenu />
-      </div>
       <div class="header-content">
-        <h1 class="welcome-message">Welcome back, {{ patientName }} ✨</h1>
-        <h2 class="prompt-message">What's on your mind today?</h2>
-        <p class="header-subtitle">Take a moment to reflect and share your thoughts</p>
+        <HamburgerMenu />
+        <div class="header-text">
+          <h1 class="welcome-message">Welcome back, {{ patientName }} ✨</h1>
+          <h2 class="prompt-message">What's on your mind today?</h2>
+          <p class="header-subtitle">Take a moment to reflect and share your thoughts</p>
+        </div>
       </div>
     </header>
 
@@ -166,7 +166,7 @@ onMounted(async () => {
     rgba(15, 23, 42, 0.98) 0%, 
     rgba(30, 41, 59, 0.95) 50%,
     rgba(67, 56, 202, 0.1) 100%);
-  padding: 1.5rem;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -178,17 +178,25 @@ onMounted(async () => {
 /* Enhanced Header */
 .journal-header {
   margin-bottom: 0.5rem;
-}
-
-.header-top {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 1rem;
+  padding: 1.25rem 1.5rem 0 1.5rem;
 }
 
 .header-content {
-  text-align: center;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
   animation: fadeInUp 0.6s ease-out;
+}
+
+.header-content :deep(.hamburger-menu) {
+  flex-shrink: 0;
+  margin-left: -0.5rem;
+  margin-top: 0.25rem;
+}
+
+.header-text {
+  flex: 1;
+  text-align: center;
 }
 
 .welcome-message {
@@ -225,6 +233,7 @@ onMounted(async () => {
   display: flex;
   gap: 1rem;
   margin-bottom: 0.5rem;
+  padding: 0 1.5rem;
 }
 
 .stat-card {
@@ -278,6 +287,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  padding: 0 1.5rem;
 }
 
 .action-btn {
@@ -341,20 +351,20 @@ onMounted(async () => {
 /* Floating Action Button */
 .fab {
   position: fixed;
-  bottom: 3rem;
-  right: 3rem;
-  width: 64px;
-  height: 64px;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 72px;
+  height: 72px;
   background: linear-gradient(135deg, 
     rgba(139, 92, 246, 0.9) 0%, 
     rgba(124, 58, 237, 0.95) 100%);
   border: none;
-  border-radius: 20px;
+  border-radius: 22px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.5);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
   backdrop-filter: blur(20px);
@@ -379,8 +389,8 @@ onMounted(async () => {
 }
 
 .fab-icon {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   color: white;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
@@ -419,6 +429,7 @@ onMounted(async () => {
   overflow: hidden;
   min-height: 0;
   position: relative;
+  margin: 0 1.5rem 1.5rem 1.5rem;
 }
 
 .insights-section::before {
@@ -688,15 +699,15 @@ onMounted(async () => {
   }
 
   .fab {
-    bottom: 1.5rem;
-    right: 1.5rem;
-    width: 56px;
-    height: 56px;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    width: 64px;
+    height: 64px;
   }
 
   .fab-icon {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
   }
 
   .insights-section {

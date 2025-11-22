@@ -92,221 +92,111 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 .hamburger-container {
   position: relative;
   display: inline-block;
+  z-index: 2000;
 }
 
 .hamburger-button {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   padding: 0;
   margin: 0;
-  background: linear-gradient(145deg, #0d1117, #0a0e13);
-  border: 1.7px solid #303851;
-  border-radius: 0.6em;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
   cursor: pointer;
-  box-shadow:
-    0 4px 20px 0 #11192875,
-    0 2px 8px 0 #0002,
-    0 0.5px 0 #c7dfff33 inset,
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   outline: none;
   position: relative;
-  transition:
-    background 0.3s ease,
-    border 0.3s ease,
-    box-shadow 0.3s ease,
-    backdrop-filter 0.3s ease,
-    transform 0.2s ease;
-}
-
-.hamburger-button::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, transparent, rgba(95, 184, 184, 0.1), transparent);
-  border-radius: 0.7em;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: -1;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hamburger-button:hover,
 .hamburger-button:focus {
-  background: linear-gradient(145deg, #1a2332, #0f1419);
-  border-color: #3d9999;
-  box-shadow:
-    0 8px 28px 2px rgba(61, 153, 153, 0.2),
-    0 2px 9px 0 #29366b55,
-    0 0.5px 0 #b8e6e666 inset,
-    0 0 15px rgba(61, 153, 153, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
-}
-
-.hamburger-button:hover::before,
-.hamburger-button:focus::before {
-  opacity: 1;
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.2);
 }
 
 .hamburger-button.open {
-  background: rgba(8, 10, 14, 0.85);
-  border: 1.5px solid rgba(61, 153, 153, 0.6);
-  box-shadow:
-    0 0 20px rgba(61, 153, 153, 0.4),
-    0 0 40px rgba(61, 153, 153, 0.2),
-    0 1.5px 10px 0 #10132332,
-    0 0 0 1px rgba(61, 153, 153, 0.3),
-    inset 0 1px 0 rgba(61, 153, 153, 0.2);
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  animation: neonPulse 2s ease-in-out infinite alternate;
-}
-
-@keyframes neonPulse {
-  0% {
-    box-shadow:
-      0 0 20px rgba(61, 153, 153, 0.4),
-      0 0 40px rgba(61, 153, 153, 0.2),
-      0 1.5px 10px 0 #10132332,
-      0 0 0 1px rgba(61, 153, 153, 0.3),
-      inset 0 1px 0 rgba(61, 153, 153, 0.2);
-  }
-  100% {
-    box-shadow:
-      0 0 30px rgba(61, 153, 153, 0.6),
-      0 0 60px rgba(61, 153, 153, 0.3),
-      0 1.5px 10px 0 #10132332,
-      0 0 0 1px rgba(61, 153, 153, 0.4),
-      inset 0 1px 0 rgba(61, 153, 153, 0.3);
-  }
+  background: rgba(139, 92, 246, 0.25);
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
 }
 
 .hamburger-button.open:hover,
 .hamburger-button.open:focus {
-  background: rgba(12, 14, 18, 0.9);
-  border-color: rgba(61, 153, 153, 0.8);
-  box-shadow:
-    0 0 25px rgba(61, 153, 153, 0.6),
-    0 0 50px rgba(61, 153, 153, 0.3),
-    0 2px 12px 0 #10132344,
-    0 0 0 1px rgba(61, 153, 153, 0.4),
-    inset 0 1px 0 rgba(61, 153, 153, 0.3);
+  background: rgba(139, 92, 246, 0.35);
+  border-color: rgba(139, 92, 246, 0.7);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
 }
 
 .hamburger-button span {
-  width: 26px;
-  height: 3px;
-  background: linear-gradient(90deg, #b4c3cf, #d1e3f0);
-  border-radius: 5px;
-  transition:
-    background 0.3s ease,
-    transform 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6),
-    opacity 0.3s ease,
-    box-shadow 0.3s ease;
-  box-shadow: 
-    0 1.5px 6px #21232b44,
-    0 0 8px rgba(180, 195, 207, 0.3);
+  width: 24px;
+  height: 2.5px;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.9), 
+    rgba(196, 181, 253, 0.8));
+  border-radius: 4px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
 
 .hamburger-button:hover span {
-  background: linear-gradient(90deg, #3d9999, #5fb8b8);
-  box-shadow: 
-    0 1.5px 6px #21232b44,
-    0 0 12px rgba(61, 153, 153, 0.5);
+  background: linear-gradient(90deg, 
+    rgba(139, 92, 246, 0.9), 
+    rgba(196, 181, 253, 1));
 }
 
 .hamburger-button.open span:nth-child(1) {
   transform: translateY(7.5px) rotate(45deg);
-  background: linear-gradient(90deg, #3d9999, #5fb8b8);
-  box-shadow: 
-    0 0 15px rgba(61, 153, 153, 0.6),
-    0 0 30px rgba(61, 153, 153, 0.3);
+  background: linear-gradient(90deg, 
+    rgba(139, 92, 246, 1), 
+    rgba(196, 181, 253, 1));
 }
 
 .hamburger-button.open span:nth-child(2) {
   opacity: 0;
-  transform: scaleX(0.6);
+  transform: scaleX(0);
 }
 
 .hamburger-button.open span:nth-child(3) {
   transform: translateY(-7.5px) rotate(-45deg);
-  background: linear-gradient(90deg, #3d9999, #5fb8b8);
-  box-shadow: 
-    0 0 15px rgba(61, 153, 153, 0.6),
-    0 0 30px rgba(61, 153, 153, 0.3);
-}
-
-.hamburger-button span {
-  opacity: 1;
-  transform: none;
+  background: linear-gradient(90deg, 
+    rgba(139, 92, 246, 1), 
+    rgba(196, 181, 253, 1));
 }
 
 .hamburger-menu {
   position: absolute;
-  top: calc(100% + 0.5rem);
+  top: calc(100% + 0.75rem);
   left: 0;
-  min-width: 200px;
-  max-width: 450px;
-  /* Enhanced glass/frosted style with teal accents */
-  background: linear-gradient(145deg, 
-    rgba(12, 14, 18, 0.671), 
-    rgba(8, 10, 14, 0.5));
-  border: 1.5px solid rgba(61, 153, 153, 0.3);
-  border-radius: 1em;
-  box-shadow:
-    0 0 20px rgba(61, 153, 153, 0.2),
-    0 6px 32px 0 rgba(0, 0, 0, 0.4),
-    0 0 0 1.5px rgba(61, 153, 153, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(61, 153, 153, 0.2);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  padding: .5em;
+  min-width: 220px;
+  background: rgba(35, 44, 66, 0.95);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+  padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 0.5rem;
-  z-index: 1001;
-  font-family: var(--font-base);
-  animation: menuGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes menuGlow {
-  0% {
-    box-shadow:
-      0 0 20px rgba(61, 153, 153, 0.2),
-      0 6px 32px 0 rgba(0, 0, 0, 0.4),
-      0 0 0 1.5px rgba(61, 153, 153, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      inset 0 -1px 0 rgba(61, 153, 153, 0.2);
-  }
-  100% {
-    box-shadow:
-      0 0 30px rgba(61, 153, 153, 0.3),
-      0 6px 32px 0 rgba(0, 0, 0, 0.4),
-      0 0 0 1.5px rgba(61, 153, 153, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15),
-      inset 0 -1px 0 rgba(61, 153, 153, 0.3);
-  }
+  z-index: 2001;
 }
 
 .menu-item {
   width: 100%;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.02), 
-    rgba(61, 153, 153, 0.03));
-  border: 1px solid rgba(61, 153, 153, 0.15);
-  border-radius: 0.75rem;
-  color: var(--color-text);
+  padding: 0.875rem 1rem;
+  background: rgba(46, 57, 75, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -314,100 +204,47 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.95rem;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  font-weight: 500;
 }
 
 .menu-item:hover {
-  /* Even more dramatic gradient + glow on hover with teal */
-  background: linear-gradient(135deg, 
-    rgba(61, 153, 153, 0.1),
-    rgba(95, 184, 184, 0.08));
-  border-color: rgba(61, 153, 153, 0.4);
-  color: var(--color-heading);
+  background: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.5);
+  color: rgba(255, 255, 255, 1);
   transform: translateX(4px);
-  box-shadow:
-    0 0 25px rgba(61, 153, 153, 0.35),
-    0 0 15px rgba(61, 153, 153, 0.2),
-    0 4px 16px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 20px rgba(61, 153, 153, 0.05);
-  text-shadow: 0 0 8px rgba(61, 153, 153, 0.6);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
 }
 
 .menu-item:active {
   transform: translateX(2px);
-  box-shadow:
-    0 0 15px rgba(61, 153, 153, 0.25),
-    0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.2);
 }
 
 .menu-icon {
   font-size: 1.1em;
   opacity: 0.9;
-  transition: 
-    opacity 0.3s ease,
-    text-shadow 0.3s ease,
-    transform 0.3s ease;
-}
-
-.menu-item:hover {
-  background: linear-gradient(145deg, 
-    rgba(35, 36, 43, 0.9), 
-    rgba(28, 32, 40, 0.85));
-  color: #3d9999;
-  border-color: rgba(61, 153, 153, 0.6);
-  box-shadow: 
-    0 0 20px rgba(61, 153, 153, 0.4),
-    0 3px 19px rgba(16, 23, 36, 0.6),
-    0 0 0 1px rgba(61, 153, 153, 0.3),
-    inset 0 1px 0 rgba(61, 153, 153, 0.2);
-  transform: translateY(-3px) scale(1.05);
-  text-shadow: 0 0 10px rgba(61, 153, 153, 0.5);
+  transition: all 0.3s ease;
 }
 
 .menu-item:hover .menu-icon {
   opacity: 1;
-  text-shadow: 0 0 15px rgba(61, 153, 153, 0.8);
   transform: scale(1.1);
-}
-
-.menu-item:active {
-  background: linear-gradient(145deg, 
-    rgba(22, 24, 26, 0.95), 
-    rgba(16, 18, 22, 0.9));
-  color: #5fb8b8;
-  border-color: rgba(95, 184, 184, 0.8);
-  transform: scale(0.98) translateY(-1px);
-  box-shadow: 
-    0 0 15px rgba(95, 184, 184, 0.6),
-    0 1px 5px rgba(16, 23, 36, 0.4),
-    0 0 0 1px rgba(95, 184, 184, 0.4),
-    inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .menu-fade-enter-active,
 .menu-fade-leave-active {
-  transition:
-    opacity 0.4s ease,
-    transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    filter 0.4s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .menu-fade-enter-from,
 .menu-fade-leave-to {
   opacity: 0;
-  transform: translateY(-15px) scale(0.95);
-  filter: blur(5px);
+  transform: translateY(-10px) scale(0.95);
 }
 
 .menu-fade-enter-to,
 .menu-fade-leave-from {
   opacity: 1;
   transform: translateY(0) scale(1);
-  filter: blur(0);
 }
 </style>

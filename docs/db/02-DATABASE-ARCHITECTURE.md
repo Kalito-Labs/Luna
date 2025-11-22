@@ -1,6 +1,6 @@
 # Luna Database Architecture
 
-**Last Updated**: November 21, 2025  
+**Last Updated**: November 22, 2025  
 **Database**: kalito.db (SQLite)  
 **Focus**: Performance, integrity, and optimization
 
@@ -184,6 +184,11 @@ journal_entries.session_id → sessions.id (ON DELETE SET NULL)
 - Delete session → Journal entry `session_id` set to NULL
 - **Benefit**: Journal entries persist even if conversation deleted
 - **Use Case**: AI conversation linked to journal, but journal is independent
+
+**Note on Logical Foreign Keys**:
+- `sessions.persona_id` → `personas.id` (logical reference, no constraint)
+- `sessions.patient_id` → `patients.id` (logical reference, no constraint)
+- **Design Choice**: Flexibility for session management without strict enforcement
 
 ---
 
@@ -412,6 +417,95 @@ All tables include:
 4. **Query Analysis**
    - Use `EXPLAIN QUERY PLAN` to analyze slow queries
    - Monitor with `PRAGMA stats` for optimization insights
+
+---
+
+## Therapeutic Enhancements
+
+### Enhanced Personas Table
+
+The `personas` table has been extended with therapeutic-specific fields to support mental health use cases:
+
+```sql
+-- NEW THERAPEUTIC ENHANCEMENT FIELDS
+specialty TEXT                    -- e.g., 'CBT', 'DBT', 'Mindfulness'
+therapeutic_focus TEXT            -- e.g., 'Anxiety', 'Depression', 'Trauma'
+template_id TEXT                  -- Reference to persona templates
+created_from TEXT DEFAULT 'manual' -- 'manual', 'template', 'system'
+tags TEXT                         -- JSON array for categorization
+color_theme TEXT DEFAULT '#6366f1' -- UI color theme (hex)
+is_favorite INTEGER DEFAULT 0     -- User favorite flag
+usage_count INTEGER DEFAULT 0     -- Track persona usage
+last_used_at TEXT                 -- Last usage timestamp
+builtin_data_access TEXT          -- JSON permissions for data access
+```
+
+**Use Cases**:
+- **Specialty-based filtering**: Find personas by therapeutic approach
+- **Usage analytics**: Track which personas are most effective
+- **Template system**: Create personas from predefined templates
+- **Data permissions**: Control what patient data each persona can access
+- **UI customization**: Color-coded personas for visual organization
+
+### Session Context Fields
+
+Sessions now include mental health context:
+
+```sql
+session_type TEXT DEFAULT 'chat'    -- 'chat', 'journal', 'medication', etc.
+patient_id TEXT                     -- Link to patient for context
+related_record_id TEXT              -- Link to medication/appointment/journal
+care_category TEXT                  -- 'mental_health', 'medication', etc.
+```
+
+**Benefits**:
+- **Contextual AI**: AI knows what type of conversation it's in
+- **Patient-aware**: Sessions linked to specific patients
+- **Care tracking**: Categorize conversations by care domain
+
+### Medical Semantic Pins
+
+Semantic pins enhanced for medical context extraction:
+
+```sql
+medical_category TEXT               -- 'symptom', 'medication', 'mood', etc.
+patient_id TEXT                     -- Direct patient link
+urgency_level TEXT DEFAULT 'normal' -- 'low', 'normal', 'high', 'urgent'
+```
+
+**Query Example**:
+```sql
+-- Get high-urgency medication-related pins for a patient
+SELECT * FROM semantic_pins 
+WHERE patient_id = ? 
+  AND medical_category = 'medication'
+  AND urgency_level IN ('high', 'urgent')
+ORDER BY importance_score DESC, created_at DESC;
+```
+
+---
+
+## Current Database State
+
+### Active Data (as of November 22, 2025)
+
+| Table | Row Count | Status |
+|-------|-----------|--------|
+| patients | 1 | Kaleb (active) |
+| medications | 4 | All active prescriptions |
+| appointments | 0 | No scheduled appointments |
+| journal_entries | 1 | 1 entry from Nov 21 |
+| vitals | Multiple | Ongoing health tracking |
+| personas | 2 | Enhanced with therapeutic fields |
+| sessions | 1 | Active conversation |
+| messages | 4 | Conversation in progress |
+| conversation_summaries | 0 | Generated as needed |
+| semantic_pins | 0 | Extracted as conversations grow |
+
+**Active Conversation**:
+- 1 active session with 4 messages
+- Demonstrates real-time chat functionality
+- Memory system ready for context extraction
 
 ---
 

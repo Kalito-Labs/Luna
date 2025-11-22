@@ -235,16 +235,17 @@ async function submitForm() {
 
 <style scoped>
 .appointment-form {
-  background: var(--bg-main);
-  border: var(--border);
-  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 50%, rgba(67, 56, 202, 0.1) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 16px;
   max-width: 1000px;
   width: 90vw;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-strong);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
 }
 
 .modal-header {
@@ -252,13 +253,17 @@ async function submitForm() {
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: var(--border);
-  background: var(--bg-panel);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
 }
 
 .modal-header h2 {
   margin: 0;
-  color: var(--text-heading);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 1.75rem;
   font-weight: 600;
 }
@@ -268,7 +273,7 @@ async function submitForm() {
   border: none;
   font-size: 2rem;
   cursor: pointer;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.6);
   padding: 0;
   width: 2rem;
   height: 2rem;
@@ -276,43 +281,61 @@ async function submitForm() {
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .close-btn:hover {
-  background: var(--bg-hover);
-  color: var(--text-heading);
+  background: rgba(139, 92, 246, 0.15);
+  color: rgba(255, 255, 255, 1);
+  transform: rotate(90deg);
 }
 
 .form-container {
   padding: 24px;
   overflow-y: auto;
   flex: 1;
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .form-section {
-  background: var(--bg-glass);
-  backdrop-filter: var(--blur);
-  border: var(--border);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
-  transition: all 0.2s ease;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .form-section:last-child {
   margin-bottom: 0;
 }
 
+.form-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.8) 0%, rgba(196, 181, 253, 0.8) 100%);
+  border-radius: 16px 16px 0 0;
+}
+
 .form-section:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-soft);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
 }
 
 .form-section h3 {
   margin: 0 0 20px 0;
-  color: var(--text-heading);
-  border-bottom: var(--border);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
   padding-bottom: 12px;
   font-weight: 600;
   font-size: 1.25rem;
@@ -337,7 +360,7 @@ async function submitForm() {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: var(--text-heading);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .form-group input,
@@ -345,12 +368,12 @@ async function submitForm() {
 .form-group textarea {
   width: 100%;
   padding: 12px;
-  border: var(--border);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 8px;
-  background: var(--bg-main);
-  color: var(--text-main);
+  background: rgba(15, 23, 42, 0.6);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 1rem;
-  transition: border-color 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .form-group input[type="checkbox"] {
@@ -362,8 +385,9 @@ async function submitForm() {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  background: rgba(15, 23, 42, 0.8);
 }
 
 .form-group input:disabled,
@@ -378,16 +402,16 @@ async function submitForm() {
   gap: 16px;
   justify-content: flex-end;
   padding-top: 20px;
-  border-top: var(--border);
+  border-top: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .btn {
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.95rem;
 }
 
@@ -397,29 +421,32 @@ async function submitForm() {
 }
 
 .btn-primary {
-  background: var(--accent-blue);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
   color: white;
-  box-shadow: var(--glow-blue);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--blue-600);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
+  border-color: rgba(139, 92, 246, 0.8);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-secondary {
-  background: transparent;
-  color: var(--accent-blue);
-  border: 2px solid var(--accent-blue);
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(129, 140, 248, 1);
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  box-shadow: 0 2px 8px rgba(129, 140, 248, 0.1);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: var(--accent-blue);
-  color: white;
-  box-shadow: var(--glow-blue);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%);
+  border-color: rgba(129, 140, 248, 0.6);
+  color: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 20px rgba(129, 140, 248, 0.3);
+  transform: translateY(-2px);
 }
 
 /* Responsive Design */
