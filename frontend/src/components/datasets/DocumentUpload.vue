@@ -308,7 +308,7 @@ function getFileIcon(type: string): string {
 }
 
 .modal-content {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(33, 39, 46, 0.952);
   backdrop-filter: blur(30px) saturate(180%);
   border: 1px solid rgba(139, 92, 246, 0.15);
   border-radius: 24px;
@@ -536,16 +536,6 @@ function getFileIcon(type: string): string {
   border-color: rgba(139, 92, 246, 0.4);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
   background: rgba(255, 255, 255, 0.06);
-}
-
-.form-select option {
-  background: rgba(15, 23, 42, 0.98);
-  color: rgba(255, 255, 255, 0.92);
-  padding: 0.5rem;
-}
-
-.form-select option:hover {
-  background: rgba(139, 92, 246, 0.2);
 }
 
 .radio-group {
