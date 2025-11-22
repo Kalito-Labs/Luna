@@ -82,13 +82,13 @@
                 <span class="help-text">What Luna can learn from this document</span>
               </label>
               <select
-                :value="getLink(persona.id)?.access_level || 'retrieve_only'"
+                :value="getLink(persona.id)?.access_level || 'read'"
                 @change="updateAccessLevel(persona.id, $event)"
                 class="access-select"
               >
-                <option value="retrieve_only">Retrieve Only (Reference)</option>
-                <option value="learn_patterns">Learn Patterns (Training)</option>
-                <option value="full_integration">Full Integration (Internalize)</option>
+                <option value="read">Read (Full Access)</option>
+                <option value="summary">Summary (Overview Only)</option>
+                <option value="reference_only">Reference Only (Context)</option>
               </select>
             </div>
 
@@ -203,7 +203,7 @@ async function toggleLink(personaId: string, event: Event) {
         body: JSON.stringify({
           enabled: true,
           weight: 1.0,
-          access_level: 'retrieve_only'
+          access_level: 'read'
         })
       })
       
@@ -213,7 +213,7 @@ async function toggleLink(personaId: string, event: Event) {
         dataset_id: props.dataset.id,
         enabled: true,
         weight: 1.0,
-        access_level: 'retrieve_only'
+        access_level: 'read'
       })
     } else {
       // Remove link

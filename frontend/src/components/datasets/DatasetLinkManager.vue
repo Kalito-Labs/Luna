@@ -136,7 +136,7 @@ async function toggleLink(datasetId: string, event: Event) {
         body: JSON.stringify({
           enabled: true,
           weight: 1.0,
-          access_level: 'retrieve_only'
+          access_level: 'read'
         })
       })
       
