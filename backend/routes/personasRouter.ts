@@ -17,7 +17,7 @@ const createPersonaSchema = z.object({
   prompt: z.string().min(1),
   description: z.string().optional(),
   icon: z.string().optional(),
-  category: z.enum(['cloud', 'local', 'general', 'therapy']).optional(),
+  category: z.enum(['cloud', 'local']).optional(),
   // Enhanced therapeutic fields
   specialty: z.string().optional(),
   therapeutic_focus: z.string().optional(),
@@ -39,7 +39,7 @@ const updatePersonaSchema = z.object({
   prompt: z.string().min(1).optional(),
   description: z.string().optional(),
   icon: z.string().optional(),
-  category: z.enum(['cloud', 'local', 'general', 'therapy']).optional(),
+  category: z.enum(['cloud', 'local']).optional(),
   // Enhanced therapeutic fields
   specialty: z.string().optional(),
   therapeutic_focus: z.string().optional(),

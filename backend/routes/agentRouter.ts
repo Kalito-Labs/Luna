@@ -48,7 +48,7 @@ function sseSend(res: Response, data: unknown) {
  * Ensure a persistent session row exists (saved = 1).
  * Auto-save model: all sessions are immediately persistent and appear in sidebar.
  */
-function ensurePersistentSession(sessionId: string, modelId?: string) {
+function ensurePersistentSession(sessionId: string, modelId?: string, personaId?: string) {
   const now = new Date().toISOString()
   const existing = db
     .prepare(`SELECT id FROM sessions WHERE id = ?`)
@@ -57,10 +57,15 @@ function ensurePersistentSession(sessionId: string, modelId?: string) {
   if (!existing) {
     db.prepare(
       `INSERT INTO sessions (id, name, model, recap, persona_id, created_at, updated_at, saved)
-       VALUES (?, ?, ?, NULL, NULL, ?, ?, 1)`
-    ).run(sessionId, 'New Chat', modelId ?? null, now, now)
+       VALUES (?, ?, ?, NULL, ?, ?, ?, 1)`
+    ).run(sessionId, 'New Chat', modelId ?? null, personaId ?? null, now, now)
   } else {
-    db.prepare(`UPDATE sessions SET updated_at = ? WHERE id = ?`).run(now, sessionId)
+    // Update both updated_at and persona_id if provided
+    if (personaId) {
+      db.prepare(`UPDATE sessions SET updated_at = ?, persona_id = ? WHERE id = ?`).run(now, personaId, sessionId)
+    } else {
+      db.prepare(`UPDATE sessions SET updated_at = ? WHERE id = ?`).run(now, sessionId)
+    }
   }
 }
 
@@ -104,7 +109,7 @@ agentRouter.post(
 
     // Make sure a transient session row exists and bump updated_at
     try {
-      ensurePersistentSession(usedSessionId, modelName)
+      ensurePersistentSession(usedSessionId, modelName, personaId)
     } catch (e) {
       logError('Failed to ensure transient session', e as Error, { sessionId: usedSessionId })
       return err(res, 500, 'INTERNAL', 'Failed to initialize session')

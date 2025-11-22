@@ -183,11 +183,11 @@ onMounted(async () => {
 .header-top {
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .header-content {
-  text-align: left;
+  text-align: center;
   animation: fadeInUp 0.6s ease-out;
 }
 

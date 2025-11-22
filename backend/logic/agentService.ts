@@ -312,6 +312,14 @@ function buildSystemPrompt(
   // Get eldercare context based on user query and model capabilities
   const lunaContext = lunaContextService.generateContextualPrompt(adapter, userInput, sessionId)
   
+  // DEBUG: Log RAG context
+  if (lunaContext.includes('Knowledge Base')) {
+    console.log('[AgentService] RAG Context Generated:')
+    console.log('  - Context length:', lunaContext.length, 'chars')
+    console.log('  - Has Knowledge Base:', lunaContext.includes('Knowledge Base Documents'))
+    console.log('  - First 500 chars:', lunaContext.substring(0, 500))
+  }
+  
   // Add balanced instructions that allow natural conversation flow
   const conversationInstructions = "You are engaged in a natural conversation with the user. Use the conversation history to understand context and maintain continuity, while primarily focusing on addressing the user's current question or request. Remember previous topics when relevant and build upon them naturally in your responses."
 

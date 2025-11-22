@@ -284,15 +284,11 @@ async function retryConnection() {
 function getCategoryLabel(category?: PersonaCategory): string {
   switch (category) {
     case 'cloud':
-      return '🚀 High Performance (Cloud Models)'
+      return '☁️ Cloud Models'
     case 'local':
-      return '⚡ Fast & Private (Local Models)'
-    case 'therapy':
-      return '🧠 Therapeutic Assistant'
-    case 'general':
-      return '💬 General Purpose'
+      return '💻 Local Models'
     default:
-      return '🚀 High Performance (Cloud Models)'
+      return '☁️ Cloud Models'
   }
 }
 

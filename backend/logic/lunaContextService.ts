@@ -72,11 +72,31 @@ export interface JournalContext {
   wordCount: number
 }
 
+export interface DatasetContext {
+  id: string
+  name: string
+  description?: string
+  chunkCount: number
+  accessLevel: 'read' | 'summary' | 'reference_only'
+  enabled: boolean
+  chunks: DatasetChunk[]
+}
+
+export interface DatasetChunk {
+  id: string
+  content: string
+  chunkIndex: number
+  sectionTitle?: string
+  pageNumber?: number
+  tokenCount?: number
+}
+
 export type LunaContext = {
   patients: PatientContext[];
   medications: MedicationContext[];
   recentAppointments: AppointmentContext[];
   journalEntries: JournalContext[];
+  datasets: DatasetContext[];
   summary: string;
 };
 
@@ -323,11 +343,95 @@ export class LunaContextService {
     }
   }
 
-
-
   /**
-   * Generate a summary of mental health context for AI
+   * Get datasets linked to a specific persona with their document chunks
+   * Returns all enabled datasets for RAG/knowledge base integration
    */
+  private getPersonaDatasets(personaId: string): DatasetContext[] {
+    try {
+      // Query persona_datasets to find enabled datasets for this persona
+      const query = `
+        SELECT 
+          pd.dataset_id,
+          pd.enabled,
+          pd.access_level,
+          pd.weight,
+          d.name,
+          d.description,
+          d.file_type,
+          d.file_size
+        FROM persona_datasets pd
+        JOIN datasets d ON pd.dataset_id = d.id
+        WHERE pd.persona_id = ? AND pd.enabled = 1
+        ORDER BY pd.weight DESC, d.name ASC
+      `
+      
+      const datasets = db.prepare(query).all(personaId) as Array<{
+        dataset_id: string
+        enabled: number
+        access_level: 'read' | 'summary' | 'reference_only'
+        weight: number
+        name: string
+        description: string | null
+        file_type: string
+        file_size: number
+      }>
+
+      if (datasets.length === 0) {
+        return []
+      }
+
+      // For each dataset, fetch its document chunks
+      return datasets.map(dataset => {
+        const chunkQuery = `
+          SELECT 
+            id,
+            chunk_index,
+            content,
+            section_title,
+            page_number,
+            token_count
+          FROM document_chunks
+          WHERE dataset_id = ?
+          ORDER BY chunk_index ASC
+        `
+        
+        const chunks = db.prepare(chunkQuery).all(dataset.dataset_id) as Array<{
+          id: string
+          chunk_index: number
+          content: string
+          section_title: string | null
+          page_number: number | null
+          token_count: number | null
+        }>
+
+        console.log(`[LunaContext] Dataset "${dataset.name}": fetched ${chunks.length} chunks`)
+        chunks.forEach(chunk => {
+          console.log(`  - Chunk ${chunk.chunk_index}: ${chunk.content.length} chars`)
+        })
+
+        return {
+          id: dataset.dataset_id,
+          name: dataset.name,
+          description: dataset.description || undefined,
+          chunkCount: chunks.length,
+          accessLevel: dataset.access_level,
+          enabled: Boolean(dataset.enabled),
+          chunks: chunks.map(chunk => ({
+            id: chunk.id,
+            content: chunk.content,
+            chunkIndex: chunk.chunk_index,
+            sectionTitle: chunk.section_title || undefined,
+            pageNumber: chunk.page_number || undefined,
+            tokenCount: chunk.token_count || undefined,
+          })),
+        }
+      })
+    } catch (error) {
+      console.error('Error fetching persona datasets for context:', error)
+      return []
+    }
+  }
   private generateContextSummary(context: LunaContext): string {
   // Use context directly, destructuring removed
     let summary = "## Mental Health Practice Context Summary\n\n";
@@ -456,6 +560,41 @@ export class LunaContextService {
       summary += `- No journal entries found in the last 30 days\n\n`;
     }
 
+    // Knowledge Base / RAG Datasets
+    if (context.datasets.length > 0) {
+      summary += `### Knowledge Base Documents (${context.datasets.length})\n`;
+      summary += `**AVAILABLE REFERENCE MATERIALS**\n\n`;
+      
+      let totalChunkContent = 0;
+      
+      context.datasets.forEach((dataset: DatasetContext) => {
+        summary += `#### 📚 ${dataset.name}\n`;
+        if (dataset.description) {
+          summary += `${dataset.description}\n`;
+        }
+        summary += `- Access Level: ${dataset.accessLevel}\n`;
+        summary += `- Content: ${dataset.chunkCount} section${dataset.chunkCount !== 1 ? 's' : ''}\n\n`;
+        
+        // Include all chunks for this dataset
+        if (dataset.chunks.length > 0) {
+          dataset.chunks.forEach((chunk: DatasetChunk) => {
+            summary += `**Section ${chunk.chunkIndex + 1}**`;
+            if (chunk.sectionTitle) {
+              summary += `: ${chunk.sectionTitle}`;
+            }
+            if (chunk.pageNumber) {
+              summary += ` (Page ${chunk.pageNumber})`;
+            }
+            summary += `\n`;
+            summary += `${chunk.content}\n\n`;
+            totalChunkContent += chunk.content.length;
+          });
+        }
+      });
+      
+      console.log(`[LunaContext] Knowledge Base summary: ${totalChunkContent} chars of chunk content added`);
+    }
+
     return summary;
   }
 
@@ -464,19 +603,22 @@ export class LunaContextService {
    * 
    * @param adapter - The AI model adapter (used to determine privacy level)
    * @param patientId - Optional: focus on specific patient
+   * @param personaId - Optional: fetch datasets linked to specific persona
    * @returns Complete mental health context for AI
    */
-  public getLunaContext(adapter: LLMAdapter, patientId?: string): LunaContext {
+  public getLunaContext(adapter: LLMAdapter, patientId?: string, personaId?: string): LunaContext {
     const patients = this.getPatients()
     const medications = this.getMedications(patientId)
     const recentAppointments = this.getRecentAppointments(patientId)
     const journalEntries = this.getRecentJournalEntries(patientId)
+    const datasets = personaId ? this.getPersonaDatasets(personaId) : []
 
     const context: LunaContext = {
       patients,
       medications,
       recentAppointments,
       journalEntries,
+      datasets,
       summary: '',
     }
 
@@ -537,11 +679,16 @@ export class LunaContextService {
    */
   public generateContextualPrompt(adapter: LLMAdapter, userQuery: string, sessionId?: string): string {
     let foundPatient: PatientContext | null = null
+    let personaId: string | undefined
     
-    // Priority 1: Check if session has a tracked patient (maintains conversation focus)
+    // Priority 1: Check if session has a tracked patient and persona (maintains conversation focus)
     if (sessionId) {
       try {
-        const session = db.prepare('SELECT patient_id FROM sessions WHERE id = ?').get(sessionId) as { patient_id: string | null } | undefined
+        const session = db.prepare('SELECT patient_id, persona_id FROM sessions WHERE id = ?').get(sessionId) as { 
+          patient_id: string | null
+          persona_id: string | null 
+        } | undefined
+        
         if (session?.patient_id) {
           const patient = db.prepare('SELECT id, name, date_of_birth, gender FROM patients WHERE id = ? AND active = 1').get(session.patient_id) as {
             id: string
@@ -560,8 +707,14 @@ export class LunaContextService {
             console.log(`[LunaContext] Using session patient focus: ${patient.name}`)
           }
         }
+        
+        // Capture persona_id for dataset retrieval
+        if (session?.persona_id) {
+          personaId = session.persona_id
+          console.log(`[LunaContext] Using session persona: ${personaId}`)
+        }
       } catch (error) {
-        console.error('Error reading session patient_id:', error)
+        console.error('Error reading session data:', error)
       }
     }
     
@@ -604,11 +757,20 @@ export class LunaContextService {
       }
     }
 
-    // Get context (focused on found patient if any)
-    const context = this.getLunaContext(adapter, foundPatient?.id)
+    // Get context (focused on found patient if any, with persona datasets)
+    console.log(`[LunaContext] Fetching context - PersonaId: ${personaId}, PatientId: ${foundPatient?.id}`)
+    const context = this.getLunaContext(adapter, foundPatient?.id, personaId)
     
-    if (context.patients.length === 0) {
-      return "" // No patient data available
+    console.log(`[LunaContext] Context retrieved - Patients: ${context.patients.length}, Datasets: ${context.datasets.length}`)
+    if (context.datasets.length > 0) {
+      context.datasets.forEach(ds => {
+        console.log(`  - Dataset: "${ds.name}" (${ds.chunkCount} chunks, access: ${ds.accessLevel})`)
+      })
+    }
+    
+    if (context.patients.length === 0 && context.datasets.length === 0) {
+      console.log('[LunaContext] No context available - returning empty')
+      return "" // No patient data or datasets available
     }
 
     let contextPrompt = "\n\n## Available Patient Information\n\n"
@@ -622,6 +784,15 @@ export class LunaContextService {
     contextPrompt += "- **NO HALLUCINATION**: Do not invent or assume patient details not explicitly provided\n"
     contextPrompt += "- **JOURNAL INSIGHTS**: Use journal entries to understand emotional state, concerns, and therapy progress\n"
     contextPrompt += "- **THERAPEUTIC SUPPORT**: Help identify patterns in mood, emotions, and themes from journal entries\n"
+    
+    // Add RAG-specific instructions if datasets are available
+    if (context.datasets.length > 0) {
+      contextPrompt += "- **KNOWLEDGE BASE ACCESS**: You have access to reference documents shown in the Knowledge Base section above\n"
+      contextPrompt += "- **CITE SOURCES**: When using information from knowledge base documents, reference the document name\n"
+      contextPrompt += "- **APPLY EXPERTISE**: Use the knowledge base to provide evidence-based therapeutic guidance\n"
+      contextPrompt += "- **DATASET PRIORITY**: Information from knowledge base documents should supplement, not replace, patient-specific data\n"
+    }
+    
     contextPrompt += "- **PROFESSIONAL CONTEXT**: This is for Caleb's mental health practice management\n"
     contextPrompt += "- Focus on supporting therapeutic goals and treatment planning\n"
 
