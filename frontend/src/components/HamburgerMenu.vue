@@ -15,6 +15,10 @@
           <span class="menu-icon">🏠</span>
           Home
         </button>
+          <button class="menu-item" @click="goToChat">
+          <span class="menu-icon">🤖</span>
+          Luna AI
+        </button>
         <button class="menu-item" @click="goToKalitoHub">
           <span class="menu-icon">🏥</span>
           Kalito Hub
@@ -31,10 +35,7 @@
           <span class="menu-icon">👤</span>
           Personas
         </button>
-        <button class="menu-item" @click="goToChat">
-          <span class="menu-icon">🤖</span>
-          Luna AI
-        </button>
+
       </div>
     </transition>
   </div>

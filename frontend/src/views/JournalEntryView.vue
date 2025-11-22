@@ -569,8 +569,8 @@ watch(() => route.params.id, (newId) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 1rem 1.5rem 1.5rem;
-  gap: 1.25rem;
+  padding: 1rem 1rem 1rem;
+  gap: 1rem;
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
@@ -917,54 +917,6 @@ watch(() => route.params.id, (newId) => {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
   padding: 0 0.5rem;
-}
-
-/* Sleep Input */
-.sleep-input-container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 0.75rem;
-  padding: 0.5rem;
-}
-
-.sleep-input {
-  flex: 1;
-  padding: 1rem 1.25rem;
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 0.75rem;
-  background: rgba(15, 23, 42, 0.6);
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.95);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  outline: none;
-  text-align: center;
-  font-weight: 600;
-  backdrop-filter: blur(10px);
-}
-
-.sleep-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.sleep-input:focus {
-  border-color: rgba(139, 92, 246, 0.6);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2), 
-              0 8px 24px rgba(139, 92, 246, 0.15);
-  transform: translateY(-2px);
-  background: rgba(15, 23, 42, 0.8);
-}
-
-.sleep-unit {
-  font-size: 1rem;
-  color: rgba(196, 181, 253, 0.8);
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  background: rgba(139, 92, 246, 0.1);
-  border-radius: 0.5rem;
-  min-width: 3rem;
-  text-align: center;
 }
 
 .content-area {
