@@ -1,446 +1,363 @@
 # Luna 🌙
 
-**A Mental Health Companion Platform**
+**Personal Mental Health Companion & AI Practice Assistant**
 
-Luna is a personal mental health companion designed to support individuals in managing their mental wellness journey. Built with Vue.js, Node.js, and SQLite, Luna provides a secure, privacy-focused platform for tracking medications, appointments, and engaging in therapeutic conversations with AI assistants.
+Luna is your comprehensive mental health management platform combining personal wellness tracking with intelligent AI conversations. Built as a single-patient system focused on Kaleb's mental health journey, Luna provides medication tracking, appointment management, therapeutic journaling, and context-aware AI interactions—all with a modern purple gradient interface.
 
-![Luna Platform](https://img.shields.io/badge/Platform-Mental%20Health%20Companion-blue)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-green)
-![Database](https://img.shields.io/badge/Database-Cleaned%20%26%20Optimized-success)
-![Conversation System](https://img.shields.io/badge/AI%20Memory-Industry%20Standard-brightgreen)
+---
 
-## ✨ Features
+## 🎯 What Luna Does
 
-### 🧠 Mental Health Management
-- **Personal Profile**: Comprehensive patient information focused on mental health needs
-- **Medication Tracking**: Detailed prescription management with doctor and pharmacy information
-- **Appointment Scheduling**: Healthcare appointment tracking with preparation notes and outcomes
-- **Journal System**: Daily journaling with mood and emotion tracking for therapeutic insights
-- **Treatment History**: Complete medical timeline for informed care decisions
+### Mental Health Management
+Luna serves as your digital mental health command center, tracking every aspect of your wellness journey:
 
-### 🤖 AI Companion System
-- **Intelligent Conversations**: Multi-turn conversations with context continuity
-- **Persona Customization**: Cloud and local AI assistant variants
-- **Memory Management**: Industry-standard conversation memory architecture
-- **Full Context Access**: AI has access to patient data, medications, appointments, and journal entries
-- **Therapeutic Focus**: AI trained specifically for mental health support with journaling insights
+- **Patient Profile** - Core demographic and contact information for Kaleb
+- **Medication Tracking** - 4 active prescriptions (Lithium, Zyprexa, Hydroxizine, Naltrexone) with dosages, frequencies, pharmacy details, and side effects monitoring
+- **Appointments** - Healthcare scheduling with preparation notes, outcomes, and follow-up tracking
+- **Vitals Monitoring** - Weight (lbs) and glucose (AM/PM) tracking with historical trends
+- **Journal System** - Daily therapeutic journaling with mood tracking, emotions tagging, and calendar visualization
 
-### 🔒 Privacy & Security
-- **Local Data**: All personal data stored locally in SQLite database
-- **No Cloud Dependencies**: Core functionality works offline
-- **Secure Architecture**: Industry-standard security practices
-- **Data Ownership**: Complete user control over personal information
+### AI Companion System
+The heart of Luna is its intelligent conversation system that understands your complete mental health context:
 
-### 📱 Modern Interface
-- **Responsive Design**: Works on desktop, tablet, and mobile devices
-- **Intuitive UI**: Clean, accessible interface optimized for daily use
-- **Real-time Updates**: Instant synchronization across all features
-- **Print Support**: Generate printable reports for healthcare providers
+- **Contextual Conversations** - AI has full access to your medications, appointments, journal entries, and vitals
+- **Therapeutic Personas** - Enhanced persona system with specialty fields (CBT, DBT, Mindfulness), therapeutic focus areas, and customizable color themes
+- **Memory Architecture** - Industry-standard conversation memory with rolling buffers, automatic summarization, and semantic pin extraction
+- **Multi-Model Support** - OpenAI GPT-4.1-nano (cloud) and Ollama (local) with intelligent model selection
+- **Session Management** - Organized conversations with session types (chat, journal, medication), care categories, and patient linking
 
-## 🏗️ Architecture
+### Knowledge Integration
+Luna can incorporate external medical knowledge through its dataset system:
 
+- **Document Processing** - Upload PDFs and Word docs for AI reference
+- **Chunked Storage** - Smart text splitting with vector embeddings for semantic search
+- **Context-Aware Retrieval** - AI automatically pulls relevant dataset information during conversations
+- **Permission Controls** - Fine-grained access levels per persona (read, summary, reference-only)
+
+---
+
+## 🏗️ Architecture Overview
+
+### Tech Stack
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │    Backend      │    │   Database      │
-│   Vue.js + TS   │◄──►│  Node.js + TS   │◄──►│     SQLite      │
-│                 │    │                 │    │                 │
-│ • Patient UI    │    │ • REST API      │    │ • Patient Data  │
-│ • Med Tracking  │    │ • AI Service    │    │ • Conversations │
-│ • Appointments  │    │ • Memory Mgmt   │    │ • AI Memory     │
-│ • Journaling    │    │ • Validation    │    │ • Journal Data  │
-│ • Chat Interface│    │ • Context Gen   │    │ • Audit Logs    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+Frontend: Vue 3 + TypeScript + Ionic Capacitor + Vite
+Backend:  Node.js + Express + TypeScript
+Database: SQLite with WAL mode
+AI:       OpenAI GPT-4.1-nano, Anthropic Claude, Ollama local models
+Search:   Tavily API for web search capabilities
 ```
 
-### Core Technologies
-- **Frontend**: Vue.js 3, TypeScript, Ionic Capacitor, Vite
-- **Backend**: Node.js, Express, TypeScript, ts-node
-- **Database**: SQLite with WAL mode for optimal performance
-- **AI Integration**: OpenAI GPT-4.1-nano, Ollama (local models)
-- **Development**: PNPM workspace, ESLint, Nodemon
+### Database Structure (10 Tables)
+**Mental Health Core:**
+- `patients` - Patient profile (1 active: Kaleb)
+- `medications` - Prescription tracking (4 active)
+- `appointments` - Healthcare scheduling
+- `journal_entries` - Therapeutic journaling with mood/emotion tracking
+- `vitals` - Health metrics (weight, glucose)
 
-## 🚀 Quick Start
+**AI Conversation:**
+- `sessions` - Chat session management with patient/care context
+- `messages` - Individual conversation messages (4 messages in 1 active session)
+- `personas` - AI personality configurations with therapeutic enhancements
 
-### Prerequisites
-- Node.js 18+ 
-- PNPM (recommended) or NPM
-- Git
+**Memory System:**
+- `conversation_summaries` - Compressed conversation history
+- `semantic_pins` - Extracted important medical/therapeutic insights
 
-### Installation
+### Key Features
 
-1. **Clone the repository**
-```bash
-git clone https://github.com/Kalito-Labs/luna-repo.git
-cd luna-repo
+#### 🎨 Modern UI/UX
+- **Purple Gradient Theme** - Unified design system across all components
+- **Glass-morphic Effects** - Backdrop blur, color saturation, subtle transparency
+- **Responsive Design** - Desktop, tablet, and mobile optimized
+- **Dark Mode Native** - Purple-tinted dark backgrounds throughout
+- **Component Consistency** - Standardized styling for forms, cards, buttons, and inputs
+
+#### 🤖 Intelligent Memory
+- **Rolling Buffer** - Last 10 messages in active context (configurable)
+- **Auto-Summarization** - Compresses conversation history after 8 messages
+- **Semantic Pins** - Extracts important medical info (symptoms, medications, moods) with urgency levels
+- **Context Building** - Pre-builds conversation context BEFORE sending to AI for accuracy
+- **Importance Scoring** - Weighted message importance for better context selection
+
+#### 🔐 Privacy & Security
+- **Local-First** - All data stored in SQLite on your machine
+- **No Cloud Dependencies** - Core features work completely offline
+- **Read-Only AI** - AI can read your data but cannot modify it
+- **Validation Layer** - Zod schemas validate all inputs
+- **Rate Limiting** - API protection against abuse
+
+#### 📊 Data Insights
+- **Journal Calendar** - Visual mood/emotion tracking across days
+- **Medication History** - Complete prescription timeline
+- **Appointment Outcomes** - Track healthcare visit results
+- **Vitals Trends** - Weight and glucose patterns over time
+
+---
+
+## 🗂️ Application Structure
+
+### Frontend Views
+```
+/                    - Home with wellness quotes and navigation
+/kalito              - Main chat workspace (ChatWorkspace.vue)
+  ├─ ChatPanel       - Desktop conversation interface
+  ├─ ChatPanelMobile - Mobile-optimized chat
+  ├─ SessionSidebar  - Desktop session/persona management
+  └─ SessionSidebarMobile - Mobile session settings
+
+/journal             - Journal hub with calendar visualization
+  ├─ /calendar       - Calendar view of journal entries
+  └─ /entry/:id      - Individual journal entry view/edit
+
+/kalitohub           - KalitoHub patient management
+  ├─ PatientDetail   - Patient profile with tabs
+  ├─ Medications     - Med list and form
+  ├─ Appointments    - Appointment list and scheduling
+  └─ Vitals          - Health metrics tracking
+
+/library             - Document library and dataset management
 ```
 
-2. **Install dependencies**
-```bash
-pnpm install
+### Backend API Routes
+```
+/api/agent           - AI conversation endpoints
+/api/sessions        - Session CRUD and management
+/api/messages        - Message history and retrieval
+/api/memory          - Conversation summaries and semantic pins
+/api/personas        - Persona management with therapeutic fields
+/api/patients        - Patient profile operations
+/api/medications     - Medication tracking
+/api/appointments    - Appointment scheduling
+/api/journal         - Journal entry CRUD
+/api/vitals          - Vitals recording and history
+/api/models          - AI model registry and configuration
+/api/search          - Tavily web search integration
+/api/datasets        - Document upload and vector search
+/api/vector-search   - Semantic search across documents
 ```
 
-3. **Set up environment variables**
-```bash
-# Backend environment
-cp backend/.env.example backend/.env
-# Add your OpenAI API key and other configurations
-```
-
-4. **Initialize the database**
-```bash
-cd backend
-pnpm run dev  # This will auto-initialize the database
-```
-
-5. **Start development servers**
-
-Frontend (in one terminal):
-```bash
-cd frontend
-pnpm run dev
-```
-
-Backend (in another terminal):
-```bash
-cd backend
-pnpm run dev
-```
-
-6. **Access the application**
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:3000
-
-## 📊 Database Schema
-
-Luna uses a carefully designed SQLite database with 10 optimized tables:
-
-### Core Data
-- **`patients`** - Personal profile information (mental health focused)
-- **`medications`** - Prescription tracking with complete details
-- **`appointments`** - Healthcare scheduling and outcomes
-- **`journal_entries`** - Daily journaling with mood and emotion tracking
-
-### AI System
-- **`sessions`** - Chat conversation management
-- **`messages`** - Individual conversation messages
-- **`personas`** - AI assistant personality configurations
-
-### Memory System
-- **`conversation_summaries`** - Compressed conversation history
-- **`semantic_pins`** - Important information extraction
-
-### Status: ✅ **PERFECTLY CLEAN** 
-All eldercare legacy removed, optimized for mental health use case with integrated journaling system.
-
-[View detailed schema documentation →](docs/db/DB-SCHEMA.md)
-
-## 🤖 AI Conversation System
-
-Luna implements an industry-standard conversation memory architecture:
-
-### Features
-- **Context Continuity**: Maintains conversation flow across multiple exchanges
-- **Smart Memory**: Automatic summarization and important information extraction
-- **Full Patient Context**: AI has access to medications, appointments, and journal entries
-- **Journal Integration**: AI can discuss and provide insights on your journal entries
-- **Mood Pattern Recognition**: AI identifies emotional patterns from journaling history
-- **Persona System**: Customizable AI personalities for different interaction styles
-- **Performance Optimized**: Pre-built context passing for fast response times
-
-### Architecture Highlights
+### Core Services
 ```typescript
-// Industry Standard Pattern
-1. Build context from existing messages (BEFORE saving current input)
-2. Save user message to database  
-3. Pass pre-built context + current input to AI
-4. Save AI response with metadata
+// Backend Logic Layer
+agentService.ts              - AI conversation orchestration
+memoryManager.ts             - Hybrid memory system implementation
+lunaContextService.ts        - Patient data context builder for AI
+modelRegistry.ts             - Multi-provider AI model management
+queryRouter.ts               - Intelligent query routing and tool selection
+structuredMedicationService  - Medication CRUD with validation
+structuredAppointmentService - Appointment CRUD with validation
+journalService.ts            - Journal operations
+tavilyService.ts             - Web search integration
+tools.ts                     - AI function calling tools
 ```
 
-[View conversation fix documentation →](docs/fixes/conversation-context-continuity-fix.md)
+---
 
-## 📁 Project Structure
+## 💾 Database State
 
-```
-luna-repo/
-├── frontend/                 # Vue.js application
-│   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── views/           # Page components
-│   │   ├── composables/     # Vue composition functions
-│   │   ├── router/          # Vue Router configuration
-│   │   └── utils/           # Utility functions
-│   ├── android/             # Capacitor Android build
-│   └── public/              # Static assets
-├── backend/                 # Node.js API server
-│   ├── logic/               # Core business logic
-│   │   ├── agentService.ts  # AI conversation management
-│   │   ├── memoryManager.ts # Conversation memory system
-│   │   └── modelRegistry.ts # AI model configuration
-│   ├── routes/              # Express route handlers
-│   ├── middleware/          # Express middleware
-│   ├── types/               # TypeScript type definitions
-│   ├── db/                  # Database setup and migrations
-│   └── tests/               # Backend test suite
-├── docs/                    # Documentation
-│   ├── db/                  # Database documentation
-│   └── fixes/               # Technical fix documentation
-└── scripts/                 # Utility scripts
-```
+### Current Data (November 22, 2025)
+- **Patients**: 1 (Kaleb, age 39, Texas)
+- **Medications**: 4 active prescriptions
+- **Appointments**: 0 scheduled
+- **Journal Entries**: 1 (Nov 21, mood: Relaxed)
+- **Vitals**: Ongoing tracking
+- **Personas**: 2 (default-cloud, default-local) with therapeutic enhancements
+- **Active Sessions**: 1 with 4 conversation messages
+- **Summaries**: 0 (generated as conversations grow)
+- **Semantic Pins**: 0 (extracted automatically)
 
-## 🧪 Testing
+### Database Optimizations
+- **WAL Mode** - Write-Ahead Logging for concurrent reads
+- **Strategic Indexes** - 8 indexes for fast queries
+- **Foreign Keys** - Cascade deletes, referential integrity
+- **Soft Deletes** - `active` flags for data retention
+- **Timestamps** - Full audit trail (created_at, updated_at)
 
-### Backend Tests
-```bash
-cd backend
-pnpm test                    # Run all tests
-pnpm test:watch             # Watch mode
-pnpm test:coverage          # Coverage report
-```
+---
 
-### Frontend Tests
-```bash
-cd frontend  
-pnpm test                   # Run component tests
-pnpm test:e2e              # End-to-end tests
-```
+## 🎭 Persona System
 
-## 📱 Mobile Development
+### Enhanced Therapeutic Features
+Personas now include specialized mental health fields:
+- `specialty` - Therapeutic approach (CBT, DBT, Mindfulness)
+- `therapeutic_focus` - Focus areas (Anxiety, Depression, Trauma)
+- `template_id` - Link to persona templates
+- `tags` - JSON categorization
+- `color_theme` - UI color customization (hex)
+- `is_favorite` - Quick access flagging
+- `usage_count` - Analytics tracking
+- `last_used_at` - Usage timestamps
+- `builtin_data_access` - Granular data permissions
 
-Luna supports mobile deployment through Capacitor:
+### Default Personas
+1. **default-cloud** (☁️) - Cloud-based assistant (GPT-4.1-nano)
+   - Temperature: 0.7
+   - Max Tokens: 1500
+   - Focus: Versatile general support
 
-### Android Build
-```bash
-cd frontend
-pnpm run build
-npx cap sync android
-npx cap open android
-```
+2. **default-local** (⚡) - Privacy-focused local assistant (Ollama)
+   - Temperature: 0.6
+   - Max Tokens: 800
+   - Focus: Offline, private conversations
 
-### iOS Build
-```bash
-cd frontend  
-pnpm run build
-npx cap sync ios
-npx cap open ios
-```
+---
 
 ## 🔧 Configuration
 
-### Environment Variables
-
-**Backend (.env)**
-```env
-# Database
-DATABASE_PATH=./db/kalito.db
-
-# AI Configuration
-OPENAI_API_KEY=your_openai_key_here
-OPENAI_BASE_URL=https://api.openai.com/v1
-DEFAULT_MODEL=gpt-4.1-nano
-
-# Server
-PORT=3000
-NODE_ENV=development
-
-# Security
-RATE_LIMIT_ENABLED=true
-CORS_ORIGINS=http://localhost:5173
-```
-
-**Frontend (environment files)**
-```env
-VITE_API_BASE_URL=http://localhost:3000
-VITE_APP_NAME=Luna
-```
-
-### AI Model Configuration
-
-Luna supports multiple AI providers:
-- **OpenAI**: GPT-4.1-nano (cloud, high quality)
-- **Ollama**: Local models (privacy-focused, offline)
-
-Configure models in `backend/logic/modelRegistry.ts`
-
-## 🛠️ Development
-
-### Available Scripts
-
-**Root Project**
+### Environment Setup
+**Root `.env`:**
 ```bash
-pnpm install              # Install all dependencies
-pnpm run lint             # Lint all code
-pnpm run format           # Format all code
+OPENAI_API_KEY=sk-proj-...
+ANTHROPIC_API_KEY=sk-ant-...
+TAVILY_API_KEY=tvly-dev-...
+VITE_KALITOSPACE_DEV_MODE=true
 ```
 
-**Backend**
-```bash
-pnpm run dev              # Start development server
-pnpm run build            # Build production bundle
-pnpm run test             # Run test suite
-pnpm run lint             # Lint backend code
-```
+**Backend:**
+- Port: 3000
+- Database: `backend/db/kalito.db`
+- Logging: Winston with file rotation
 
-**Frontend**
+**Frontend:**
+- Port: 5173 (dev)
+- Build: Vite optimized bundle
+- PWA: Service worker enabled
+
+---
+
+## 🚀 Development Workflow
+
+### Running the App
 ```bash
-pnpm run dev              # Start development server
-pnpm run build            # Build production bundle
-pnpm run preview          # Preview production build
-pnpm run test             # Run component tests
+# Terminal 1 - Backend
+cd backend && pnpm dev
+
+# Terminal 2 - Frontend  
+cd frontend && pnpm dev
+
+# Or use npm scripts from root:
+pnpm run dev:backend
+pnpm run dev:frontend
 ```
 
 ### Database Management
-
 ```bash
-# Backup database
-./scripts/backup-db
-
-# Restore from backup  
-./scripts/restore-db <backup-file>
-
-# Database audit (check for issues)
-cd backend && node dist/scripts/audit-database.js
+pnpm run db:backup        # Backup kalito.db
+pnpm run db:restore       # Restore from backup
 ```
+
+### Building for Production
+```bash
+# Frontend build
+cd frontend && pnpm build
+
+# Backend build
+cd backend && pnpm build && pnpm start
+
+# Android APK
+pnpm run build-app        # Build + sync + generate APK
+```
+
+---
+
+## 📱 Mobile Support
+
+Luna is a hybrid app using Capacitor:
+- **Android**: Full support (builds to APK)
+- **iOS**: Configured but not actively developed
+- **PWA**: Installable web app with offline support
+
+### Android Build
+```bash
+pnpm run android:build    # Sync Capacitor
+pnpm run android:apk      # Generate debug APK
+pnpm run android:install  # Install on device via ADB
+```
+
+---
+
+## 🎨 UI Design System
+
+### Color Palette
+- **Primary Purple**: `rgba(139, 92, 246)` - Buttons, borders, accents
+- **Light Purple**: `rgba(196, 181, 253)` - Text gradients, labels
+- **Indigo**: `rgba(129, 140, 248)` - Secondary actions, user messages
+- **Dark Backgrounds**: `rgba(15, 23, 42, 0.95-0.98)` - Cards, modals
+- **Glass Overlays**: `rgba(255, 255, 255, 0.04-0.06)` - Translucent layers
+
+### Component Patterns
+- **Border Radius**: 12-16px for modern rounded corners
+- **Transitions**: `cubic-bezier(0.4, 0, 0.2, 1)` for smooth animations
+- **Shadows**: Purple-tinted with varying intensities
+- **Gradient Backgrounds**: Purple-tinted gradients across backgrounds
+- **Glass-morphism**: `backdrop-filter: blur(20-30px) saturate(180%)`
+
+### Key Components
+- `HamburgerMenu.vue` - Global navigation (dark purple theme)
+- `PatientDetailModal.vue` - Patient management (glass-morphic cards)
+- `MedicationForm/List.vue` - Med tracking (purple filter buttons)
+- `AppointmentForm/List.vue` - Appointment scheduling (status badges)
+- `ChatPanel.vue` - Conversation interface (purple gradient input)
+- `SessionSidebar.vue` - Session management (purple cards)
+- `PersonaManager.vue` - Persona configuration (therapeutic fields)
+
+---
 
 ## 📖 Documentation
 
-### Available Documentation
-- **[Database Schema](docs/db/DB-SCHEMA.md)** - Complete database documentation
-- **[Conversation Fix](docs/fixes/conversation-context-continuity-fix.md)** - AI memory architecture fix
-- **[Database Instructions](docs/db/db-instructions.md)** - Database setup and maintenance
-- **[API Documentation](backend/types/)** - TypeScript API contracts
+### Database Docs
+- `docs/db/01-DATABASE-SCHEMA.md` - Complete schema reference
+- `docs/db/02-DATABASE-ARCHITECTURE.md` - Architecture and optimizations
 
-### Key Features Documented
-- ✅ Database schema and relationships
-- ✅ AI conversation memory system  
-- ✅ Frontend-backend integration
-- ✅ Security and validation patterns
-- ✅ Performance optimizations
-
-## 🤝 Contributing
-
-### Development Workflow
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes with proper TypeScript types
-4. Add tests for new functionality
-5. Run linting and tests: `pnpm run lint && pnpm test`
-6. Commit with conventional commits: `git commit -m "feat: add amazing feature"`
-7. Push to your branch: `git push origin feature/amazing-feature`
-8. Open a Pull Request
-
-### Code Standards
-- **TypeScript**: Strict mode enabled, full type coverage required
-- **ESLint**: Enforced code quality and consistency
-- **Conventional Commits**: Required for clear history
-- **Test Coverage**: New features must include tests
-- **Documentation**: Update relevant docs with changes
-
-## 📋 Roadmap
-
-### ✅ Completed
-- Core patient management system
-- Medication and appointment tracking
-- **Journal system with mood and emotion tracking**
-- **AI context integration with journal entries**
-- AI conversation system with context continuity
-- Database cleanup and optimization
-- Mobile app foundation
-
-### 🔄 In Progress
-- Enhanced AI memory system (summarization, semantic pins)
-- Advanced appointment preparation workflows
-- Medication reminder system
-- Journal analytics and insights dashboard
-
-### 🔮 Planned
-- **Enhanced AI Features**
-  - Advanced mood tracking analytics
-  - Therapy session preparation
-  - Crisis intervention protocols
-  - Goal setting and progress tracking
-  - Journal sentiment analysis
-
-- **Platform Expansion**
-  - iOS app deployment
-  - Offline-first enhancements
-  - Healthcare provider integration
-  - Family caregiver features
-
-- **Analytics & Insights**
-  - Mental health trend analysis from journal patterns
-  - Medication adherence tracking
-  - Appointment outcome correlation
-  - Personalized wellness recommendations
-
-## 🏥 Use Cases
-
-### Primary Users
-- **Individuals managing mental health conditions**
-- **Caregivers supporting loved ones**
-- **Patients preparing for therapy sessions**
-- **Anyone seeking structured mental wellness support**
-
-### Key Scenarios
-- **Daily Check-ins**: Regular conversations with AI companion
-- **Journaling**: Track moods, emotions, and thoughts with calendar view
-- **AI Reflection**: Discuss journal entries with AI for therapeutic insights
-- **Medication Management**: Track prescriptions and side effects
-- **Appointment Preparation**: Organize questions and concerns
-- **Progress Tracking**: Monitor mental health journey over time through journaling
-- **Crisis Support**: Immediate access to coping strategies
-
-## 📞 Support
-
-### Getting Help
-- **Documentation**: Check the [docs/](docs/) directory first
-- **Issues**: Report bugs via GitHub Issues
-- **Discussions**: Use GitHub Discussions for questions
-- **Security**: Email security issues to security@kalito-labs.com
-
-### System Requirements
-- **Minimum**: Node.js 18+, 2GB RAM, 1GB storage
-- **Recommended**: Node.js 20+, 4GB RAM, 5GB storage
-- **Mobile**: Android 7+ or iOS 12+
-
-## 🔐 Security & Privacy
-
-### Data Security
-- **Local Storage**: All personal data stored locally
-- **Encryption**: Sensitive data encrypted at rest
-- **Access Control**: Role-based permissions
-- **Audit Logs**: Complete activity tracking
-
-### Privacy Commitment
-- **No Data Collection**: Personal information never leaves your device
-- **Optional Cloud**: AI features use only necessary context
-- **User Control**: Complete data ownership and deletion rights
-- **Transparency**: Open source for full visibility
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Mental Health Community** - For inspiring this platform's mission
-- **Open Source Contributors** - For the incredible tools that make this possible
-- **Healthcare Professionals** - For guidance on therapeutic best practices
-- **Beta Testers** - For valuable feedback and real-world testing
+### Implementation Docs
+- `docs/00-Ai-Protocols/` - AI system protocols and guidelines
+- `docs/Tasks/` - Development roadmap and task tracking
 
 ---
 
-<div align="center">
+## 🎯 Current Focus
 
-**Luna 🌙 - Your Mental Health Companion**
+### Completed
+✅ Purple gradient UI theme across all components
+✅ Enhanced persona system with therapeutic fields
+✅ Journal calendar visualization
+✅ Medication and appointment tracking
+✅ AI conversation with full patient context
+✅ Memory system architecture (rolling buffer + summarization)
+✅ Database optimization and cleanup
+✅ Mobile-responsive design
+✅ Dataset/document integration
 
-*Building bridges between technology and mental wellness*
+### Active Development
+🔄 Enhanced AI memory features (semantic pins in production)
+🔄 Conversation summarization automation
+🔄 Journal insights and analytics
+🔄 Mood pattern analysis
 
-[🌟 Star this repo](https://github.com/Kalito-Labs/luna-repo) | [🐛 Report Bug](https://github.com/Kalito-Labs/luna-repo/issues) | [💡 Request Feature](https://github.com/Kalito-Labs/luna-repo/discussions)
-
-</div>
+### Planned
+🔮 Medication reminder system
+🔮 Appointment preparation workflows
+🔮 Crisis intervention protocols
+🔮 Advanced analytics dashboard
+🔮 Export reports for healthcare providers
 
 ---
 
-**Last Updated**: November 17, 2025  
-**Version**: 1.1.0-beta  
-**Status**: Production Ready ✅
+## 📊 Project Stats
+
+- **Frontend Components**: 50+ Vue components
+- **Backend Routes**: 13 API route groups
+- **Database Tables**: 10 optimized tables
+- **Active Indexes**: 8 performance indexes
+- **Lines of Code**: ~15,000+ (TypeScript + Vue)
+- **Dependencies**: Minimal, carefully selected
+- **Bundle Size**: Optimized for fast loading
+
+---
+
+**Last Updated**: November 22, 2025  
+**Version**: 1.2.0-beta  
+**Status**: Production Ready with Active Development ✅
+
+**Built with ❤️ for mental wellness**
