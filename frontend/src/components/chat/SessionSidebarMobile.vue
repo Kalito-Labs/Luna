@@ -624,7 +624,7 @@ function formatDate(dateStr: string | undefined): string {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
   z-index: 9999;
   display: flex;
   align-items: center;

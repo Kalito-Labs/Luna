@@ -160,12 +160,15 @@ function formatRoute(route: string): string {
   align-items: center;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: var(--border);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .list-header h3 {
   margin: 0;
-  color: var(--text-heading);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -180,14 +183,14 @@ function formatRoute(route: string): string {
 
 .filter-btn {
   padding: 12px 20px;
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--bg-glass);
-  backdrop-filter: var(--blur);
-  color: var(--text-main);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -195,16 +198,17 @@ function formatRoute(route: string): string {
 }
 
 .filter-btn:hover {
-  border-color: var(--accent-blue);
-  background: var(--bg-panel);
-  transform: translateY(-1px);
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(139, 92, 246, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);
 }
 
 .filter-btn.active {
-  background: var(--accent-blue);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
   color: white;
-  border-color: var(--accent-blue);
-  box-shadow: var(--glow-blue);
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
 }
 
 .count-badge {
@@ -218,12 +222,12 @@ function formatRoute(route: string): string {
 }
 
 .filter-btn.active .count-badge {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .filter-btn:not(.active) .count-badge {
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--accent-blue);
+  background: rgba(139, 92, 246, 0.2);
+  color: rgba(196, 181, 253, 1);
 }
 
 .medications-grid {
@@ -233,19 +237,31 @@ function formatRoute(route: string): string {
 }
 
 .medication-card {
-  background: var(--bg-glass);
-  backdrop-filter: var(--blur);
-  border: var(--border);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
   padding: 24px;
-  box-shadow: var(--shadow-soft);
-  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.medication-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.8) 0%, rgba(196, 181, 253, 0.8) 100%);
+  border-radius: 16px 16px 0 0;
 }
 
 .medication-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  border-color: var(--accent-blue);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.5);
 }
 
 .med-header {
@@ -254,7 +270,7 @@ function formatRoute(route: string): string {
   align-items: flex-start;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: var(--border);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
   gap: 12px;
 }
 
@@ -265,7 +281,7 @@ function formatRoute(route: string): string {
 
 .med-header h4 {
   margin: 0 0 8px 0;
-  color: var(--text-heading);
+  color: rgba(255, 255, 255, 0.95);
   font-weight: 600;
   font-size: 1.1rem;
 }
@@ -282,14 +298,14 @@ function formatRoute(route: string): string {
 }
 
 .dosage-badge {
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--accent-blue);
+  background: rgba(139, 92, 246, 0.2);
+  color: rgba(196, 181, 253, 1);
   padding: 6px 12px;
   border-radius: 16px;
   font-size: 0.75rem;
   font-weight: 600;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
 }
 
 .med-details {
@@ -299,13 +315,13 @@ function formatRoute(route: string): string {
 .med-details p {
   margin: 8px 0;
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.7);
   display: flex;
   align-items: center;
 }
 
 .med-details strong {
-  color: var(--text-heading);
+  color: rgba(255, 255, 255, 0.9);
   margin-right: 8px;
   min-width: 120px;
 }
@@ -314,14 +330,14 @@ function formatRoute(route: string): string {
   display: flex;
   gap: 12px;
   padding-top: 16px;
-  border-top: var(--border);
+  border-top: 1px solid rgba(139, 92, 246, 0.2);
   flex-wrap: wrap;
 }
 
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .empty-state p {
@@ -331,7 +347,7 @@ function formatRoute(route: string): string {
 
 .btn {
   padding: 10px 18px;
-  border-radius: 8px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -339,7 +355,7 @@ function formatRoute(route: string): string {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.875rem;
   white-space: nowrap;
 }
@@ -361,41 +377,46 @@ function formatRoute(route: string): string {
 }
 
 .btn-primary {
-  background: var(--accent-blue);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
   color: white;
-  box-shadow: var(--glow-blue);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--blue-600);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
+  border-color: rgba(139, 92, 246, 0.8);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-outline {
-  background: transparent;
-  color: var(--accent-blue);
-  border: 2px solid var(--accent-blue);
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(129, 140, 248, 1);
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  box-shadow: 0 2px 8px rgba(129, 140, 248, 0.1);
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: var(--accent-blue);
-  color: white;
-  box-shadow: var(--glow-blue);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%);
+  border-color: rgba(129, 140, 248, 0.6);
+  color: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 20px rgba(129, 140, 248, 0.3);
+  transform: translateY(-2px);
 }
 
 .btn-danger {
-  background: var(--led-red);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.9) 100%);
   color: white;
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #dc2626;
-  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 1) 0%, rgba(220, 38, 38, 1) 100%);
+  border-color: rgba(239, 68, 68, 0.8);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
+  transform: translateY(-2px);
 }
 
 /* Responsive Design */

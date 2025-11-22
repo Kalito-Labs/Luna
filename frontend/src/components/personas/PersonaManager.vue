@@ -1,11 +1,10 @@
 <template>
   <div class="persona-manager-view">
     <div class="header">
-      <!-- Hamburger button/menu in header -->
-      <div class="hamburger-header">
+      <div class="header-content">
         <HamburgerMenu />
+        <h1 class="page-title">Persona Manager</h1>
       </div>
-      <h1 class="page-title">Persona Manager</h1>
       <div class="header-actions">
         <button 
           class="primary-button"
@@ -461,70 +460,91 @@ onMounted(async () => {
 <style scoped>
 .persona-manager-view {
   min-height: 100vh;
-  background: var(--bg-main);
-  color: var(--text-main);
-  padding: 2rem;
+  background: linear-gradient(135deg, 
+    rgba(15, 23, 42, 0.98) 0%, 
+    rgba(30, 41, 59, 0.95) 50%,
+    rgba(67, 56, 202, 0.1) 100%);
+  color: rgba(255, 255, 255, 0.92);
+  padding: 0;
   overflow: auto;
 }
 
 .header {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: var(--border);
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  position: relative;
+  z-index: 100;
+}
+
+.header-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 1;
+}
+
+.header-content :deep(.hamburger-menu) {
+  flex-shrink: 0;
+  margin-left: -0.5rem;
+  margin-top: 0.25rem;
 }
 
 .header-actions {
-  grid-column: 3;
-  justify-self: end;
   display: flex;
   gap: 0.75rem;
 }
 
-/* Hamburger menu in header */
-.hamburger-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 100; /* Below modals (1000+) but above regular content */
-}
-
 .page-title {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 600;
-  margin: 0;
-  color: var(--text-heading);
-  text-align: center;
-  grid-column: 2;
+  margin: 0.25rem 0 0 0;
+  color: rgba(255, 255, 255, 0.92);
+  flex: 1;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.98) 0%, 
+    rgba(196, 181, 253, 0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .primary-button {
-  grid-column: 3;
-  justify-self: end;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--accent-blue);
-  border: none;
-  border-radius: 0.5rem;
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.9) 0%, 
+    rgba(124, 58, 237, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
   color: white;
-  padding: 0.6rem 1.2rem;
+  padding: 0.75rem 1.25rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 500;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+  backdrop-filter: blur(20px);
 }
 
 .primary-button:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--glow-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 1) 0%, 
+    rgba(124, 58, 237, 1) 100%);
 }
 
 .primary-button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .plus-icon {
@@ -535,21 +555,40 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   gap: 1.5rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
 }
 
 .persona-card {
-  background: var(--bg-glass);
-  backdrop-filter: var(--blur);
-  border: var(--border);
-  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 20px;
   padding: 1.5rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.persona-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(139, 92, 246, 0.6), 
+    transparent);
+  border-radius: 2px;
 }
 
 .persona-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-soft);
-  border-color: var(--accent-blue);
+  transform: translateY(-3px);
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 8px 40px rgba(139, 92, 246, 0.2);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .persona-card.is-default {
