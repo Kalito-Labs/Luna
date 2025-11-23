@@ -513,13 +513,13 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(30px) saturate(150%);
   border-radius: 20px 20px 12px 20px;
-  padding: 1.5rem 2rem 3.5rem 2rem;
+  padding: 2rem 2.5rem 4rem 2.5rem;
   font-size: 0.95rem;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.95);
   line-height: 1.7;
   border: 1px solid rgba(139, 92, 246, 0.15);
-  margin: 0.5rem 2.5%;
+  margin: .5rem 2.5%;
   width: 95%;
   max-width: 95%;
   min-width: 200px;
@@ -782,7 +782,7 @@ onUnmounted(() => {
   background: rgba(8, 12, 20, 0.98);
   border: 1px solid rgba(139, 92, 246, 0.15);
   border-radius: 16px;
-  margin: 1.5rem 0;
+  margin: 2rem 0;
   max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;
@@ -892,7 +892,7 @@ onUnmounted(() => {
 
 /* List Styling */
 .list-container {
-  margin: 1.5rem 0;
+  margin: 2rem 0;
   counter-reset: list-counter;
 }
 
@@ -922,7 +922,7 @@ onUnmounted(() => {
 }
 
 .message-paragraph {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
   line-height: 1.75;
 }
 
