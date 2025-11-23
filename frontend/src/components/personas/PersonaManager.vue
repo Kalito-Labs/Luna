@@ -31,7 +31,7 @@
         :class="{ 'is-default': isDefaultPersona(persona.id) }"
       >
         <div class="persona-header">
-          <div class="persona-icon" :style="{ background: persona.color_theme || '#6366f1' }">
+          <div class="persona-icon">
             {{ persona.icon || '🤖' }}
           </div>
           <div class="persona-info">
@@ -41,15 +41,9 @@
                 <span v-if="getPersonaBadge(persona.id)" class="default-badge">
                   {{ getPersonaBadge(persona.id) }}
                 </span>
-                <span v-if="persona.specialty" class="specialty-badge">
-                  {{ persona.specialty }}
-                </span>
               </div>
             </div>
             <p class="persona-id">ID: {{ persona.id }}</p>
-            <p v-if="persona.therapeutic_focus" class="therapeutic-focus">
-              {{ truncateText(persona.therapeutic_focus, 80) }}
-            </p>
           </div>
           <div class="persona-actions">
             <button
@@ -146,11 +140,10 @@
               :class="{ selected: selectedTemplate?.id === template.id }"
               @click="selectedTemplate = template"
             >
-              <div class="template-icon" :style="{ background: template.color_theme }">
+              <div class="template-icon">
                 {{ template.icon }}
               </div>
               <h3 class="template-name">{{ template.name }}</h3>
-              <p class="template-specialty">{{ template.specialty }}</p>
               <p class="template-description">{{ template.description }}</p>
               <div class="template-tags" v-if="template.tags">
                 <span 
@@ -559,7 +552,7 @@ onMounted(async () => {
 }
 
 .persona-card {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(14, 14, 14, 0.06);
   backdrop-filter: blur(30px);
   border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 20px;
@@ -656,23 +649,6 @@ onMounted(async () => {
   border-radius: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-}
-
-.specialty-badge {
-  background: var(--accent-teal);
-  color: white;
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.15rem 0.5rem;
-  border-radius: 0.75rem;
-}
-
-.therapeutic-focus {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  font-style: italic;
-  margin: 0.25rem 0 0 0;
-  line-height: 1.3;
 }
 
 .persona-actions {
@@ -1062,13 +1038,6 @@ onMounted(async () => {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-heading);
-  margin: 0 0 0.5rem;
-}
-
-.template-specialty {
-  font-size: 0.85rem;
-  color: var(--accent-blue);
-  font-weight: 600;
   margin: 0 0 0.5rem;
 }
 

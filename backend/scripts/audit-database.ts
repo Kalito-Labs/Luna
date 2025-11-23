@@ -134,58 +134,12 @@ if (orphanedAppts.length > 0) {
   console.log('');
 }
 
-// 4. VITALS
-console.log('4. VITALS TABLE');
-console.log('─'.repeat(80));
-const vitals = db.prepare(`
-  SELECT v.*, p.name as patient_name 
-  FROM vitals v 
-  LEFT JOIN patients p ON v.patient_id = p.id 
-  ORDER BY v.recorded_date DESC
-`).all();
-console.log(`Total vitals records: ${vitals.length}\n`);
-
-const vitalsByPatient: Record<string, any[]> = {};
-vitals.forEach((v: any) => {
-  const patientName = v.patient_name || 'ORPHANED';
-  if (!vitalsByPatient[patientName]) {
-    vitalsByPatient[patientName] = [];
-  }
-  vitalsByPatient[patientName].push(v);
-});
-
-Object.entries(vitalsByPatient).forEach(([patientName, vits]) => {
-  console.log(`${patientName}: ${vits.length} vital record(s)`);
-  vits.slice(0, 3).forEach((v: any) => {
-    const measurements = [];
-    if (v.weight_lbs) measurements.push(`Weight: ${v.weight_lbs}lbs`);
-    if (v.glucose_am) measurements.push(`Glucose AM: ${v.glucose_am}`);
-    if (v.glucose_pm) measurements.push(`Glucose PM: ${v.glucose_pm}`);
-    console.log(`   - ${v.recorded_date}: ${measurements.join(', ') || 'No measurements'}`);
-  });
-  if (vits.length > 3) {
-    console.log(`   ... and ${vits.length - 3} more`);
-  }
-  console.log('');
-});
-
-// Check for orphaned vitals
-const orphanedVitals = vitals.filter((v: any) => !v.patient_name);
-if (orphanedVitals.length > 0) {
-  console.log(`⚠️  ORPHANED VITALS: ${orphanedVitals.length}`);
-  orphanedVitals.forEach((v: any) => {
-    console.log(`   - ${v.recorded_date} (patient_id: ${v.patient_id})`);
-  });
-  console.log('');
-}
-
 // SUMMARY
 console.log('=== AUDIT SUMMARY ===');
 console.log('─'.repeat(80));
 console.log(`✓ Patients: ${patients.length}`);
 console.log(`✓ Medications: ${allMeds.length}`);
 console.log(`✓ Appointments: ${appointments.length}`);
-console.log(`✓ Vitals: ${vitals.length}`);
 console.log('');
 
 // Issues found
@@ -193,7 +147,6 @@ const issues: string[] = [];
 if (duplicateNames.length > 0) issues.push('Duplicate patient names');
 if (orphanedMeds.length > 0) issues.push(`${orphanedMeds.length} orphaned medications`);
 if (orphanedAppts.length > 0) issues.push(`${orphanedAppts.length} orphaned appointments`);
-if (orphanedVitals.length > 0) issues.push(`${orphanedVitals.length} orphaned vitals`);
 
 if (issues.length > 0) {
   console.log('⚠️  ISSUES FOUND:');

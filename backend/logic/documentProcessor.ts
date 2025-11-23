@@ -9,6 +9,9 @@ import { db } from '../db/db'
 import { chunkingService, ChunkingOptions } from './chunkingService'
 // import { embeddingService, EmbeddingOptions } from './embeddingService' // TEMPORARILY DISABLED
 
+// Import pdf-parse v2 - PDFParse is a class constructor
+import { PDFParse } from 'pdf-parse'
+
 // Types for document processing
 export interface UploadedFile {
   originalname: string
@@ -195,21 +198,22 @@ export class DocumentProcessor {
    */
   private async extractPDF(buffer: Buffer, extractedAt: string): Promise<{ content: string; metadata: DocumentMetadata }> {
     try {
-      // TODO: Fix PDF parsing - temporarily return placeholder
-      console.warn('PDF parsing temporarily disabled - returning placeholder')
+      // Create PDFParse instance with buffer
+      const parser = new PDFParse({ data: buffer })
       
-      const placeholderContent = 'PDF content extraction temporarily disabled. Please use TXT or DOCX files.'
+      // Extract text using getText method
+      const result = await parser.getText()
       
       const metadata: DocumentMetadata = {
-        page_count: 1,
-        word_count: this.countWords(placeholderContent),
-        character_count: placeholderContent.length,
+        page_count: result.total,
+        word_count: this.countWords(result.text),
+        character_count: result.text.length,
         extracted_at: extractedAt,
         processing_mode: 'local'
       }
 
       return {
-        content: placeholderContent,
+        content: result.text,
         metadata
       }
     } catch (error) {

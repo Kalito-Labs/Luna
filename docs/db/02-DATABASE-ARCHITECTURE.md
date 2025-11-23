@@ -427,13 +427,10 @@ All tables include:
 The `personas` table has been extended with therapeutic-specific fields to support mental health use cases:
 
 ```sql
--- NEW THERAPEUTIC ENHANCEMENT FIELDS
-specialty TEXT                    -- e.g., 'CBT', 'DBT', 'Mindfulness'
-therapeutic_focus TEXT            -- e.g., 'Anxiety', 'Depression', 'Trauma'
+-- THERAPEUTIC ENHANCEMENT FIELDS
 template_id TEXT                  -- Reference to persona templates
 created_from TEXT DEFAULT 'manual' -- 'manual', 'template', 'system'
 tags TEXT                         -- JSON array for categorization
-color_theme TEXT DEFAULT '#6366f1' -- UI color theme (hex)
 is_favorite INTEGER DEFAULT 0     -- User favorite flag
 usage_count INTEGER DEFAULT 0     -- Track persona usage
 last_used_at TEXT                 -- Last usage timestamp
@@ -441,11 +438,10 @@ builtin_data_access TEXT          -- JSON permissions for data access
 ```
 
 **Use Cases**:
-- **Specialty-based filtering**: Find personas by therapeutic approach
 - **Usage analytics**: Track which personas are most effective
 - **Template system**: Create personas from predefined templates
 - **Data permissions**: Control what patient data each persona can access
-- **UI customization**: Color-coded personas for visual organization
+- **Quick access**: Favorite personas for faster selection
 
 ### Session Context Fields
 

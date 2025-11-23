@@ -24,7 +24,6 @@ import modelsRouter from './routes/modelsRouter'
 import memoryRouter from './routes/memoryRouter'
 import patientsRouter from './routes/patientsRouter'
 import medicationsRouter from './routes/medicationsRouter'
-import vitalsRouter from './routes/vitalsRouter'
 import journalRouter from './routes/journalRouter'
 import { appointmentsRouter } from './routes/appointmentsRouter'
 import { searchRouter } from './routes/searchRouter'
@@ -150,7 +149,6 @@ app.use('/api/memory', memoryRouter)
 // Patient management routes
 app.use('/api/patients', patientsRouter)
 app.use('/api/medications', medicationsRouter)
-app.use('/api/vitals', vitalsRouter)
 app.use('/api/appointments', appointmentsRouter)
 
 // Journal and mood tracking

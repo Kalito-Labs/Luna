@@ -32,7 +32,6 @@
             </div>
             <div>
               <h3>{{ persona.name }}</h3>
-              <p v-if="persona.specialty">{{ persona.specialty }}</p>
             </div>
           </div>
 

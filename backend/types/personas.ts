@@ -11,15 +11,6 @@ import {
 /** Persona categories map 1:1 with model families you expose in UI */
 export type PersonaCategory = 'cloud' | 'local'
 
-/** Therapeutic specialties for mental health personas */
-export type TherapeuticSpecialty = 
-  | 'Cognitive Behavioral Therapy'
-  | 'Dialectical Behavior Therapy'
-  | 'Mindfulness & Meditation'
-  | 'Trauma-Informed Care'
-  | 'General Mental Health'
-  | 'General AI Assistant'
-
 /** How a persona was created - tracking origin for better UX */
 export type PersonaCreatedFrom = 'template' | 'duplicate' | 'manual'
 
@@ -54,9 +45,6 @@ export interface PersonaTemplate {
   name: string
   description: string
   icon: string
-  color_theme: string
-  specialty: TherapeuticSpecialty
-  therapeutic_focus?: string
   category: PersonaCategory
   prompt_template: string
   temperature: number
@@ -95,18 +83,12 @@ export interface Persona {
   updated_at: string
   
   // === THERAPEUTIC ENHANCEMENT FIELDS ===
-  /** Therapeutic specialty (CBT, DBT, etc.) */
-  specialty?: TherapeuticSpecialty
-  /** Detailed therapeutic focus description */
-  therapeutic_focus?: string
   /** Reference to the template this was created from */
   template_id?: string
   /** How this persona was created */
   created_from?: PersonaCreatedFrom
   /** JSON array of searchable tags */
   tags?: string
-  /** UI theme color for this persona */
-  color_theme?: string
   /** User favorite flag */
   is_favorite?: boolean
   /** Number of times this persona has been used */
@@ -129,12 +111,9 @@ export interface CreatePersonaRequest {
   settings?: PersonaSettings
   
   // === ENHANCED FIELDS FOR PERSONA CREATION ===
-  specialty?: TherapeuticSpecialty
-  therapeutic_focus?: string
   template_id?: string // If created from a template
   created_from?: PersonaCreatedFrom
   tags?: string
-  color_theme?: string
   builtin_data_access?: string
 }
 
@@ -148,10 +127,7 @@ export interface UpdatePersonaRequest {
   settings?: PersonaSettings
   
   // === ENHANCED FIELDS FOR PERSONA UPDATES ===
-  specialty?: TherapeuticSpecialty
-  therapeutic_focus?: string
   tags?: string
-  color_theme?: string
   is_favorite?: boolean
   builtin_data_access?: string
 }
@@ -168,7 +144,6 @@ export interface CreateFromTemplateRequest {
     maxTokens?: number
     topP?: number
     repeatPenalty?: number
-    color_theme?: string
     tags?: string
     builtin_data_access?: string
   }

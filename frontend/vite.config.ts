@@ -6,7 +6,14 @@ import fs from 'fs'
 
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          // Tell Vue that ion-icon is a custom element (web component)
+          isCustomElement: (tag) => tag === 'ion-icon'
+        }
+      }
+    }),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],

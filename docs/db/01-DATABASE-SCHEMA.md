@@ -164,12 +164,9 @@ erDiagram
         REAL repeatPenalty
         TEXT stopSequences
         INTEGER is_default
-        TEXT specialty
-        TEXT therapeutic_focus
         TEXT template_id
         TEXT created_from
         TEXT tags
-        TEXT color_theme
         INTEGER is_favorite
         INTEGER usage_count
         TEXT last_used_at
@@ -286,7 +283,7 @@ erDiagram
 ### Enhanced Personas (2)
 - **default-cloud** - Cloud-based AI assistant with therapeutic enhancements
 - **default-local** - Privacy-focused local AI with specialized settings
-- **New Fields**: specialty, therapeutic_focus, tags, color themes, usage tracking
+- **New Fields**: tags, templates, usage tracking, data permissions
 
 ---
 

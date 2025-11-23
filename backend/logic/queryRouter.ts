@@ -1,14 +1,13 @@
 /**
  * Query Router - Detects query intent for structured validation
  * 
- * Routes specific query types (medications, appointments, vitals) to 
+ * Routes specific query types (medications, appointments) to 
  * structured services with validation. All other queries use free-text.
  */
 
 export type QueryType = 
   | 'MEDICATIONS'
-  | 'APPOINTMENTS' 
-  | 'VITALS'
+  | 'APPOINTMENTS'
   | 'GENERAL'
 
 /**
@@ -37,16 +36,6 @@ export function detectQueryType(query: string): QueryType {
   
   if (appointmentPatterns.some(pattern => pattern.test(lowerQuery))) {
     return 'APPOINTMENTS'
-  }
-  
-  // Vitals-related keywords
-  const vitalsPatterns = [
-    /\b(vital|glucose|blood sugar|weight|blood pressure|bp)\b/i,
-    /\b(measurement|reading|health metric)\b/i,
-  ]
-  
-  if (vitalsPatterns.some(pattern => pattern.test(lowerQuery))) {
-    return 'VITALS'
   }
   
   // Default to general conversation

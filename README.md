@@ -14,14 +14,13 @@ Luna serves as your digital mental health command center, tracking every aspect 
 - **Patient Profile** - Core demographic and contact information for Kaleb
 - **Medication Tracking** - 4 active prescriptions (Lithium, Zyprexa, Hydroxizine, Naltrexone) with dosages, frequencies, pharmacy details, and side effects monitoring
 - **Appointments** - Healthcare scheduling with preparation notes, outcomes, and follow-up tracking
-- **Vitals Monitoring** - Weight (lbs) and glucose (AM/PM) tracking with historical trends
 - **Journal System** - Daily therapeutic journaling with mood tracking, emotions tagging, and calendar visualization
 
 ### AI Companion System
 The heart of Luna is its intelligent conversation system that understands your complete mental health context:
 
-- **Contextual Conversations** - AI has full access to your medications, appointments, journal entries, and vitals
-- **Therapeutic Personas** - Enhanced persona system with specialty fields (CBT, DBT, Mindfulness), therapeutic focus areas, and customizable color themes
+- **Contextual Conversations** - AI has full access to your medications, appointments, and journal entries
+- **Therapeutic Personas** - Enhanced persona system with templates, customizable settings, and usage tracking
 - **Memory Architecture** - Industry-standard conversation memory with rolling buffers, automatic summarization, and semantic pin extraction
 - **Multi-Model Support** - OpenAI GPT-4.1-nano (cloud) and Ollama (local) with intelligent model selection
 - **Session Management** - Organized conversations with session types (chat, journal, medication), care categories, and patient linking
@@ -53,7 +52,6 @@ Search:   Tavily API for web search capabilities
 - `medications` - Prescription tracking (4 active)
 - `appointments` - Healthcare scheduling
 - `journal_entries` - Therapeutic journaling with mood/emotion tracking
-- `vitals` - Health metrics (weight, glucose)
 
 **AI Conversation:**
 - `sessions` - Chat session management with patient/care context
@@ -91,7 +89,6 @@ Search:   Tavily API for web search capabilities
 - **Journal Calendar** - Visual mood/emotion tracking across days
 - **Medication History** - Complete prescription timeline
 - **Appointment Outcomes** - Track healthcare visit results
-- **Vitals Trends** - Weight and glucose patterns over time
 
 ---
 
@@ -113,8 +110,7 @@ Search:   Tavily API for web search capabilities
 /kalitohub           - KalitoHub patient management
   ├─ PatientDetail   - Patient profile with tabs
   ├─ Medications     - Med list and form
-  ├─ Appointments    - Appointment list and scheduling
-  └─ Vitals          - Health metrics tracking
+  └─ Appointments    - Appointment list and scheduling
 
 /library             - Document library and dataset management
 ```
@@ -130,7 +126,6 @@ Search:   Tavily API for web search capabilities
 /api/medications     - Medication tracking
 /api/appointments    - Appointment scheduling
 /api/journal         - Journal entry CRUD
-/api/vitals          - Vitals recording and history
 /api/models          - AI model registry and configuration
 /api/search          - Tavily web search integration
 /api/datasets        - Document upload and vector search
@@ -161,7 +156,6 @@ tools.ts                     - AI function calling tools
 - **Medications**: 4 active prescriptions
 - **Appointments**: 0 scheduled
 - **Journal Entries**: 1 (Nov 21, mood: Relaxed)
-- **Vitals**: Ongoing tracking
 - **Personas**: 2 (default-cloud, default-local) with therapeutic enhancements
 - **Active Sessions**: 1 with 4 conversation messages
 - **Summaries**: 0 (generated as conversations grow)
@@ -180,11 +174,8 @@ tools.ts                     - AI function calling tools
 
 ### Enhanced Therapeutic Features
 Personas now include specialized mental health fields:
-- `specialty` - Therapeutic approach (CBT, DBT, Mindfulness)
-- `therapeutic_focus` - Focus areas (Anxiety, Depression, Trauma)
 - `template_id` - Link to persona templates
 - `tags` - JSON categorization
-- `color_theme` - UI color customization (hex)
 - `is_favorite` - Quick access flagging
 - `usage_count` - Analytics tracking
 - `last_used_at` - Usage timestamps
