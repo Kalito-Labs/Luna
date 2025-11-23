@@ -208,7 +208,6 @@
         ref="printComponent"
         :patient="patient"
         :medications="medications"
-        :appointments="[]"
       />
     </div>
   </div>

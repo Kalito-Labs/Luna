@@ -84,34 +84,6 @@
       </div>
     </div>
 
-    <!-- Appointments Section -->
-    <div v-if="appointments.length > 0" class="appointments-section">
-      <h2 class="section-title">Appointments ({{ appointments.length }})</h2>
-      <table class="appointments-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Type</th>
-            <th>Location</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="appointment in sortedAppointments" :key="appointment.id">
-            <td><strong>{{ formatDate(appointment.appointment_date) }}</strong></td>
-            <td>{{ appointment.appointment_time ? formatTime(appointment.appointment_time) : 'TBD' }}</td>
-            <td>{{ appointment.appointment_type || 'General' }}</td>
-            <td>{{ appointment.location || 'TBD' }}</td>
-            <td class="status-cell">{{ formatStatus(appointment.status) }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-for="appointment in appointments.filter(a => a.notes)" :key="'notes-' + appointment.id" class="appt-notes">
-        <strong>{{ formatDate(appointment.appointment_date) }} - Notes:</strong> {{ appointment.notes }}
-      </div>
-    </div>
-
     <!-- Print Footer -->
     <div class="print-footer">
       <p>This report was generated on {{ formattedDate }} from the Luna Management System.</p>
@@ -154,20 +126,9 @@ interface Medication {
   patient_name?: string
 }
 
-interface Appointment {
-  id: string
-  appointment_date: string
-  appointment_time?: string
-  appointment_type?: string
-  location?: string
-  notes?: string
-  status: string
-}
-
 interface Props {
   patient: Patient
   medications: Medication[]
-  appointments: Appointment[]
 }
 
 const props = defineProps<Props>()
@@ -185,12 +146,6 @@ const formattedDate = computed(() => {
 
 const primaryDoctorName = computed(() => {
   return null
-})
-
-const sortedAppointments = computed(() => {
-  return [...props.appointments].sort((a, b) => 
-    new Date(a.appointment_date).getTime() - new Date(b.appointment_date).getTime()
-  )
 })
 
 function calculateAge(dateOfBirth: string): number {
@@ -364,7 +319,7 @@ defineExpose({
     line-height: 1.5;
   }
 
-  /* Tables for Medications & Appointments */
+  /* Tables for Medications */
   .medications-table,
   .appointments-table {
     width: 100%;
@@ -410,8 +365,7 @@ defineExpose({
     page-break-inside: avoid;
   }
 
-  .med-notes strong,
-  .appt-notes strong {
+  .med-notes strong {
     display: block;
     margin-bottom: 3pt;
   }

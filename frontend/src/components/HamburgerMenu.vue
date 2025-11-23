@@ -186,7 +186,10 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   top: calc(100% + 0.75rem);
   left: 0;
   min-width: 220px;
-  background: rgba(44, 45, 54, 0.979);
+  background: linear-gradient(135deg, 
+    rgba(15, 23, 42, 0.98) 0%, 
+    rgba(30, 41, 59, 0.95) 50%,
+    rgba(67, 56, 202, 0.1) 100%);
   backdrop-filter: blur(30px);
   border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 20px;
