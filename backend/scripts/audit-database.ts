@@ -95,58 +95,17 @@ Object.entries(medsByPatient).forEach(([patientName, meds]) => {
   }
 });
 
-// 3. APPOINTMENTS
-console.log('3. APPOINTMENTS TABLE');
-console.log('─'.repeat(80));
-const appointments = db.prepare(`
-  SELECT a.*, p.name as patient_name 
-  FROM appointments a 
-  LEFT JOIN patients p ON a.patient_id = p.id 
-  ORDER BY a.appointment_date DESC
-`).all();
-console.log(`Total appointments: ${appointments.length}\n`);
-
-const apptsByPatient: Record<string, any[]> = {};
-appointments.forEach((a: any) => {
-  const patientName = a.patient_name || 'ORPHANED';
-  if (!apptsByPatient[patientName]) {
-    apptsByPatient[patientName] = [];
-  }
-  apptsByPatient[patientName].push(a);
-});
-
-Object.entries(apptsByPatient).forEach(([patientName, appts]) => {
-  console.log(`${patientName}: ${appts.length} appointment(s)`);
-  appts.forEach((a: any) => {
-    console.log(`   - ${a.appointment_date} ${a.appointment_time || ''} - ${a.appointment_type || 'N/A'}`);
-    console.log(`     Status: ${a.status || 'N/A'}`);
-  });
-  console.log('');
-});
-
-// Check for orphaned appointments
-const orphanedAppts = appointments.filter((a: any) => !a.patient_name);
-if (orphanedAppts.length > 0) {
-  console.log(`⚠️  ORPHANED APPOINTMENTS: ${orphanedAppts.length}`);
-  orphanedAppts.forEach((a: any) => {
-    console.log(`   - ${a.appointment_date} (patient_id: ${a.patient_id})`);
-  });
-  console.log('');
-}
-
 // SUMMARY
 console.log('=== AUDIT SUMMARY ===');
 console.log('─'.repeat(80));
 console.log(`✓ Patients: ${patients.length}`);
 console.log(`✓ Medications: ${allMeds.length}`);
-console.log(`✓ Appointments: ${appointments.length}`);
 console.log('');
 
 // Issues found
 const issues: string[] = [];
 if (duplicateNames.length > 0) issues.push('Duplicate patient names');
 if (orphanedMeds.length > 0) issues.push(`${orphanedMeds.length} orphaned medications`);
-if (orphanedAppts.length > 0) issues.push(`${orphanedAppts.length} orphaned appointments`);
 
 if (issues.length > 0) {
   console.log('⚠️  ISSUES FOUND:');

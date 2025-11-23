@@ -552,7 +552,7 @@ onMounted(async () => {
 }
 
 .persona-card {
-  background: rgba(14, 14, 14, 0.06);
+  background: rgba(15, 15, 15, 0.06);
   backdrop-filter: blur(30px);
   border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 20px;
