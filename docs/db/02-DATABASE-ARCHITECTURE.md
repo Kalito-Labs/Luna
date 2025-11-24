@@ -21,9 +21,7 @@ graph TB
         subgraph "Mental Health Data"
             Patients[Patients]
             Meds[Medications]
-            Appts[Appointments]
             Journal[Journal Entries]
-            Vitals[Vitals]
         end
         
         subgraph "AI Conversation"
@@ -45,9 +43,7 @@ graph TB
     DB --> Summaries
     
     Patients --> Meds
-    Patients --> Appts
     Patients --> Journal
-    Patients --> Vitals
     Sessions --> Messages
     Sessions --> Summaries
     Sessions --> Pins
@@ -160,9 +156,7 @@ CREATE INDEX idx_semantic_pins_patient_medical
 ```mermaid
 graph LR
     Patient[Patient Deleted] --> Meds[Medications Deleted]
-    Patient --> Appts[Appointments Deleted]
     Patient --> Journal[Journal Entries Deleted]
-    Patient --> Vitals[Vitals Deleted]
     
     Session[Session Deleted] --> Msgs[Messages Deleted]
     Session --> Summaries[Summaries Deleted]
@@ -489,9 +483,7 @@ ORDER BY importance_score DESC, created_at DESC;
 |-------|-----------|--------|
 | patients | 1 | Kaleb (active) |
 | medications | 4 | All active prescriptions |
-| appointments | 0 | No scheduled appointments |
 | journal_entries | 1 | 1 entry from Nov 21 |
-| vitals | Multiple | Ongoing health tracking |
 | personas | 2 | Enhanced with therapeutic fields |
 | sessions | 1 | Active conversation |
 | messages | 4 | Conversation in progress |

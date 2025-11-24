@@ -15,7 +15,6 @@
 | **Database Type** | SQLite with WAL mode |
 | **Active Patients** | 1 (Kaleb) |
 | **Medications** | 4 active |
-| **Appointments** | 0 |
 | **Journal Entries** | 1 |
 | **Personas** | 2 (enhanced with therapeutic fields) |
 | **Sessions** | 1 active |
@@ -28,9 +27,7 @@
 ```mermaid
 erDiagram
     patients ||--o{ medications : "has"
-    patients ||--o{ appointments : "schedules"
     patients ||--o{ journal_entries : "writes"
-    patients ||--o{ vitals : "tracks"
     patients ||--o{ sessions : "creates"
     
     sessions ||--o{ messages : "contains"
@@ -75,23 +72,6 @@ erDiagram
         TEXT updated_at
     }
     
-    appointments {
-        TEXT id PK
-        TEXT patient_id FK
-        TEXT appointment_date
-        TEXT appointment_time
-        TEXT appointment_type
-        TEXT location
-        TEXT notes
-        TEXT preparation_notes
-        TEXT status
-        TEXT outcome_summary
-        INTEGER follow_up_required
-        TEXT provider_name
-        TEXT created_at
-        TEXT updated_at
-    }
-    
     journal_entries {
         TEXT id PK
         TEXT patient_id FK
@@ -106,19 +86,6 @@ erDiagram
         TEXT prompt_used
         TEXT privacy_level
         INTEGER favorite
-        TEXT created_at
-        TEXT updated_at
-    }
-    
-    vitals {
-        TEXT id PK
-        TEXT patient_id FK
-        REAL weight_lbs
-        INTEGER glucose_am
-        INTEGER glucose_pm
-        TEXT recorded_date
-        TEXT notes
-        INTEGER active
         TEXT created_at
         TEXT updated_at
     }
@@ -207,9 +174,7 @@ erDiagram
 ### 🧠 Mental Health Core
 - **patients** - Patient profiles (mental health focused)
 - **medications** - Prescription tracking with side effects
-- **appointments** - Healthcare scheduling with preparation
 - **journal_entries** - Daily journaling with mood tracking
-- **vitals** - Health metrics (weight, glucose)
 
 ### 🤖 AI Conversation System
 - **sessions** - Chat session management
@@ -225,12 +190,10 @@ erDiagram
 ## Foreign Key Relationships (Verified)
 
 | Child Table | Parent Table | FK Column | On Delete |
-|-------------|--------------|-----------|-----------|
+|-------------|--------------|-----------|-----------||
 | medications | patients | patient_id | CASCADE |
-| appointments | patients | patient_id | CASCADE |
 | journal_entries | patients | patient_id | CASCADE |
 | journal_entries | sessions | session_id | SET NULL |
-| vitals | patients | patient_id | CASCADE |
 | messages | sessions | session_id | CASCADE |
 | conversation_summaries | sessions | session_id | CASCADE |
 | semantic_pins | sessions | session_id | CASCADE |
@@ -267,9 +230,6 @@ erDiagram
 2. **Zyprexa** - 5mg, 1x daily (antipsychotic)
 3. **Hydroxizine** - 25mg, 2x daily (anxiolytic)
 4. **Naltrexone** - 50mg, 1x daily (addiction treatment)
-
-### Appointments (0)
-- No scheduled appointments
 
 ### Journal Entry (1)
 - **Date**: 2025-11-21
