@@ -25,13 +25,15 @@ The heart of Luna is its intelligent conversation system that understands your c
 - **Multi-Model Support** - OpenAI GPT-4.1-nano (cloud) and Ollama (local) with intelligent model selection
 - **Session Management** - Organized conversations with session types (chat, journal, medication), care categories, and patient linking
 
-### Knowledge Integration
-Luna can incorporate external medical knowledge through its dataset system:
+### Knowledge Integration (RAG System)
+Luna can incorporate external medical knowledge through its Retrieval-Augmented Generation system:
 
-- **Document Processing** - Upload PDFs and Word docs for AI reference
-- **Chunked Storage** - Smart text splitting with vector embeddings for semantic search
+- **Document Processing** - Upload PDF, DOCX, TXT, and MD files for AI reference
+- **Chunked Storage** - Smart text splitting (1000 chars, 200 overlap) with semantic coherence
 - **Context-Aware Retrieval** - AI automatically pulls relevant dataset information during conversations
-- **Permission Controls** - Fine-grained access levels per persona (read, summary, reference-only)
+- **Persona-Specific Links** - Each persona can have its own curated knowledge base
+- **Access Levels** - Fine-grained permissions per persona (read, summary, reference-only)
+- **Weighted Priority** - Control which documents take precedence (0.1 - 2.0 weighting)
 
 ---
 
@@ -46,7 +48,7 @@ AI:       OpenAI GPT-4.1-nano, Anthropic Claude, Ollama local models
 Search:   Tavily API for web search capabilities
 ```
 
-### Database Structure (10 Tables)
+### Database Structure (13 Tables)
 **Mental Health Core:**
 - `patients` - Patient profile (1 active: Kaleb)
 - `medications` - Prescription tracking (4 active)
@@ -62,6 +64,11 @@ Search:   Tavily API for web search capabilities
 - `conversation_summaries` - Compressed conversation history
 - `semantic_pins` - Extracted important medical/therapeutic insights
 
+**Knowledge Base (RAG):**
+- `datasets` - Uploaded documents (PDF, DOCX, TXT, MD)
+- `document_chunks` - Text segments with embeddings
+- `persona_datasets` - Links personas to knowledge base documents
+
 ### Key Features
 
 #### 🎨 Modern UI/UX
@@ -76,7 +83,9 @@ Search:   Tavily API for web search capabilities
 - **Auto-Summarization** - Compresses conversation history after 8 messages
 - **Semantic Pins** - Extracts important medical info (symptoms, medications, moods) with urgency levels
 - **Context Building** - Pre-builds conversation context BEFORE sending to AI for accuracy
-- **Importance Scoring** - Weighted message importance for better context selection
+- **Importance Scoring** - Crisis: 0.8-1.0, Therapeutic: 0.7-0.9, Treatment: 0.6-0.8
+- **Therapy-Optimized** - Special validation for therapeutic expressions and narrative work
+- **Hallucination Prevention** - Structured services bypass AI for factual database queries
 
 #### 🔐 Privacy & Security
 - **Local-First** - All data stored in SQLite on your machine
@@ -143,6 +152,9 @@ queryRouter.ts               - Intelligent query routing and tool selection
 structuredMedicationService  - Medication CRUD with validation
 structuredAppointmentService - Appointment CRUD with validation
 journalService.ts            - Journal operations
+documentProcessor.ts         - PDF/DOCX/TXT/MD processing pipeline
+chunkingService.ts           - Intelligent text segmentation for RAG
+embeddingService.ts          - Vector embedding generation (planned)
 tavilyService.ts             - Web search integration
 tools.ts                     - AI function calling tools
 ```
@@ -151,7 +163,7 @@ tools.ts                     - AI function calling tools
 
 ## 💾 Database State
 
-### Current Data (November 22, 2025)
+### Current Data (November 23, 2025)
 - **Patients**: 1 (Kaleb, age 39, Texas)
 - **Medications**: 4 active prescriptions
 - **Appointments**: 0 scheduled
@@ -160,6 +172,8 @@ tools.ts                     - AI function calling tools
 - **Active Sessions**: 1 with 4 conversation messages
 - **Summaries**: 0 (generated as conversations grow)
 - **Semantic Pins**: 0 (extracted automatically)
+- **Datasets**: 0 (knowledge base documents)
+- **Document Chunks**: 0 (RAG text segments)
 
 ### Database Optimizations
 - **WAL Mode** - Write-Ahead Logging for concurrent reads
@@ -167,6 +181,7 @@ tools.ts                     - AI function calling tools
 - **Foreign Keys** - Cascade deletes, referential integrity
 - **Soft Deletes** - `active` flags for data retention
 - **Timestamps** - Full audit trail (created_at, updated_at)
+- **Query Router** - Bypasses AI for appointments/medications to prevent hallucinations
 
 ---
 
@@ -298,11 +313,14 @@ pnpm run android:install  # Install on device via ADB
 ## 📖 Documentation
 
 ### Database Docs
-- `docs/db/01-DATABASE-SCHEMA.md` - Complete schema reference
-- `docs/db/02-DATABASE-ARCHITECTURE.md` - Architecture and optimizations
+- `docs/db/01-DATABASE-SCHEMA.md` - Complete 13-table schema reference
+- `docs/db/02-DATABASE-ARCHITECTURE.md` - Performance optimizations and indexes
 
-### Implementation Docs
+### Backend Docs
+- `docs/backend/memory-architecture.md` - Complete memory & context system documentation
 - `docs/00-Ai-Protocols/` - AI system protocols and guidelines
+
+### Planning Docs
 - `docs/Tasks/` - Development roadmap and task tracking
 
 ---
@@ -312,13 +330,17 @@ pnpm run android:install  # Install on device via ADB
 ### Completed
 ✅ Purple gradient UI theme across all components
 ✅ Enhanced persona system with therapeutic fields
-✅ Journal calendar visualization
-✅ Medication and appointment tracking
-✅ AI conversation with full patient context
-✅ Memory system architecture (rolling buffer + summarization)
-✅ Database optimization and cleanup
-✅ Mobile-responsive design
-✅ Dataset/document integration
+✅ Journal calendar visualization with mood/emotion tracking
+✅ Medication and appointment tracking with structured validation
+✅ AI conversation with full patient context (meds, appointments, journals)
+✅ Memory system architecture (rolling buffer + summarization + semantic pins)
+✅ Query routing system (bypasses AI for factual queries)
+✅ Importance scoring with crisis prioritization (0.3 boost)
+✅ RAG system (document upload, chunking, persona-dataset linking)
+✅ Database optimization and cleanup (13 tables, 8 indexes, WAL mode)
+✅ Mobile-responsive design (Capacitor + Android APK)
+✅ Web search integration (Tavily API with explicit intent detection)
+✅ Therapy-optimized summarization with hallucination prevention
 
 ### Active Development
 🔄 Enhanced AI memory features (semantic pins in production)
@@ -339,16 +361,17 @@ pnpm run android:install  # Install on device via ADB
 
 - **Frontend Components**: 50+ Vue components
 - **Backend Routes**: 13 API route groups
-- **Database Tables**: 10 optimized tables
+- **Database Tables**: 13 optimized tables (includes RAG system)
 - **Active Indexes**: 8 performance indexes
-- **Lines of Code**: ~15,000+ (TypeScript + Vue)
+- **Backend Services**: 14 core logic services
+- **Lines of Code**: ~18,000+ (TypeScript + Vue)
 - **Dependencies**: Minimal, carefully selected
 - **Bundle Size**: Optimized for fast loading
 
 ---
 
-**Last Updated**: November 22, 2025  
-**Version**: 1.2.0-beta  
+**Last Updated**: November 23, 2025  
+**Version**: 1.3.0-beta  
 **Status**: Production Ready with Active Development ✅
 
 **Built with ❤️ for mental wellness**
