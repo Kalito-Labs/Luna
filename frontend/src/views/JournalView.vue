@@ -17,27 +17,31 @@
       <div class="stat-card">
         <div class="stat-icon">📝</div>
         <div class="stat-content">
-          <span class="stat-number">{{ recentEntries.length }}</span>
+          <span class="stat-number">{{ todaysEntries.length }}</span>
           <span class="stat-label">Today's entries</span>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">🌟</div>
+        <div class="stat-icon">📚</div>
         <div class="stat-content">
-          <span class="stat-number">7</span>
+          <span class="stat-number">{{ totalEntries }}</span>
+          <span class="stat-label">Total entries</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-content">
+          <span class="stat-number">{{ currentStreak }}</span>
           <span class="stat-label">Day streak</span>
         </div>
       </div>
-    </div>
-
-    <!-- Primary Action Buttons -->
-    <div class="action-buttons">
-      <button @click="goToInsights" class="action-btn secondary-btn">
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 3v18h18M7 16l4-4 4 4 6-6" />
-        </svg>
-        <span>View Insights</span>
-      </button>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-content">
+          <span class="stat-number">{{ thisWeekEntries.length }}</span>
+          <span class="stat-label">This week</span>
+        </div>
+      </div>
     </div>
 
     <!-- Floating Action Button -->
@@ -54,7 +58,7 @@
         <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 3v18h18M7 16l4-4 4 4 6-6" />
         </svg>
-        <h3>Insights</h3>
+        <h3>{{ hasEntries ? `Recent Entries (${recentEntries.length})` : 'Insights' }}</h3>
       </div>
 
       <div v-if="loading" class="loading-state">
@@ -75,6 +79,12 @@
         </div>
         <h3>Your journal awaits</h3>
         <p>Start your first entry to begin tracking your thoughts and moods</p>
+        <button @click="startNewEntry" class="empty-cta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <span>Create First Entry</span>
+        </button>
       </div>
 
       <div v-else class="entries-grid">
@@ -113,20 +123,79 @@ const patientId = computed(() => getPatientId())
 
 // Computed
 const hasEntries = computed(() => recentEntries.value.length > 0)
+const todaysEntries = computed(() => {
+  const today = new Date().toISOString().split('T')[0]
+  return recentEntries.value.filter((entry: any) => {
+    return entry.created_at && entry.created_at.startsWith(today)
+  })
+})
+
+const totalEntries = computed(() => recentEntries.value.length)
+
+const thisWeekEntries = computed(() => {
+  const now = new Date()
+  const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())
+  const weekStartString = weekStart.toISOString().split('T')[0] || ''
+  
+  return recentEntries.value.filter((entry: any) => {
+    if (!entry.created_at) return false
+    const entryDate = entry.created_at.split('T')[0] || ''
+    return entryDate >= weekStartString
+  })
+})
+
+const currentStreak = computed(() => {
+  if (recentEntries.value.length === 0) return 0
+  
+  // Group entries by date
+  const entriesByDate = new Map()
+  recentEntries.value.forEach((entry: any) => {
+    if (entry.created_at) {
+      const date = entry.created_at.split('T')[0]
+      if (!entriesByDate.has(date)) {
+        entriesByDate.set(date, [])
+      }
+      entriesByDate.get(date).push(entry)
+    }
+  })
+  
+  // Get unique dates and sort them
+  const uniqueDates = Array.from(entriesByDate.keys()).sort().reverse()
+  
+  let streak = 0
+  const today = new Date()
+  
+  for (let i = 0; i < uniqueDates.length; i++) {
+    const checkDate = new Date()
+    checkDate.setDate(today.getDate() - i)
+    const checkDateString = checkDate.toISOString().split('T')[0]
+    
+    if (uniqueDates.includes(checkDateString)) {
+      streak++
+    } else {
+      break
+    }
+  }
+  
+  return streak
+})
 
 // Methods
 const fetchRecentEntries = async () => {
   try {
     loading.value = true
-    // Get today's date in YYYY-MM-DD format
-    const today = new Date().toISOString().split('T')[0]
-    const response = await fetch(apiUrl(`/api/journal/patient/${patientId.value}?startDate=${today}&endDate=${today}`))
+    // Fetch all entries for the patient (no date filter to get everything)
+    const response = await fetch(apiUrl(`/api/journal/patient/${patientId.value}`))
     
     if (!response.ok) {
       throw new Error('Failed to fetch entries')
     }
     
-    recentEntries.value = await response.json()
+    const entries = await response.json()
+    // Sort entries by creation date (newest first)
+    recentEntries.value = entries.sort((a: JournalEntry, b: JournalEntry) => 
+      new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
+    )
   } catch (error) {
     console.error('Error fetching recent entries:', error)
   } finally {
@@ -143,10 +212,6 @@ const openEntry = (id: string) => {
 }
 
 const viewAllEntries = () => {
-  router.push('/journal/calendar')
-}
-
-const goToInsights = () => {
   router.push('/journal/calendar')
 }
 
@@ -230,10 +295,18 @@ onMounted(async () => {
 
 /* Quick Stats Cards */
 .stats-cards {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 1rem;
   margin-bottom: 0.5rem;
   padding: 0 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .stats-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
 }
 
 .stat-card {
@@ -690,7 +763,7 @@ onMounted(async () => {
   }
 
   .stats-cards {
-    flex-direction: column;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
 
