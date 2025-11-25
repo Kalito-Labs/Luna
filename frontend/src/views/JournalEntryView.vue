@@ -622,7 +622,7 @@ watch(() => route.params.id, (newId) => {
 
 /* Mental Health Tracking Card */
 .mental-health-card {
-  padding: 1.5rem;
+  padding: 1rem;
   position: relative;
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.08) 0%, 
@@ -679,7 +679,7 @@ watch(() => route.params.id, (newId) => {
   .tracking-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
+    gap: 1rem;
     align-items: start;
   }
   
