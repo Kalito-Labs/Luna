@@ -1,41 +1,7 @@
 <template>
-  <div class="dbt-page">
-    <main class="main-content">
-      <div class="container">
+  <div class="dbt-content">
+    <div class="container-dbt">
         
-        <!-- Introduction Section -->
-        <section class="intro-section">
-          <div class="section-header">
-            <h1 class="page-title">⚖️ DBT Skills</h1>
-            <p class="page-subtitle">
-              Dialectical Behavior Therapy: Balance acceptance with change
-            </p>
-          </div>
-          
-          <div class="dialectic-card glass-card">
-            <h3>The Dialectic</h3>
-            <div class="dialectic-balance">
-              <div class="dialectic-side acceptance">
-                <div class="side-icon">🤝</div>
-                <h4>Acceptance</h4>
-                <p>You're doing your best with the tools you have</p>
-              </div>
-              <div class="dialectic-center">
-                <span class="balance-symbol">⚖️</span>
-                <span class="while-text">WHILE</span>
-              </div>
-              <div class="dialectic-side change">
-                <div class="side-icon">🌱</div>
-                <h4>Change</h4>
-                <p>You can learn new skills to build a better life</p>
-              </div>
-            </div>
-            <p class="dialectic-explanation">
-              Accepting yourself as you are <strong>WHILE</strong> working to change
-            </p>
-          </div>
-        </section>
-
         <!-- Four Modules Navigation -->
         <section class="modules-section">
           <div class="section-header">
@@ -409,7 +375,10 @@
               >
                 <div class="log-header">
                   <span class="log-skill">{{ log.skill }}</span>
-                  <span class="log-date">{{ formatDate(log.date) }}</span>
+                  <div class="log-header-right">
+                    <span class="log-date">{{ formatDate(log.date) }}</span>
+                    <button @click="deleteLog(log.id!)" class="delete-log">🗑️</button>
+                  </div>
                 </div>
                 <p class="log-situation">{{ log.situation }}</p>
                 <div class="log-effectiveness">
@@ -429,13 +398,11 @@
         </section>
 
       </div>
-    </main>
-  </div>
+    </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, reactive, computed } from 'vue'
-import HamburgerMenu from '@/components/HamburgerMenu.vue'
 
 interface DBTModule {
   id: string
@@ -468,9 +435,7 @@ interface PracticeLog {
 
 export default defineComponent({
   name: 'DBTView',
-  components: {
-    HamburgerMenu
-  },
+  components: {},
   setup() {
     const selectedModule = ref<string | null>(null)
     
@@ -597,6 +562,15 @@ export default defineComponent({
       })
     }
 
+    const deleteLog = (logId: string) => {
+      const index = savedPracticeLogs.value.findIndex(log => log.id === logId)
+      if (index > -1) {
+        savedPracticeLogs.value.splice(index, 1)
+        localStorage.setItem('dbt-practice-logs', JSON.stringify(savedPracticeLogs.value))
+        showToast('Practice log deleted', false)
+      }
+    }
+
     const showToast = (message: string, isSuccess: boolean = true) => {
       const toastDiv = document.createElement('div')
       toastDiv.textContent = message
@@ -649,6 +623,7 @@ export default defineComponent({
       selectModule,
       startExercise,
       savePracticeLog,
+      deleteLog,
       formatDate
     }
   }
@@ -656,61 +631,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.dbt-page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: linear-gradient(135deg, 
-    rgba(15, 23, 42, 0.95) 0%,
-    rgba(30, 41, 59, 0.9) 50%,
-    rgba(15, 23, 42, 0.95) 100%);
-  color: rgba(255, 255, 255, 0.9);
-  overflow: hidden;
-}
-
-.header-content {
-  padding: 25px;
-  position: relative;
-  z-index: 100;
-}
-
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(139, 92, 246, 0.6) rgba(255, 255, 255, 0.1);
-}
-
-.main-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.main-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-  margin: 8px 0;
-}
-
-.main-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.6) 0%, 
-    rgba(129, 140, 248, 0.6) 100%);
-  border-radius: 4px;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.container {
+.container-dbt {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px 20px 80px 20px;
-}
-
-.intro-section {
-  margin-bottom: 60px;
 }
 
 .section-header {
@@ -769,85 +693,6 @@ export default defineComponent({
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 24px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.dialectic-card h3 {
-  color: rgba(196, 181, 253, 1);
-  text-align: center;
-  font-size: 1.6rem;
-  margin-bottom: 30px;
-  font-weight: 600;
-}
-
-.dialectic-balance {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 32px;
-  align-items: center;
-  margin-bottom: 32px;
-}
-
-.dialectic-side {
-  text-align: center;
-  padding: 24px;
-  border-radius: 12px;
-  border: 2px solid;
-}
-
-.dialectic-side.acceptance {
-  background: rgba(34, 197, 94, 0.05);
-  border-color: rgba(34, 197, 94, 0.3);
-}
-
-.dialectic-side.change {
-  background: rgba(59, 130, 246, 0.05);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-
-.side-icon {
-  font-size: 2.5rem;
-  margin-bottom: 12px;
-}
-
-.dialectic-side h4 {
-  color: rgba(196, 181, 253, 1);
-  margin: 0 0 8px 0;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.dialectic-side p {
-  color: rgba(255, 255, 255, 0.8);
-  margin: 0;
-  line-height: 1.5;
-}
-
-.dialectic-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.balance-symbol {
-  font-size: 3rem;
-}
-
-.while-text {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(129, 140, 248, 1) 100%);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.dialectic-explanation {
-  text-align: center;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1.2rem;
-  line-height: 1.6;
-  margin: 0;
 }
 
 .modules-section {
@@ -1245,7 +1090,7 @@ export default defineComponent({
 .form-select,
 .form-textarea {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(36, 44, 51, 0.863);
   color: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
@@ -1367,10 +1212,34 @@ export default defineComponent({
   font-size: 1.1rem;
 }
 
+.log-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .log-date {
   color: rgba(139, 92, 246, 1);
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+.delete-log {
+  background: rgba(239, 68, 68, 0.1);
+  color: rgba(248, 113, 113, 0.8);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  line-height: 1;
+}
+
+.delete-log:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: rgba(248, 113, 113, 1);
 }
 
 .log-situation {
@@ -1421,17 +1290,8 @@ export default defineComponent({
 }
 
 @media (max-width: 768px) {
-  .container {
+  .container-dbt {
     padding: 20px 16px 100px 16px;
-  }
-  
-  .dialectic-balance {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  
-  .dialectic-center {
-    order: -1;
   }
   
   .modules-grid {
@@ -1452,7 +1312,7 @@ export default defineComponent({
 }
 
 @media (max-width: 480px) {
-  .container {
+  .container-dbt {
     padding: 16px 12px 80px 12px;
   }
   
