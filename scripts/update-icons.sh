@@ -5,7 +5,7 @@
 
 set -e
 
-SOURCE_ICON="/home/kalito/kalito-labs/luna-repo/frontend/src/assets/luna-icon.png"
+SOURCE_ICON="/home/kalito/kalito-labs/luna-repo/frontend/resources/new-bg.png"
 ANDROID_RES="/home/kalito/kalito-labs/luna-repo/frontend/android/app/src/main/res"
 FRONTEND_RESOURCES="/home/kalito/kalito-labs/luna-repo/frontend/resources"
 FRONTEND_PUBLIC="/home/kalito/kalito-labs/luna-repo/frontend/public/favicon_io"

@@ -792,7 +792,8 @@ onMounted(() => {
 }
 
 .documents-container.grid {
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  align-items: start;
 }
 
 .documents-container.list {
@@ -805,13 +806,16 @@ onMounted(() => {
   backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 16px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   gap: 1rem;
   box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15);
   position: relative;
+  height: fit-content;
+  max-height: 400px;
+  min-height: 200px;
 }
 
 .document-card::before {
@@ -840,20 +844,22 @@ onMounted(() => {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
 }
 
 .file-icon {
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  font-size: 2rem;
+  border-radius: 10px;
+  font-size: 1.5rem;
   background: rgba(139, 92, 246, 0.2);
   color: rgba(139, 92, 246, 1);
   border: 1px solid rgba(139, 92, 246, 0.3);
+  flex-shrink: 0;
 }
 
 .file-icon.pdf {
@@ -906,11 +912,13 @@ onMounted(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.625rem;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .document-name {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
   -webkit-background-clip: text;
@@ -1030,8 +1038,10 @@ onMounted(() => {
 .document-actions {
   display: flex;
   gap: 0.5rem;
-  padding-top: 0.5rem;
+  padding-top: 0.75rem;
   border-top: 1px solid rgba(139, 92, 246, 0.2);
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
 .action-btn {
@@ -1039,12 +1049,12 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 12px;
-  font-size: 0.9rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

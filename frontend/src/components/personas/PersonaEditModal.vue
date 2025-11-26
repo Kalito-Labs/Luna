@@ -436,7 +436,7 @@ watch(() => props.show, (newShow) => {
 
 /* Modal Shell */
 .modal {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(33, 34, 36, 0.938);
   border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 24px;
   width: 1000px;
@@ -460,7 +460,7 @@ watch(() => props.show, (newShow) => {
   align-items: center;
   padding: 24px;
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(20px);
 }
 
@@ -506,7 +506,7 @@ watch(() => props.show, (newShow) => {
   display: flex;
   gap: 12px;
   padding: 20px 24px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
 }
 
@@ -559,7 +559,7 @@ watch(() => props.show, (newShow) => {
   padding: 20px 24px;
   border-top: 1px solid rgba(139, 92, 246, 0.15);
   margin-top: auto;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .datasets-info {
@@ -580,7 +580,7 @@ watch(() => props.show, (newShow) => {
   padding: 24px;
   overflow-y: auto;
   flex: 1;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* Scrollbar */
@@ -602,7 +602,7 @@ watch(() => props.show, (newShow) => {
 .form-section {
   margin-bottom: 32px;
   padding: 24px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(139, 92, 246, 0.15);
   border-radius: 20px;
@@ -642,7 +642,7 @@ watch(() => props.show, (newShow) => {
 }
 
 .section-description {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.9);
   margin: 0 0 20px 0;
   font-size: 0.9rem;
   line-height: 1.6;
@@ -663,7 +663,7 @@ watch(() => props.show, (newShow) => {
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  color: rgba(139, 92, 246, 0.9);
+  color: white;
   font-size: 0.9rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -679,8 +679,8 @@ watch(() => props.show, (newShow) => {
   border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 12px;
   font-size: 0.95rem;
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
 }
@@ -699,7 +699,7 @@ watch(() => props.show, (newShow) => {
   outline: none;
   border-color: rgba(139, 92, 246, 0.3);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .form-input:hover,
@@ -761,7 +761,7 @@ watch(() => props.show, (newShow) => {
 }
 
 .setting-header label {
-  color: rgba(139, 92, 246, 0.9);
+  color: white;
   font-weight: 600;
   font-size: 0.95rem;
   margin: 0;
@@ -859,7 +859,7 @@ watch(() => props.show, (newShow) => {
 }
 
 .setting-description {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 0.85rem;
   line-height: 1.5;
 }
@@ -959,7 +959,7 @@ watch(() => props.show, (newShow) => {
   justify-content: flex-end;
   padding: 20px 24px;
   border-top: 1px solid rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .primary-button,

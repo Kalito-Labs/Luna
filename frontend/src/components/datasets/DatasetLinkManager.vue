@@ -215,13 +215,13 @@ watch(() => props.personaId, () => {
 .manager-header h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
+  color: white;
   margin: 0 0 0.25rem 0;
 }
 
 .manager-header p {
   font-size: 0.9rem;
-  color: var(--text-secondary, #666);
+  color: rgba(255, 255, 255, 0.8);
   margin: 0;
 }
 
@@ -373,13 +373,13 @@ watch(() => props.personaId, () => {
 .dataset-info h4 {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
+  color: white;
   margin: 0;
 }
 
 .description {
   font-size: 0.85rem;
-  color: var(--text-secondary, #666);
+  color: rgba(255, 255, 255, 0.8);
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -393,7 +393,7 @@ watch(() => props.personaId, () => {
   flex-wrap: wrap;
   gap: 0.75rem;
   font-size: 0.8rem;
-  color: var(--text-secondary, #666);
+  color: rgba(255, 255, 255, 0.7);
   margin-top: 0.25rem;
 }
 
@@ -489,13 +489,13 @@ watch(() => props.personaId, () => {
 .empty-state h4 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
+  color: white;
   margin: 0 0 0.5rem 0;
 }
 
 .empty-state p {
   font-size: 0.9rem;
-  color: var(--text-secondary, #666);
+  color: rgba(255, 255, 255, 0.8);
   margin: 0 0 1.5rem 0;
   max-width: 400px;
 }
