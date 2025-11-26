@@ -2,9 +2,6 @@
   <div class="cbt-page">
 
     <main class="main-content">
-    <div class="header-content">
-        <HamburgerMenu />
-      </div>
       <div class="container">
         <!-- CBT Core Theory Section -->
         <section class="cbt-section">
@@ -38,37 +35,6 @@
               Negative thought patterns lead to negative emotions and unhelpful behaviors. By identifying 
               and challenging these patterns, we can change how we feel and act.
             </p>
-          </div>
-        </section>
-
-        <!-- Automatic Thoughts Section -->
-        <section class="cbt-section">
-          <div class="section-header">
-            <h2 class="section-title">⚡ Automatic Thoughts</h2>
-            <p class="section-subtitle">
-              Those immediate, reflexive thoughts that pop up without you even noticing.
-            </p>
-          </div>
-
-          <div class="automatic-thoughts-card glass-card">
-            <div class="definition">
-              <h4>What are Automatic Thoughts?</h4>
-              <ul>
-                <li>Immediate, reflexive thoughts in response to situations</li>
-                <li>Often negative, distorted, or unhelpful</li>
-                <li>Usually happen so fast we don't notice them</li>
-              </ul>
-            </div>
-            
-            <div class="example-box">
-              <strong>Example:</strong>
-              <div class="example-scenario">
-                <span class="scenario">Someone doesn't text back</span>
-                <span class="arrow">→</span>
-                <span class="thought">"They hate me"</span>
-              </div>
-              <small>This is an automatic thought - immediate but often inaccurate</small>
-            </div>
           </div>
         </section>
 

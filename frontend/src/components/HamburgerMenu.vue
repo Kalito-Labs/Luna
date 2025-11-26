@@ -33,9 +33,9 @@
           Library
         </button>
 
-        <button class="menu-item" @click="goToCBT">
+        <button class="menu-item" @click="goToResources">
           <span class="menu-icon">🧠</span>
-          CBT Therapy
+          Resources
         </button>
 
         <button class="menu-item" @click="goToPersonas">
@@ -86,9 +86,9 @@ function goToLibrary() {
   router.push({ name: 'library' })
 }
 
-function goToCBT() {
+function goToResources() {
   open.value = false
-  router.push({ name: 'cbt' })
+  router.push({ name: 'resources' })
 }
 
 function goToKalitoHub() {
