@@ -72,6 +72,24 @@ export interface JournalContext {
   wordCount: number
 }
 
+export interface CBTThoughtRecordContext {
+  id: string
+  patientId: string
+  patientName?: string
+  situation: string
+  automaticThought: string
+  emotion: string
+  emotionIntensity: number
+  evidenceFor: string
+  evidenceAgainst: string
+  alternativeThought: string
+  newEmotion: string
+  newEmotionIntensity: number
+  improvementScore?: number  // Calculate emotional improvement (before vs after)
+  createdAt: string
+  sessionId?: string
+}
+
 export interface DatasetContext {
   id: string
   name: string
@@ -96,6 +114,7 @@ export type LunaContext = {
   medications: MedicationContext[];
   recentAppointments: AppointmentContext[];
   journalEntries: JournalContext[];
+  cbtThoughtRecords: CBTThoughtRecordContext[];
   datasets: DatasetContext[];
   summary: string;
 };
@@ -344,6 +363,83 @@ export class LunaContextService {
   }
 
   /**
+   * Get recent CBT thought records for AI context and progress analysis
+   * Returns records from the past 30 days to provide therapeutic insights
+   */
+  private getRecentCBTThoughtRecords(patientId?: string, maxRecords: number = 15): CBTThoughtRecordContext[] {
+    try {
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - this.MAX_RECENT_DAYS)
+      const dateThreshold = thirtyDaysAgo.toISOString().split('T')[0]
+
+      let query = `
+        SELECT 
+          c.id, c.patient_id, c.session_id, c.situation, c.automatic_thought,
+          c.emotion, c.emotion_intensity, c.evidence_for, c.evidence_against,
+          c.alternative_thought, c.new_emotion, c.new_emotion_intensity,
+          c.created_at,
+          p.name as patient_name
+        FROM cbt_thought_records c
+        LEFT JOIN patients p ON c.patient_id = p.id
+        WHERE DATE(c.created_at) >= ?
+      `
+      
+      const params: (string | number)[] = [dateThreshold]
+      
+      if (patientId) {
+        query += ' AND c.patient_id = ?'
+        params.push(patientId)
+      }
+      
+      query += ' ORDER BY c.created_at DESC LIMIT ?'
+      params.push(maxRecords)
+
+      const rows = db.prepare(query).all(...params) as Array<{
+        id: string
+        patient_id: string
+        session_id: string | null
+        situation: string
+        automatic_thought: string
+        emotion: string
+        emotion_intensity: number
+        evidence_for: string
+        evidence_against: string
+        alternative_thought: string
+        new_emotion: string
+        new_emotion_intensity: number
+        created_at: string
+        patient_name: string | null
+      }>
+
+      return rows.map(row => {
+        // Calculate improvement score (emotional intensity reduction)
+        const improvementScore = row.emotion_intensity - row.new_emotion_intensity
+
+        return {
+          id: row.id,
+          patientId: row.patient_id,
+          patientName: row.patient_name || undefined,
+          situation: row.situation,
+          automaticThought: row.automatic_thought,
+          emotion: row.emotion,
+          emotionIntensity: row.emotion_intensity,
+          evidenceFor: row.evidence_for,
+          evidenceAgainst: row.evidence_against,
+          alternativeThought: row.alternative_thought,
+          newEmotion: row.new_emotion,
+          newEmotionIntensity: row.new_emotion_intensity,
+          improvementScore: improvementScore,
+          createdAt: row.created_at,
+          sessionId: row.session_id || undefined,
+        }
+      })
+    } catch (error) {
+      console.error('Error fetching CBT thought records for context:', error)
+      return []
+    }
+  }
+
+  /**
    * Get datasets linked to a specific persona with their document chunks
    * Returns all enabled datasets for RAG/knowledge base integration
    */
@@ -560,6 +656,84 @@ export class LunaContextService {
       summary += `- No journal entries found in the last 30 days\n\n`;
     }
 
+    // CBT Thought Records - provides therapeutic progress and cognitive pattern insights
+    if (context.cbtThoughtRecords.length > 0) {
+      summary += `### CBT Thought Records (Last 30 Days: ${context.cbtThoughtRecords.length} records)\n\n`;
+      
+      // Calculate overall progress metrics
+      const recordsWithImprovement = context.cbtThoughtRecords.filter(record => 
+        record.improvementScore !== undefined && record.improvementScore > 0
+      );
+      const averageImprovement = recordsWithImprovement.length > 0 
+        ? recordsWithImprovement.reduce((sum, record) => sum + (record.improvementScore || 0), 0) / recordsWithImprovement.length
+        : 0;
+      
+      summary += `**THERAPEUTIC PROGRESS OVERVIEW**\n`;
+      summary += `- ${recordsWithImprovement.length}/${context.cbtThoughtRecords.length} records show emotional improvement\n`;
+      if (averageImprovement > 0) {
+        summary += `- Average emotional intensity reduction: ${averageImprovement.toFixed(1)} points\n`;
+      }
+      summary += `\n`;
+      
+      // Group CBT records by patient
+      const cbtByPatient = new Map<string, CBTThoughtRecordContext[]>();
+      context.cbtThoughtRecords.forEach((record: CBTThoughtRecordContext) => {
+        const patientName = record.patientName || 'Unknown Patient';
+        if (!cbtByPatient.has(patientName)) {
+          cbtByPatient.set(patientName, []);
+        }
+        cbtByPatient.get(patientName)!.push(record);
+      });
+      
+      // Display CBT records grouped by patient
+      cbtByPatient.forEach((records, patientName) => {
+        summary += `**${patientName} (${records.length} thought record${records.length !== 1 ? 's' : ''})**\n`;
+        
+        records.slice(0, 5).forEach((record: CBTThoughtRecordContext) => {
+          summary += `- ${record.createdAt.split('T')[0]}`;
+          if (record.sessionId) summary += ` (Session: ${record.sessionId})`;
+          summary += `\n`;
+          
+          // Show the cognitive pattern and emotional journey
+          summary += `  Situation: ${record.situation}\n`;
+          summary += `  Initial thought: "${record.automaticThought}"\n`;
+          summary += `  Emotion: ${record.emotion} (intensity: ${record.emotionIntensity}/100)\n`;
+          
+          // Show therapeutic work done
+          if (record.evidenceFor && record.evidenceAgainst) {
+            summary += `  Evidence work: Examined thoughts objectively\n`;
+          }
+          
+          // Show progress/outcome
+          if (record.alternativeThought) {
+            summary += `  Alternative thought: "${record.alternativeThought}"\n`;
+          }
+          if (record.newEmotion && record.newEmotionIntensity !== undefined) {
+            summary += `  Result: ${record.newEmotion} (intensity: ${record.newEmotionIntensity}/100)`;
+            if (record.improvementScore !== undefined) {
+              const change = record.improvementScore > 0 ? 'improved' : 
+                           record.improvementScore < 0 ? 'increased' : 'unchanged';
+              summary += ` - ${change} by ${Math.abs(record.improvementScore)} points`;
+            }
+            summary += `\n`;
+          }
+          summary += `\n`;
+        });
+        
+        // Show summary if more than 5 records
+        if (records.length > 5) {
+          summary += `  ... and ${records.length - 5} more records\n\n`;
+        } else {
+          summary += `\n`;
+        }
+      });
+    } else {
+      summary += `### CBT Thought Records\n`;
+      summary += `**NO RECENT CBT THOUGHT RECORDS**\n`;
+      summary += `- No thought records found in the last 30 days\n`;
+      summary += `- Consider encouraging the use of CBT tools for emotional regulation\n\n`;
+    }
+
     // Knowledge Base / RAG Datasets
     if (context.datasets.length > 0) {
       summary += `### Knowledge Base Documents (${context.datasets.length})\n`;
@@ -611,6 +785,7 @@ export class LunaContextService {
     const medications = this.getMedications(patientId)
     const recentAppointments = this.getRecentAppointments(patientId)
     const journalEntries = this.getRecentJournalEntries(patientId)
+    const cbtThoughtRecords = this.getRecentCBTThoughtRecords(patientId)
     const datasets = personaId ? this.getPersonaDatasets(personaId) : []
 
     const context: LunaContext = {
@@ -618,6 +793,7 @@ export class LunaContextService {
       medications,
       recentAppointments,
       journalEntries,
+      cbtThoughtRecords,
       datasets,
       summary: '',
     }
