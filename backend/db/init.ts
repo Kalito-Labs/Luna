@@ -273,6 +273,34 @@ if (!tableHasFK('messages', 'sessions')) {
 }
 
 // ---------------------------------------------------------------------
+// CBT Thought Records Table
+// ---------------------------------------------------------------------
+
+// Create CBT thought records table for cognitive behavioral therapy data
+db.exec(`
+CREATE TABLE IF NOT EXISTS cbt_thought_records (
+  id TEXT PRIMARY KEY,
+  patient_id TEXT,
+  session_id TEXT,
+  situation TEXT NOT NULL,
+  automatic_thought TEXT NOT NULL,
+  emotion TEXT NOT NULL,
+  emotion_intensity INTEGER NOT NULL CHECK(emotion_intensity >= 0 AND emotion_intensity <= 100),
+  evidence_for TEXT NOT NULL,
+  evidence_against TEXT NOT NULL,
+  alternative_thought TEXT NOT NULL,
+  new_emotion TEXT NOT NULL,
+  new_emotion_intensity INTEGER NOT NULL CHECK(new_emotion_intensity >= 0 AND new_emotion_intensity <= 100),
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
+  FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
+);
+`)
+
+console.log('✅ CBT Thought Records table created/verified')
+
+// ---------------------------------------------------------------------
 // Seed Default Personas
 // ---------------------------------------------------------------------
 
