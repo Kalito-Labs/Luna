@@ -1,5 +1,10 @@
 <template>
   <div class="cbt-page">
+    <!-- Back Button -->
+    <button @click="$emit('back')" class="back-button">
+      <span class="back-arrow">←</span>
+      <span>Back to Therapy Resources</span>
+    </button>
 
     <main class="main-content">
       <div class="container">
@@ -53,28 +58,33 @@
               :key="distortion.id"
               class="distortion-card glass-card"
               @click="selectDistortion(distortion)"
-              :class="{ 'selected': selectedDistortion?.id === distortion.id }"
+              :class="{ 'flipped': selectedDistortion?.id === distortion.id }"
             >
-              <h4>{{ distortion.name }}</h4>
-              <p class="distortion-description">{{ distortion.description }}</p>
-              <div class="distortion-example">
-                <strong>Example:</strong>
-                <em>"{{ distortion.example }}"</em>
+              <div class="card-inner">
+                <!-- Front of Card -->
+                <div class="card-front">
+                  <h4>{{ distortion.name }}</h4>
+                  <p class="distortion-description">{{ distortion.description }}</p>
+                  <div class="distortion-example">
+                    <strong>Example:</strong>
+                    <em>"{{ distortion.example }}"</em>
+                  </div>
+                </div>
+                
+                <!-- Back of Card -->
+                <div class="card-back">
+                  <h4>{{ distortion.name }}</h4>
+                  <p class="distortion-description">{{ distortion.description }}</p>
+                  <div class="challenge-section">
+                    <h5>How to Challenge This Distortion:</h5>
+                    <ul>
+                      <li v-for="challenge in distortion.challenges" :key="challenge">
+                        {{ challenge }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <!-- Selected Distortion Detail -->
-          <div v-if="selectedDistortion" class="distortion-detail glass-card">
-            <h3>{{ selectedDistortion.name }}</h3>
-            <p>{{ selectedDistortion.description }}</p>
-            <div class="challenge-section">
-              <h4>How to Challenge This Distortion:</h4>
-              <ul>
-                <li v-for="challenge in selectedDistortion.challenges" :key="challenge">
-                  {{ challenge }}
-                </li>
-              </ul>
             </div>
           </div>
         </section>
@@ -173,9 +183,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import HamburgerMenu from '@/components/HamburgerMenu.vue'
+import { defineComponent, ref, computed } from 'vue'
 import ThoughtRecordModal from '@/components/ThoughtRecordModal.vue'
+import { useTherapyStorage, type CBTThoughtRecordData, type TherapyRecord } from '../composables/useTherapyStorage'
 
 interface CognitiveDistortion {
   id: string
@@ -202,13 +212,42 @@ interface SavedThoughtRecord {
 export default defineComponent({
   name: 'CBTView',
   components: {
-    HamburgerMenu,
     ThoughtRecordModal
   },
+  emits: ['back'],
   setup() {
     const selectedDistortion = ref<CognitiveDistortion | null>(null)
     const showThoughtRecordModal = ref(false)
-    const savedThoughtRecords = ref<SavedThoughtRecord[]>([])
+
+    // Use the therapy storage composable
+    const patientId = 'kaleb' // TODO: Get from auth/context
+    const {
+      records: therapyRecords,
+      isLoading,
+      save: saveToStorage,
+      remove: removeFromStorage
+    } = useTherapyStorage<CBTThoughtRecordData>({
+      therapyType: 'cbt',
+      patientId,
+      useBackend: true
+    })
+
+    // Computed: Transform therapy records to SavedThoughtRecord format for display
+    const savedThoughtRecords = computed(() => {
+      return therapyRecords.value.map((record: TherapyRecord<CBTThoughtRecordData>) => ({
+        id: record.id,
+        situation: record.data.situation,
+        automaticThought: record.data.automaticThought,
+        emotion: record.data.emotion,
+        emotionIntensity: record.data.emotionIntensity,
+        evidenceFor: record.data.evidenceFor,
+        evidenceAgainst: record.data.evidenceAgainst,
+        alternativeThought: record.data.alternativeThought,
+        newEmotion: record.data.newEmotion,
+        newEmotionIntensity: record.data.newEmotionIntensity,
+        createdAt: record.created_at
+      }))
+    })
 
     const cognitiveDistortions: CognitiveDistortion[] = [
       {
@@ -362,18 +401,33 @@ export default defineComponent({
       showThoughtRecordModal.value = false
     }
 
-    const saveThoughtRecord = (record: SavedThoughtRecord) => {
-      savedThoughtRecords.value.unshift(record)
-      // Here you could also save to localStorage or database
-      localStorage.setItem('cbt-thought-records', JSON.stringify(savedThoughtRecords.value))
+    const saveThoughtRecord = async (record: SavedThoughtRecord) => {
+      const cbtData: CBTThoughtRecordData = {
+        situation: record.situation,
+        automaticThought: record.automaticThought,
+        emotion: record.emotion,
+        emotionIntensity: record.emotionIntensity,
+        evidenceFor: record.evidenceFor,
+        evidenceAgainst: record.evidenceAgainst,
+        alternativeThought: record.alternativeThought,
+        newEmotion: record.newEmotion,
+        newEmotionIntensity: record.newEmotionIntensity
+      }
+
+      const success = await saveToStorage(cbtData)
+      if (success) {
+        showToast('Thought record saved!')
+      } else {
+        showToast('Failed to save thought record', false)
+      }
     }
 
-    const deleteRecord = (recordId: string) => {
-      const index = savedThoughtRecords.value.findIndex(r => r.id === recordId)
-      if (index > -1) {
-        savedThoughtRecords.value.splice(index, 1)
-        localStorage.setItem('cbt-thought-records', JSON.stringify(savedThoughtRecords.value))
+    const deleteRecord = async (recordId: string) => {
+      const success = await removeFromStorage(recordId)
+      if (success) {
         showToast('Thought record deleted', false)
+      } else {
+        showToast('Failed to delete thought record', false)
       }
     }
 
@@ -387,26 +441,12 @@ export default defineComponent({
       })
     }
 
-    // Load saved records from localStorage on component mount
-    const loadSavedRecords = () => {
-      try {
-        const saved = localStorage.getItem('cbt-thought-records')
-        if (saved) {
-          savedThoughtRecords.value = JSON.parse(saved)
-        }
-      } catch (error) {
-        console.error('Error loading saved records:', error)
-      }
-    }
-    
-    // Load records on component mount
-    loadSavedRecords()
-
     return {
       selectedDistortion,
       cognitiveDistortions,
       showThoughtRecordModal,
       savedThoughtRecords,
+      isLoading,
       selectDistortion,
       openThoughtRecordModal,
       closeThoughtRecordModal,
@@ -419,6 +459,43 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.back-button {
+  position: fixed;
+  top: 32px;
+  left: 32px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.back-button:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: translateX(-4px);
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.3);
+}
+
+.back-arrow {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.back-button:hover .back-arrow {
+  transform: translateX(-4px);
+}
+
 .cbt-page {
   display: flex;
   flex-direction: column;
@@ -431,63 +508,16 @@ export default defineComponent({
   overflow: hidden;
 }
 
-.header-content {
-  padding: 25px;
-  position: relative;
-  z-index: 100;
-}
-
 .main-content {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0;
   scroll-behavior: smooth;
-  
-  /* Custom scrollbar styling */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(139, 92, 246, 0.6) rgba(255, 255, 255, 0.1);
-}
-
-/* WebKit scrollbar styling */
-.main-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.main-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-  margin: 8px 0;
-}
-
-.main-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.6) 0%, 
-    rgba(129, 140, 248, 0.6) 100%);
-  border-radius: 4px;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.main-content::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.8) 0%, 
-    rgba(129, 140, 248, 0.8) 100%);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.main-content::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 1) 0%, 
-    rgba(129, 140, 248, 1) 100%);
-}
-
-.main-content::-webkit-scrollbar-corner {
-  background: transparent;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1700px;
   margin: 0 auto;
   padding: 20px 20px 80px 20px; /* Added top and bottom padding for scroll space */
 }
@@ -603,69 +633,6 @@ export default defineComponent({
   font-size: 1.1rem;
 }
 
-.automatic-thoughts-card {
-  display: grid;
-  gap: 30px;
-}
-
-.definition h4 {
-  color: rgba(196, 181, 253, 1);
-  margin-bottom: 20px;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.definition ul {
-  color: rgba(255, 255, 255, 0.85);
-  padding-left: 24px;
-}
-
-.definition li {
-  margin-bottom: 12px;
-  line-height: 1.6;
-  font-size: 1.05rem;
-}
-
-.example-box {
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 12px;
-  padding: 24px;
-  text-align: center;
-}
-
-.example-scenario {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  margin: 15px 0;
-  flex-wrap: wrap;
-}
-
-.scenario {
-  background: rgba(129, 140, 248, 0.2);
-  padding: 10px 18px;
-  border-radius: 8px;
-  color: rgba(196, 181, 253, 1);
-  font-weight: 500;
-}
-
-.arrow {
-  color: rgba(139, 92, 246, 1);
-  font-size: 1.4rem;
-  font-weight: bold;
-}
-
-.thought {
-  background: rgba(220, 38, 38, 0.2);
-  padding: 10px 18px;
-  border-radius: 8px;
-  color: rgba(248, 113, 113, 1);
-  font-style: italic;
-  font-weight: 500;
-}
-
 .distortions-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -675,27 +642,70 @@ export default defineComponent({
 
 .distortion-card {
   cursor: pointer;
-  transition: all 0.3s ease;
   position: relative;
+  min-height: 280px;
+  height: auto;
+  perspective: 1000px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
-.distortion-card:hover {
-  transform: translateY(-4px);
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.distortion-card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  min-height: 280px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(139, 92, 246, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-front {
+  transform: rotateY(0deg);
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+.distortion-card:hover .card-front,
+.distortion-card:hover .card-back {
   box-shadow: 
     0 16px 48px rgba(0, 0, 0, 0.4),
     0 8px 24px rgba(139, 92, 246, 0.2);
   border-color: rgba(139, 92, 246, 0.4);
 }
 
-.distortion-card.selected {
-  border-color: rgba(139, 92, 246, 0.6);
-  box-shadow: 
-    0 0 0 2px rgba(139, 92, 246, 0.3),
-    0 12px 36px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
-}
-
-.distortion-card h4 {
+.card-front h4,
+.card-back h4 {
   color: rgba(196, 181, 253, 1);
   font-size: 1.2rem;
   margin-bottom: 16px;
@@ -727,180 +737,27 @@ export default defineComponent({
   margin-left: 8px;
 }
 
-.distortion-detail {
-  margin-top: 40px;
+.card-back .challenge-section {
+  margin-top: 20px;
 }
 
-.distortion-detail h3 {
+.card-back .challenge-section h5 {
   color: rgba(196, 181, 253, 1);
-  margin-bottom: 20px;
-  font-size: 1.4rem;
+  margin: 0 0 12px 0;
+  font-size: 1rem;
   font-weight: 600;
 }
 
-.challenge-section h4 {
-  color: rgba(196, 181, 253, 1);
-  margin: 24px 0 16px 0;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.challenge-section ul {
+.card-back .challenge-section ul {
   color: rgba(255, 255, 255, 0.85);
-  padding-left: 24px;
+  padding-left: 18px;
+  margin: 0;
 }
 
-.challenge-section li {
-  margin-bottom: 12px;
-  line-height: 1.6;
-  font-size: 1.05rem;
-}
-
-.thought-record-form {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.form-group {
-  margin-bottom: 32px;
-}
-
-.form-group label {
-  display: block;
-  color: rgba(196, 181, 253, 1);
-  font-weight: 600;
-  margin-bottom: 12px;
-  font-size: 1.1rem;
-}
-
-.custom-textarea,
-.custom-input {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 16px 20px;
-  font-size: 1rem;
-  line-height: 1.5;
-  resize: vertical;
-  transition: all 0.3s ease;
-}
-
-.custom-textarea:focus,
-.custom-input:focus {
-  outline: none;
-  border-color: rgba(139, 92, 246, 0.6);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-}
-
-.custom-textarea::placeholder,
-.custom-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.emotion-input {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.slider-container {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.slider-label {
-  color: rgba(196, 181, 253, 0.8);
-  font-weight: 500;
-  min-width: 24px;
-  text-align: center;
-}
-
-.emotion-slider {
-  flex: 1;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-}
-
-.emotion-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(129, 140, 248, 1) 100%);
-  cursor: pointer;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
-}
-
-.emotion-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(129, 140, 248, 1) 100%);
-  cursor: pointer;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
-}
-
-.slider-value {
-  color: rgba(139, 92, 246, 1);
-  font-weight: 600;
-  font-size: 1.1rem;
-  text-align: center;
-  padding: 8px 12px;
-  background: rgba(139, 92, 246, 0.1);
-  border-radius: 8px;
-  border: 1px solid rgba(139, 92, 246, 0.3);
-}
-
-.form-actions {
-  display: flex;
-  gap: 20px;
-  justify-content: flex-end;
-  margin-top: 40px;
-}
-
-.clear-button {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.clear-button:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.save-button {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(129, 140, 248, 1) 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 32px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
-  transition: all 0.3s ease;
-}
-
-.save-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+.card-back .challenge-section li {
+  margin-bottom: 10px;
+  line-height: 1.4;
+  font-size: 0.9rem;
 }
 
 /* Thought Record Card Styles */
@@ -1088,24 +945,19 @@ export default defineComponent({
 }
 
 @media (max-width: 768px) {
+  .back-button {
+    top: 20px;
+    left: 20px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
   .cbt-page {
     height: 100vh; /* Ensure full height on mobile */
   }
   
   .container {
     padding: 20px 16px 100px 16px; /* Mobile container padding */
-  }
-  
-  .header-content {
-    padding: 16px;
-  }
-  
-  .page-title {
-    font-size: 1.6rem;
-  }
-  
-  .page-subtitle {
-    font-size: 1rem;
   }
   
   .section-title {
@@ -1120,19 +972,6 @@ export default defineComponent({
     grid-template-columns: 1fr;
   }
   
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .example-scenario {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .challenge-actions {
-    flex-direction: column;
-  }
-  
   .triangle-container {
     width: 200px;
     height: 173px;
@@ -1142,15 +981,6 @@ export default defineComponent({
     padding: 12px 16px;
     font-size: 0.9rem;
     min-width: 70px;
-  }
-  
-  .header-content {
-    padding: 16px;
-  }
-  
-  /* Mobile scrollbar adjustments */
-  .main-content::-webkit-scrollbar {
-    width: 6px; /* Thinner on mobile */
   }
   
   /* Mobile thought record card */
@@ -1196,10 +1026,6 @@ export default defineComponent({
     padding: 16px 12px 80px 12px; /* Tighter padding on very small screens */
   }
   
-  .header-content {
-    padding: 12px;
-  }
-  
   /* Smaller screens adjustments */
   .thought-record-card p {
     font-size: 1rem;
@@ -1212,11 +1038,6 @@ export default defineComponent({
   
   .saved-record-card {
     margin-bottom: 16px;
-  }
-  
-  /* Even thinner scrollbar on very small screens */
-  .main-content::-webkit-scrollbar {
-    width: 4px;
   }
 }
 </style>

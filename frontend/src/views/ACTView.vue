@@ -1,26 +1,25 @@
 <template>
-  <div class="self-context-page">
+  <div class="act-page">
+    <!-- Back Button -->
+    <button @click="$emit('back')" class="back-button">
+      <span class="back-arrow">←</span>
+      <span>Back to Therapy Resources</span>
+    </button>
+
     <main class="main-content">
       <div class="container">
         
         <!-- Introduction Section -->
         <section class="intro-section">
           <div class="section-header">
-            <h1 class="page-title">🌌 Self as Context</h1>
+            <h1 class="page-title">🌌 ACT: Acceptance & Commitment Therapy</h1>
             <p class="page-subtitle">
-              Discover your observer self and connect with what truly matters to you
-            </p>
+You are not your thoughts, emotions, or experiences - you are the observer of them            </p>
           </div>
         </section>
 
         <!-- Self-as-Context Core Concept -->
         <section class="concept-section">
-          <div class="section-header">
-            <h2 class="section-title">🎭 Understanding Self-as-Context</h2>
-            <p class="section-subtitle">
-              You are not your thoughts, emotions, or experiences - you are the observer of them
-            </p>
-          </div>
 
           <div class="concept-card glass-card">
             <div class="problem-solution">
@@ -46,7 +45,7 @@
           </div>
         </section>
 
-        <!-- Sky Metaphor Section -->
+        <!-- Sky Metaphor & Cognitive Defusion -->
         <section class="metaphor-section">
           <div class="section-header">
             <h2 class="section-title">☁️ The Sky Metaphor</h2>
@@ -75,6 +74,7 @@
                 </div>
               </div>
             </div>
+            
             <div class="metaphor-explanation">
               <h4>Key Insights:</h4>
               <ul>
@@ -84,103 +84,36 @@
                 <li><strong>The observer self</strong> is the continuous awareness that has always been there</li>
               </ul>
             </div>
-          </div>
-        </section>
 
-        <!-- Observer Self Exercises -->
-        <section class="exercises-section">
-          <div class="section-header">
-            <h2 class="section-title">🧘 Observer Self Exercises</h2>
-            <p class="section-subtitle">
-              Practice connecting with your observer self
-            </p>
-          </div>
+            <div class="section-divider"></div>
 
-          <div class="exercises-grid">
-            <!-- Observer Meditation -->
-            <div class="exercise-card glass-card">
-              <div class="exercise-icon">🎯</div>
-              <h3>Observer Meditation</h3>
-              <p class="exercise-description">
-                Practice noticing the one who notices
+            <div class="defusion-header">
+              <h3>🧘 Cognitive Defusion Exercise</h3>
+              <p class="defusion-subtitle">
+                Practice separating yourself from your thoughts and feelings
               </p>
-              <div class="exercise-steps">
-                <div class="step">
-                  <span class="step-number">1</span>
-                  <p>Notice you're having thoughts</p>
-                </div>
-                <div class="step">
-                  <span class="step-number">2</span>
-                  <p>Now notice you're <em>noticing</em> thoughts</p>
-                </div>
-                <div class="step">
-                  <span class="step-number">3</span>
-                  <p>Ask: "Who is the one observing?"</p>
-                </div>
-                <div class="step">
-                  <span class="step-number">4</span>
-                  <p>You are not the content, you are the space</p>
-                </div>
-              </div>
-              <button @click="startObserverMeditation" class="exercise-button">
-                Start 5-Minute Practice
-              </button>
             </div>
 
-            <!-- Continuous You Exercise -->
-            <div class="exercise-card glass-card">
-              <div class="exercise-icon">⏰</div>
-              <h3>Continuous You</h3>
-              <p class="exercise-description">
-                Connect with the "you" that has always been there
-              </p>
-              <div class="timeline-exercise">
-                <div class="timeline-point" @click="toggleTimelineReflection('childhood')">
-                  <span class="age">Age 5</span>
-                  <p>Remember being a child</p>
-                </div>
-                <div class="timeline-point" @click="toggleTimelineReflection('teen')">
-                  <span class="age">Teenager</span>
-                  <p>Your teenage years</p>
-                </div>
-                <div class="timeline-point" @click="toggleTimelineReflection('now')">
-                  <span class="age">Now</span>
-                  <p>Present moment you</p>
-                </div>
-              </div>
-              <div v-if="activeTimelineReflection" class="reflection-prompt glass-card">
-                <h4>{{ timelineReflections[activeTimelineReflection].title }}</h4>
-                <p>{{ timelineReflections[activeTimelineReflection].prompt }}</p>
-                <textarea 
-                  v-model="timelineReflections[activeTimelineReflection].response"
-                  placeholder="Write your reflection here..."
-                  class="reflection-textarea"
-                ></textarea>
-              </div>
-            </div>
-
-            <!-- I Am Not My... Exercise -->
-            <div class="exercise-card glass-card">
+            <div class="exercise-content">
               <div class="exercise-icon">🔄</div>
-              <h3>"I Am Not My..."</h3>
+              <h4>"I Am Not My..."</h4>
               <p class="exercise-description">
                 Practice disidentifying from temporary experiences
               </p>
+              
               <div class="disidentification-list">
                 <div 
                   v-for="item in disidentificationItems" 
                   :key="item.id"
                   class="disidentification-item"
-                  @click="toggleDisidentification(item.id)"
-                  :class="{ 'completed': item.completed }"
                 >
-                  <div class="item-icon">{{ item.completed ? '✅' : '⬜' }}</div>
                   <div class="item-content">
                     <strong>I am not my {{ item.category }}</strong>
                     <p>{{ item.explanation }}</p>
                   </div>
                 </div>
               </div>
+              
               <div class="disidentification-affirmation">
                 <p class="affirmation-text">
                   "I am the observer, the continuous awareness that witnesses all experiences"
@@ -264,6 +197,9 @@
                     <span class="rating-value">{{ domainRatings[selectedDomain] || 0 }}/10</span>
                   </div>
                 </div>
+                <button @click="saveDomainValues(selectedDomain)" class="save-values-button">
+                  Save Values Reflection
+                </button>
               </div>
             </div>
           </div>
@@ -403,20 +339,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue'
-import HamburgerMenu from '@/components/HamburgerMenu.vue'
+import { defineComponent, ref, reactive, computed } from 'vue'
+import { useTherapyStorage } from '@/composables/useTherapyStorage'
+import type { TherapyRecord } from '@/composables/useTherapyStorage'
 
 interface LifeDomain {
   id: string
   name: string
   icon: string
   description: string
-}
-
-interface TimelineReflection {
-  title: string
-  prompt: string
-  response: string
 }
 
 interface DisidentificationItem {
@@ -437,15 +368,47 @@ interface ActionPlan {
   createdAt?: string
 }
 
+// ACT-specific therapy record data types
+interface ACTActionPlanData {
+  type: 'action_plan'
+  actionPlan: ActionPlan
+}
+
+interface ACTValuesReflectionData {
+  type: 'values_reflection'
+  domainId: string
+  domainName: string
+  values: string
+  consistencyRating: number
+}
+
+interface ACTDisidentificationData {
+  type: 'disidentification'
+  items: DisidentificationItem[]
+  completedCount: number
+}
+
+type ACTRecordData = ACTActionPlanData | ACTValuesReflectionData | ACTDisidentificationData
+
 export default defineComponent({
-  name: 'SelfContextView',
-  components: {
-    HamburgerMenu
-  },
+  name: 'ACTView',
+  components: {},
+  emits: ['back'],
   setup() {
+    // Initialize therapy storage for ACT exercises
+    const {
+      records: therapyRecords,
+      isLoading,
+      error: storageError,
+      save: saveToTherapy,
+      remove: removeFromTherapy
+    } = useTherapyStorage<ACTRecordData>({
+      therapyType: 'act',
+      patientId: 'kaleb', // TODO: Get from auth/context
+      useBackend: true
+    })
+
     const selectedDomain = ref<string | null>(null)
-    const activeTimelineReflection = ref<string | null>(null)
-    const currentActionStep = ref(1)
 
     const lifeDomains: LifeDomain[] = [
       {
@@ -497,24 +460,6 @@ export default defineComponent({
         description: 'Nature, sustainability'
       }
     ]
-
-    const timelineReflections = reactive<Record<string, TimelineReflection>>({
-      childhood: {
-        title: 'Your Childhood Self',
-        prompt: 'What do you remember about being 5 years old? What did you love? What made you curious? Notice that the "you" experiencing life then is the same "you" here now.',
-        response: ''
-      },
-      teen: {
-        title: 'Your Teenage Self',
-        prompt: 'Remember your teenage years. Your interests, dreams, and struggles may have been different, but notice the continuous thread of "you" that was there witnessing it all.',
-        response: ''
-      },
-      now: {
-        title: 'Your Present Self',
-        prompt: 'Here you are now. Your experiences have changed dramatically since childhood, but that essential "you" - the observer, the experiencer - has remained constant throughout.',
-        response: ''
-      }
-    })
 
     const disidentificationItems = ref<DisidentificationItem[]>([
       {
@@ -575,50 +520,51 @@ export default defineComponent({
       willingnessAction: ''
     })
 
-    const savedActionPlans = ref<ActionPlan[]>([])
+    // Computed property to extract saved action plans from therapy records
+    const savedActionPlans = computed(() => {
+      return therapyRecords.value
+        .filter((record: TherapyRecord<ACTRecordData>) => record.record_data.type === 'action_plan')
+        .map((record: TherapyRecord<ACTRecordData>) => {
+          const data = record.record_data as ACTActionPlanData
+          return {
+            ...data.actionPlan,
+            id: record.id,
+            createdAt: record.created_at
+          }
+        })
+        .sort((a: ActionPlan, b: ActionPlan) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
+    })
 
     // Methods
     const selectDomain = (domainId: string) => {
       selectedDomain.value = selectedDomain.value === domainId ? null : domainId
     }
 
-    const toggleTimelineReflection = (period: string) => {
-      activeTimelineReflection.value = activeTimelineReflection.value === period ? null : period
-    }
+    const saveDomainValues = async (domainId: string) => {
+      const domain = lifeDomains.find(d => d.id === domainId)
+      if (!domain || !domainValues[domainId]) return
 
-    const toggleDisidentification = (itemId: string) => {
-      const item = disidentificationItems.value.find(i => i.id === itemId)
-      if (item) {
-        item.completed = !item.completed
+      const actData: ACTValuesReflectionData = {
+        type: 'values_reflection',
+        domainId,
+        domainName: domain.name,
+        values: domainValues[domainId],
+        consistencyRating: domainRatings[domainId] || 0
       }
-    }
 
-    const startObserverMeditation = () => {
-      // Simple guided meditation timer
-      const steps = [
-        'Take three deep breaths... Notice you\'re breathing.',
-        'Now notice your thoughts... What\'s going through your mind?',
-        'Notice that you\'re noticing your thoughts... Who is the observer?',
-        'You are not your thoughts. You are the space in which thoughts appear.',
-        'Rest in this awareness... You are the sky, not the weather.'
-      ]
-      
-      let stepIndex = 0
-      const showStep = () => {
-        if (stepIndex < steps.length) {
-          showToast(steps[stepIndex], true)
-          stepIndex++
-          setTimeout(showStep, 60000) // 1 minute per step
-        } else {
-          showToast('Meditation complete. You are the observer.', true)
+      try {
+        await saveToTherapy(actData)
+        showToast(`${domain.name} values saved`, true)
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          // eslint-disable-next-line no-console
+          console.error('Error saving domain values:', error)
         }
+        showToast('Failed to save values', false)
       }
-      
-      showToast('Starting 5-minute Observer Meditation...', true)
-      setTimeout(showStep, 3000)
     }
 
-    const saveActionPlan = () => {
+    const saveActionPlan = async () => {
       if (!actionPlan.value || !actionPlan.firstStep) {
         showToast('Please fill in at least your value and first step', false)
         return
@@ -630,17 +576,29 @@ export default defineComponent({
         createdAt: new Date().toISOString()
       }
 
-      savedActionPlans.value.unshift(newPlan)
-      localStorage.setItem('self-context-actions', JSON.stringify(savedActionPlans.value))
+      // Save to backend via therapy storage
+      const actData: ACTActionPlanData = {
+        type: 'action_plan',
+        actionPlan: newPlan
+      }
 
-      // Reset form
-      Object.keys(actionPlan).forEach(key => {
-        if (key !== 'id' && key !== 'createdAt') {
-          (actionPlan as any)[key] = ''
+      try {
+        await saveToTherapy(actData)
+        showToast('Action plan committed! Take your first step.', true)
+
+        // Reset form
+        Object.keys(actionPlan).forEach(key => {
+          if (key !== 'id' && key !== 'createdAt') {
+            (actionPlan as any)[key] = ''
+          }
+        })
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          // eslint-disable-next-line no-console
+          console.error('Error saving action plan:', error)
         }
-      })
-
-      showToast('Action plan committed! Take your first step.', true)
+        showToast('Failed to save action plan', false)
+      }
     }
 
     const formatDate = (dateString: string) => {
@@ -679,36 +637,18 @@ export default defineComponent({
       }, 3000)
     }
 
-    // Load saved data
-    const loadSavedData = () => {
-      try {
-        const saved = localStorage.getItem('self-context-actions')
-        if (saved) {
-          savedActionPlans.value = JSON.parse(saved)
-        }
-      } catch (error) {
-        console.error('Error loading saved data:', error)
-      }
-    }
-
-    loadSavedData()
-
     return {
       selectedDomain,
-      activeTimelineReflection,
-      currentActionStep,
       lifeDomains,
-      timelineReflections,
       disidentificationItems,
       valuesQuestions,
       domainValues,
       domainRatings,
       actionPlan,
       savedActionPlans,
+      isLoading,
       selectDomain,
-      toggleTimelineReflection,
-      toggleDisidentification,
-      startObserverMeditation,
+      saveDomainValues,
       saveActionPlan,
       formatDate
     }
@@ -717,7 +657,44 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.self-context-page {
+.back-button {
+  position: fixed;
+  top: 32px;
+  left: 32px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.back-button:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: translateX(-4px);
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.3);
+}
+
+.back-arrow {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.back-button:hover .back-arrow {
+  transform: translateX(-4px);
+}
+
+.act-page {
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -741,33 +718,10 @@ export default defineComponent({
   overflow-x: hidden;
   padding: 0;
   scroll-behavior: smooth;
-  
-  /* Custom scrollbar styling */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(139, 92, 246, 0.6) rgba(255, 255, 255, 0.1);
-}
-
-.main-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.main-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-  margin: 8px 0;
-}
-
-.main-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.6) 0%, 
-    rgba(129, 140, 248, 0.6) 100%);
-  border-radius: 4px;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1700px;
   margin: 0 auto;
   padding: 20px 20px 80px 20px;
 }
@@ -976,14 +930,44 @@ export default defineComponent({
   font-size: 1.05rem;
 }
 
-.exercises-section {
-  margin-bottom: 60px;
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(139, 92, 246, 0.3) 50%, 
+    transparent 100%);
+  margin: 48px 0 40px 0;
 }
 
-.exercises-grid {
-  display: grid;
-  gap: 32px;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+.defusion-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.defusion-header h3 {
+  color: rgba(196, 181, 253, 1);
+  margin-bottom: 12px;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.defusion-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.exercise-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.exercises-section {
+  margin-bottom: 60px;
 }
 
 .exercise-card {
@@ -991,6 +975,8 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .exercise-icon {
@@ -999,7 +985,7 @@ export default defineComponent({
   opacity: 0.8;
 }
 
-.exercise-card h3 {
+.exercise-content h4 {
   color: rgba(196, 181, 253, 1);
   margin-bottom: 16px;
   font-size: 1.5rem;
@@ -1012,143 +998,28 @@ export default defineComponent({
   line-height: 1.6;
 }
 
-.exercise-steps {
-  width: 100%;
-  margin-bottom: 24px;
-}
-
-.step {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-  text-align: left;
-}
-
-.step-number {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(129, 140, 248, 0.8) 100%);
-  color: white;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  margin-right: 16px;
-  flex-shrink: 0;
-}
-
-.step p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.5;
-}
-
-.exercise-button {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(129, 140, 248, 1) 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
-  transition: all 0.3s ease;
-}
-
-.exercise-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
-}
-
-.timeline-exercise {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 24px;
-  width: 100%;
-}
-
-.timeline-point {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  padding: 16px;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-}
-
-.timeline-point:hover {
-  border-color: rgba(139, 92, 246, 0.4);
-  background: rgba(139, 92, 246, 0.05);
-}
-
-.age {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(129, 140, 248, 0.8) 100%);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.reflection-prompt {
-  margin-top: 24px;
-  text-align: left;
-}
-
-.reflection-prompt h4 {
-  color: rgba(196, 181, 253, 1);
-  margin-bottom: 12px;
-  font-size: 1.2rem;
-}
-
-.reflection-textarea {
-  width: 100%;
-  min-height: 100px;
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  resize: vertical;
-}
-
 .disidentification-list {
   width: 100%;
-  margin-bottom: 24px;
+  max-width: 700px;
+  margin: 32px auto 24px;
 }
 
 .disidentification-item {
   display: flex;
-  align-items: center;
-  padding: 16px;
+  align-items: flex-start;
+  padding: 20px 24px;
   border-radius: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  background: rgba(139, 92, 246, 0.05);
+  border-left: 4px solid rgba(139, 92, 246, 0.4);
+  margin-bottom: 16px;
   text-align: left;
+  transition: all 0.3s ease;
 }
 
 .disidentification-item:hover {
-  border-color: rgba(139, 92, 246, 0.4);
-  background: rgba(139, 92, 246, 0.05);
-}
-
-.disidentification-item.completed {
-  border-color: rgba(34, 197, 94, 0.4);
-  background: rgba(34, 197, 94, 0.05);
-}
-
-.item-icon {
-  font-size: 1.2rem;
-  margin-right: 16px;
-  flex-shrink: 0;
+  background: rgba(139, 92, 246, 0.08);
+  border-left-color: rgba(139, 92, 246, 0.6);
+  transform: translateX(4px);
 }
 
 .item-content strong {
@@ -1340,6 +1211,26 @@ export default defineComponent({
   line-height: 1.5;
   resize: vertical;
   margin-bottom: 20px;
+}
+
+.save-values-button {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(129, 140, 248, 0.8) 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.save-values-button:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(129, 140, 248, 1) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .consistency-rating label {
@@ -1613,6 +1504,13 @@ export default defineComponent({
 }
 
 @media (max-width: 768px) {
+  .back-button {
+    top: 20px;
+    left: 20px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
   .container {
     padding: 20px 16px 100px 16px;
   }
@@ -1655,11 +1553,6 @@ export default defineComponent({
   .bullseye-exercise {
     grid-template-columns: 1fr;
     gap: 24px;
-  }
-  
-  .timeline-exercise {
-    flex-direction: column;
-    gap: 16px;
   }
 }
 

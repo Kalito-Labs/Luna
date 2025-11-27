@@ -273,24 +273,18 @@ if (!tableHasFK('messages', 'sessions')) {
 }
 
 // ---------------------------------------------------------------------
-// CBT Thought Records Table
+// Therapy Records Tables
 // ---------------------------------------------------------------------
 
-// Create CBT thought records table for cognitive behavioral therapy data
+// Create unified therapy records table for all therapy types (CBT, ACT, DBT)
+// Uses JSON data field for flexible storage of therapy-specific data
 db.exec(`
-CREATE TABLE IF NOT EXISTS cbt_thought_records (
+CREATE TABLE IF NOT EXISTS therapy_records (
   id TEXT PRIMARY KEY,
-  patient_id TEXT,
+  patient_id TEXT NOT NULL,
   session_id TEXT,
-  situation TEXT NOT NULL,
-  automatic_thought TEXT NOT NULL,
-  emotion TEXT NOT NULL,
-  emotion_intensity INTEGER NOT NULL CHECK(emotion_intensity >= 0 AND emotion_intensity <= 100),
-  evidence_for TEXT NOT NULL,
-  evidence_against TEXT NOT NULL,
-  alternative_thought TEXT NOT NULL,
-  new_emotion TEXT NOT NULL,
-  new_emotion_intensity INTEGER NOT NULL CHECK(new_emotion_intensity >= 0 AND new_emotion_intensity <= 100),
+  therapy_type TEXT NOT NULL CHECK(therapy_type IN ('cbt', 'act', 'dbt')),
+  record_data TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
@@ -298,7 +292,59 @@ CREATE TABLE IF NOT EXISTS cbt_thought_records (
 );
 `)
 
-console.log('✅ CBT Thought Records table created/verified')
+// Create index for faster queries by therapy type and patient
+db.exec(`
+CREATE INDEX IF NOT EXISTS idx_therapy_records_patient_type
+  ON therapy_records(patient_id, therapy_type, created_at DESC);
+`)
+
+console.log('✅ Therapy Records table created/verified')
+
+// ---------------------------------------------------------------------
+// Migration: Convert old CBT thought records to new format
+// ---------------------------------------------------------------------
+
+// Check if old cbt_thought_records table exists
+const oldCbtTableExists = db.prepare(`
+  SELECT name FROM sqlite_master 
+  WHERE type='table' AND name='cbt_thought_records'
+`).get()
+
+if (oldCbtTableExists) {
+  console.log('📦 Migrating old CBT thought records to new therapy_records table...')
+  
+  db.transaction(() => {
+    // Copy old records to new format
+    db.exec(`
+      INSERT INTO therapy_records (id, patient_id, session_id, therapy_type, record_data, created_at, updated_at)
+      SELECT 
+        id,
+        patient_id,
+        session_id,
+        'cbt' as therapy_type,
+        json_object(
+          'situation', situation,
+          'automaticThought', automatic_thought,
+          'emotion', emotion,
+          'emotionIntensity', emotion_intensity,
+          'evidenceFor', evidence_for,
+          'evidenceAgainst', evidence_against,
+          'alternativeThought', alternative_thought,
+          'newEmotion', new_emotion,
+          'newEmotionIntensity', new_emotion_intensity
+        ) as record_data,
+        created_at,
+        updated_at
+      FROM cbt_thought_records
+      WHERE id NOT IN (SELECT id FROM therapy_records);
+    `)
+    
+    // Drop old table
+    db.exec(`DROP TABLE IF EXISTS cbt_thought_records;`)
+  })()
+  
+  console.log('✅ Migration completed: old CBT records migrated to therapy_records')
+}
 
 // ---------------------------------------------------------------------
 // Seed Default Personas

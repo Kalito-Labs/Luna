@@ -25,6 +25,7 @@ import memoryRouter from './routes/memoryRouter'
 import patientsRouter from './routes/patientsRouter'
 import medicationsRouter from './routes/medicationsRouter'
 import journalRouter from './routes/journalRouter'
+import therapyRecordsRouter from './routes/therapyRecordsRouter'
 import { searchRouter } from './routes/searchRouter'
 import datasetsRouter from './routes/datasetsRouter'
 import { vectorSearchRouter } from './routes/vectorSearchRouter'
@@ -151,6 +152,9 @@ app.use('/api/medications', medicationsRouter)
 
 // Journal and mood tracking
 app.use('/api/journal', journalRouter)
+
+// Therapy records (CBT, ACT, DBT)
+app.use('/api/therapy-records', therapyRecordsRouter)
 
 // Search
 app.use('/api/search', searchRouter)
