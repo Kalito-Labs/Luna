@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import router from './router'
 import App from './App.vue'
 import './assets/styles/main.css'
+import './assets/styles/scrollbar.css'
 
 // Import Ionicons web components
 // For Ionicons v8, we import the component with .js extension

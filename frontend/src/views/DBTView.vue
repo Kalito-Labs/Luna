@@ -1,13 +1,45 @@
 <template>
   <div class="dbt-content">
+    <!-- Back Button -->
+    <button @click="$emit('back')" class="back-button">
+      <span class="back-arrow">←</span>
+      <span>Back to Therapy Resources</span>
+    </button>
+
     <div class="container-dbt">
+        
+        <!-- DBT Core Theory -->
+        <section class="intro-section">
+          <div class="section-header">
+            <h1 class="page-title">💫 DBT: Dialectical Behavior Therapy</h1>
+            <p class="page-subtitle">
+              Combining acceptance and change for emotional balance
+            </p>
+          </div>
+          
+          <div class="core-theory glass-card">
+            <div class="dialectic-explanation">
+              <h3>The Dialectic</h3>
+              <p class="dialectic-text">
+                DBT combines <strong>acceptance</strong> (you're doing your best) with <strong>change</strong> (you need to learn new skills).
+              </p>
+              <div class="dialectic-formula">
+                <span class="formula-part acceptance">Accepting yourself as you are</span>
+                <span class="formula-plus">+</span>
+                <span class="formula-part change">Working to change</span>
+                <span class="formula-equals">=</span>
+                <span class="formula-result">Dialectical Balance</span>
+              </div>
+            </div>
+          </div>
+        </section>
         
         <!-- Four Modules Navigation -->
         <section class="modules-section">
           <div class="section-header">
-            <h2 class="section-title">The Four DBT Modules</h2>
+            <h2 class="section-title">The Two Core DBT Modules</h2>
             <p class="section-subtitle">
-              Core skills for emotional regulation and distress tolerance
+              Master these foundational skills for emotional regulation and distress tolerance
             </p>
           </div>
 
@@ -376,7 +408,7 @@
                 <div class="log-header">
                   <span class="log-skill">{{ log.skill }}</span>
                   <div class="log-header-right">
-                    <span class="log-date">{{ formatDate(log.date) }}</span>
+                    <span class="log-date">{{ formatDate(log.date || '') }}</span>
                     <button @click="deleteLog(log.id!)" class="delete-log">🗑️</button>
                   </div>
                 </div>
@@ -436,6 +468,7 @@ interface PracticeLog {
 export default defineComponent({
   name: 'DBTView',
   components: {},
+  emits: ['back'],
   setup() {
     const selectedModule = ref<string | null>(null)
     
@@ -453,27 +486,13 @@ export default defineComponent({
         icon: '🛟',
         description: 'Survive crises without making things worse',
         skillCount: 15
-      },
-      {
-        id: 'emotion',
-        name: 'Emotion Regulation',
-        icon: '💫',
-        description: 'Understand and manage intense emotions',
-        skillCount: 10
-      },
-      {
-        id: 'interpersonal',
-        name: 'Interpersonal Effectiveness',
-        icon: '🤝',
-        description: 'Build healthy relationships and communicate effectively',
-        skillCount: 8
       }
     ]
 
     const mindfulnessExercises: MindfulnessExercise[] = [
       { id: '1', name: 'Body Scan', icon: '🧘' },
       { id: '2', name: 'Breath Counting', icon: '🌬️' },
-      { id: '3', name: 'Five Senses', icon: '👁️' },
+      { id: '3', name: 'Five Senses Grounding', icon: '👁️' },
       { id: '4', name: 'Walking Meditation', icon: '🚶' },
       { id: '5', name: 'Eating Meditation', icon: '🍽️' }
     ]
@@ -481,11 +500,11 @@ export default defineComponent({
     const acceptsSkills: AcronymSkill[] = [
       { letter: 'A', word: 'Activities', description: 'Engage in something absorbing' },
       { letter: 'C', word: 'Contributing', description: 'Help someone else' },
-      { letter: 'C', word: 'Comparisons', description: 'Compare to times you coped worse' },
+      { letter: 'C', word: 'Comparisons', description: 'Compare to times you coped worse or others\' struggles' },
       { letter: 'E', word: 'Emotions', description: 'Create opposite emotion (comedy for sadness)' },
       { letter: 'P', word: 'Pushing away', description: 'Mentally shelve the problem for now' },
       { letter: 'T', word: 'Thoughts', description: 'Engage your mind (puzzles, count backwards)' },
-      { letter: 'S', word: 'Sensations', description: 'Strong sensations (hold ice, loud music)' }
+      { letter: 'S', word: 'Sensations', description: 'Strong sensations (hold ice, squeeze stress ball, loud music)' }
     ]
 
     const improveSkills: AcronymSkill[] = [
@@ -631,8 +650,45 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.back-button {
+  position: fixed;
+  top: 32px;
+  left: 32px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.back-button:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: translateX(-4px);
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.3);
+}
+
+.back-arrow {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.back-button:hover .back-arrow {
+  transform: translateX(-4px);
+}
+
 .container-dbt {
-  max-width: 1200px;
+  max-width: 1700px;
   margin: 0 auto;
   padding: 20px 20px 80px 20px;
 }
@@ -693,6 +749,87 @@ export default defineComponent({
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 24px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.intro-section {
+  margin-bottom: 60px;
+}
+
+.core-theory {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.dialectic-explanation {
+  text-align: center;
+}
+
+.dialectic-explanation h3 {
+  color: rgba(196, 181, 253, 1);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+}
+
+.dialectic-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  line-height: 1.8;
+  margin-bottom: 32px;
+}
+
+.dialectic-text strong {
+  color: rgba(196, 181, 253, 1);
+  font-weight: 600;
+}
+
+.dialectic-formula {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 24px;
+  background: rgba(139, 92, 246, 0.05);
+  border: 2px solid rgba(139, 92, 246, 0.2);
+  border-radius: 12px;
+}
+
+.formula-part {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.formula-part.acceptance {
+  background: rgba(34, 197, 94, 0.1);
+  border: 2px solid rgba(34, 197, 94, 0.3);
+  color: rgba(34, 197, 94, 1);
+}
+
+.formula-part.change {
+  background: rgba(59, 130, 246, 0.1);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  color: rgba(96, 165, 250, 1);
+}
+
+.formula-plus,
+.formula-equals {
+  color: rgba(196, 181, 253, 1);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.formula-result {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(129, 140, 248, 0.8) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
 }
 
 .modules-section {
@@ -1290,6 +1427,13 @@ export default defineComponent({
 }
 
 @media (max-width: 768px) {
+  .back-button {
+    top: 20px;
+    left: 20px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
   .container-dbt {
     padding: 20px 16px 100px 16px;
   }

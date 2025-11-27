@@ -8,7 +8,7 @@ import JournalEntryView from '../views/JournalEntryView.vue'
 import JournalCalendarView from '../views/JournalCalendarView.vue'
 import LibraryView from '../views/LibraryView.vue'
 import CBTView from '../views/CBTView.vue'
-import SelfContextView from '../views/SelfContextView.vue'
+import ACTView from '../views/ACTView.vue'
 import DBTView from '../views/DBTView.vue'
 import ResourcesView from '../views/ResourcesView.vue'
 
@@ -19,7 +19,7 @@ const routes = [
   { path: '/library', name: 'library', component: LibraryView },
   { path: '/resources', name: 'resources', component: ResourcesView },
   { path: '/cbt', name: 'cbt', component: CBTView },
-  { path: '/self-context', name: 'self-context', component: SelfContextView },
+  { path: '/self-context', name: 'self-context', component: ACTView },
   { path: '/dbt', name: 'dbt', component: DBTView },
   { path: '/kalito-hub', name: 'kalito-hub', component: KalitoHub },
   { path: '/journal', name: 'journal', component: JournalView },

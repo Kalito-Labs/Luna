@@ -1,19 +1,19 @@
 <template>
   <div class="resources-page">
-    <!-- Hamburger button/menu, top left -->
-    <div class="hamburger-fixed">
+    <!-- Hamburger button/menu, top left - only show when no therapy is selected -->
+    <div v-if="!selectedTherapy" class="hamburger-fixed">
       <HamburgerMenu />
     </div>
     
     <main class="main-content">
-      <div class="header-content">
+      <div v-if="!selectedTherapy" class="header-content">
         <h1 class="page-title">🧠 Therapy Resources</h1>
       </div>
       
       <div class="container">
 
         <!-- Therapy Type Selector -->
-        <section class="therapy-selector">
+        <section v-if="!selectedTherapy" class="therapy-selector">
           <div class="selector-tabs">
             <button 
               v-for="therapy in therapyTypes" 
@@ -58,8 +58,11 @@
         </section>
 
         <!-- Dynamic Therapy Content -->
-        <section v-if="selectedTherapy" class="therapy-content">
-          <component :is="currentTherapyComponent" />
+        <section v-if="selectedTherapy" class="therapy-content therapy-fullscreen">
+          <component 
+            :is="currentTherapyComponent" 
+            @back="deselectTherapy"
+          />
         </section>
       </div>
     </main>
@@ -70,7 +73,7 @@
 import { defineComponent, ref, computed, markRaw } from 'vue'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import CBTView from './CBTView.vue'
-import SelfContextView from './SelfContextView.vue'
+import ACTView from './ACTView.vue'
 import DBTView from './DBTView.vue'
 
 interface TherapyType {
@@ -88,7 +91,7 @@ export default defineComponent({
   components: {
     HamburgerMenu,
     CBTView,
-    SelfContextView,
+    ACTView,
     DBTView
   },
   setup() {
@@ -121,7 +124,7 @@ export default defineComponent({
           'Committed action',
           'Psychological flexibility'
         ],
-        component: markRaw(SelfContextView)
+        component: markRaw(ACTView)
       },
       {
         id: 'dbt',
@@ -145,21 +148,22 @@ export default defineComponent({
     })
 
     const selectTherapy = (therapyId: string) => {
-      // Toggle off if clicking the same therapy
-      if (selectedTherapy.value === therapyId) {
-        selectedTherapy.value = null
-      } else {
-        selectedTherapy.value = therapyId
-        // Scroll to top of content
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
+      selectedTherapy.value = therapyId
+      // Scroll to top of content
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
+    const deselectTherapy = () => {
+      selectedTherapy.value = null
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
     return {
       selectedTherapy,
       therapyTypes,
       currentTherapyComponent,
-      selectTherapy
+      selectTherapy,
+      deselectTherapy
     }
   }
 })
@@ -202,32 +206,10 @@ export default defineComponent({
   overflow-x: hidden;
   padding: 0;
   scroll-behavior: smooth;
-  
-  scrollbar-width: thin;
-  scrollbar-color: rgba(139, 92, 246, 0.6) rgba(255, 255, 255, 0.1);
-}
-
-.main-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.main-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-  margin: 8px 0;
-}
-
-.main-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.6) 0%, 
-    rgba(129, 140, 248, 0.6) 100%);
-  border-radius: 4px;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1700px;
   margin: 0 auto;
   padding: 20px 20px 80px 20px;
 }
@@ -453,6 +435,22 @@ export default defineComponent({
 
 .therapy-content {
   animation: fadeIn 0.4s ease-in-out;
+}
+
+.therapy-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(15, 23, 42, 0.95) 0%,
+    rgba(30, 41, 59, 0.9) 50%,
+    rgba(15, 23, 42, 0.95) 100%);
+  z-index: 1000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
 }
 
 @keyframes fadeIn {

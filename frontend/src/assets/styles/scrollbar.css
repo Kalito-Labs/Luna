@@ -1,0 +1,59 @@
+/* ============================================================================
+   scrollbar.css — Shared Scrollbar Styles for Main Content Areas
+   ============================================================================ */
+
+/* Firefox scrollbar styling */
+.main-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 92, 246, 0.6) rgba(255, 255, 255, 0.1);
+}
+
+/* WebKit scrollbar styling (Chrome, Safari, Edge) */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  margin: 8px 0;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.6) 0%, 
+    rgba(129, 140, 248, 0.6) 100%);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.8) 0%, 
+    rgba(129, 140, 248, 0.8) 100%);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+.main-content::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 1) 0%, 
+    rgba(129, 140, 248, 1) 100%);
+}
+
+.main-content::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .main-content::-webkit-scrollbar {
+    width: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content::-webkit-scrollbar {
+    width: 4px;
+  }
+}
