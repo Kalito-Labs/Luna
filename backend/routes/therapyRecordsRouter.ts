@@ -60,10 +60,24 @@ const queryOptionsSchema = z.object({
  */
 therapyRecordsRouter.post('/', validateBody(createTherapyRecordSchema), (req, res) => {
   try {
+    console.log('📥 Received POST /api/therapy-records request:', {
+      patient_id: req.body.patient_id,
+      therapy_type: req.body.therapy_type,
+      session_id: req.body.session_id,
+      has_data: !!req.body.data
+    })
+    
     const record = therapyRecordsService.createRecord(req.body)
+    
+    console.log('✅ Successfully created therapy record:', {
+      id: record.id,
+      therapy_type: record.therapy_type,
+      patient_id: record.patient_id
+    })
+    
     res.status(201).json(record)
   } catch (error) {
-    console.error('Error creating therapy record:', error)
+    console.error('❌ Error creating therapy record:', error)
     res.status(500).json({
       error: 'Failed to create therapy record',
       message: error instanceof Error ? error.message : 'Unknown error'
@@ -170,10 +184,28 @@ therapyRecordsRouter.delete('/:id', (req, res) => {
 })
 
 /**
- * GET /api/therapy-records/stats/:patientId?
+ * GET /api/therapy-records/stats (with optional patientId query param)
  * Get therapy record statistics by type
  */
-therapyRecordsRouter.get('/stats/:patientId?', (req, res) => {
+therapyRecordsRouter.get('/stats', (req, res) => {
+  try {
+    const patientId = req.query.patientId as string | undefined
+    const stats = therapyRecordsService.getRecordStats(patientId)
+    res.json(stats)
+  } catch (error) {
+    console.error('Error retrieving therapy record stats:', error)
+    res.status(500).json({
+      error: 'Failed to retrieve therapy record stats',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    })
+  }
+})
+
+/**
+ * GET /api/therapy-records/stats/:patientId
+ * Get therapy record statistics by type for specific patient
+ */
+therapyRecordsRouter.get('/stats/:patientId', (req, res) => {
   try {
     const stats = therapyRecordsService.getRecordStats(req.params.patientId)
     res.json(stats)

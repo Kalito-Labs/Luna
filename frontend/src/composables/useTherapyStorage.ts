@@ -4,7 +4,7 @@
  * and localStorage fallback for offline support
  */
 
-import { ref, computed } from 'vue'
+import { ref, computed, unref, type Ref } from 'vue'
 
 export type TherapyType = 'cbt' | 'act' | 'dbt'
 
@@ -41,7 +41,7 @@ export interface CBTThoughtRecordData {
  */
 export interface TherapyStorageOptions {
   therapyType: TherapyType
-  patientId: string
+  patientId: string | Ref<string>  // Accept both string and ref
   useBackend?: boolean // Default: true
   localStorageKey?: string // Default: `${therapyType}-records`
 }
@@ -105,7 +105,7 @@ export function useTherapyStorage<T = Record<string, unknown>>(options: TherapyS
    */
   const loadFromBackend = async (): Promise<TherapyRecord<T>[]> => {
     const response = await fetch(
-      `${API_BASE_URL}/api/therapy-records/patient/${patientId}?therapy_type=${therapyType}&sortOrder=DESC`,
+      `${API_BASE_URL}/api/therapy-records/patient/${unref(patientId)}?therapy_type=${therapyType}&sortOrder=DESC`,
       {
         method: 'GET',
         headers: {
@@ -125,6 +125,14 @@ export function useTherapyStorage<T = Record<string, unknown>>(options: TherapyS
    * Load records (tries backend first, falls back to localStorage)
    */
   const load = async (): Promise<void> => {
+    // Skip loading if patient ID is not set
+    const currentPatientId = unref(patientId)
+    if (!currentPatientId || currentPatientId.trim() === '') {
+      console.warn('⏭️ Skipping load: patient ID not set')
+      records.value = loadFromLocalStorage()
+      return
+    }
+
     isLoading.value = true
     error.value = null
     isSynced.value = false
@@ -169,7 +177,7 @@ export function useTherapyStorage<T = Record<string, unknown>>(options: TherapyS
 
     try {
       const newRecord: Omit<TherapyRecord<T>, 'id' | 'created_at' | 'updated_at'> = {
-        patient_id: patientId,
+        patient_id: unref(patientId),  // Use unref to handle both string and Ref<string>
         session_id: sessionId,
         therapy_type: therapyType,
         data
@@ -178,6 +186,11 @@ export function useTherapyStorage<T = Record<string, unknown>>(options: TherapyS
       if (useBackend) {
         // Try to save to backend
         try {
+          console.log('🔵 Attempting backend save:', {
+            url: `${API_BASE_URL}/api/therapy-records`,
+            payload: newRecord
+          })
+          
           const response = await fetch(`${API_BASE_URL}/api/therapy-records`, {
             method: 'POST',
             headers: {
@@ -186,11 +199,17 @@ export function useTherapyStorage<T = Record<string, unknown>>(options: TherapyS
             body: JSON.stringify(newRecord)
           })
 
+          console.log('🔵 Backend response status:', response.status, response.statusText)
+
           if (!response.ok) {
-            throw new Error(`Backend error: ${response.statusText}`)
+            const errorText = await response.text()
+            console.error('🔴 Backend error response:', errorText)
+            throw new Error(`Backend error: ${response.statusText} - ${errorText}`)
           }
 
           const savedRecord = await response.json() as TherapyRecord<T>
+          console.log('✅ Backend save successful:', savedRecord)
+          
           // @ts-expect-error - Vue ref unwrapping type mismatch
           records.value.unshift(savedRecord)
           isSynced.value = true
@@ -201,6 +220,7 @@ export function useTherapyStorage<T = Record<string, unknown>>(options: TherapyS
           
           return true
         } catch (backendError) {
+          console.error('🔴 Backend save failed, falling back to localStorage:', backendError)
           if (import.meta.env.DEV) {
             // eslint-disable-next-line no-console
             console.warn('Backend save failed, saving to localStorage only:', backendError)
@@ -387,8 +407,14 @@ export function useTherapyStorage<T = Record<string, unknown>>(options: TherapyS
   const hasRecords = computed(() => records.value.length > 0)
   const unsyncedCount = computed(() => records.value.filter(r => r.id.startsWith('local-')).length)
 
-  // Auto-load on creation
-  load()
+  // Auto-load on creation only if patient ID is set
+  const currentPatientId = unref(patientId)
+  if (currentPatientId && currentPatientId.trim() !== '') {
+    load()
+  } else {
+    // Load from localStorage as fallback
+    records.value = loadFromLocalStorage()
+  }
 
   return {
     // State

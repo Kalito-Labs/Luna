@@ -12,123 +12,184 @@
         <!-- Introduction Section -->
         <section class="intro-section">
           <div class="section-header">
-            <h1 class="page-title">🌌 ACT: Acceptance & Commitment Therapy</h1>
+            <h1 class="page-title">ACT</h1>
             <p class="page-subtitle">
-You are not your thoughts, emotions, or experiences - you are the observer of them            </p>
+Acceptance and Commitment Therapy
+            </p>
           </div>
         </section>
 
-        <!-- Self-as-Context Core Concept -->
-        <section class="concept-section">
-
-          <div class="concept-card glass-card">
-            <div class="problem-solution">
-              <div class="problem-box">
-                <h4>⚠️ The Problem</h4>
-                <p>Over-identification with thoughts, feelings, roles, and labels:</p>
-                <ul>
-                  <li>"I <em>AM</em> my anxiety"</li>
-                  <li>"I <em>AM</em> a failure"</li>
-                  <li>"I <em>AM</em> broken"</li>
-                </ul>
-              </div>
-              <div class="solution-box">
-                <h4>✨ The Solution</h4>
-                <p>Recognize yourself as the observer - the sky that contains all weather:</p>
-                <ul>
-                  <li>"I am <em>experiencing</em> anxiety"</li>
-                  <li>"I am <em>having</em> thoughts about failure"</li>
-                  <li>"I am <em>noticing</em> difficult feelings"</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Sky Metaphor & Cognitive Defusion -->
-        <section class="metaphor-section">
+        <!-- Cognitive Defusion Section -->
+        <section class="defusion-section">
           <div class="section-header">
-            <h2 class="section-title">☁️ The Sky Metaphor</h2>
+            <h2 class="section-title">🎭 Cognitive Defusion</h2>
             <p class="section-subtitle">
-              Your consciousness is like the vast sky
+              Create distance between you and your thoughts - see them as mental events, not facts
             </p>
           </div>
 
-          <div class="sky-visualization glass-card">
-            <div class="sky-container">
-              <div class="sky-background">
-                <div class="cloud-element thought-cloud" style="top: 20%; left: 15%;">
-                  <span>Anxious Thoughts</span>
+          <div class="defusion-problem glass-card">
+            <h3>⚠️ The Problem: Fusion</h3>
+            <p class="fusion-explanation">
+              When we're "fused" with thoughts, we treat them as literal truth, commands, or threats. 
+              The thought "I'm worthless" becomes "I AM worthless."
+            </p>
+            <div class="fusion-examples">
+              <div class="fusion-example">
+                <span class="fusion-icon">❌</span>
+                <div class="fusion-text">
+                  <strong>Fused:</strong> "I'm stupid"
                 </div>
-                <div class="cloud-element emotion-cloud" style="top: 40%; right: 20%;">
-                  <span>Sadness</span>
-                </div>
-                <div class="cloud-element memory-cloud" style="bottom: 30%; left: 25%;">
-                  <span>Painful Memory</span>
-                </div>
-                <div class="sun-element" style="top: 15%; right: 15%;">
-                  <span>Joy</span>
-                </div>
-                <div class="observer-point">
-                  <span>Observer Self</span>
+              </div>
+              <div class="fusion-example">
+                <span class="fusion-icon">✅</span>
+                <div class="fusion-text">
+                  <strong>Defused:</strong> "I'm having the thought that I'm stupid"
                 </div>
               </div>
             </div>
+          </div>
+
+          <div class="defusion-techniques glass-card">
+            <h3>🛠️ Defusion Techniques</h3>
+            <p class="techniques-intro">Try these practices to create space from difficult thoughts:</p>
             
-            <div class="metaphor-explanation">
-              <h4>Key Insights:</h4>
-              <ul>
-                <li><strong>The sky</strong> contains all weather but isn't damaged by it</li>
-                <li><strong>Storms pass</strong>, clouds move, but the sky remains constant</li>
-                <li><strong>You can observe</strong> "I'm experiencing anxiety" from the still point of awareness</li>
-                <li><strong>The observer self</strong> is the continuous awareness that has always been there</li>
-              </ul>
+            <div class="techniques-grid">
+              <!-- Technique 1 -->
+              <div class="technique-card">
+                <div class="technique-header">
+                  <span class="technique-icon">💭</span>
+                  <h4>"I'm having the thought that..."</h4>
+                </div>
+                <p class="technique-description">
+                  Prefix troubling thoughts with this phrase to create observer perspective.
+                </p>
+                <div class="technique-example">
+                  <strong>Try it:</strong> Take a negative thought and add this prefix. Notice how it feels different.
+                </div>
+              </div>
+
+              <!-- Technique 2 -->
+              <div class="technique-card">
+                <div class="technique-header">
+                  <span class="technique-icon">📖</span>
+                  <h4>Name the Story</h4>
+                </div>
+                <p class="technique-description">
+                  Recognize repetitive thought patterns as familiar stories.
+                </p>
+                <div class="technique-example">
+                  <strong>Example:</strong> "Ah, there's the 'I'm not good enough' story again"
+                </div>
+              </div>
+
+              <!-- Technique 3 -->
+              <div class="technique-card">
+                <div class="technique-header">
+                  <span class="technique-icon">🙏</span>
+                  <h4>Thank Your Mind</h4>
+                </div>
+                <p class="technique-description">
+                  Acknowledge thoughts without obeying them.
+                </p>
+                <div class="technique-example">
+                  <strong>Say:</strong> "Thanks mind, I know you're trying to protect me"
+                </div>
+              </div>
+
+              <!-- Technique 4 -->
+              <div class="technique-card">
+                <div class="technique-header">
+                  <span class="technique-icon">🎪</span>
+                  <h4>Silly Voices</h4>
+                </div>
+                <p class="technique-description">
+                  Say the thought in a cartoon character voice or sing it to "Happy Birthday."
+                </p>
+                <div class="technique-example">
+                  <strong>Effect:</strong> Makes the thought lose its power and authority
+                </div>
+              </div>
+
+              <!-- Technique 5 -->
+              <div class="technique-card">
+                <div class="technique-header">
+                  <span class="technique-icon">🍃</span>
+                  <h4>Leaves on a Stream</h4>
+                </div>
+                <p class="technique-description">
+                  Visualize thoughts as leaves floating down a stream. Watch them drift by without grabbing them.
+                </p>
+                <div class="technique-example">
+                  <strong>Practice:</strong> Close your eyes and imagine this for 2 minutes
+                </div>
+              </div>
+
+              <!-- Technique 6 -->
+              <div class="technique-card">
+                <div class="technique-header">
+                  <span class="technique-icon">📝</span>
+                  <h4>Thoughts as Text</h4>
+                </div>
+                <p class="technique-description">
+                  Imagine the thought written on a sign or scrolling on a screen.
+                </p>
+                <div class="technique-example">
+                  <strong>Result:</strong> See the thought as an object, not truth
+                </div>
+              </div>
             </div>
 
-            <div class="section-divider"></div>
-
-            <div class="defusion-header">
-              <h3>🧘 Cognitive Defusion Exercise</h3>
-              <p class="defusion-subtitle">
-                Practice separating yourself from your thoughts and feelings
-              </p>
+            <!-- Interactive Exercise -->
+            <div class="defusion-exercise">
+              <h4>🎯 Try It Now</h4>
+              <p>Write a difficult thought you're having, then practice defusion:</p>
+              <textarea 
+                v-model="defusionThought"
+                placeholder="e.g., 'I'm going to fail this project'"
+                class="defusion-input"
+              ></textarea>
+              <div v-if="defusionThought" class="defusion-result">
+                <p><strong>Original:</strong> "{{ defusionThought }}"</p>
+                <p><strong>Defused:</strong> "I'm having the thought that {{ defusionThought.toLowerCase() }}"</p>
+                <p><strong>Named:</strong> "There's the '{{ defusionThought.toLowerCase() }}' story"</p>
+                <p><strong>Thanked:</strong> "Thanks mind for the '{{ defusionThought.toLowerCase() }}' thought"</p>
+                <button @click="saveDefusionPractice" class="save-defusion-button">
+                  Save This Practice
+                </button>
+              </div>
             </div>
+          </div>
 
-            <div class="exercise-content">
-              <div class="exercise-icon">🔄</div>
-              <h4>"I Am Not My..."</h4>
-              <p class="exercise-description">
-                Practice disidentifying from temporary experiences
-              </p>
-              
-              <div class="disidentification-list">
-                <div 
-                  v-for="item in disidentificationItems" 
-                  :key="item.id"
-                  class="disidentification-item"
-                >
-                  <div class="item-content">
-                    <strong>I am not my {{ item.category }}</strong>
-                    <p>{{ item.explanation }}</p>
+          <!-- Saved Defusion Practices -->
+          <div v-if="savedDefusionPractices.length > 0" class="saved-defusions glass-card">
+            <h3>Your Defusion Practice History</h3>
+            <div class="defusions-list">
+              <div 
+                v-for="practice in savedDefusionPractices" 
+                :key="practice.id"
+                class="defusion-item"
+              >
+                <div class="defusion-item-header">
+                  <span class="defusion-item-date">{{ formatDate(practice.createdAt) }}</span>
+                </div>
+                <p class="defusion-original-thought">"{{ practice.originalThought }}"</p>
+                <div class="defusion-reframes">
+                  <div class="reframe">
+                    <strong>Defused:</strong> "{{ practice.defusedThought }}"
                   </div>
                 </div>
-              </div>
-              
-              <div class="disidentification-affirmation">
-                <p class="affirmation-text">
-                  "I am the observer, the continuous awareness that witnesses all experiences"
-                </p>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Values Section -->
-        <section class="values-section">
+        <!-- Values & Action Section -->
+        <section class="values-action-section">
           <div class="section-header">
-            <h2 class="section-title">💎 Your Values</h2>
+            <h2 class="section-title">💎 Your Values & Committed Actions</h2>
             <p class="section-subtitle">
-              Discover what truly matters to you and let it guide your life
+              Discover what truly matters to you and transform values into concrete action
             </p>
           </div>
 
@@ -167,143 +228,99 @@ You are not your thoughts, emotions, or experiences - you are the observer of th
             </div>
           </div>
 
-          <!-- Values Bullseye -->
-          <div v-if="selectedDomain" class="values-bullseye glass-card">
-            <h3>Values Bullseye: {{ lifeDomains.find(d => d.id === selectedDomain)?.name }}</h3>
-            <div class="bullseye-exercise">
-              <div class="bullseye-questions">
-                <h4>Reflection Questions:</h4>
-                <ul>
-                  <li v-for="question in valuesQuestions" :key="question">{{ question }}</li>
-                </ul>
+          <!-- Combined Values & Action Exercise -->
+          <div v-if="selectedDomain" class="combined-exercise glass-card">
+            <h3>{{ lifeDomains.find(d => d.id === selectedDomain)?.name }} - Values & Action Plan</h3>
+            
+            <!-- Reflection Questions -->
+            <div class="reflection-section">
+              <h4>Reflection Questions:</h4>
+              <ul class="reflection-questions">
+                <li v-for="question in valuesQuestions" :key="question">{{ question }}</li>
+              </ul>
+            </div>
+
+            <!-- Values Input -->
+            <div class="values-input-section">
+              <h4>Your Values in This Domain:</h4>
+              <textarea 
+                v-model="domainValues[selectedDomain]"
+                placeholder="What do you value most in this area of life? What would you want your life to stand for here?"
+                class="values-textarea"
+              ></textarea>
+              <div class="consistency-rating">
+                <label>How consistently are you living this value? (0-10)</label>
+                <div class="rating-slider">
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="10" 
+                    v-model="domainRatings[selectedDomain]"
+                    class="slider"
+                  >
+                  <span class="rating-value">{{ domainRatings[selectedDomain] || 0 }}/10</span>
+                </div>
               </div>
-              <div class="bullseye-action">
-                <h4>Your Values in This Domain:</h4>
-                <textarea 
-                  v-model="domainValues[selectedDomain]"
-                  placeholder="What do you value most in this area of life? What would you want your life to stand for here?"
-                  class="values-textarea"
-                ></textarea>
-                <div class="consistency-rating">
-                  <label>How consistently are you living this value? (0-10)</label>
-                  <div class="rating-slider">
-                    <input 
-                      type="range" 
-                      min="0" 
-                      max="10" 
-                      v-model="domainRatings[selectedDomain]"
-                      class="slider"
-                    >
-                    <span class="rating-value">{{ domainRatings[selectedDomain] || 0 }}/10</span>
+              <button @click="saveDomainValues(selectedDomain)" class="save-values-button">
+                Save Values Reflection
+              </button>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- Action Planning -->
+            <div class="action-planning-section">
+              <h4>Plan Your Committed Action</h4>
+              <p class="action-intro">Take concrete steps toward what matters, even when it's uncomfortable. This is where values become lived experience.</p>
+              <div class="planning-form">
+                <div class="form-group">
+                  <label>1. Your Chosen Value:</label>
+                  <input 
+                    v-model="actionPlan.value" 
+                    type="text" 
+                    placeholder="e.g., Being a loving parent, Creative expression, Health and vitality"
+                    class="form-input"
+                  >
+                </div>
+                <div class="form-group">
+                  <label>2. Your SMART Goal:</label>
+                  <textarea 
+                    v-model="actionPlan.goal"
+                    placeholder="Make it specific, measurable, achievable, relevant, and time-bound"
+                    class="form-textarea"
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label>3. First Small Step:</label>
+                  <input 
+                    v-model="actionPlan.firstStep" 
+                    type="text" 
+                    placeholder="What's the tiniest action you could take today?"
+                    class="form-input"
+                  >
+                </div>
+                <div class="form-group">
+                  <label>4. Potential Barriers:</label>
+                  <p class="field-note">What difficult thoughts or feelings might show up? (Remember: you can use your defusion skills with these!)</p>
+                  <textarea 
+                    v-model="actionPlan.barriers"
+                    placeholder="e.g., 'I'll fail', anxiety, fear of judgment, discomfort..."
+                    class="form-textarea"
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label>5. Willingness Statement:</label>
+                  <p class="field-note">Willingness is the heart of psychological flexibility - being open to discomfort while moving toward what matters.</p>
+                  <div class="willingness-template">
+                    "I'm willing to feel <input v-model="actionPlan.willingnessFeel" type="text" placeholder="anxiety, discomfort, etc." class="inline-input"> 
+                    in order to <input v-model="actionPlan.willingnessAction" type="text" placeholder="take this action toward my value" class="inline-input">"
                   </div>
                 </div>
-                <button @click="saveDomainValues(selectedDomain)" class="save-values-button">
-                  Save Values Reflection
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Committed Action Section -->
-        <section class="action-section">
-          <div class="section-header">
-            <h2 class="section-title">🎯 Committed Action</h2>
-            <p class="section-subtitle">
-              Transform your values into concrete action, even when it's uncomfortable
-            </p>
-          </div>
-
-          <div class="action-process glass-card">
-            <h3>From Values to Action</h3>
-            <div class="action-steps">
-              <div class="action-step" :class="{ 'active': currentActionStep === 1 }">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                  <h4>Choose a Value</h4>
-                  <p>Select what matters most to you right now</p>
+                <div class="form-actions">
+                  <button @click="saveActionPlan" class="save-action-button">
+                    Commit to This Action
+                  </button>
                 </div>
-              </div>
-              <div class="action-step" :class="{ 'active': currentActionStep === 2 }">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                  <h4>Set a SMART Goal</h4>
-                  <p>Make it Specific, Measurable, Achievable, Relevant, Time-bound</p>
-                </div>
-              </div>
-              <div class="action-step" :class="{ 'active': currentActionStep === 3 }">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                  <h4>Break It Down</h4>
-                  <p>What's the smallest first step you can take?</p>
-                </div>
-              </div>
-              <div class="action-step" :class="{ 'active': currentActionStep === 4 }">
-                <div class="step-number">4</div>
-                <div class="step-content">
-                  <h4>Notice Barriers</h4>
-                  <p>What thoughts or feelings might get in the way?</p>
-                </div>
-              </div>
-              <div class="action-step" :class="{ 'active': currentActionStep === 5 }">
-                <div class="step-number">5</div>
-                <div class="step-content">
-                  <h4>Take Action</h4>
-                  <p>Do it anyway, making room for discomfort</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Action Planning Form -->
-          <div class="action-planning glass-card">
-            <h3>Plan Your Committed Action</h3>
-            <div class="planning-form">
-              <div class="form-group">
-                <label>1. Your Chosen Value:</label>
-                <input 
-                  v-model="actionPlan.value" 
-                  type="text" 
-                  placeholder="e.g., Being a loving parent, Creative expression, Health and vitality"
-                  class="form-input"
-                >
-              </div>
-              <div class="form-group">
-                <label>2. Your SMART Goal:</label>
-                <textarea 
-                  v-model="actionPlan.goal"
-                  placeholder="Make it specific, measurable, achievable, relevant, and time-bound"
-                  class="form-textarea"
-                ></textarea>
-              </div>
-              <div class="form-group">
-                <label>3. First Small Step:</label>
-                <input 
-                  v-model="actionPlan.firstStep" 
-                  type="text" 
-                  placeholder="What's the tiniest action you could take today?"
-                  class="form-input"
-                >
-              </div>
-              <div class="form-group">
-                <label>4. Potential Barriers:</label>
-                <textarea 
-                  v-model="actionPlan.barriers"
-                  placeholder="What thoughts, feelings, or situations might stop you?"
-                  class="form-textarea"
-                ></textarea>
-              </div>
-              <div class="form-group">
-                <label>5. Willingness Statement:</label>
-                <div class="willingness-template">
-                  "I'm willing to feel <input v-model="actionPlan.willingnessFeel" type="text" placeholder="anxiety, discomfort, etc." class="inline-input"> 
-                  in order to <input v-model="actionPlan.willingnessAction" type="text" placeholder="take this action toward my value" class="inline-input">"
-                </div>
-              </div>
-              <div class="form-actions">
-                <button @click="saveActionPlan" class="save-action-button">
-                  Commit to This Action
-                </button>
               </div>
             </div>
           </div>
@@ -331,6 +348,28 @@ You are not your thoughts, emotions, or experiences - you are the observer of th
               </div>
             </div>
           </div>
+
+          <!-- Saved Values Reflections -->
+          <div v-if="savedValuesReflections.length > 0" class="saved-values glass-card">
+            <h3>Your Values Reflections</h3>
+            <div class="values-list">
+              <div 
+                v-for="reflection in savedValuesReflections" 
+                :key="reflection.id"
+                class="reflection-item"
+              >
+                <div class="reflection-header">
+                  <h4>{{ reflection.domainIcon }} {{ reflection.domainName }}</h4>
+                  <span class="reflection-date">{{ formatDate(reflection.createdAt) }}</span>
+                </div>
+                <p class="reflection-values">{{ reflection.values }}</p>
+                <div class="reflection-rating">
+                  <strong>Consistency:</strong> 
+                  <span class="rating-badge">{{ reflection.consistencyRating }}/10</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
       </div>
@@ -339,9 +378,10 @@ You are not your thoughts, emotions, or experiences - you are the observer of th
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, computed } from 'vue'
+import { defineComponent, ref, reactive, computed, watch } from 'vue'
 import { useTherapyStorage } from '@/composables/useTherapyStorage'
 import type { TherapyRecord } from '@/composables/useTherapyStorage'
+import { useCurrentUser } from '@/composables/useCurrentUser'
 
 interface LifeDomain {
   id: string
@@ -368,6 +408,13 @@ interface ActionPlan {
   createdAt?: string
 }
 
+interface DefusionPractice {
+  id?: string
+  originalThought: string
+  defusedThought: string
+  createdAt?: string
+}
+
 // ACT-specific therapy record data types
 interface ACTActionPlanData {
   type: 'action_plan'
@@ -382,33 +429,51 @@ interface ACTValuesReflectionData {
   consistencyRating: number
 }
 
+interface ACTDefusionData {
+  type: 'defusion_practice'
+  defusionPractice: DefusionPractice
+}
+
 interface ACTDisidentificationData {
   type: 'disidentification'
   items: DisidentificationItem[]
   completedCount: number
 }
 
-type ACTRecordData = ACTActionPlanData | ACTValuesReflectionData | ACTDisidentificationData
+type ACTRecordData = ACTActionPlanData | ACTValuesReflectionData | ACTDefusionData | ACTDisidentificationData
 
 export default defineComponent({
   name: 'ACTView',
   components: {},
   emits: ['back'],
   setup() {
-    // Initialize therapy storage for ACT exercises
+    // Get current user (Kaleb) from database by name
+    const { patientId, patientName, isReady, ensureLoaded } = useCurrentUser()
+
+    // Initialize therapy storage for ACT exercises with dynamic patient ID
     const {
       records: therapyRecords,
       isLoading,
       error: storageError,
       save: saveToTherapy,
-      remove: removeFromTherapy
+      remove: removeFromTherapy,
+      load: loadRecords
     } = useTherapyStorage<ACTRecordData>({
       therapyType: 'act',
-      patientId: 'kaleb', // TODO: Get from auth/context
+      patientId: patientId, // Pass the ref directly, not .value
       useBackend: true
     })
 
+    // Watch for patient ID to become available, then load records
+    watch(patientId, (newPatientId) => {
+      if (newPatientId) {
+        console.log('🔵 Patient ID loaded for ACT, fetching records for:', newPatientId)
+        loadRecords().catch((err: Error) => console.error('Failed to load ACT records:', err))
+      }
+    }, { immediate: false })
+
     const selectedDomain = ref<string | null>(null)
+    const defusionThought = ref<string>('')
 
     const lifeDomains: LifeDomain[] = [
       {
@@ -500,13 +565,68 @@ export default defineComponent({
       }
     ])
 
-    const valuesQuestions = [
-      'What do you want your life to stand for?',
-      'At your funeral, what would you want said about you?',
-      'When you\'re 90, what will you be glad you did?',
-      'What would you do if fear wasn\'t a factor?',
-      'What makes you feel most alive?'
-    ]
+    const domainQuestions: Record<string, string[]> = {
+      relationships: [
+        'What kind of partner, friend, or family member do you want to be?',
+        'How do you want others to feel when they\'re around you?',
+        'What would a meaningful connection look like to you?',
+        'If you could be remembered for one quality in relationships, what would it be?',
+        'What small act of love or kindness could you offer today?'
+      ],
+      work: [
+        'What impact do you want to have through your work?',
+        'What strengths or talents do you want to develop and share?',
+        'How do you want to contribute to something larger than yourself?',
+        'What would make your work feel meaningful, regardless of external success?',
+        'If money wasn\'t a concern, what would you still choose to do?'
+      ],
+      education: [
+        'What would you love to learn just for the joy of learning?',
+        'What skills or knowledge would enrich your life?',
+        'How do you want to grow as a person this year?',
+        'What would you attempt if you knew you couldn\'t fail?',
+        'What does being a lifelong learner mean to you?'
+      ],
+      recreation: [
+        'What activities make you lose track of time?',
+        'How do you want to express your creativity and playfulness?',
+        'What hobbies would bring more joy and vitality into your life?',
+        'If you had a free day with no obligations, how would you ideally spend it?',
+        'What does "play" mean to you as an adult?'
+      ],
+      spirituality: [
+        'What gives your life deeper meaning beyond the everyday?',
+        'How do you want to connect with something greater than yourself?',
+        'What practices help you feel centered and at peace?',
+        'What legacy of wisdom or values do you want to live by?',
+        'What would living with more presence and awareness look like?'
+      ],
+      community: [
+        'How do you want to contribute to your community or society?',
+        'What causes or issues matter most to you?',
+        'What kind of neighbor or citizen do you aspire to be?',
+        'How can you use your privileges or resources to help others?',
+        'What does being a good community member mean to you?'
+      ],
+      health: [
+        'How do you want to treat your body and mind?',
+        'What does vitality and wellness mean to you personally?',
+        'What healthy habits would improve your quality of life?',
+        'How do you want to feel in your body day-to-day?',
+        'If your body could speak, what would it ask of you?'
+      ],
+      environment: [
+        'What relationship do you want to have with nature?',
+        'How do you want to care for the planet for future generations?',
+        'What small changes could reduce your environmental impact?',
+        'How does spending time in nature nourish you?',
+        'What does environmental stewardship mean to you?'
+      ]
+    }
+
+    const valuesQuestions = computed(() => {
+      return selectedDomain.value ? domainQuestions[selectedDomain.value] : []
+    })
 
     const domainValues = reactive<Record<string, string>>({})
     const domainRatings = reactive<Record<string, number>>({})
@@ -523,7 +643,7 @@ export default defineComponent({
     // Computed property to extract saved action plans from therapy records
     const savedActionPlans = computed(() => {
       return therapyRecords.value
-        .filter((record: TherapyRecord<ACTRecordData>) => record.record_data.type === 'action_plan')
+        .filter((record: TherapyRecord<ACTRecordData>) => record.record_data && record.record_data.type === 'action_plan')
         .map((record: TherapyRecord<ACTRecordData>) => {
           const data = record.record_data as ACTActionPlanData
           return {
@@ -533,6 +653,41 @@ export default defineComponent({
           }
         })
         .sort((a: ActionPlan, b: ActionPlan) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
+    })
+
+    // Computed property to extract saved values reflections from therapy records
+    const savedValuesReflections = computed(() => {
+      return therapyRecords.value
+        .filter((record: TherapyRecord<ACTRecordData>) => record.record_data && record.record_data.type === 'values_reflection')
+        .map((record: TherapyRecord<ACTRecordData>) => {
+          const data = record.record_data as ACTValuesReflectionData
+          const domain = lifeDomains.find(d => d.id === data.domainId)
+          return {
+            id: record.id,
+            domainId: data.domainId,
+            domainName: data.domainName,
+            domainIcon: domain?.icon || '💎',
+            values: data.values,
+            consistencyRating: data.consistencyRating,
+            createdAt: record.created_at
+          }
+        })
+        .sort((a: { createdAt: string }, b: { createdAt: string }) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    })
+
+    // Computed property to extract saved defusion practices from therapy records
+    const savedDefusionPractices = computed(() => {
+      return therapyRecords.value
+        .filter((record: TherapyRecord<ACTRecordData>) => record.record_data && record.record_data.type === 'defusion_practice')
+        .map((record: TherapyRecord<ACTRecordData>) => {
+          const data = record.record_data as ACTDefusionData
+          return {
+            ...data.defusionPractice,
+            id: record.id,
+            createdAt: record.created_at
+          }
+        })
+        .sort((a: DefusionPractice, b: DefusionPractice) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
     })
 
     // Methods
@@ -601,6 +756,39 @@ export default defineComponent({
       }
     }
 
+    const saveDefusionPractice = async () => {
+      if (!defusionThought.value.trim()) {
+        showToast('Please enter a thought first', false)
+        return
+      }
+
+      const newPractice: DefusionPractice = {
+        id: Date.now().toString(),
+        originalThought: defusionThought.value,
+        defusedThought: `I'm having the thought that ${defusionThought.value.toLowerCase()}`,
+        createdAt: new Date().toISOString()
+      }
+
+      const actData: ACTDefusionData = {
+        type: 'defusion_practice',
+        defusionPractice: newPractice
+      }
+
+      try {
+        await saveToTherapy(actData)
+        showToast('Defusion practice saved!', true)
+
+        // Reset form
+        defusionThought.value = ''
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          // eslint-disable-next-line no-console
+          console.error('Error saving defusion practice:', error)
+        }
+        showToast('Failed to save defusion practice', false)
+      }
+    }
+
     const formatDate = (dateString: string) => {
       const date = new Date(dateString)
       return date.toLocaleDateString('en-US', { 
@@ -639,6 +827,7 @@ export default defineComponent({
 
     return {
       selectedDomain,
+      defusionThought,
       lifeDomains,
       disidentificationItems,
       valuesQuestions,
@@ -646,10 +835,13 @@ export default defineComponent({
       domainRatings,
       actionPlan,
       savedActionPlans,
+      savedValuesReflections,
+      savedDefusionPractices,
       isLoading,
       selectDomain,
       saveDomainValues,
       saveActionPlan,
+      saveDefusionPractice,
       formatDate
     }
   }
@@ -1233,6 +1425,43 @@ export default defineComponent({
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
+.save-values-button {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(129, 140, 248, 0.8) 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.save-values-button:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(129, 140, 248, 1) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.action-intro {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 20px;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: center;
+  font-style: italic;
+}
+
+.field-note {
+  color: rgba(196, 181, 253, 0.8);
+  font-size: 0.9rem;
+  margin: 4px 0 8px 0;
+  line-height: 1.4;
+  font-style: italic;
+}
+
 .consistency-rating label {
   display: block;
   color: rgba(196, 181, 253, 1);
@@ -1503,6 +1732,285 @@ export default defineComponent({
   line-height: 1.5;
 }
 
+/* Cognitive Defusion Styles */
+.defusion-section {
+  margin-bottom: 60px;
+}
+
+.defusion-problem h3 {
+  color: rgba(196, 181, 253, 1);
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.fusion-explanation {
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.fusion-examples {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.fusion-example {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 20px;
+  flex: 1;
+  min-width: 250px;
+  max-width: 400px;
+}
+
+.fusion-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.fusion-text {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+}
+
+.fusion-text strong {
+  color: rgba(196, 181, 253, 1);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.defusion-techniques h3 {
+  color: rgba(196, 181, 253, 1);
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.techniques-intro {
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin-bottom: 32px;
+  font-size: 1.05rem;
+}
+
+.techniques-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.technique-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.technique-card:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.05);
+  transform: translateY(-2px);
+}
+
+.technique-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.technique-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.technique-header h4 {
+  color: rgba(196, 181, 253, 1);
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.technique-description {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 12px;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.technique-example {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.technique-example strong {
+  color: rgba(196, 181, 253, 1);
+}
+
+.defusion-exercise {
+  background: rgba(139, 92, 246, 0.05);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 32px;
+}
+
+.defusion-exercise h4 {
+  color: rgba(196, 181, 253, 1);
+  margin: 0 0 12px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.defusion-exercise > p {
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 16px;
+}
+
+.defusion-input {
+  width: 100%;
+  min-height: 80px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: vertical;
+  margin-bottom: 20px;
+}
+
+.defusion-input:focus {
+  outline: none;
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.defusion-result {
+  background: rgba(34, 197, 94, 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.defusion-result p {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 12px 0;
+  line-height: 1.6;
+}
+
+.defusion-result p:last-child {
+  margin-bottom: 0;
+}
+
+.defusion-result strong {
+  color: rgba(34, 197, 94, 1);
+}
+
+.save-defusion-button {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(129, 140, 248, 1) 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+  transition: all 0.3s ease;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.save-defusion-button:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 1.2) 0%, rgba(129, 140, 248, 1.2) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.saved-defusions h3 {
+  color: rgba(196, 181, 253, 1);
+  margin-bottom: 24px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.defusions-list {
+  display: grid;
+  gap: 20px;
+}
+
+.defusion-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.defusion-item:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.defusion-item-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.defusion-item-date {
+  color: rgba(139, 92, 246, 1);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.defusion-original-thought {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.defusion-reframes {
+  margin-top: 12px;
+}
+
+.reframe {
+  background: rgba(34, 197, 94, 0.05);
+  border-left: 3px solid rgba(34, 197, 94, 0.5);
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.reframe strong {
+  color: rgba(34, 197, 94, 1);
+}
+
 @media (max-width: 768px) {
   .back-button {
     top: 20px;
@@ -1553,6 +2061,14 @@ export default defineComponent({
   .bullseye-exercise {
     grid-template-columns: 1fr;
     gap: 24px;
+  }
+
+  .techniques-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fusion-examples {
+    flex-direction: column;
   }
 }
 

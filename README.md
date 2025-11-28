@@ -15,11 +15,13 @@ Luna serves as your digital mental health command center, tracking every aspect 
 - **Medication Tracking** - 4 active prescriptions (Lithium, Zyprexa, Hydroxizine, Naltrexone) with dosages, frequencies, pharmacy details, and side effects monitoring
 - **Appointments** - Healthcare scheduling with preparation notes, outcomes, and follow-up tracking
 - **Journal System** - Daily therapeutic journaling with mood tracking, emotions tagging, and calendar visualization
+- **CBT Thought Records** - Cognitive Behavioral Therapy exercises tracking automatic thoughts, emotions, evidence examination, and alternative thinking patterns
 
 ### AI Companion System
 The heart of Luna is its intelligent conversation system that understands your complete mental health context:
 
-- **Contextual Conversations** - AI has full access to your medications, appointments, and journal entries
+- **Contextual Conversations** - AI has full access to your medications, appointments, journal entries, and CBT thought records
+- **Therapeutic Progress Tracking** - AI analyzes CBT exercises, tracks emotional improvement scores, and identifies cognitive patterns
 - **Therapeutic Personas** - Enhanced persona system with templates, customizable settings, and usage tracking
 - **Memory Architecture** - Industry-standard conversation memory with rolling buffers, automatic summarization, and semantic pin extraction
 - **Multi-Model Support** - OpenAI GPT-4.1-nano (cloud) and Ollama (local) with intelligent model selection
@@ -48,12 +50,13 @@ AI:       OpenAI GPT-4.1-nano, Anthropic Claude, Ollama local models
 Search:   Tavily API for web search capabilities
 ```
 
-### Database Structure (13 Tables)
+### Database Structure (14 Tables)
 **Mental Health Core:**
 - `patients` - Patient profile (1 active: Kaleb)
 - `medications` - Prescription tracking (4 active)
 - `appointments` - Healthcare scheduling
 - `journal_entries` - Therapeutic journaling with mood/emotion tracking
+- `therapy_records` - CBT/ACT/DBT exercise tracking with structured data storage
 
 **AI Conversation:**
 - `sessions` - Chat session management with patient/care context
@@ -121,6 +124,11 @@ Search:   Tavily API for web search capabilities
   ├─ Medications     - Med list and form
   └─ Appointments    - Appointment list and scheduling
 
+/therapy             - Therapy exercises hub
+  ├─ /cbt            - Cognitive Behavioral Therapy thought records
+  ├─ /act            - Acceptance & Commitment Therapy (planned)
+  └─ /dbt            - Dialectical Behavior Therapy (planned)
+
 /library             - Document library and dataset management
 ```
 
@@ -135,6 +143,7 @@ Search:   Tavily API for web search capabilities
 /api/medications     - Medication tracking
 /api/appointments    - Appointment scheduling
 /api/journal         - Journal entry CRUD
+/api/therapy-records - CBT/ACT/DBT exercise tracking
 /api/models          - AI model registry and configuration
 /api/search          - Tavily web search integration
 /api/datasets        - Document upload and vector search
@@ -163,11 +172,12 @@ tools.ts                     - AI function calling tools
 
 ## 💾 Database State
 
-### Current Data (November 23, 2025)
+### Current Data (November 27, 2025)
 - **Patients**: 1 (Kaleb, age 39, Texas)
 - **Medications**: 4 active prescriptions
 - **Appointments**: 0 scheduled
-- **Journal Entries**: 1 (Nov 21, mood: Relaxed)
+- **Journal Entries**: 5 recent entries with mood tracking
+- **CBT Thought Records**: 1 active thought record (road rage cognitive restructuring)
 - **Personas**: 2 (default-cloud, default-local) with therapeutic enhancements
 - **Active Sessions**: 1 with 4 conversation messages
 - **Summaries**: 0 (generated as conversations grow)
@@ -341,10 +351,15 @@ pnpm run android:install  # Install on device via ADB
 ✅ Mobile-responsive design (Capacitor + Android APK)
 ✅ Web search integration (Tavily API with explicit intent detection)
 ✅ Therapy-optimized summarization with hallucination prevention
+✅ CBT Thought Records system with AI integration
+✅ Single-user architecture with name-based patient lookup
+✅ Therapeutic progress tracking (emotion intensity, improvement scores)
 
 ### Active Development
 🔄 Enhanced AI memory features (semantic pins in production)
 🔄 Conversation summarization automation
+🔄 ACT (Acceptance & Commitment Therapy) exercises
+🔄 DBT (Dialectical Behavior Therapy) skills tracking
 🔄 Journal insights and analytics
 🔄 Mood pattern analysis
 
@@ -361,7 +376,7 @@ pnpm run android:install  # Install on device via ADB
 
 - **Frontend Components**: 50+ Vue components
 - **Backend Routes**: 13 API route groups
-- **Database Tables**: 13 optimized tables (includes RAG system)
+- **Database Tables**: 14 optimized tables (includes RAG + therapy tracking)
 - **Active Indexes**: 8 performance indexes
 - **Backend Services**: 14 core logic services
 - **Lines of Code**: ~18,000+ (TypeScript + Vue)
@@ -370,8 +385,8 @@ pnpm run android:install  # Install on device via ADB
 
 ---
 
-**Last Updated**: November 23, 2025  
-**Version**: 1.3.0-beta  
+**Last Updated**: November 27, 2025  
+**Version**: 1.4.0-beta  
 **Status**: Production Ready with Active Development ✅
 
 **Built with ❤️ for mental wellness**

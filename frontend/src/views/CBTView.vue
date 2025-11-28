@@ -94,29 +94,11 @@
           <div class="section-header">
             <h2 class="section-title">📝 Thought Records</h2>
             <p class="section-subtitle">
-              A structured way to examine and challenge your thoughts.
+              A powerful 7-step thought record process to identify, examine, and challenge negative thoughts.
             </p>
-          </div>
-
-          <div class="thought-record-card glass-card">
-            <div class="card-content">
-              <div class="card-icon">📝</div>
-              <h3>Create a New Thought Record</h3>
-              <p>
-                Use the powerful 7-step thought record process to identify, examine, and 
-                challenge negative thoughts. This structured approach helps you develop 
-                more balanced thinking patterns.
-              </p>
-              <div class="benefits-list">
-                <span class="benefit">✓ Identify triggers</span>
-                <span class="benefit">✓ Challenge thoughts</span>
-                <span class="benefit">✓ Track emotions</span>
-                <span class="benefit">✓ Build balance</span>
-              </div>
-              <button @click="openThoughtRecordModal" class="start-record-button">
-                Start Thought Record
-              </button>
-            </div>
+           <button @click="openThoughtRecordModal" class="start-record-button">
+              Start Thought Record
+            </button>
           </div>
         </section>
 
@@ -183,9 +165,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, ref, computed, watch } from 'vue'
 import ThoughtRecordModal from '@/components/ThoughtRecordModal.vue'
 import { useTherapyStorage, type CBTThoughtRecordData, type TherapyRecord } from '../composables/useTherapyStorage'
+import { useCurrentUser } from '../composables/useCurrentUser'
 
 interface CognitiveDistortion {
   id: string
@@ -219,21 +202,45 @@ export default defineComponent({
     const selectedDistortion = ref<CognitiveDistortion | null>(null)
     const showThoughtRecordModal = ref(false)
 
-    // Use the therapy storage composable
-    const patientId = 'kaleb' // TODO: Get from auth/context
+    // Get current user (Kaleb) from database
+    const { patientId, patientName, isReady, ensureLoaded } = useCurrentUser()
+    
+    // Initialize with empty patient ID - will be updated when loaded
+    const therapyStorageOptions = computed(() => ({
+      therapyType: 'cbt' as const,
+      patientId: patientId.value || '',
+      useBackend: true
+    }))
+    
+    // Create therapy storage with reactive patient ID
     const {
       records: therapyRecords,
       isLoading,
       save: saveToStorage,
-      remove: removeFromStorage
-    } = useTherapyStorage<CBTThoughtRecordData>({
-      therapyType: 'cbt',
-      patientId,
-      useBackend: true
+      remove: removeFromStorage,
+      load: loadRecords
+    } = useTherapyStorage<CBTThoughtRecordData>(therapyStorageOptions.value)
+    
+    // Watch for patient ID changes and reload records
+    watch(patientId, (newPatientId) => {
+      if (newPatientId) {
+        console.log('🔵 Patient ID loaded, fetching records for:', newPatientId)
+        loadRecords().catch(err => {
+          console.error('Failed to load therapy records:', err)
+        })
+      }
+    }, { immediate: false })
+    
+    // Ensure user is loaded on mount
+    ensureLoaded().catch(err => {
+      console.error('Failed to load user data:', err)
     })
 
     // Computed: Transform therapy records to SavedThoughtRecord format for display
     const savedThoughtRecords = computed(() => {
+      if (!therapyRecords.value || therapyRecords.value.length === 0) {
+        return []
+      }
       return therapyRecords.value.map((record: TherapyRecord<CBTThoughtRecordData>) => ({
         id: record.id,
         situation: record.data.situation,
@@ -544,9 +551,10 @@ export default defineComponent({
 .section-subtitle {
   color: rgba(196, 181, 253, 0.8);
   font-size: 1.2rem;
-  margin: 0;
+  margin: 0 0 24px 0;
   max-width: 600px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
   line-height: 1.6;
 }
 
@@ -765,51 +773,10 @@ export default defineComponent({
   text-align: center;
   position: relative;
   overflow: hidden;
-}
-
-.card-content {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-}
-
-.card-icon {
-  font-size: 3rem;
-  margin-bottom: 8px;
-  opacity: 0.8;
-}
-
-.thought-record-card h3 {
-  color: rgba(196, 181, 253, 1);
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.thought-record-card p {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1.1rem;
-  line-height: 1.6;
-  max-width: 500px;
-  margin: 0;
-}
-
-.benefits-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
   justify-content: center;
-}
-
-.benefit {
-  background: rgba(139, 92, 246, 0.2);
-  color: rgba(196, 181, 253, 1);
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  align-items: center;
+  padding: 48px 32px;
 }
 
 .start-record-button {
@@ -984,13 +951,8 @@ export default defineComponent({
   }
   
   /* Mobile thought record card */
-  .thought-record-card h3 {
-    font-size: 1.5rem;
-  }
-  
-  .benefits-list {
-    flex-direction: column;
-    align-items: center;
+  .thought-record-card {
+    padding: 32px 24px;
   }
   
   .start-record-button {
@@ -1027,8 +989,8 @@ export default defineComponent({
   }
   
   /* Smaller screens adjustments */
-  .thought-record-card p {
-    font-size: 1rem;
+  .thought-record-card {
+    padding: 28px 20px;
   }
   
   .start-record-button {
