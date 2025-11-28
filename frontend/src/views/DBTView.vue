@@ -64,7 +64,13 @@
           <div class="section-header">
             <h2 class="section-title">🧘 Mindfulness: The Foundation</h2>
             <p class="section-subtitle">
-              Being fully present in the current moment without judgment
+              Being fully present in the current moment without judgment - the foundation for all other DBT skills
+            </p>
+          </div>
+
+          <div class="module-intro glass-card">
+            <p class="intro-text">
+              Mindfulness is the core skill that supports everything else in DBT. By learning to observe and describe your experience without judgment, you create space to choose skillful responses rather than reacting automatically.
             </p>
           </div>
 
@@ -399,6 +405,10 @@
           <!-- Saved Practice Logs -->
           <div v-if="savedPracticeLogs.length > 0" class="saved-logs glass-card">
             <h3>Your Practice History</h3>
+            <p class="practice-note">
+              <strong>Note:</strong> Your practice logs are saved to track your progress over time. 
+              This helps you and your therapeutic support see patterns and growth in your DBT skills practice.
+            </p>
             <div class="logs-list">
               <div 
                 v-for="log in savedPracticeLogs" 
@@ -434,7 +444,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, computed } from 'vue'
+import { defineComponent, ref, reactive, computed, watch } from 'vue'
+import { useTherapyStorage } from '@/composables/useTherapyStorage'
+import type { TherapyRecord } from '@/composables/useTherapyStorage'
+import { useCurrentUser } from '@/composables/useCurrentUser'
 
 interface DBTModule {
   id: string
@@ -465,11 +478,43 @@ interface PracticeLog {
   date?: string
 }
 
+// DBT-specific therapy record data types
+interface DBTPracticeLogData {
+  type: 'practice_log'
+  practiceLog: PracticeLog
+}
+
+type DBTRecordData = DBTPracticeLogData
+
 export default defineComponent({
   name: 'DBTView',
   components: {},
   emits: ['back'],
   setup() {
+    // Get current user (Kaleb) from database by name
+    const { patientId } = useCurrentUser()
+
+    // Initialize therapy storage for DBT exercises with dynamic patient ID
+    const {
+      records: therapyRecords,
+      isLoading,
+      save: saveToTherapy,
+      load: loadRecords,
+      remove: removeFromTherapy
+    } = useTherapyStorage<DBTRecordData>({
+      therapyType: 'dbt',
+      patientId: patientId, // Pass the ref directly, not .value
+      useBackend: true
+    })
+
+    // Watch for patient ID to become available, then load records
+    watch(patientId, (newPatientId) => {
+      if (newPatientId) {
+        console.log('🔵 Patient ID loaded for DBT, fetching records for:', newPatientId)
+        loadRecords().catch((err: Error) => console.error('Failed to load DBT records:', err))
+      }
+    }, { immediate: true })
+
     const selectedModule = ref<string | null>(null)
     
     const dbtModules: DBTModule[] = [
@@ -492,7 +537,7 @@ export default defineComponent({
     const mindfulnessExercises: MindfulnessExercise[] = [
       { id: '1', name: 'Body Scan', icon: '🧘' },
       { id: '2', name: 'Breath Counting', icon: '🌬️' },
-      { id: '3', name: 'Five Senses Grounding', icon: '👁️' },
+      { id: '3', name: 'Five Senses (5-4-3-2-1)', icon: '👁️' },
       { id: '4', name: 'Walking Meditation', icon: '🚶' },
       { id: '5', name: 'Eating Meditation', icon: '🍽️' }
     ]
@@ -524,7 +569,24 @@ export default defineComponent({
       notes: ''
     })
 
-    const savedPracticeLogs = ref<PracticeLog[]>([])
+    // Computed property to extract saved practice logs from therapy records
+    const savedPracticeLogs = computed(() => {
+      const filtered = therapyRecords.value
+        .filter((record: any) => {
+          // Backend returns 'data' field, not 'record_data'
+          return record.data && record.data.type === 'practice_log'
+        })
+        .map((record: any) => {
+          const data = record.data as DBTPracticeLogData
+          return {
+            ...data.practiceLog,
+            id: record.id,
+            date: record.created_at
+          }
+        })
+        .sort((a: PracticeLog, b: PracticeLog) => new Date(b.date!).getTime() - new Date(a.date!).getTime())
+      return filtered
+    })
 
     const availableSkills = computed(() => {
       const skills: string[] = []
@@ -547,7 +609,7 @@ export default defineComponent({
       // Future: Could implement actual guided exercises
     }
 
-    const savePracticeLog = () => {
+    const savePracticeLog = async () => {
       if (!practiceLog.skill || !practiceLog.situation) {
         showToast('Please fill in skill and situation', false)
         return
@@ -559,16 +621,28 @@ export default defineComponent({
         date: new Date().toISOString()
       }
 
-      savedPracticeLogs.value.unshift(newLog)
-      localStorage.setItem('dbt-practice-logs', JSON.stringify(savedPracticeLogs.value))
+      // Save to backend via therapy storage
+      const dbtData: DBTPracticeLogData = {
+        type: 'practice_log',
+        practiceLog: newLog
+      }
 
-      // Reset form
-      practiceLog.skill = ''
-      practiceLog.situation = ''
-      practiceLog.effectiveness = 5
-      practiceLog.notes = ''
+      try {
+        await saveToTherapy(dbtData)
+        showToast('Practice log saved!', true)
 
-      showToast('Practice log saved!', true)
+        // Reset form
+        practiceLog.skill = ''
+        practiceLog.situation = ''
+        practiceLog.effectiveness = 5
+        practiceLog.notes = ''
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          // eslint-disable-next-line no-console
+          console.error('Error saving practice log:', error)
+        }
+        showToast('Failed to save practice log', false)
+      }
     }
 
     const formatDate = (dateString: string) => {
@@ -581,12 +655,19 @@ export default defineComponent({
       })
     }
 
-    const deleteLog = (logId: string) => {
-      const index = savedPracticeLogs.value.findIndex(log => log.id === logId)
-      if (index > -1) {
-        savedPracticeLogs.value.splice(index, 1)
-        localStorage.setItem('dbt-practice-logs', JSON.stringify(savedPracticeLogs.value))
-        showToast('Practice log deleted', false)
+    const deleteLog = async (logId: string) => {
+      try {
+        const success = await removeFromTherapy(logId)
+        if (success) {
+          showToast('Practice log deleted', false)
+        } else {
+          showToast('Failed to delete practice log', false)
+        }
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.error('Error deleting log:', error)
+        }
+        showToast('Failed to delete practice log', false)
       }
     }
 
@@ -615,20 +696,6 @@ export default defineComponent({
         setTimeout(() => document.body.removeChild(toastDiv), 300)
       }, 3000)
     }
-
-    // Load saved logs
-    const loadSavedLogs = () => {
-      try {
-        const saved = localStorage.getItem('dbt-practice-logs')
-        if (saved) {
-          savedPracticeLogs.value = JSON.parse(saved)
-        }
-      } catch (error) {
-        console.error('Error loading saved logs:', error)
-      }
-    }
-
-    loadSavedLogs()
 
     return {
       selectedModule,
@@ -1424,6 +1491,21 @@ export default defineComponent({
   margin: 0;
   line-height: 1.5;
   font-size: 0.95rem;
+}
+
+.practice-note {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+  padding: 12px;
+  background: rgba(139, 92, 246, 0.1);
+  border-left: 3px solid rgba(139, 92, 246, 0.5);
+  border-radius: 4px;
+}
+
+.practice-note strong {
+  color: rgba(139, 92, 246, 1);
 }
 
 @media (max-width: 768px) {

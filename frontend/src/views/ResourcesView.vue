@@ -103,12 +103,12 @@ export default defineComponent({
         name: 'CBT',
         icon: '🧠',
         shortDesc: 'Cognitive Behavioral Therapy',
-        description: 'Change negative thought patterns and develop healthier behaviors through structured exercises and cognitive restructuring.',
+        description: 'Understand how thoughts, feelings, and behaviors are connected. Learn to identify and challenge cognitive distortions.',
         features: [
-          'Identify cognitive distortions',
-          'Challenge negative thoughts',
-          'Track thought records',
-          'Build balanced thinking'
+          'Understand thought-feeling-behavior connection',
+          'Identify 10 cognitive distortions',
+          'Challenge unhelpful thinking',
+          'Create thought records'
         ],
         component: markRaw(CBTView)
       },
