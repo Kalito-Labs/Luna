@@ -1,56 +1,93 @@
 <template>
   <div class="journal-home">
-    <!-- Header Section with Hamburger Menu -->
+    <!-- Compact Header -->
     <header class="journal-header">
-      <div class="header-content">
+      <div class="header-left">
         <HamburgerMenu />
-        <div class="header-text">
-          <h1 class="welcome-message">Welcome back, {{ patientName }} ✨</h1>
-          <h2 class="prompt-message">What's on your mind today?</h2>
-          <p class="header-subtitle">Take a moment to reflect and share your thoughts</p>
+        <div class="header-title">
+          <h1>My Journal</h1>
+          <span class="current-date">{{ formattedDate }}</span>
         </div>
       </div>
+      <button @click="startNewEntry" class="new-entry-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        <span>New Entry</span>
+      </button>
     </header>
 
-    <!-- Quick Stats Cards -->
-    <div class="stats-cards">
-      <div class="stat-card">
-        <div class="stat-icon">📝</div>
-        <div class="stat-content">
-          <span class="stat-number">{{ todaysEntries.length }}</span>
-          <span class="stat-label">Today's entries</span>
+    <!-- Main Content Container -->
+    <div class="content-container">
+      <!-- Left Column: Entries List -->
+      <div class="entries-column">
+        <div class="column-header">
+          <h2>Recent Entries</h2>
+          <span v-if="hasEntries" class="entry-count">{{ recentEntries.length }} total</span>
         </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">📚</div>
-        <div class="stat-content">
-          <span class="stat-number">{{ totalEntries }}</span>
-          <span class="stat-label">Total entries</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🔥</div>
-        <div class="stat-content">
-          <span class="stat-number">{{ currentStreak }}</span>
-          <span class="stat-label">Day streak</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">📅</div>
-        <div class="stat-content">
-          <span class="stat-number">{{ thisWeekEntries.length }}</span>
-          <span class="stat-label">This week</span>
-        </div>
-      </div>
-    </div>
 
-    <!-- Floating Action Button -->
-    <button @click="startNewEntry" class="fab">
-      <svg class="fab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M12 5v14M5 12h14" />
-      </svg>
-      <span class="fab-tooltip">Start new entry</span>
-    </button>
+        <div v-if="loading" class="loading-state">
+        <div class="loading-animation">
+          <div class="loading-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+        </div>
+        <p>Loading your journal...</p>
+      </div>
+
+        <div v-else-if="!hasEntries" class="empty-state">
+          <div class="empty-icon">📖</div>
+          <p>No entries yet</p>
+          <button @click="startNewEntry" class="empty-cta">Create First Entry</button>
+        </div>
+
+        <div v-else class="entries-list">
+          <JournalPreviewCard 
+            v-for="entry in recentEntries" 
+            :key="entry.id" 
+            :entry="entry"
+            @click="openEntry(entry.id)"
+          />
+        </div>
+      </div>
+
+      <!-- Right Column: Stats & Quick Actions -->
+      <aside class="sidebar">
+        <!-- Quick Stats -->
+        <div class="stats-panel">
+          <h3>Overview</h3>
+          <div class="stat-row">
+            <span class="stat-label">Total Entries</span>
+            <span class="stat-value">{{ totalEntries }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Current Streak</span>
+            <span class="stat-value">{{ currentStreak }} days 🔥</span>
+          </div>
+          <div v-if="lastEntryDate" class="stat-row">
+            <span class="stat-label">Last Entry</span>
+            <span class="stat-value">{{ lastEntryDate }}</span>
+          </div>
+          <div v-if="averageMood" class="stat-row">
+            <span class="stat-label">Recent Mood</span>
+            <span class="stat-value">{{ averageMood }}</span>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <button @click="viewAllEntries" class="action-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <path d="M3 10h18" />
+            </svg>
+            <span>Calendar View</span>
+          </button>
+        </div>
+      </aside>
+    </div>
 
     <!-- Error Toast Notification -->
     <transition name="toast">
@@ -62,55 +99,6 @@
         <span>{{ errorMessage }}</span>
       </div>
     </transition>
-
-    <!-- Insights Section -->
-    <section class="insights-section">
-      <div class="section-header">
-        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 3v18h18M7 16l4-4 4 4 6-6" />
-        </svg>
-        <h3>{{ hasEntries ? `Recent Entries (${recentEntries.length})` : 'Insights' }}</h3>
-      </div>
-
-      <div v-if="loading" class="loading-state">
-        <div class="loading-animation">
-          <div class="loading-dots">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-          </div>
-        </div>
-        <p>Loading your journal...</p>
-      </div>
-
-      <div v-else-if="!hasEntries" class="empty-state">
-        <div class="empty-illustration">
-          <div class="empty-icon">📖</div>
-          <div class="empty-sparkles">✨</div>
-        </div>
-        <h3>Your journal awaits</h3>
-        <p>Start your first entry to begin tracking your thoughts and moods</p>
-        <button @click="startNewEntry" class="empty-cta">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-          <span>Create First Entry</span>
-        </button>
-      </div>
-
-      <div v-else class="entries-grid">
-        <JournalPreviewCard 
-          v-for="entry in recentEntries" 
-          :key="entry.id" 
-          :entry="entry"
-          @click="openEntry(entry.id)"
-        />
-      </div>
-
-      <button v-if="hasEntries" @click="viewAllEntries" class="view-all-btn">
-        View All Entries
-      </button>
-    </section>
   </div>
 </template>
 
@@ -183,6 +171,57 @@ const currentStreak = computed(() => {
   return streak
 })
 
+const formattedDate = computed(() => {
+  const today = new Date()
+  return today.toLocaleDateString('en-US', { 
+    weekday: 'long',
+    month: 'long', 
+    day: 'numeric',
+    year: 'numeric'
+  })
+})
+
+const lastEntryDate = computed(() => {
+  if (recentEntries.value.length === 0) return null
+  const lastEntry = recentEntries.value[0]
+  const date = new Date(lastEntry.entry_date)
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+})
+
+const averageMood = computed(() => {
+  const recentWithMood = recentEntries.value.slice(0, 7).filter((e: JournalEntry) => e.mood)
+  if (recentWithMood.length === 0) return null
+  
+  // Get most common mood from last 7 entries
+  const moodCounts: Record<string, number> = {}
+  recentWithMood.forEach((entry: JournalEntry) => {
+    if (entry.mood) {
+      moodCounts[entry.mood] = (moodCounts[entry.mood] || 0) + 1
+    }
+  })
+  
+  const mostCommon = Object.entries(moodCounts).sort((a, b) => b[1] - a[1])[0]
+  if (!mostCommon) return null
+  
+  const moodEmojis: Record<string, string> = {
+    happy: '😊',
+    excited: '🎉',
+    grateful: '🙏',
+    relaxed: '🌴',
+    content: '😌',
+    tired: '😴',
+    unsure: '🤔',
+    bored: '😑',
+    anxious: '😰',
+    angry: '😠',
+    stressed: '😫',
+    sad: '😢',
+    desperate: '😭'
+  }
+  
+  return moodEmojis[mostCommon[0]] || '😊'
+})
+
 // Methods
 const showError = (message: string) => {
   errorMessage.value = message
@@ -242,321 +281,245 @@ onMounted(async () => {
 <style scoped>
 .journal-home {
   min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(135deg, 
     rgba(15, 23, 42, 0.98) 0%, 
     rgba(30, 41, 59, 0.95) 50%,
     rgba(67, 56, 202, 0.1) 100%);
-  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
   color: rgba(255, 255, 255, 0.92);
-  position: relative;
-  overflow-x: hidden;
-}
-
-/* Enhanced Header */
-.journal-header {
-  margin-bottom: 0.5rem;
-  padding: 1.25rem 1.5rem 0 1.5rem;
-}
-
-.header-content {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.header-content :deep(.hamburger-menu) {
-  flex-shrink: 0;
-  margin-left: -0.5rem;
-  margin-top: 0.25rem;
-}
-
-.header-text {
-  flex: 1;
-  text-align: center;
-}
-
-.welcome-message {
-  font-size: 1.75rem;
-  font-weight: 300;
-  margin: 0 0 0.75rem 0;
-  color: rgba(255, 255, 255, 0.85);
-  letter-spacing: -0.02em;
-}
-
-.prompt-message {
-  font-size: 2.25rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
-  line-height: 1.15;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.98) 0%, 
-    rgba(196, 181, 253, 0.9) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.header-subtitle {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin: 0;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-}
-
-/* Quick Stats Cards */
-.stats-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
-  margin-bottom: 0.5rem;
-  padding: 0 1.5rem;
-}
-
-@media (max-width: 640px) {
-  .stats-cards {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-  }
-}
-
-.stat-card {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.stat-card:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(139, 92, 246, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.15);
-}
-
-.stat-icon {
-  font-size: 1.5rem;
-  filter: grayscale(20%);
-}
-
-.stat-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-}
-
-.stat-number {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: rgba(196, 181, 253, 0.95);
-}
-
-.stat-label {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 500;
-}
-
-/* Action Buttons */
-.action-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 0 1.5rem;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 0.875rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
 }
 
-.action-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.1), 
-    transparent);
-  transition: left 0.6s ease;
-}
-
-.action-btn:hover::before {
-  left: 100%;
-}
-
-.secondary-btn {
-  color: rgba(129, 140, 248, 0.9);
-  border-color: rgba(129, 140, 248, 0.3);
-  background: rgba(129, 140, 248, 0.08);
-}
-
-.secondary-btn:hover {
-  background: rgba(129, 140, 248, 0.15);
-  border-color: rgba(129, 140, 248, 0.5);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(129, 140, 248, 0.25);
-  color: rgba(129, 140, 248, 1);
-}
-
-.btn-icon {
-  width: 22px;
-  height: 22px;
+/* Compact Header */
+.journal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
   flex-shrink: 0;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  position: relative;
+  z-index: 100;
 }
 
-/* Floating Action Button */
-.fab {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  width: 72px;
-  height: 72px;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-title h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1;
+}
+
+.current-date {
+  display: block;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.25rem;
+  font-weight: 400;
+}
+
+.new-entry-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
   background: linear-gradient(135deg, 
     rgba(139, 92, 246, 0.9) 0%, 
     rgba(124, 58, 237, 0.95) 100%);
+  color: white;
   border: none;
-  border-radius: 22px;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.5);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 100;
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.fab:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 16px 48px rgba(139, 92, 246, 0.6);
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 1) 0%, 
-    rgba(124, 58, 237, 1) 100%);
-}
-
-.fab:hover .fab-tooltip {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-8px);
-}
-
-.fab:active {
-  transform: translateY(-2px) scale(1.02);
-}
-
-.fab-icon {
-  width: 32px;
-  height: 32px;
-  color: white;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-}
-
-.fab-tooltip {
-  position: absolute;
-  bottom: calc(100% + 1rem);
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
-  background: rgba(30, 30, 40, 0.95);
-  color: white;
-  padding: 0.5rem 0.875rem;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  white-space: nowrap;
-  opacity: 0;
   transition: all 0.3s ease;
-  pointer-events: none;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
-/* Enhanced Insights Section */
-.insights-section {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(139, 92, 246, 0.15);
-  backdrop-filter: blur(30px);
-  border-radius: 24px;
-  padding: 1.75rem;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
-  flex: 1;
+.new-entry-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
+}
+
+.new-entry-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Two-Column Layout */
+.content-container {
   display: flex;
-  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+  padding: 1.5rem;
   overflow: hidden;
   min-height: 0;
   position: relative;
-  margin: 0 1.5rem 1.5rem 1.5rem;
+  z-index: 1;
 }
 
-.insights-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(139, 92, 246, 0.6), 
-    transparent);
-  border-radius: 2px;
+/* Left Column - Entries */
+.entries-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  position: relative;
+  z-index: auto;
 }
 
-.section-header {
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.column-header h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.entry-count {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Entries List */
+.entries-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 0;
+}
+
+.entries-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.entries-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.entries-list::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.4);
+  border-radius: 10px;
+}
+
+.entries-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
+}
+
+/* Right Sidebar */
+.sidebar {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex-shrink: 0;
+}
+
+.stats-panel {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  backdrop-filter: blur(20px);
+}
+
+.stats-panel h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.875rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(196, 181, 253, 0.95);
+}
+
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.action-link {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
 }
 
-.section-icon {
-  width: 24px;
-  height: 24px;
-  color: rgba(139, 92, 246, 0.8);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+.action-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: rgba(255, 255, 255, 1);
+  transform: translateX(4px);
 }
 
-.section-header h3 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
-  letter-spacing: -0.01em;
+.action-link svg {
+  width: 20px;
+  height: 20px;
+  color: rgba(139, 92, 246, 0.7);
 }
 
-/* Enhanced Loading & Empty States */
+/* Loading & Empty States */
 .loading-state,
 .empty-state {
   display: flex;
@@ -565,13 +528,11 @@ onMounted(async () => {
   justify-content: center;
   padding: 3rem 1.5rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.7);
   flex: 1;
 }
 
-/* New Loading Animation */
 .loading-animation {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .loading-dots {
@@ -580,251 +541,108 @@ onMounted(async () => {
 }
 
 .dot {
-  width: 12px;
-  height: 12px;
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.8), 
-    rgba(196, 181, 253, 0.6));
+  width: 10px;
+  height: 10px;
+  background: rgba(139, 92, 246, 0.8);
   border-radius: 50%;
   animation: loadingPulse 1.5s ease-in-out infinite;
 }
 
-.dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes loadingPulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.3);
-    opacity: 1;
-  }
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; }
 }
 
-/* Enhanced Empty State */
-.empty-illustration {
-  position: relative;
-  margin-bottom: 2rem;
+.loading-state p {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
 }
 
 .empty-icon {
-  font-size: 4rem;
+  font-size: 3rem;
   margin-bottom: 1rem;
-  filter: grayscale(10%);
-  animation: float 3s ease-in-out infinite;
-}
-
-.empty-sparkles {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  font-size: 1.5rem;
-  animation: sparkle 2s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes sparkle {
-  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
-  50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
-}
-
-.empty-state h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 1rem 0;
-  color: rgba(255, 255, 255, 0.9);
 }
 
 .empty-state p {
-  font-size: 1rem;
-  margin: 0 0 2rem 0;
   color: rgba(255, 255, 255, 0.6);
-  max-width: 280px;
-  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
+  font-size: 0.95rem;
 }
 
 .empty-cta {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.2), 
-    rgba(124, 58, 237, 0.3));
+  padding: 0.75rem 1.5rem;
+  background: rgba(139, 92, 246, 0.2);
   color: rgba(196, 181, 253, 0.95);
   border: 1px solid rgba(139, 92, 246, 0.4);
-  border-radius: 12px;
-  font-size: 0.95rem;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
 }
 
 .empty-cta:hover {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.3), 
-    rgba(124, 58, 237, 0.4));
+  background: rgba(139, 92, 246, 0.3);
   border-color: rgba(139, 92, 246, 0.6);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
   color: white;
 }
 
-.empty-cta svg {
-  width: 18px;
-  height: 18px;
-}
-
-/* Entries Grid */
-.entries-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  overflow-y: auto;
-  flex: 1;
-  padding-right: 0.5rem;
-}
-
-/* Enhanced scrollbar */
-.entries-grid::-webkit-scrollbar {
-  width: 8px;
-}
-
-.entries-grid::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-}
-
-.entries-grid::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, 
-    rgba(139, 92, 246, 0.6), 
-    rgba(124, 58, 237, 0.7));
-  border-radius: 10px;
-  transition: all 0.3s ease;
-}
-
-.entries-grid::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, 
-    rgba(139, 92, 246, 0.8), 
-    rgba(124, 58, 237, 0.9));
-}
-
-.view-all-btn {
-  width: 100%;
-  margin-top: 1.25rem;
-  padding: 0.875rem;
-  border: 1px solid rgba(129, 140, 248, 0.4);
-  background: rgba(129, 140, 248, 0.1);
-  color: rgba(129, 140, 248, 0.95);
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.view-all-btn:hover {
-  background: rgba(129, 140, 248, 0.2);
-  border-color: rgba(129, 140, 248, 0.6);
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(129, 140, 248, 0.3);
-}
-
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+/* Error Toast Notification */
+@media (max-width: 1024px) {
+  .content-container {
+    flex-direction: column;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .sidebar {
+    width: 100%;
+    order: -1;
   }
-}
-
-/* Enhanced Responsive */
-@media (max-width: 640px) {
-  .journal-home {
-    width: 100vw;
-    max-width: 100vw;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .header-content {
-    text-align: center;
-  }
-
-  .welcome-message {
-    font-size: 1.5rem;
-  }
-
-  .prompt-message {
-    font-size: 1.875rem;
-  }
-
-  .stats-cards {
+  
+  .stats-panel {
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    gap: 1rem;
   }
+  
+  .stats-panel h3 {
+    grid-column: 1 / -1;
+  }
+  
+  .stat-row {
+    border-bottom: none;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 0.5rem;
+  }
+}
 
-  .stat-card {
+@media (max-width: 640px) {
+  .journal-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .header-left {
+    justify-content: space-between;
+  }
+  
+  .new-entry-btn {
+    width: 100%;
     justify-content: center;
   }
-
-  .fab {
-    bottom: 1.25rem;
-    right: 1.25rem;
-    width: 64px;
-    height: 64px;
+  
+  .content-container {
+    padding: 1rem;
+    gap: 1rem;
   }
-
-  .fab-icon {
-    width: 28px;
-    height: 28px;
-  }
-
-  .insights-section {
-    padding: 1.25rem;
-  }
-
-  .empty-state {
-    padding: 2rem 1rem;
-  }
-
-  .empty-icon {
-    font-size: 3rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .journal-home {
-    width: 100vw;
-    max-width: 100vw;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .action-buttons {
-    flex-direction: row;
-  }
-
-  .stats-cards {
-    margin-bottom: 1rem;
+  
+  .stats-panel {
+    grid-template-columns: 1fr;
   }
 }
 

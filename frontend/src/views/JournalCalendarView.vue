@@ -1,36 +1,62 @@
 <template>
   <div class="calendar-view">
-    <!-- Header -->
+    <!-- Compact Header with Navigation and Stats -->
     <header class="calendar-header">
-      <button @click="close" class="close-btn" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg>
-      </button>
+      <div class="header-left">
+        <button @click="close" class="close-btn" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </button>
+        
+        <div class="date-navigation">
+          <button @click="previousYear" class="year-nav-btn" title="Previous year">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 18l-6-6 6-6M12 18l-6-6 6-6" />
+            </svg>
+          </button>
+          
+          <button @click="previousMonth" class="nav-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          
+          <h2 class="current-month">{{ currentMonthName }} {{ currentYear }}</h2>
+          
+          <button @click="nextMonth" class="nav-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+          
+          <button @click="nextYear" class="year-nav-btn" title="Next year">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 6l6 6-6 6M12 6l6 6-6 6" />
+            </svg>
+          </button>
+        </div>
+      </div>
       
-      <h2>Journal Calendar</h2>
+      <div class="header-stats">
+        <div class="stat-item">
+          <span class="stat-value">{{ monthStats.totalEntries }}</span>
+          <span class="stat-label">Entries</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value">{{ monthStats.daysWithEntries }}</span>
+          <span class="stat-label">Days</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-value">{{ monthStats.currentStreak }}</span>
+          <span class="stat-label">Streak</span>
+        </div>
+      </div>
       
       <button @click="goToToday" class="today-btn">Today</button>
     </header>
-
-    <!-- Month Navigation -->
-    <div class="month-navigation">
-      <button @click="previousMonth" class="nav-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-      </button>
-      
-      <h3 class="current-month">
-        {{ currentMonthName }} {{ currentYear }}
-      </h3>
-      
-      <button @click="nextMonth" class="nav-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 18l6-6-6-6" />
-        </svg>
-      </button>
-    </div>
 
     <!-- Calendar Grid -->
     <div class="calendar-container">
@@ -56,11 +82,9 @@
         >
           <div class="day-number">{{ day.dayNumber }}</div>
           
-          <!-- Check Mark Indicator -->
-          <div v-if="day.hasEntry" class="check-indicator">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-              <path d="M5 13l4 4L19 7" />
-            </svg>
+          <!-- Entry Count Badge -->
+          <div v-if="day.hasEntry && day.entryCount > 0" class="entry-badge">
+            {{ day.entryCount }}
           </div>
         </div>
       </div>
@@ -73,24 +97,6 @@
       :entries="selectedDayEntries"
       @close="closeModal"
     />
-
-    <!-- Monthly Stats -->
-    <div class="monthly-stats">
-      <div class="stat-card">
-        <div class="stat-value">{{ monthStats.totalEntries }}</div>
-        <div class="stat-label">Entries</div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-value">{{ monthStats.daysWithEntries }}</div>
-        <div class="stat-label">Days Journaled</div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-value">{{ monthStats.currentStreak }}</div>
-        <div class="stat-label">Day Streak</div>
-      </div>
-    </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="loading-overlay">
@@ -377,6 +383,14 @@ const nextMonth = () => {
   }
 }
 
+const previousYear = () => {
+  currentYear.value--
+}
+
+const nextYear = () => {
+  currentYear.value++
+}
+
 const goToToday = () => {
   const today = new Date()
   currentYear.value = today.getFullYear()
@@ -417,13 +431,14 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.5rem;
   background: rgba(30, 41, 59, 0.85);
   backdrop-filter: blur(25px);
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
   color: rgba(255, 255, 255, 0.95);
   flex-shrink: 0;
   position: relative;
+  gap: 1.5rem;
 }
 
 .calendar-header::before {
@@ -437,6 +452,65 @@ onMounted(() => {
     transparent, 
     rgba(139, 92, 246, 0.6), 
     transparent);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.date-navigation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.current-month {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  min-width: 200px;
+  text-align: center;
+}
+
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: rgba(196, 181, 253, 0.7);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 2rem;
+  background: rgba(139, 92, 246, 0.2);
 }
 
 .calendar-header h2 {
@@ -456,7 +530,8 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   border-radius: 0.5rem;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .close-btn:hover {
@@ -470,19 +545,72 @@ onMounted(() => {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
+.nav-btn {
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.nav-btn:hover {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.nav-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.year-nav-btn {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.year-nav-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: rgba(255, 255, 255, 0.95);
+  transform: scale(1.05);
+}
+
+.year-nav-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
 .today-btn {
   background: linear-gradient(135deg, 
     rgba(139, 92, 246, 0.2) 0%, 
     rgba(124, 58, 237, 0.25) 100%);
   border: 1px solid rgba(139, 92, 246, 0.4);
   color: rgba(255, 255, 255, 0.95);
-  padding: 0.625rem 1.25rem;
+  padding: 0.625rem 1rem;
   border-radius: 0.75rem;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
+  flex-shrink: 0;
 }
 
 .today-btn:hover {
@@ -494,60 +622,14 @@ onMounted(() => {
   border-color: rgba(139, 92, 246, 0.6);
 }
 
-/* Month Navigation */
-.month-navigation {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(139, 92, 246, 0.15);
-  backdrop-filter: blur(25px);
-  margin: 1rem 1.5rem;
-  border-radius: 1.25rem;
-  color: rgba(255, 255, 255, 0.95);
-  flex-shrink: 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
-.current-month {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 500;
-}
-
-.nav-btn {
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  color: rgba(255, 255, 255, 0.95);
-  cursor: pointer;
-  padding: 0.875rem;
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.nav-btn:hover {
-  background: rgba(139, 92, 246, 0.25);
-  border-color: rgba(139, 92, 246, 0.5);
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-}
-
-.nav-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
 /* Calendar Container */
 .calendar-container {
   flex: 1;
   display: flex;
   flex-direction: column;
   padding: 0 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  margin-top: 1rem;
   min-height: 0;
   overflow: hidden;
 }
@@ -637,26 +719,25 @@ onMounted(() => {
   color: rgba(255, 255, 255, 0.9);
 }
 
-.check-indicator {
+.entry-badge {
   position: absolute;
-  bottom: 0.25rem;
-  width: 18px;
-  height: 18px;
+  top: 0.25rem;
+  right: 0.25rem;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 0.375rem;
   background: linear-gradient(135deg, 
     rgba(139, 92, 246, 0.9) 0%, 
     rgba(124, 58, 237, 0.95) 100%);
-  border-radius: 50%;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4);
-}
-
-.check-indicator svg {
-  width: 12px;
-  height: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
   color: white;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.5);
+  line-height: 1;
 }
 
 /* Selected Day Panel */
@@ -845,9 +926,83 @@ onMounted(() => {
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .calendar-header {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .header-stats {
+    order: 3;
+    width: 100%;
+    justify-content: space-around;
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar-header {
+    padding: 1rem;
+  }
+  
+  .header-left {
+    flex: 1;
+  }
+  
+  .date-navigation {
+    gap: 0.25rem;
+  }
+  
+  .current-month {
+    font-size: 1.1rem;
+    min-width: 160px;
+  }
+  
+  .year-nav-btn {
+    display: none;
+  }
+  
+  .header-stats {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1.1rem;
+  }
+  
+  .stat-label {
+    font-size: 0.65rem;
+  }
+}
+
 @media (max-width: 640px) {
+  .calendar-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-left {
+    justify-content: space-between;
+  }
+  
+  .date-navigation {
+    justify-content: center;
+    flex: 1;
+  }
+  
+  .current-month {
+    font-size: 1rem;
+    min-width: 140px;
+  }
+  
+  .today-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
   .calendar-container {
     padding: 0 1rem;
+    margin-top: 0.75rem;
   }
 
   .calendar-grid {
@@ -873,19 +1028,12 @@ onMounted(() => {
   .day-number {
     font-size: 0.85rem;
   }
-
-  .monthly-stats {
-    grid-template-columns: 1fr;
-    padding: 0 1rem 1.5rem;
-  }
-
-  .current-month {
-    font-size: 1.25rem;
-  }
-
-  .month-navigation {
-    margin: 0.75rem 1rem;
-    padding: 1.25rem;
+  
+  .entry-badge {
+    min-width: 16px;
+    height: 16px;
+    font-size: 0.65rem;
+    padding: 0 0.25rem;
   }
 }
 
