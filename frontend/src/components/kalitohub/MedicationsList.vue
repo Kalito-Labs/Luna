@@ -1,12 +1,5 @@
 <template>
   <div class="medications-list">
-    <div class="list-header">
-      <h3>Medications</h3>
-      <button v-if="!readonly" @click="$emit('add-medication')" class="btn btn-sm btn-primary">
-        Add Medication
-      </button>
-    </div>
-    
     <!-- Patient Filter Buttons - Only show when multiple patients -->
     <div v-if="patients.length > 1" class="patient-filters">
       <button 

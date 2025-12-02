@@ -1,50 +1,90 @@
 <template>
   <div class="kalito-hub">
-    <div class="dashboard-header">
-      <HamburgerMenu />
-      <h1>Kalito Hub</h1>
-    </div>
-    
-    <!-- Quick Actions - Main Dashboard -->
-    <div class="quick-actions">
-      <h2>Dashboard</h2>
-      <div class="action-grid">
-        <!-- My Profile -->
-        <button @click="openMyProfile" class="action-btn patients-btn">
-          <div class="btn-icon">👤</div>
-          <div class="btn-content">
-            <h3>My Profile</h3>
-            <p>Personal Information</p>
-          </div>
-        </button>
-        
-        <!-- Medications -->
-        <button @click="activeView = 'medications'" class="action-btn medications-btn" :class="{ active: activeView === 'medications' }">
-          <div class="btn-icon">💊</div>
-          <div class="btn-content">
-            <h3>Medications</h3>
-            <p>Track medications & dosages</p>
-          </div>
-        </button>
+    <!-- Compact Header -->
+    <header class="health-header">
+      <div class="header-left">
+        <HamburgerMenu />
+        <div class="header-title">
+          <h1>Health Dashboard</h1>
+          <span class="subtitle">Your personal health information</span>
+        </div>
       </div>
-    </div>
+      <button @click="openProfileEditor" class="edit-profile-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+        </svg>
+        <span>Edit Profile</span>
+      </button>
+    </header>
 
-    <!-- Content Sections -->
+    <!-- Two-Column Content Container -->
+    <div class="content-container">
+      <!-- Left Column: Medications -->
+      <div class="medications-column">
+        <div class="column-header">
+          <h2>My Medications</h2>
+          <button @click="showMedicationForm = true" class="add-med-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            <span>Add New</span>
+          </button>
+        </div>
 
-    <!-- Medications Overview -->
-    <div v-if="activeView === 'medications'" class="content-section">
-      <MedicationsList 
-        :medications="allMedications"
-        :patients="patients"
-        @add-medication="showMedicationForm = true"
-        @edit-medication="editMedication"
-        @delete-medication="deleteMedication"
-      />
+        <div class="medications-content">
+          <MedicationsList 
+            :medications="allMedications"
+            :patients="patients"
+            @add-medication="showMedicationForm = true"
+            @edit-medication="editMedication"
+            @delete-medication="deleteMedication"
+          />
+        </div>
+      </div>
+
+      <!-- Right Column: Sidebar -->
+      <aside class="sidebar">
+        <!-- Profile Card -->
+        <div class="profile-card">
+          <div class="profile-avatar">👤</div>
+          <h3>{{ profileName }}</h3>
+          <div class="profile-stats">
+            <div class="stat-row">
+              <span class="stat-label">Age</span>
+              <span class="stat-value">{{ profileAge || 'Not set' }}</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Medications</span>
+              <span class="stat-value">{{ allMedications.length }}</span>
+            </div>
+            <div class="stat-row" v-if="lastUpdated">
+              <span class="stat-label">Last Updated</span>
+              <span class="stat-value">{{ lastUpdated }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <button @click="openProfileEditor" class="action-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+            </svg>
+            <span>Edit Profile</span>
+          </button>
+          <button @click="viewFullProfile" class="action-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>View Full Profile</span>
+          </button>
+        </div>
+      </aside>
     </div>
 
     <!-- Modals -->
     <!-- Medication Form Modal -->
-    <div v-if="showMedicationForm" class="modal-overlay">
+    <div v-if="showMedicationForm" class="modal-overlay" @click="closeMedicationForm">
       <MedicationForm 
         :medication="editingMedication"
         :is-editing="!!editingMedication"
@@ -56,29 +96,37 @@
     </div>
 
     <!-- Patient Detail Modal -->
-    <div v-if="showPatientDetail" class="modal-overlay">
-  <PatientDetailModal 
-    v-if="selectedPatient"
-    :patient="selectedPatient"
-    :medications="patientMedications"
-    @close="closePatientDetail"
-    @save-patient="savePatient"
-    @add-medication="() => { showPatientDetail = false; showMedicationForm = true }"
-    @edit-medication="editMedication"
-    @delete-medication="deleteMedication"
-    @click.stop
-  />
+    <div v-if="showPatientDetail" class="modal-overlay" @click="closePatientDetail">
+      <PatientDetailModal 
+        v-if="selectedPatient"
+        :patient="selectedPatient"
+        :medications="patientMedications"
+        @close="closePatientDetail"
+        @save-patient="savePatient"
+        @add-medication="() => { showPatientDetail = false; showMedicationForm = true }"
+        @edit-medication="editMedication"
+        @delete-medication="deleteMedication"
+        @click.stop
+      />
     </div>
 
-    <!-- Success/Error Messages -->
-    <div v-if="message" class="message" :class="messageType">
-      {{ message }}
-    </div>
+    <!-- Success/Error Toast -->
+    <transition name="toast">
+      <div v-if="message" class="toast-message" :class="messageType">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle v-if="messageType === 'error'" cx="12" cy="12" r="10" />
+          <path v-if="messageType === 'error'" d="M12 8v4M12 16h.01" />
+          <path v-if="messageType === 'success'" d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline v-if="messageType === 'success'" points="22 4 12 14.01 9 11.01" />
+        </svg>
+        <span>{{ message }}</span>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { apiUrl } from '../config/api'
 import { usePatient } from '../composables/usePatient'
 import HamburgerMenu from '../components/HamburgerMenu.vue'
@@ -110,17 +158,45 @@ const patients = ref<Patient[]>([])
 const showMedicationForm = ref(false)
 const showPatientDetail = ref(false)
 
-const activeView = ref<'patients' | 'medications'>('medications')
-
 const editingMedication = ref<any | null>(null)
 const selectedPatient = ref<Patient | null>(null)
 const patientMedications = ref<any[]>([])
 
-// Global data for all tabs
+// Global data
 const allMedications = ref<any[]>([])
 
 const message = ref('')
 const messageType = ref<'success' | 'error'>('success')
+
+// Computed properties for profile card
+const profileName = computed(() => {
+  if (patients.value.length > 0 && patients.value[0]) {
+    return patients.value[0].name || 'My Profile'
+  }
+  return 'My Profile'
+})
+
+const profileAge = computed(() => {
+  if (patients.value.length > 0 && patients.value[0]?.date_of_birth) {
+    const dob = new Date(patients.value[0].date_of_birth)
+    const today = new Date()
+    let age = today.getFullYear() - dob.getFullYear()
+    const monthDiff = today.getMonth() - dob.getMonth()
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      age--
+    }
+    return age > 0 ? age : null
+  }
+  return null
+})
+
+const lastUpdated = computed(() => {
+  if (patients.value.length > 0 && patients.value[0]?.updated_at) {
+    const date = new Date(patients.value[0].updated_at)
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+  return null
+})
 
 onMounted(async () => {
   await loadPatients()
@@ -159,7 +235,7 @@ async function loadAllMedications() {
 
 
 
-async function openMyProfile() {
+async function openProfileEditor() {
   // Load or create a default patient for single-user mode
   if (patients.value.length === 0) {
     // If no patients exist, create a default patient
@@ -183,6 +259,10 @@ async function openMyProfile() {
   
   // Show the patient detail modal
   showPatientDetail.value = true
+}
+
+function viewFullProfile() {
+  openProfileEditor()
 }
 
 async function loadPatientData(patientId: string) {
@@ -354,365 +434,299 @@ function showMessage(text: string, type: 'success' | 'error') {
 
 <style scoped>
 /* ================================================================ */
-/* BASE LAYOUT - Desktop First, Fluid Responsive                   */
+/* BASE LAYOUT - Matching JournalView Aesthetic                     */
 /* ================================================================ */
 
 .kalito-hub {
-  max-width: 100%;
-  width: 100%;
-  margin: 0 auto;
-  padding: 32px;
   min-height: 100vh;
-  max-height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+  height: 100vh;
   background: linear-gradient(135deg, 
     rgba(15, 23, 42, 0.98) 0%, 
     rgba(30, 41, 59, 0.95) 50%,
     rgba(67, 56, 202, 0.1) 100%);
-  color: rgba(255, 255, 255, 0.92);
-  box-sizing: border-box;
-}
-
-/* Tablet: 769px - 1024px */
-@media (max-width: 1024px) {
-  .kalito-hub {
-    padding: 24px;
-  }
-
-  .hamburger-fixed {
-    top: 24px;
-    left: 24px;
-  }
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .kalito-hub {
-    padding: 16px;
-  }
-
-  .hamburger-fixed {
-    top: 20px;
-    left: 20px;
-  }
-}
-
-/* ================================================================ */
-/* DASHBOARD HEADER                                                 */
-/* ================================================================ */
-
-.dashboard-header {
-  position: relative;
-  text-align: center;
-  margin-bottom: 48px;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 1.5rem;
-  z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.dashboard-header :deep(.hamburger-container) {
-  position: absolute;
-  top: 1.5rem;
-  left: 1.5rem;
-  z-index: 2000;
-}
-
-.dashboard-header h1 {
-  margin: 0;
-  font-size: 2.5rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.98) 0%, 
-    rgba(196, 181, 253, 0.9) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-
-/* Tablet: 769px - 1024px */
-@media (max-width: 1024px) {
-  .dashboard-header {
-    margin-bottom: 36px;
-    padding-bottom: 1.25rem;
-  }
-  
-  .dashboard-header h1 {
-    font-size: 2.1rem;
-  }
-  
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .dashboard-header {
-    margin-bottom: 28px;
-    padding-bottom: 1rem;
-  }
-  
-  .dashboard-header h1 {
-    font-size: 1.75rem;
-    margin-bottom: 8px;
-  }
-  
-}
-
-/* ================================================================ */
-/* QUICK ACTIONS SECTION                                            */
-/* ================================================================ */
-
-.quick-actions {
-  margin-bottom: 48px;
-}
-
-.quick-actions h2 {
-  margin: 0 0 24px 0;
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.action-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-/* Tablet: 769px - 1024px */
-@media (max-width: 1024px) {
-  .quick-actions {
-    margin-bottom: 36px;
-  }
-  
-  .quick-actions h2 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-  }
-  
-  .action-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .quick-actions {
-    margin-bottom: 28px;
-  }
-  
-  .quick-actions h2 {
-    font-size: 1.3rem;
-    margin-bottom: 16px;
-  }
-  
-  .action-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-}
-
-/* ================================================================ */
-/* ACTION BUTTONS                                                   */
-/* ================================================================ */
-
-.action-btn {
   display: flex;
-  align-items: center;
-  padding: 24px;
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(30px);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: left;
-  min-height: 120px;
-  width: 100%;
-  box-sizing: border-box;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+  flex-direction: column;
+  color: rgba(255, 255, 255, 0.92);
   position: relative;
   overflow: hidden;
 }
 
-.action-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(139, 92, 246, 0.6), 
-    transparent);
-  border-radius: 2px;
+/* ================================================================ */
+/* COMPACT HEADER                                                   */
+/* ================================================================ */
+
+.health-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 100;
 }
 
-/* Tablet: 769px - 1024px */
-@media (max-width: 1024px) {
-  .action-btn {
-    padding: 20px;
-    min-height: 100px;
-  }
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .action-btn {
-    padding: 16px;
-    min-height: 85px;
-    border-radius: 10px;
-  }
+.header-title h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1;
 }
 
-/* Action button states */
-.action-btn:hover:not(:disabled) {
-  border-color: rgba(139, 92, 246, 0.3);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 50px rgba(139, 92, 246, 0.25);
-  background: rgba(255, 255, 255, 0.08);
+.subtitle {
+  display: block;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.25rem;
+  font-weight: 400;
 }
 
-.action-btn.active {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(139, 92, 246, 0.3);
-  box-shadow: 0 8px 40px rgba(139, 92, 246, 0.25);
+.edit-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.9) 0%, 
+    rgba(124, 58, 237, 0.95) 100%);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
-.action-btn.active .btn-content h3 {
-  color: rgba(196, 181, 253, 1);
+.edit-profile-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
 }
 
-.action-btn.active .btn-content p {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.action-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.edit-profile-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* ================================================================ */
-/* BUTTON ICON & CONTENT                                            */
+/* TWO-COLUMN LAYOUT                                                */
 /* ================================================================ */
 
-.btn-icon {
-  font-size: 2.5rem;
-  margin-right: 18px;
+.content-container {
+  display: flex;
+  gap: 1.5rem;
+  flex: 1;
+  padding: 1.5rem;
+  overflow: hidden;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Left Column - Medications */
+.medications-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  position: relative;
+  z-index: auto;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.column-header h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.add-med-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.9) 0%, 
+    rgba(124, 58, 237, 0.95) 100%);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.add-med-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
+}
+
+.add-med-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.medications-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.medications-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.medications-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.medications-content::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.4);
+  border-radius: 10px;
+}
+
+.medications-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
+}
+
+/* ================================================================ */
+/* SIDEBAR                                                          */
+/* ================================================================ */
+
+.sidebar {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
   flex-shrink: 0;
 }
 
-.btn-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.btn-content h3 {
-  margin: 0 0 6px 0;
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 1.15rem;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.btn-content p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 0.95rem;
-  line-height: 1.4;
-}
-
-/* Tablet: 769px - 1024px */
-@media (max-width: 1024px) {
-  .btn-icon {
-    font-size: 2.2rem;
-    margin-right: 14px;
-  }
-  
-  .btn-content h3 {
-    font-size: 1.05rem;
-  }
-  
-  .btn-content p {
-    font-size: 0.9rem;
-  }
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .btn-icon {
-    font-size: 1.9rem;
-    margin-right: 12px;
-  }
-  
-  .btn-content h3 {
-    font-size: 0.95rem;
-    margin-bottom: 4px;
-  }
-  
-  .btn-content p {
-    font-size: 0.85rem;
-  }
-}
-
-/* ================================================================ */
-/* CONTENT SECTIONS                                                 */
-/* ================================================================ */
-
-.content-section {
-  margin-bottom: 40px;
-  overflow-x: auto;
-  overflow-y: auto;
-  max-height: calc(100vh - 300px); /* Allow scrolling with enough space for header */
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Tablet: 769px - 1024px */
-@media (max-width: 1024px) {
-  .content-section {
-    margin-bottom: 32px;
-  }
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .content-section {
-    margin-bottom: 24px;
-  }
-}
-
-/* ================================================================ */
-/* PATIENTS OVERVIEW SECTION                                        */
-/* ================================================================ */
-
-.empty-state {
+.profile-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(20px);
   text-align: center;
-  padding: 60px 20px;
-  color: rgba(255, 255, 255, 0.65);
 }
 
-.empty-icon {
-  font-size: 4rem;
-  margin-bottom: 16px;
-  filter: drop-shadow(0 4px 12px rgba(139, 92, 246, 0.3));
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.2) 0%, 
+    rgba(124, 58, 237, 0.3) 100%);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  margin: 0 auto 1rem;
 }
 
-.empty-state h3 {
-  color: rgba(255, 255, 255, 0.92);
-  margin: 0 0 8px 0;
+.profile-card h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
 }
 
-.empty-state p {
-  margin: 0 0 24px 0;
+.profile-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(196, 181, 253, 0.95);
+}
+
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.action-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.action-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: rgba(255, 255, 255, 1);
+  transform: translateX(4px);
+}
+
+.action-link svg {
+  width: 20px;
+  height: 20px;
+  color: rgba(139, 92, 246, 0.7);
+  flex-shrink: 0;
+}
+
+/* ================================================================ */
+/* MODALS                                                           */
+/* ================================================================ */
 
 .modal-overlay {
   position: fixed;
@@ -720,265 +734,167 @@ function showMessage(text: string, type: 'success' | 'error') {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(30px) saturate(180%);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 1rem;
 }
 
-/* Tablet: 769px - 1024px */
+/* Toast Notification */
+.toast-message {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 1001;
+  font-size: 0.95rem;
+  font-weight: 500;
+  max-width: 90%;
+  animation: slideDown 0.3s ease-out;
+}
+
+.toast-message.success {
+  background: rgba(34, 197, 94, 0.95);
+  color: white;
+}
+
+.toast-message.error {
+  background: rgba(239, 68, 68, 0.95);
+  color: white;
+}
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.toast-enter-active {
+  animation: slideDown 0.3s ease-out;
+}
+
+.toast-leave-active {
+  animation: slideUp 0.3s ease-in;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+
+/* ================================================================ */
+/* RESPONSIVE DESIGN                                                */
+/* ================================================================ */
+
 @media (max-width: 1024px) {
-  .modal-overlay {
-    padding: 16px;
+  .content-container {
+    flex-direction: column;
   }
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .modal-overlay {
-  padding: 0;
-    align-items: stretch;
+  
+  .sidebar {
+    width: 100%;
+    order: -1;
   }
-}
-
-.modal-content {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 24px;
-  width: 70vw;
-  max-width: 95vw;
-  max-height: 90vh;
-  overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(30px);
-}
-
-/* Tablet: 769px - 1024px */
-@media (max-width: 1024px) {
-  .modal-content {
-    width: 85vw;
+  
+  .profile-card {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    gap: 1.5rem;
   }
-}
-
-/* Mobile: <= 768px */
-@media (max-width: 768px) {
-  .modal-content {
-    width: 100vw;
-    height: 100vh;
-    max-height: 100vh;
-    border-radius: 0;
+  
+  .profile-avatar {
     margin: 0;
   }
-}
-
-.message {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 12px 20px;
-  border-radius: 16px;
-  font-weight: 500;
-  z-index: 1001;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
-.message.success {
-  background: linear-gradient(135deg, 
-    rgba(34, 197, 94, 0.9), 
-    rgba(22, 163, 74, 0.95));
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.message.error {
-  background: linear-gradient(135deg, 
-    rgba(239, 68, 68, 0.9), 
-    rgba(220, 38, 38, 0.95));
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn {
-  padding: 10px 18px;
-  border-radius: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.875rem;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  backdrop-filter: blur(20px);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.btn-sm {
-  padding: 8px 14px;
-  font-size: 0.8rem;
-}
-
-.btn-lg {
-  padding: 14px 28px;
-  font-size: 1rem;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.9) 0%, 
-    rgba(124, 58, 237, 0.95) 100%);
-  color: white;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 1) 0%, 
-    rgba(124, 58, 237, 1) 100%);
-  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.6);
-  transform: translateY(-3px);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.btn-outline {
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(196, 181, 253, 0.95);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(20px);
-}
-
-.btn-outline:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 1);
-  border-color: rgba(139, 92, 246, 0.4);
-  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.25);
-  transform: translateY(-3px);
-}
-
-.btn-danger {
-  background: var(--led-red);
-  color: white;
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
-}
-
-.btn-danger:hover:not(:disabled) {
-  background: #dc2626;
-  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
-  transform: translateY(-1px);
-}
-
-/* Custom Scrollbars - Modern Dark Gray Design */
-
-/* Main dashboard scrollbar */
-.kalito-hub::-webkit-scrollbar {
-  width: 12px;
-}
-
-.kalito-hub::-webkit-scrollbar-track {
-  background: rgba(30, 30, 35, 0.4);
-  border-radius: 6px;
-  margin: 4px;
-}
-
-.kalito-hub::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, 
-    rgba(139, 92, 246, 0.6), 
-    rgba(124, 58, 237, 0.7));
-  border-radius: 6px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  transition: all 0.3s ease;
-}
-
-.kalito-hub::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, 
-    rgba(139, 92, 246, 0.8), 
-    rgba(124, 58, 237, 0.9));
-  box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
-}
-
-.kalito-hub::-webkit-scrollbar-thumb:active {
-  background: rgba(139, 92, 246, 1);
-}
-
-/* Child elements scrollbars */
-.kalito-hub *::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-.kalito-hub *::-webkit-scrollbar-track {
-  background: rgba(30, 30, 35, 0.3);
-  border-radius: 5px;
-}
-
-.kalito-hub *::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.5);
-  border-radius: 5px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  transition: all 0.3s ease;
-}
-
-.kalito-hub *::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.7);
-  box-shadow: 0 0 6px rgba(139, 92, 246, 0.3);
-}
-
-.kalito-hub *::-webkit-scrollbar-thumb:active {
-  background: rgba(139, 92, 246, 0.9);
-}
-
-/* Firefox scrollbar styling */
-.kalito-hub {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(139, 92, 246, 0.7) rgba(30, 30, 35, 0.4);
-}
-
-.kalito-hub * {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(139, 92, 246, 0.5) rgba(30, 30, 35, 0.3);
-}
-
-/* Mobile: <= 768px - Thinner scrollbars */
-@media (max-width: 768px) {
-  .kalito-hub::-webkit-scrollbar {
-    width: 8px;
+  
+  .profile-stats {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
   }
   
-  .kalito-hub *::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  .stat-row {
+    flex-direction: column;
+    align-items: flex-start;
+    border-bottom: none;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
   }
 }
 
-/* Touch device improvements */
-@media (hover: none) and (pointer: coarse) {
-  .action-btn:hover {
-    transform: none;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+@media (max-width: 640px) {
+  .health-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
   }
   
-  .patient-card:hover {
-    transform: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  .header-left {
+    justify-content: space-between;
   }
   
-  .btn:hover {
-    transform: none !important;
+  .edit-profile-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .content-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .profile-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .profile-avatar {
+    margin: 0 auto 1rem;
+  }
+  
+  .profile-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .column-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .add-med-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
