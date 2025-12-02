@@ -2,26 +2,53 @@
   <div class="journal-entry-view">
     <!-- Header -->
     <header class="entry-header">
-      <button @click="cancel" class="close-btn" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12" />
-        </svg>
-      </button>
-      
-      <input 
-        v-model="entry.title" 
-        :placeholder="isEditing ? 'Edit entry title...' : 'New journal entry...'"
-        class="entry-title-input"
-      />
-      
-      <div class="header-actions">
-        <button v-if="isEditing" @click="deleteEntry" class="delete-btn" aria-label="Delete">
+      <div class="header-top">
+        <button @click="cancel" class="icon-btn" aria-label="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z" />
+            <path d="M18 6L6 18M6 6l12 12" />
           </svg>
         </button>
-        <button @click="save" class="save-btn" :disabled="!canSave">
-          Save
+        
+        <input 
+          v-model="entry.title" 
+          :placeholder="isEditing ? 'Edit entry title...' : 'Untitled Entry'"
+          class="title-input"
+        />
+        
+        <!-- Auto-save Status -->
+        <div class="save-status">
+          <transition name="fade">
+            <svg v-if="autoSaveStatus === 'Saving...'" class="status-icon spinning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" opacity="0.25" />
+              <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+            </svg>
+            <svg v-else-if="autoSaveStatus === 'Saved ✓'" class="status-icon success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+            <svg v-else class="status-icon idle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </transition>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button @click="save" class="primary-btn" :disabled="!canSave || isSaving">
+          <svg v-if="isSaving" class="btn-icon spinning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" opacity="0.25" />
+            <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+          </svg>
+          <svg v-else class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+            <path d="M17 21v-8H7v8M7 3v5h8" />
+          </svg>
+          <span>{{ isSaving ? 'Saving...' : 'Save Entry' }}</span>
+        </button>
+        
+        <button v-if="isEditing" @click="deleteEntry" class="danger-btn" aria-label="Delete">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z" />
+          </svg>
         </button>
       </div>
     </header>
@@ -29,22 +56,25 @@
     <!-- Entry Form -->
     <div class="entry-form">
       <!-- Mental Health Tracking Card -->
-      <div class="form-section mental-health-card">
-        <h3 class="section-title">How are you today?</h3>
+      <div class="form-section wellness-tracker">
+        <div class="tracker-header">
+          <h3 class="section-title">Today's Check-in</h3>
+          <span class="tracker-badge">Optional</span>
+        </div>
         
         <div class="tracking-grid">
-          <!-- Emotion Selector -->
+          <!-- Emotion Selector - Dropdown -->
           <div class="tracking-item emotion-item">
-            <label for="emotion-select" class="item-label">Feeling</label>
+            <label for="mood-select" class="item-label">How are you feeling?</label>
             <select 
-              id="emotion-select"
+              id="mood-select"
               v-model="entry.mood" 
-              class="emotion-dropdown"
+              class="mood-dropdown"
             >
-              <option :value="undefined">Select emotion</option>
+              <option value="">Select an emotion...</option>
               <option 
-                v-for="mood in availableMoods" 
-                :key="mood.id" 
+                v-for="mood in availableMoods"
+                :key="mood.id"
                 :value="mood.id"
               >
                 {{ mood.icon }} {{ mood.label }}
@@ -54,82 +84,93 @@
 
           <!-- Sleep Hours -->
           <div class="tracking-item sleep-item">
-            <label for="sleep-hours" class="item-label">
-              Sleep Hours
-              <span v-if="entry.sleep_hours" class="sleep-value">{{ entry.sleep_hours }}hrs</span>
-            </label>
-            <div class="sleep-scale-container">
-              <span class="scale-label">0</span>
-              <input 
-                id="sleep-hours"
-                type="range"
-                min="0"
-                max="12"
-                step="0.5"
-                v-model.number="entry.sleep_hours"
-                class="sleep-slider"
-              />
-              <span class="scale-label">12</span>
+            <div class="item-header">
+              <label for="sleep-hours" class="item-label">Sleep Hours</label>
+              <span class="value-badge">{{ entry.sleep_hours || 0 }}h</span>
             </div>
-            <div class="sleep-scale-labels">
-              <span class="sleep-label-low">None</span>
-              <span class="sleep-label-high">Full</span>
+            <div class="slider-wrapper">
+              <div class="slider-icons">
+                <span class="slider-icon-start">😴</span>
+                <div class="slider-track">
+                  <div class="slider-fill" :style="{ width: `${((entry.sleep_hours || 0) / 12) * 100}%` }"></div>
+                  <input 
+                    id="sleep-hours"
+                    type="range"
+                    min="0"
+                    max="12"
+                    step="0.5"
+                    v-model.number="entry.sleep_hours"
+                    class="modern-slider"
+                  />
+                </div>
+                <span class="slider-icon-end">🌟</span>
+              </div>
+              <div class="slider-ticks">
+                <span>0</span>
+                <span>3</span>
+                <span>6</span>
+                <span>9</span>
+                <span>12</span>
+              </div>
             </div>
           </div>
 
           <!-- Mood Scale -->
           <div class="tracking-item mood-item">
-            <label for="mood-scale" class="item-label">
-              Mood Scale
-              <span v-if="entry.mood_scale" class="mood-value">{{ entry.mood_scale }}/10</span>
-            </label>
-            <div class="mood-scale-container">
-              <span class="scale-label">1</span>
-              <input 
-                id="mood-scale"
-                type="range"
-                min="1"
-                max="10"
-                v-model.number="entry.mood_scale"
-                class="mood-slider"
-              />
-              <span class="scale-label">10</span>
+            <div class="item-header">
+              <label for="mood-scale" class="item-label">Energy Level</label>
+              <span class="value-badge">{{ entry.mood_scale || 5 }}/10</span>
             </div>
-            <div class="mood-scale-labels">
-              <span class="mood-label-low">Low</span>
-              <span class="mood-label-high">Great</span>
+            <div class="slider-wrapper">
+              <div class="slider-icons">
+                <span class="slider-icon-start">😔</span>
+                <div class="slider-track">
+                  <div class="slider-fill energy" :style="{ width: `${((entry.mood_scale || 5) / 10) * 100}%` }"></div>
+                  <input 
+                    id="mood-scale"
+                    type="range"
+                    min="1"
+                    max="10"
+                    v-model.number="entry.mood_scale"
+                    class="modern-slider energy"
+                  />
+                </div>
+                <span class="slider-icon-end">🚀</span>
+              </div>
+              <div class="slider-ticks">
+                <span>1</span>
+                <span>3</span>
+                <span>5</span>
+                <span>7</span>
+                <span>10</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Main Content Area -->
-      <textarea
-        v-model="entry.content"
-        :placeholder="placeholder"
-        @input="handleInput"
-        class="content-area"
-        ref="contentArea"
-      />
-
-      <!-- Metadata Footer -->
-      <div class="entry-metadata">
-        <div class="metadata-left">
-          <span class="word-count">{{ wordCount }} words</span>
-          <span class="char-count">{{ charCount }} characters</span>
-        </div>
-        <div class="metadata-right">
-          <span class="date-display">{{ formattedDate }}</span>
+      <div class="editor-container">
+        <textarea
+          v-model="entry.content"
+          :placeholder="placeholder"
+          @input="handleInput"
+          class="content-area"
+          ref="contentArea"
+        />
+        
+        <!-- Editor Footer -->
+        <div class="editor-footer">
+          <div class="metadata-left">
+            <span class="word-count">{{ wordCount }} words</span>
+            <span class="char-count">{{ charCount }} characters</span>
+          </div>
+          <div class="metadata-right">
+            <span class="date-display">{{ formattedDate }}</span>
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- Auto-save Indicator -->
-    <transition name="fade">
-      <div v-if="autoSaveStatus" class="auto-save-indicator">
-        {{ autoSaveStatus }}
-      </div>
-    </transition>
   </div>
 </template>
 
@@ -165,6 +206,7 @@ const entry = ref<{
 
 const autoSaveStatus = ref('')
 const isEditing = ref(false)
+const isSaving = ref(false)
 const entryId = ref<string>()
 const autoSaveTimer = ref<ReturnType<typeof setTimeout>>()
 const contentArea = ref<HTMLTextAreaElement>()
@@ -256,19 +298,28 @@ const autoSave = async () => {
 }
 
 const save = async () => {
-  if (!canSave.value) return
+  if (!canSave.value || isSaving.value) return
 
   try {
+    isSaving.value = true
+    autoSaveStatus.value = 'Saving...'
+    
     if (isEditing.value && entryId.value) {
       await updateEntry()
     } else {
       await createEntry()
     }
     
+    autoSaveStatus.value = 'Saved ✓'
     router.push('/journal')
   } catch (error) {
     console.error('Error saving entry:', error)
-    alert('Failed to save entry. Please try again.')
+    autoSaveStatus.value = 'Save failed - please try again'
+    setTimeout(() => {
+      autoSaveStatus.value = ''
+    }, 3000)
+  } finally {
+    isSaving.value = false
   }
 }
 
@@ -404,33 +455,47 @@ watch(() => route.params.id, (newId) => {
 </script>
 
 <style scoped>
+/* Modern Design System */
+:root {
+  --surface-1: rgba(255, 255, 255, 0.03);
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --surface-3: rgba(255, 255, 255, 0.10);
+  
+  --primary: rgba(139, 92, 246, 1);
+  --primary-light: rgba(196, 181, 253, 1);
+  --primary-dark: rgba(124, 58, 237, 1);
+  
+  --success: rgba(34, 197, 94, 1);
+  --danger: rgba(239, 68, 68, 1);
+  --warning: rgba(245, 158, 11, 1);
+  
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+}
+
 .journal-entry-view {
   height: 100vh;
-  max-height: 100vh;
   background: linear-gradient(135deg, 
     rgba(15, 23, 42, 0.98) 0%, 
     rgba(30, 41, 59, 0.95) 50%,
     rgba(67, 56, 202, 0.08) 100%);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   position: relative;
 }
 
-/* Header */
+/* Modern Header */
 .entry-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.5rem;
+  flex-direction: column;
+  padding: 0.75rem 1.25rem;
   background: rgba(30, 41, 59, 0.85);
   backdrop-filter: blur(25px);
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  gap: 1rem;
+  gap: 0.75rem;
   position: relative;
-  flex-shrink: 0;
-  min-height: 70px;
 }
 
 .entry-header::before {
@@ -446,122 +511,152 @@ watch(() => route.params.id, (newId) => {
     transparent);
 }
 
-.header-actions {
+.header-top {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
-.close-btn,
-.save-btn,
-.delete-btn {
-  padding: 0.5rem 1rem;
+.icon-btn {
+  background: transparent;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 500;
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.close-btn {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-}
-
-.close-btn svg {
-  width: 24px;
-  height: 24px;
-}
-
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.95);
-  transform: scale(1.05);
-}
-
-.delete-btn {
-  background: transparent;
-  color: rgba(239, 68, 68, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
+  padding: 0.375rem;
   border-radius: 0.5rem;
-  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
-.delete-btn svg {
-  width: 20px;
-  height: 20px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
-.delete-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: rgba(239, 68, 68, 1);
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+.icon-btn:hover {
+  background: var(--surface-2);
+  color: var(--text-primary);
 }
 
-.entry-title-input {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.95);
-  letter-spacing: -0.01em;
+.title-input {
   flex: 1;
-  text-align: center;
   background: transparent;
   border: none;
   outline: none;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease;
-}
-
-.entry-title-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.entry-title-input:focus {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 1);
-}
-
-.save-btn {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.85) 0%, 
-    rgba(124, 58, 237, 0.9) 100%);
-  color: white;
-  min-width: 88px;
+  font-size: 1rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+  color: var(--text-primary);
+  text-align: center;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
 }
 
-.save-btn:hover:not(:disabled) {
+.title-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.title-input:focus {
+  background: var(--surface-1);
+}
+
+.save-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.625rem;
+  background: var(--surface-1);
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  min-width: 36px;
+  justify-content: center;
+}
+
+.status-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.status-icon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+.status-icon.success {
+  color: var(--success);
+}
+
+.status-icon.idle {
+  opacity: 0.3;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  justify-content: center;
+}
+
+.primary-btn,
+.danger-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 0.625rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.primary-btn {
   background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 1) 0%, 
-    rgba(124, 58, 237, 1) 100%);
+    var(--primary) 0%, 
+    var(--primary-dark) 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+  min-width: 140px;
+}
+
+.primary-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
-  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.save-btn:active:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.save-btn:disabled {
+.primary-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+.danger-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 0.625rem;
+}
+
+.danger-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-icon.spinning {
+  animation: spin 1s linear infinite;
 }
 
 /* Entry Form */
@@ -569,21 +664,18 @@ watch(() => route.params.id, (newId) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 1rem 1rem 1rem;
-  gap: 1rem;
+  padding: 1.5rem;
+  gap: 1.5rem;
   overflow-y: auto;
-  overflow-x: hidden;
   min-height: 0;
-  scroll-behavior: smooth;
 }
 
-/* Custom scrollbar for entry form */
 .entry-form::-webkit-scrollbar {
   width: 8px;
 }
 
 .entry-form::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-1);
   border-radius: 10px;
 }
 
@@ -592,46 +684,20 @@ watch(() => route.params.id, (newId) => {
     rgba(139, 92, 246, 0.6), 
     rgba(124, 58, 237, 0.7));
   border-radius: 10px;
-  transition: all 0.3s ease;
 }
 
-.entry-form::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, 
-    rgba(139, 92, 246, 0.8), 
-    rgba(124, 58, 237, 0.9));
-}
-
-.form-section {
-  background: rgba(255, 255, 255, 0.06);
+/* Wellness Tracker */
+.wellness-tracker {
+  background: var(--surface-2);
   border: 1px solid rgba(139, 92, 246, 0.15);
   border-radius: 1.25rem;
+  padding: 1.5rem;
   backdrop-filter: blur(25px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: visible;
-  min-height: auto;
 }
 
-.form-section:hover {
-  border-color: rgba(139, 92, 246, 0.3);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px);
-}
-
-/* Mental Health Tracking Card */
-.mental-health-card {
-  padding: 1rem;
-  position: relative;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.08) 0%, 
-    rgba(139, 92, 246, 0.05) 100%);
-  min-height: auto;
-  height: auto;
-}
-
-.mental-health-card::before {
+.wellness-tracker::before {
   content: '';
   position: absolute;
   top: 0;
@@ -644,313 +710,232 @@ watch(() => route.params.id, (newId) => {
     transparent);
 }
 
-.section-title {
-  margin: 0 0 1.5rem 0;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.95);
-  text-align: center;
-  letter-spacing: -0.02em;
-  position: relative;
+.tracker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
 }
 
-.section-title::after {
-  content: '';
-  position: absolute;
-  bottom: -0.75rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    rgba(139, 92, 246, 0.6), 
-    rgba(196, 181, 253, 0.4));
-  border-radius: 2px;
+.section-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tracker-badge {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  background: var(--surface-1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-weight: 500;
 }
 
 .tracking-grid {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  width: 100%;
-}
-
-@media (min-width: 640px) {
-  .tracking-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    align-items: start;
-  }
-  
-  .emotion-item {
-    grid-column: 1;
-  }
-  
-  .sleep-item {
-    grid-column: 2;
-  }
-  
-  .mood-item {
-    grid-column: 1 / -1;
-    margin-top: 0.75rem;
-  }
+  gap: 1.5rem;
 }
 
 .tracking-item {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 1.25rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(139, 92, 246, 0.15);
-  border-radius: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  gap: 1rem;
 }
 
-.tracking-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(139, 92, 246, 0.05), 
-    transparent);
-  transition: left 0.6s ease;
-}
-
-.tracking-item:hover::before {
-  left: 100%;
-}
-
-.tracking-item:hover {
-  border-color: rgba(139, 92, 246, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.1);
+.item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .item-label {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
-  letter-spacing: 0.01em;
+  color: var(--text-primary);
 }
 
-/* Emotion Dropdown */
-.emotion-dropdown {
-  padding: 1rem 1.25rem;
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 0.75rem;
-  background: rgba(15, 23, 42, 0.6);
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.95);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  outline: none;
-  width: 100%;
-  backdrop-filter: blur(10px);
-}
-
-.emotion-dropdown:focus {
-  border-color: rgba(139, 92, 246, 0.6);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2), 
-              0 8px 24px rgba(139, 92, 246, 0.15);
-  transform: translateY(-2px);
-  background: rgba(15, 23, 42, 0.8);
-}
-
-.emotion-dropdown option {
-  background: rgba(15, 23, 42, 0.95);
-  color: rgba(255, 255, 255, 0.95);
-  padding: 0.5rem;
-}
-
-/* Mood Scale */
-.mood-value {
-  color: rgba(139, 92, 246, 0.95);
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.mood-scale-container {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 0.75rem 0;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 0.75rem;
-  margin: 0.25rem 0;
-}
-
-.scale-label {
+.value-badge {
   font-size: 0.875rem;
-  color: rgba(196, 181, 253, 0.8);
-  font-weight: 600;
-  min-width: 1.5rem;
-  text-align: center;
-  padding: 0.25rem;
-  background: rgba(139, 92, 246, 0.1);
+  font-weight: 700;
+  color: var(--primary-light);
+  background: rgba(139, 92, 246, 0.15);
+  padding: 0.25rem 0.75rem;
   border-radius: 0.5rem;
 }
 
-.mood-slider {
-  flex: 1;
-  height: 8px;
-  border-radius: 6px;
-  background: linear-gradient(90deg, 
-    rgba(239, 68, 68, 0.3), 
-    rgba(245, 158, 11, 0.3), 
-    rgba(34, 197, 94, 0.3));
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.mood-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 1) 0%, 
-    rgba(196, 181, 253, 0.95) 100%);
+/* Mood Dropdown */
+.mood-dropdown {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: var(--surface-1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 0.75rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.5);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 3px solid rgba(255, 255, 255, 0.9);
-  position: relative;
+  transition: all 0.2s ease;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.25rem;
+  padding-right: 2.5rem;
 }
 
-.mood-slider::-webkit-slider-thumb:hover {
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 1) 0%, 
-    rgba(196, 181, 253, 1) 100%);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.7);
-  transform: scale(1.2);
-  border-color: white;
+.mood-dropdown:hover {
+  background: var(--surface-2);
+  border-color: rgba(139, 92, 246, 0.4);
 }
 
-.mood-scale-labels {
+.mood-dropdown:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+  background: var(--surface-2);
+}
+
+.mood-dropdown option {
+  background: rgba(30, 41, 59, 0.98);
+  color: var(--text-primary);
+  padding: 0.5rem;
+}
+
+/* Modern Sliders */
+.slider-wrapper {
   display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
-  padding: 0 0.5rem;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-/* Sleep Scale */
-.sleep-value {
-  color: rgba(139, 92, 246, 0.95);
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.sleep-scale-container {
+.slider-icons {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 0.75rem 0;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 0.75rem;
-  margin: 0.25rem 0;
+  gap: 1rem;
 }
 
-.sleep-slider {
+.slider-icon-start,
+.slider-icon-end {
+  font-size: 1.5rem;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.slider-track {
   flex: 1;
+  position: relative;
   height: 8px;
-  border-radius: 6px;
+  background: var(--surface-1);
+  border-radius: 10px;
+  overflow: visible;
+}
+
+.slider-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
   background: linear-gradient(90deg, 
-    rgba(30, 41, 59, 0.4), 
-    rgba(59, 130, 246, 0.3), 
-    rgba(139, 92, 246, 0.3));
+    rgba(59, 130, 246, 0.6), 
+    rgba(139, 92, 246, 0.8));
+  border-radius: 10px;
+  transition: width 0.2s ease;
+  pointer-events: none;
+}
+
+.slider-fill.energy {
+  background: linear-gradient(90deg, 
+    rgba(239, 68, 68, 0.5), 
+    rgba(245, 158, 11, 0.5), 
+    rgba(34, 197, 94, 0.6));
+}
+
+.modern-slider {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  transform: translateY(-50%);
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
   outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.sleep-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 1) 0%, 
-    rgba(139, 92, 246, 0.95) 100%);
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 3px solid rgba(255, 255, 255, 0.9);
-  position: relative;
 }
 
-.sleep-slider::-webkit-slider-thumb:hover {
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 1) 0%, 
-    rgba(139, 92, 246, 1) 100%);
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.7);
+.modern-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--primary);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-slider::-webkit-slider-thumb:hover {
   transform: scale(1.2);
-  border-color: white;
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.6);
 }
 
-.sleep-scale-labels {
+.modern-slider::-webkit-slider-thumb:active {
+  transform: scale(1.1);
+}
+
+.slider-ticks {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
   padding: 0 0.5rem;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
 }
 
+/* Editor Container */
+.editor-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  min-height: 0;
+}
+
+/* Content Area */
 .content-area {
   flex: 1;
   padding: 2rem;
   border: 1px solid rgba(139, 92, 246, 0.15);
   border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface-1);
   backdrop-filter: blur(25px);
   font-size: 1.125rem;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--text-primary);
   resize: none;
   font-family: inherit;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  min-height: 250px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 400;
-  letter-spacing: 0.01em;
+  min-height: 0;
+  transition: all 0.3s ease;
+  outline: none;
 }
 
 .content-area::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-tertiary);
 }
 
 .content-area:focus {
-  outline: none;
-  border-color: rgba(139, 92, 246, 0.6);
-  box-shadow: 0 12px 48px rgba(139, 92, 246, 0.25);
-  transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 12px 48px rgba(139, 92, 246, 0.15);
+  background: var(--surface-2);
 }
 
-/* Custom scrollbar for content area */
 .content-area::-webkit-scrollbar {
   width: 10px;
 }
@@ -961,32 +946,23 @@ watch(() => route.params.id, (newId) => {
 }
 
 .content-area::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(60, 60, 70, 0.9), rgba(80, 80, 90, 0.9));
+  background: linear-gradient(180deg, 
+    rgba(60, 60, 70, 0.9), 
+    rgba(80, 80, 90, 0.9));
   border-radius: 10px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  transition: all 0.3s ease;
 }
 
-.content-area::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(90, 90, 100, 0.95), rgba(110, 110, 120, 0.95));
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Metadata */
-.entry-metadata {
+/* Editor Footer */
+.editor-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 1.5rem;
-  background: rgba(255, 255, 255, 0.04);
+  padding: 1rem 1.5rem;
+  background: var(--surface-1);
   border: 1px solid rgba(139, 92, 246, 0.15);
-  backdrop-filter: blur(25px);
   border-radius: 1rem;
-  font-size: 0.9rem;
-  color: rgba(196, 181, 253, 0.8);
-  font-weight: 500;
-  flex-shrink: 0;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
 }
 
 .metadata-left,
@@ -996,30 +972,10 @@ watch(() => route.params.id, (newId) => {
   align-items: center;
 }
 
-/* Auto-save Indicator */
-.auto-save-indicator {
-  position: fixed;
-  bottom: 2rem;
-  left: 2rem;
-  padding: 0.875rem 1.5rem;
-  background: rgba(30, 41, 59, 0.95);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  backdrop-filter: blur(20px);
-  color: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  z-index: 1001;
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 /* Transitions */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
 .fade-enter-from,
@@ -1030,103 +986,45 @@ watch(() => route.params.id, (newId) => {
 /* Responsive */
 @media (max-width: 640px) {
   .entry-header {
-    padding: 0.875rem 1rem;
-    flex-wrap: wrap;
-    min-height: auto;
+    padding: 1rem;
   }
-
-  .entry-title-input {
-    font-size: 1rem;
-    order: 2;
-    width: 100%;
-    text-align: center;
-    margin-top: 0.5rem;
-  }
-
-  .close-btn {
-    order: 1;
-  }
-
+  
   .header-actions {
-    order: 3;
+    flex-wrap: wrap;
   }
-
+  
+  .primary-btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+  }
+  
   .entry-form {
     padding: 1rem;
     gap: 1rem;
   }
-
-  .mental-health-card {
-    padding: 1.5rem;
-  }
-
-  .section-title {
-    font-size: 1.125rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .tracking-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .tracking-item {
+  
+  .wellness-tracker {
     padding: 1.25rem;
   }
-
+  
   .content-area {
     padding: 1.5rem;
     font-size: 1rem;
-    min-height: 200px;
+    min-height: 250px;
   }
-
+  
+  .editor-footer {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  
   .metadata-left,
   .metadata-right {
     flex-direction: column;
     gap: 0.5rem;
     align-items: flex-start;
-  }
-
-  .metadata-right {
-    align-items: flex-end;
-  }
-
-  .entry-metadata {
-    padding: 1rem;
-    font-size: 0.8rem;
-  }
-
-  .mood-scale-container {
-    gap: 1rem;
-  }
-
-  .sleep-input-container {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .sleep-input {
-    text-align: center;
-    max-width: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .entry-form {
-    padding: 0.75rem;
-  }
-
-  .mental-health-card {
-    padding: 1.25rem;
-  }
-
-  .tracking-item {
-    padding: 1rem;
-  }
-
-  .content-area {
-    padding: 1.25rem;
-    min-height: 180px;
   }
 }
 </style>

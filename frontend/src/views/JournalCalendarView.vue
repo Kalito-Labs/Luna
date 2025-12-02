@@ -96,6 +96,17 @@
     <div v-if="loading" class="loading-overlay">
       <div class="spinner"></div>
     </div>
+
+    <!-- Error Toast Notification -->
+    <transition name="toast">
+      <div v-if="errorMessage" class="error-toast">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4M12 16h.01" />
+        </svg>
+        <span>{{ errorMessage }}</span>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -117,6 +128,7 @@ const selectedDate = ref<string | null>(null)
 const calendarEntries = ref<JournalEntry[]>([])
 const loading = ref(false)
 const showModal = ref(false)
+const errorMessage = ref('')
 
 const patientId = computed(() => getPatientId())
 
@@ -237,6 +249,13 @@ const monthStats = computed(() => {
 })
 
 // Methods
+const showError = (message: string) => {
+  errorMessage.value = message
+  setTimeout(() => {
+    errorMessage.value = ''
+  }, 5000)
+}
+
 const formatDate = (year: number, month: number, day: number): string => {
   const date = new Date(year, month, day)
   return date.toISOString().split('T')[0] ?? ''
@@ -281,8 +300,7 @@ const loadCalendarData = async () => {
   } catch (error) {
     console.error('Error loading calendar data:', error)
     calendarEntries.value = []
-    // Show user-friendly error
-    alert('Could not load calendar data. Please check if the backend server is running.')
+    showError('Could not load calendar data. Please try again.')
   } finally {
     loading.value = false
     console.log('Loading complete, entries:', calendarEntries.value.length)
@@ -318,12 +336,17 @@ const calculateStreak = (): number => {
 
 const selectDay = (day: any) => {
   if (day.isOtherMonth) {
-    // Navigate to that month
+    // Navigate to that month and pre-select the date
+    selectedDate.value = day.date
     if (day.dayNumber > 15) {
       previousMonth()
     } else {
       nextMonth()
     }
+    // Open modal after navigation completes
+    setTimeout(() => {
+      showModal.value = true
+    }, 100)
     return
   }
   
@@ -863,6 +886,66 @@ onMounted(() => {
   .month-navigation {
     margin: 0.75rem 1rem;
     padding: 1.25rem;
+  }
+}
+
+/* Error Toast Notification */
+.error-toast {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: rgba(239, 68, 68, 0.95);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 1000;
+  font-size: 0.95rem;
+  font-weight: 500;
+  max-width: 90%;
+  animation: slideDown 0.3s ease-out;
+}
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Toast Transitions */
+.toast-enter-active {
+  animation: slideDown 0.3s ease-out;
+}
+
+.toast-leave-active {
+  animation: slideUp 0.3s ease-in;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
   }
 }
 </style>

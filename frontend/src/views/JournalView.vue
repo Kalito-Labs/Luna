@@ -52,6 +52,17 @@
       <span class="fab-tooltip">Start new entry</span>
     </button>
 
+    <!-- Error Toast Notification -->
+    <transition name="toast">
+      <div v-if="errorMessage" class="error-toast">
+        <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4M12 16h.01" />
+        </svg>
+        <span>{{ errorMessage }}</span>
+      </div>
+    </transition>
+
     <!-- Insights Section -->
     <section class="insights-section">
       <div class="section-header">
@@ -118,6 +129,7 @@ const { getPatientName, getPatientId, loadPatient } = usePatient()
 // State
 const loading = ref(true)
 const recentEntries = ref<JournalEntry[]>([])
+const errorMessage = ref('')
 const patientName = computed(() => getPatientName())
 const patientId = computed(() => getPatientId())
 
@@ -125,8 +137,8 @@ const patientId = computed(() => getPatientId())
 const hasEntries = computed(() => recentEntries.value.length > 0)
 const todaysEntries = computed(() => {
   const today = new Date().toISOString().split('T')[0]
-  return recentEntries.value.filter((entry: any) => {
-    return entry.created_at && entry.created_at.startsWith(today)
+  return recentEntries.value.filter((entry: JournalEntry) => {
+    return entry.entry_date === today
   })
 })
 
@@ -137,42 +149,33 @@ const thisWeekEntries = computed(() => {
   const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())
   const weekStartString = weekStart.toISOString().split('T')[0] || ''
   
-  return recentEntries.value.filter((entry: any) => {
-    if (!entry.created_at) return false
-    const entryDate = entry.created_at.split('T')[0] || ''
-    return entryDate >= weekStartString
+  return recentEntries.value.filter((entry: JournalEntry) => {
+    return entry.entry_date >= weekStartString
   })
 })
 
 const currentStreak = computed(() => {
   if (recentEntries.value.length === 0) return 0
   
-  // Group entries by date
-  const entriesByDate = new Map()
-  recentEntries.value.forEach((entry: any) => {
-    if (entry.created_at) {
-      const date = entry.created_at.split('T')[0]
-      if (!entriesByDate.has(date)) {
-        entriesByDate.set(date, [])
-      }
-      entriesByDate.get(date).push(entry)
-    }
-  })
-  
-  // Get unique dates and sort them
-  const uniqueDates = Array.from(entriesByDate.keys()).sort().reverse()
+  // Get unique entry dates and sort descending
+  const uniqueDates = [...new Set(recentEntries.value.map((entry: JournalEntry) => entry.entry_date))]
+    .sort()
+    .reverse()
   
   let streak = 0
   const today = new Date()
+  today.setHours(0, 0, 0, 0)
   
+  // Check consecutive days starting from today or yesterday
   for (let i = 0; i < uniqueDates.length; i++) {
-    const checkDate = new Date()
+    const checkDate = new Date(today)
     checkDate.setDate(today.getDate() - i)
     const checkDateString = checkDate.toISOString().split('T')[0]
     
     if (uniqueDates.includes(checkDateString)) {
       streak++
-    } else {
+    } else if (i > 0) {
+      // Only break after first day (allow starting yesterday)
       break
     }
   }
@@ -181,23 +184,35 @@ const currentStreak = computed(() => {
 })
 
 // Methods
+const showError = (message: string) => {
+  errorMessage.value = message
+  setTimeout(() => {
+    errorMessage.value = ''
+  }, 5000)
+}
+
 const fetchRecentEntries = async () => {
   try {
     loading.value = true
-    // Fetch all entries for the patient (no date filter to get everything)
+    errorMessage.value = ''
+    
     const response = await fetch(apiUrl(`/api/journal/patient/${patientId.value}`))
     
     if (!response.ok) {
-      throw new Error('Failed to fetch entries')
+      throw new Error(`Failed to fetch entries: ${response.status}`)
     }
     
     const entries = await response.json()
-    // Sort entries by creation date (newest first)
-    recentEntries.value = entries.sort((a: JournalEntry, b: JournalEntry) => 
-      new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
-    )
+    
+    // Sort entries by entry_date (newest first), then by created_at as secondary sort
+    recentEntries.value = entries.sort((a: JournalEntry, b: JournalEntry) => {
+      const dateCompare = b.entry_date.localeCompare(a.entry_date)
+      if (dateCompare !== 0) return dateCompare
+      return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
+    })
   } catch (error) {
     console.error('Error fetching recent entries:', error)
+    showError('Failed to load journal entries. Please try again.')
   } finally {
     loading.value = false
   }
@@ -810,6 +825,66 @@ onMounted(async () => {
 
   .stats-cards {
     margin-bottom: 1rem;
+  }
+}
+
+/* Error Toast Notification */
+.error-toast {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: rgba(239, 68, 68, 0.95);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 1000;
+  font-size: 0.95rem;
+  font-weight: 500;
+  max-width: 90%;
+  animation: slideDown 0.3s ease-out;
+}
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Toast Transitions */
+.toast-enter-active {
+  animation: slideDown 0.3s ease-out;
+}
+
+.toast-leave-active {
+  animation: slideUp 0.3s ease-in;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
   }
 }
 </style>

@@ -62,9 +62,9 @@ export class JournalService {
     const stmt = db.prepare(`
       INSERT INTO journal_entries (
         id, patient_id, session_id, title, content, entry_date, entry_time,
-        mood, emotions, journal_type, prompt_used, privacy_level,
+        mood, mood_scale, sleep_hours, emotions, journal_type, prompt_used, privacy_level,
         favorite, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)
     `)
 
     stmt.run(
@@ -76,6 +76,8 @@ export class JournalService {
       data.entry_date,
       data.entry_time || null,
       data.mood || null,
+      data.mood_scale || null,
+      data.sleep_hours || null,
       emotionsJson,
       data.journal_type || 'free',
       data.prompt_used || null,
@@ -133,6 +135,14 @@ export class JournalService {
     if (data.mood !== undefined) {
       updates.push('mood = ?')
       values.push(data.mood)
+    }
+    if (data.mood_scale !== undefined) {
+      updates.push('mood_scale = ?')
+      values.push(data.mood_scale)
+    }
+    if (data.sleep_hours !== undefined) {
+      updates.push('sleep_hours = ?')
+      values.push(data.sleep_hours)
     }
     if (data.emotions !== undefined) {
       updates.push('emotions = ?')
