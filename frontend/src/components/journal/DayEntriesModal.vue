@@ -4,7 +4,7 @@
       <div class="modal-container" @click.stop>
         <!-- Header -->
         <header class="modal-header">
-          <h3>{{ formattedDate }}</h3>
+          <h3>{{ formattedDateWithCount }}</h3>
           <button @click="closeModal" class="close-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 6L6 18M6 6l12 12" />
@@ -39,10 +39,7 @@
               </p>
 
               <div class="entry-footer">
-                <div v-if="entry.mood" class="mood-tag">
-                  <span class="mood-emoji">{{ getMoodEmoji(entry.mood) }}</span>
-                  <span class="mood-label">{{ entry.mood }}</span>
-                </div>
+                <MoodBadge v-if="entry.mood" :mood="entry.mood" />
                 <span class="word-count">{{ getWordCount(entry.content) }} words</span>
               </div>
             </div>
@@ -66,7 +63,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import type { JournalEntry, MoodType } from '../../types/journal'
+import MoodBadge from './MoodBadge.vue'
+import type { JournalEntry } from '../../types/journal'
 
 const router = useRouter()
 
@@ -93,6 +91,12 @@ const formattedDate = computed(() => {
   })
 })
 
+const formattedDateWithCount = computed(() => {
+  const count = props.entries.length
+  const entryText = count === 1 ? 'entry' : 'entries'
+  return `${count} ${entryText} on ${formattedDate.value}`
+})
+
 // Methods
 const closeModal = () => {
   emit('close')
@@ -110,7 +114,7 @@ const createNewEntry = () => {
   })
 }
 
-const truncateContent = (content: string, maxLength = 120): string => {
+const truncateContent = (content: string, maxLength = 200): string => {
   if (content.length <= maxLength) return content
   return content.substring(0, maxLength) + '...'
 }
@@ -118,7 +122,8 @@ const truncateContent = (content: string, maxLength = 120): string => {
 const formatTime = (time: string): string => {
   // Convert 24h format to 12h format
   const [hours, minutes] = time.split(':')
-  const hour = parseInt(hours)
+  if (!hours || !minutes) return time
+  const hour = parseInt(hours, 10)
   const ampm = hour >= 12 ? 'PM' : 'AM'
   const displayHour = hour % 12 || 12
   return `${displayHour}:${minutes} ${ampm}`
@@ -126,25 +131,6 @@ const formatTime = (time: string): string => {
 
 const getWordCount = (content: string): number => {
   return content.trim().split(/\s+/).length
-}
-
-const getMoodEmoji = (mood: MoodType): string => {
-  const moodEmojis: Record<MoodType, string> = {
-    happy: '😊',
-    excited: '🎉',
-    grateful: '🙏',
-    relaxed: '😌',
-    content: '😊',
-    tired: '😴',
-    unsure: '🤔',
-    bored: '😑',
-    anxious: '😰',
-    angry: '😠',
-    stressed: '😫',
-    sad: '😢',
-    desperate: '😭'
-  }
-  return moodEmojis[mood] || '😊'
 }
 </script>
 
@@ -331,34 +317,6 @@ const getMoodEmoji = (mood: MoodType): string => {
   gap: 1rem;
   padding-top: 1rem;
   border-top: 1px solid rgba(139, 92, 246, 0.15);
-}
-
-.mood-tag {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.875rem;
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: 1.25rem;
-  font-size: 0.85rem;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-.entry-card:hover .mood-tag {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.4);
-}
-
-.mood-emoji {
-  font-size: 1rem;
-}
-
-.mood-label {
-  color: rgba(255, 255, 255, 0.8);
-  text-transform: capitalize;
-  font-weight: 500;
 }
 
 .word-count {

@@ -111,6 +111,8 @@ CREATE TABLE IF NOT EXISTS journal_entries (
   entry_date TEXT NOT NULL,
   entry_time TEXT,
   mood TEXT,
+  mood_scale INTEGER,
+  sleep_hours REAL,
   emotions TEXT,
   journal_type TEXT DEFAULT 'free',
   prompt_used TEXT,
@@ -410,6 +412,22 @@ for (const persona of defaultPersonas) {
 // ---------------------------------------------------------------------
 
 console.log('✅ Database initialized at:', dbPath)
+
+// ---------------------------------------------------------------------
+// Run Migrations
+// ---------------------------------------------------------------------
+
+// Migration 006: Add mood_scale and sleep_hours to journal_entries
+if (!columnExists('journal_entries', 'mood_scale')) {
+  console.log('Running migration 006: Add journal tracking fields...')
+  db.exec(`ALTER TABLE journal_entries ADD COLUMN mood_scale INTEGER;`)
+  console.log('✅ Added mood_scale column to journal_entries')
+}
+
+if (!columnExists('journal_entries', 'sleep_hours')) {
+  db.exec(`ALTER TABLE journal_entries ADD COLUMN sleep_hours REAL;`)
+  console.log('✅ Added sleep_hours column to journal_entries')
+}
 
 // ---------------------------------------------------------------------
 // Check Eldercare Tables

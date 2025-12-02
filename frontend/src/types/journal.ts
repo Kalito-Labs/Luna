@@ -30,6 +30,8 @@ export interface JournalEntry {
   entry_date: string  // YYYY-MM-DD
   entry_time?: string // HH:MM
   mood?: MoodType
+  mood_scale?: number  // 1-10 intensity scale
+  sleep_hours?: number // 0-12 hours of sleep
   emotions?: MoodType[]
   journal_type: JournalType
   prompt_used?: string
@@ -47,6 +49,8 @@ export interface CreateJournalEntryRequest {
   entry_date: string
   entry_time?: string
   mood?: MoodType
+  mood_scale?: number
+  sleep_hours?: number
   emotions?: MoodType[]
   journal_type?: JournalType
   prompt_used?: string
@@ -59,6 +63,8 @@ export interface UpdateJournalEntryRequest {
   entry_date?: string
   entry_time?: string
   mood?: MoodType
+  mood_scale?: number
+  sleep_hours?: number
   emotions?: MoodType[]
   journal_type?: JournalType
   prompt_used?: string

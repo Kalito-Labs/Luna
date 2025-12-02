@@ -54,11 +54,30 @@ const wordCount = computed(() => {
 })
 
 const formattedDate = computed(() => {
-  const date = new Date(props.entry.entry_date)
-  return date.toLocaleDateString('en-US', { 
+  const entryDate = new Date(props.entry.entry_date)
+  const today = new Date()
+  
+  // Reset time to midnight for accurate day comparison
+  today.setHours(0, 0, 0, 0)
+  const entryDateMidnight = new Date(entryDate)
+  entryDateMidnight.setHours(0, 0, 0, 0)
+  
+  const daysDiff = Math.floor((today.getTime() - entryDateMidnight.getTime()) / (1000 * 60 * 60 * 24))
+  
+  // Relative dates for recent entries
+  if (daysDiff === 0) {
+    return 'Today'
+  } else if (daysDiff === 1) {
+    return 'Yesterday'
+  } else if (daysDiff > 1 && daysDiff <= 6) {
+    return `${daysDiff} days ago`
+  }
+  
+  // Absolute dates for older entries
+  return entryDate.toLocaleDateString('en-US', { 
     month: 'short', 
     day: 'numeric',
-    year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+    year: entryDate.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
   })
 })
 </script>

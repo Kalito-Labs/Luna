@@ -28,28 +28,6 @@ Acceptance and Commitment Therapy
             </p>
           </div>
 
-          <div class="defusion-problem glass-card">
-            <h3>⚠️ The Problem: Fusion</h3>
-            <p class="fusion-explanation">
-              When we're "fused" with thoughts, we treat them as literal truth, commands, or threats. 
-              The thought "I'm worthless" becomes "I AM worthless."
-            </p>
-            <div class="fusion-examples">
-              <div class="fusion-example">
-                <span class="fusion-icon">❌</span>
-                <div class="fusion-text">
-                  <strong>Fused:</strong> "I'm stupid"
-                </div>
-              </div>
-              <div class="fusion-example">
-                <span class="fusion-icon">✅</span>
-                <div class="fusion-text">
-                  <strong>Defused:</strong> "I'm having the thought that I'm stupid"
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="defusion-techniques glass-card">
             <h3>🛠️ Defusion Techniques</h3>
             <p class="techniques-intro">Try these practices to create space from difficult thoughts:</p>
