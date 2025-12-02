@@ -110,7 +110,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 .hamburger-container {
   position: relative;
   display: inline-block;
-  z-index: 2000;
+  z-index: 9999;
 }
 
 .hamburger-button {
@@ -208,7 +208,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  z-index: 2001;
+  z-index: 10000;
 }
 
 .menu-item {
