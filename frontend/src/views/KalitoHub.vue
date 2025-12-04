@@ -2,19 +2,11 @@
   <div class="kalito-hub">
     <!-- Compact Header -->
     <header class="health-header">
-      <div class="header-left">
-        <HamburgerMenu />
-        <div class="header-title">
-          <h1>Health Dashboard</h1>
-          <span class="subtitle">Your personal health information</span>
-        </div>
+      <HamburgerMenu />
+      <div class="header-title">
+        <h1>Profile Hub</h1>
+        <span class="subtitle">Your personal health information</span>
       </div>
-      <button @click="openProfileEditor" class="edit-profile-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-        </svg>
-        <span>Edit Profile</span>
-      </button>
     </header>
 
     <!-- Two-Column Content Container -->
@@ -458,7 +450,7 @@ function showMessage(text: string, type: 'success' | 'error') {
 .health-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
   padding: 1rem 1.5rem;
   background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(20px);
@@ -466,12 +458,6 @@ function showMessage(text: string, type: 'success' | 'error') {
   flex-shrink: 0;
   position: relative;
   z-index: 100;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
 }
 
 .header-title h1 {
@@ -488,34 +474,6 @@ function showMessage(text: string, type: 'success' | 'error') {
   color: rgba(255, 255, 255, 0.5);
   margin-top: 0.25rem;
   font-weight: 400;
-}
-
-.edit-profile-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.9) 0%, 
-    rgba(124, 58, 237, 0.95) 100%);
-  color: white;
-  border: none;
-  border-radius: 0.75rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-}
-
-.edit-profile-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
-}
-
-.edit-profile-btn svg {
-  width: 18px;
-  height: 18px;
 }
 
 /* ================================================================ */
@@ -854,18 +812,7 @@ function showMessage(text: string, type: 'success' | 'error') {
 
 @media (max-width: 640px) {
   .health-header {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: stretch;
-  }
-  
-  .header-left {
-    justify-content: space-between;
-  }
-  
-  .edit-profile-btn {
-    width: 100%;
-    justify-content: center;
+    gap: 0.75rem;
   }
   
   .content-container {

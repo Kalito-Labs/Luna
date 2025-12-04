@@ -159,10 +159,7 @@ function formatRoute(route: string): string {
 
 .list-header h3 {
   margin: 0;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: rgba(255, 255, 255, 0.95);
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -170,15 +167,15 @@ function formatRoute(route: string): string {
 /* Patient Filter Buttons */
 .patient-filters {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
 }
 
 .filter-btn {
-  padding: 12px 20px;
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 16px;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 0.75rem;
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px);
   color: rgba(255, 255, 255, 0.9);
@@ -187,31 +184,29 @@ function formatRoute(route: string): string {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
+  gap: 0.5rem;
+  font-size: 0.875rem;
 }
 
 .filter-btn:hover {
   border-color: rgba(139, 92, 246, 0.3);
   background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.25);
+  transform: translateY(-2px);
 }
 
 .filter-btn.active {
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(124, 58, 237, 0.95) 100%);
   color: white;
-  border-color: rgba(139, 92, 246, 0.4);
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
+  border-color: rgba(139, 92, 246, 0.3);
 }
 
 .count-badge {
   background: rgba(255, 255, 255, 0.2);
-  padding: 2px 8px;
-  border-radius: 12px;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.75rem;
   font-size: 0.75rem;
   font-weight: 700;
-  min-width: 24px;
+  min-width: 1.5rem;
   text-align: center;
 }
 
@@ -226,18 +221,17 @@ function formatRoute(route: string): string {
 
 .medications-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: 1.5rem;
 }
 
 .medication-card {
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(30px);
   border: 1px solid rgba(139, 92, 246, 0.15);
-  border-radius: 20px;
-  padding: 24px;
+  border-radius: 1rem;
+  padding: 1.5rem;
   position: relative;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(139, 92, 246, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -253,8 +247,7 @@ function formatRoute(route: string): string {
 }
 
 .medication-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(139, 92, 246, 0.25);
+  transform: translateY(-2px);
   border-color: rgba(139, 92, 246, 0.3);
 }
 
@@ -262,10 +255,10 @@ function formatRoute(route: string): string {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .med-title {
@@ -274,7 +267,7 @@ function formatRoute(route: string): string {
 }
 
 .med-header h4 {
-  margin: 0 0 8px 0;
+  margin: 0 0 0.5rem 0;
   color: rgba(255, 255, 255, 0.95);
   font-weight: 600;
   font-size: 1.1rem;
@@ -283,9 +276,9 @@ function formatRoute(route: string): string {
 .patient-badge {
   display: inline-block;
   background: rgba(107, 114, 128, 0.15);
-  color: var(--text-muted);
-  padding: 4px 10px;
-  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.75rem;
   font-size: 0.75rem;
   font-weight: 600;
   border: 1px solid rgba(107, 114, 128, 0.2);
@@ -294,21 +287,20 @@ function formatRoute(route: string): string {
 .dosage-badge {
   background: rgba(139, 92, 246, 0.15);
   color: rgba(196, 181, 253, 1);
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.75rem;
   font-size: 0.75rem;
   font-weight: 600;
   border: 1px solid rgba(139, 92, 246, 0.25);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
 }
 
 .med-details {
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 
 .med-details p {
-  margin: 8px 0;
-  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.7);
   display: flex;
   align-items: center;
@@ -316,21 +308,21 @@ function formatRoute(route: string): string {
 
 .med-details strong {
   color: rgba(255, 255, 255, 0.9);
-  margin-right: 8px;
-  min-width: 120px;
+  margin-right: 0.5rem;
+  min-width: 7.5rem;
 }
 
 .med-actions {
   display: flex;
-  gap: 12px;
-  padding-top: 16px;
+  gap: 0.75rem;
+  padding-top: 1rem;
   border-top: 1px solid rgba(139, 92, 246, 0.15);
   flex-wrap: wrap;
 }
 
 .empty-state {
   text-align: center;
-  padding: 60px 20px;
+  padding: 3.75rem 1.25rem;
   color: rgba(255, 255, 255, 0.6);
 }
 
@@ -340,8 +332,8 @@ function formatRoute(route: string): string {
 }
 
 .btn {
-  padding: 10px 18px;
-  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -362,113 +354,106 @@ function formatRoute(route: string): string {
 }
 
 .btn-xs {
-  padding: 8px 14px;
+  padding: 0.5rem 0.875rem;
   font-size: 0.8rem;
 }
 
 .btn-sm {
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   font-size: 0.875rem;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(124, 58, 237, 0.95) 100%);
   color: white;
-  border: 1px solid rgba(139, 92, 246, 0.5);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
-  border-color: rgba(139, 92, 246, 0.8);
-  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.5);
-  transform: translateY(-3px);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-outline {
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(129, 140, 248, 1);
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  box-shadow: 0 2px 8px rgba(129, 140, 248, 0.1);
+  background: rgba(107, 114, 128, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(107, 114, 128, 0.3);
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(129, 140, 248, 0.4);
-  color: rgba(255, 255, 255, 1);
-  box-shadow: 0 8px 32px rgba(129, 140, 248, 0.3);
-  transform: translateY(-3px);
+  background: rgba(107, 114, 128, 0.3);
+  border-color: rgba(107, 114, 128, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.95) 100%);
   color: white;
-  border: 1px solid rgba(239, 68, 68, 0.5);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .btn-danger:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(239, 68, 68, 1) 0%, rgba(220, 38, 38, 1) 100%);
-  border-color: rgba(239, 68, 68, 0.8);
-  box-shadow: 0 12px 40px rgba(239, 68, 68, 0.5);
-  transform: translateY(-3px);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: translateY(-2px);
 }
 
 /* Responsive Design */
 @media (max-width: 1200px) {
   .medications-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
+    gap: 1.25rem;
   }
 }
 
 @media (max-width: 1024px) {
   .medications-grid {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(16.25rem, 1fr));
+    gap: 1.25rem;
   }
   
   .medication-card {
-    padding: 20px;
+    padding: 1.25rem;
   }
 }
 
 @media (max-width: 768px) {
   .medications-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1rem;
   }
   
   .medication-card {
-    padding: 16px;
+    padding: 1rem;
   }
   
   .list-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 0.75rem;
   }
   
   .patient-filters {
     width: 100%;
-    gap: 8px;
+    gap: 0.5rem;
   }
   
   .filter-btn {
     flex: 1;
     min-width: 0;
     justify-content: center;
-    padding: 10px 16px;
+    padding: 0.625rem 1rem;
     font-size: 0.875rem;
   }
   
   .med-actions {
-    gap: 8px;
+    gap: 0.5rem;
     justify-content: center;
   }
   
   .med-details strong {
-    min-width: 100px;
+    min-width: 6.25rem;
     font-size: 0.85rem;
   }
 }
@@ -476,16 +461,16 @@ function formatRoute(route: string): string {
 @media (max-width: 480px) {
   .medications-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 0.75rem;
   }
   
   .medication-card {
-    padding: 16px;
+    padding: 1rem;
   }
   
   .patient-filters {
     flex-direction: column;
-    gap: 8px;
+    gap: 0.5rem;
   }
   
   .filter-btn {
@@ -495,12 +480,12 @@ function formatRoute(route: string): string {
   .med-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 0.5rem;
   }
   
   .med-actions {
     flex-direction: column;
-    gap: 6px;
+    gap: 0.375rem;
   }
   
   .btn-xs,
@@ -513,10 +498,14 @@ function formatRoute(route: string): string {
 @media (hover: none) and (pointer: coarse) {
   .medication-card:hover {
     transform: none;
-    box-shadow: var(--shadow-soft);
+    border-color: rgba(139, 92, 246, 0.15);
   }
   
   .btn:hover {
+    transform: none !important;
+  }
+  
+  .filter-btn:hover {
     transform: none !important;
   }
 }

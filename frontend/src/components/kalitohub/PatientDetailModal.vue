@@ -318,16 +318,15 @@ function saveChanges() {
 
 <style scoped>
 .patient-detail-modal {
-  background: rgba(255, 255, 255, 0.06);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
   border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 24px;
-  max-width: 1000px;
+  border-radius: 1.25rem;
+  max-width: 62.5rem;
   width: 90vw;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(30px);
 }
 
@@ -335,39 +334,36 @@ function saveChanges() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
+  padding: 1.5rem;
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(20px);
 }
 
 .modal-header h2 {
   margin: 0;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 1.75rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.5rem;
   font-weight: 600;
 }
 
 .modal-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .print-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.375rem;
   font-size: 0.875rem;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 2rem;
+  font-size: 1.75rem;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.6);
   padding: 0;
@@ -376,7 +372,7 @@ function saveChanges() {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: 0.5rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -387,7 +383,7 @@ function saveChanges() {
 }
 
 .modal-body {
-  padding: 24px;
+  padding: 1.5rem;
   overflow-y: auto;
   flex: 1;
   background: rgba(0, 0, 0, 0.05);
@@ -480,15 +476,14 @@ function saveChanges() {
 }
 
 .patient-info-section {
-  margin-bottom: 32px;
-  padding: 24px;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(139, 92, 246, 0.15);
-  border-radius: 20px;
+  border-radius: 1rem;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .patient-info-section::before {
@@ -507,7 +502,6 @@ function saveChanges() {
 
 .patient-info-section:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 50px rgba(139, 92, 246, 0.25);
   border-color: rgba(139, 92, 246, 0.3);
 }
 
@@ -515,32 +509,31 @@ function saveChanges() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .section-header h3 {
   margin: 0;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.125rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(15.625rem, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 .info-item label {
@@ -557,15 +550,15 @@ function saveChanges() {
 }
 
 .notes-section {
-  margin-top: 20px;
-  padding-top: 20px;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
   border-top: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .notes-section label {
   font-weight: 600;
   color: rgba(139, 92, 246, 0.9);
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
   display: block;
 }
 
@@ -577,60 +570,60 @@ function saveChanges() {
 
 /* Edit Form Styles */
 .edit-form {
-  margin-top: 20px;
+  margin-top: 1.25rem;
 }
 
 .form-container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 1.5rem;
 }
 
 .form-section {
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 1rem;
+  padding: 1.5rem;
   border: 1px solid rgba(139, 92, 246, 0.15);
   backdrop-filter: blur(20px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .form-section h4 {
-  margin: 0 0 16px 0;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 1.1rem;
+  margin: 0 0 1rem 0;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.125rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+  gap: 1rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.375rem;
 }
 
 .form-group label {
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 12px;
+  padding: 0.75rem;
   border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 12px;
-  font-size: 0.95rem;
-  background: rgba(255, 255, 255, 0.04);
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  background: rgba(30, 41, 59, 0.6);
   color: rgba(255, 255, 255, 0.9);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
@@ -640,20 +633,19 @@ function saveChanges() {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.5);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.06);
 }
 
 .form-group textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 5rem;
   line-height: 1.5;
 }
 
 .btn {
-  padding: 10px 18px;
-  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -673,65 +665,56 @@ function saveChanges() {
 }
 
 .btn-sm {
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   font-size: 0.875rem;
 }
 
 .btn-outline {
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(129, 140, 248, 1);
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: rgba(107, 114, 128, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(107, 114, 128, 0.3);
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(129, 140, 248, 0.4);
-  color: rgba(255, 255, 255, 1);
-  box-shadow: 0 8px 32px rgba(129, 140, 248, 0.25);
-  transform: translateY(-3px);
+  background: rgba(107, 114, 128, 0.3);
+  border-color: rgba(107, 114, 128, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(124, 58, 237, 0.95) 100%);
   color: white;
-  border: 1px solid rgba(139, 92, 246, 0.5);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.6);
-  transform: translateY(-3px);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-success {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.9) 0%, rgba(5, 150, 105, 0.95) 100%);
   color: white;
-  border: 1px solid rgba(16, 185, 129, 0.5);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .btn-success:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(16, 185, 129, 1) 0%, rgba(5, 150, 105, 1) 100%);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 12px 40px rgba(16, 185, 129, 0.6);
-  transform: translateY(-3px);
+  border-color: rgba(16, 185, 129, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-secondary {
-  background: linear-gradient(135deg, rgba(107, 114, 128, 0.6) 0%, rgba(75, 85, 99, 0.7) 100%);
+  background: rgba(107, 114, 128, 0.2);
   color: white;
-  border: 1px solid rgba(107, 114, 128, 0.5);
-  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.2);
+  border: 1px solid rgba(107, 114, 128, 0.3);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(107, 114, 128, 0.8) 0%, rgba(75, 85, 99, 0.9) 100%);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 12px 40px rgba(107, 114, 128, 0.6);
-  transform: translateY(-3px);
+  background: rgba(107, 114, 128, 0.3);
+  border-color: rgba(107, 114, 128, 0.5);
+  transform: translateY(-2px);
 }
 
 /* Responsive Design */
@@ -741,11 +724,11 @@ function saveChanges() {
   }
   
   .modal-body {
-    padding: 20px;
+    padding: 1.25rem;
   }
   
   .patient-info-section {
-    padding: 20px;
+    padding: 1.25rem;
   }
 }
 
@@ -758,46 +741,46 @@ function saveChanges() {
   }
   
   .modal-header {
-    padding: 20px;
+    padding: 1.25rem;
   }
   
   .modal-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
   
   .modal-actions {
-    gap: 8px;
+    gap: 0.5rem;
   }
   
   .print-btn {
     font-size: 0.8rem;
-    padding: 6px 12px;
+    padding: 0.375rem 0.75rem;
   }
   
   .modal-body {
-    padding: 16px;
+    padding: 1rem;
   }
   
   .patient-info-section {
-    padding: 16px;
+    padding: 1rem;
   }
   
   .info-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 1rem;
   }
   
   .section-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 0.75rem;
   }
 }
 
 @media (max-width: 480px) {
   .modal-header {
-    padding: 12px;
-    gap: 8px;
+    padding: 0.75rem;
+    gap: 0.5rem;
   }
   
   .modal-header h2 {
@@ -807,12 +790,12 @@ function saveChanges() {
   
   .modal-actions {
     flex-direction: row;
-    gap: 6px;
+    gap: 0.375rem;
     flex-shrink: 0;
   }
   
   .modal-actions .btn {
-    padding: 8px 10px;
+    padding: 0.5rem 0.625rem;
     font-size: 1.2rem;
     min-width: auto;
   }
@@ -823,17 +806,17 @@ function saveChanges() {
   
   .close-btn {
     font-size: 1.5rem;
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
   }
   
   .modal-body {
-    padding: 12px;
+    padding: 0.75rem;
   }
   
   .patient-info-section {
-    padding: 16px;
-    margin-bottom: 24px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
   }
   
   .info-item label {
@@ -849,7 +832,7 @@ function saveChanges() {
 @media (hover: none) and (pointer: coarse) {
   .patient-info-section:hover {
     transform: none;
-    box-shadow: none;
+    border-color: rgba(139, 92, 246, 0.15);
   }
   
   .btn:hover {
@@ -857,7 +840,7 @@ function saveChanges() {
   }
   
   .close-btn:hover {
-    background: var(--bg-hover);
+    transform: none;
   }
 }
 </style>

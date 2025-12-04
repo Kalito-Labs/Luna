@@ -426,31 +426,30 @@ watch(() => props.show, (newShow) => {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 24px;
+  padding: 1.5rem;
 }
 
 /* Modal Shell */
 .modal {
-  background: rgba(33, 34, 36, 0.938);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
   border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 24px;
-  width: 1000px;
+  border-radius: 1.25rem;
+  width: 62.5rem;
   max-width: 90vw;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(30px);
 }
 
 .modal.modal-wide {
-  width: 1200px;
+  width: 75rem;
 }
 
 /* Header */
@@ -458,19 +457,16 @@ watch(() => props.show, (newShow) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
+  padding: 1.5rem;
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(20px);
 }
 
 .modal-header h2 {
   margin: 0;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 1.75rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.5rem;
   font-weight: 600;
 }
 
@@ -478,7 +474,7 @@ watch(() => props.show, (newShow) => {
 .close-button {
   background: none;
   border: none;
-  font-size: 2rem;
+  font-size: 1.75rem;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.6);
   padding: 0;
@@ -487,7 +483,7 @@ watch(() => props.show, (newShow) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: 0.5rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -504,8 +500,8 @@ watch(() => props.show, (newShow) => {
 /* Tabs Navigation */
 .tabs-nav {
   display: flex;
-  gap: 12px;
-  padding: 20px 24px;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
   background: rgba(255, 255, 255, 0.08);
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
 }
@@ -513,11 +509,11 @@ watch(() => props.show, (newShow) => {
 .tab-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 16px;
+  border-radius: 0.75rem;
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.875rem;
   font-weight: 600;
@@ -545,29 +541,30 @@ watch(() => props.show, (newShow) => {
 
 /* Datasets Tab */
 .datasets-tab {
-  padding: 24px;
-  min-height: 400px;
+  padding: 1.5rem;
+  min-height: 25rem;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 1.5rem;
 }
 
 .datasets-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 1.25rem 1.5rem;
   border-top: 1px solid rgba(139, 92, 246, 0.15);
   margin-top: auto;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(20px);
 }
 
 .datasets-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 
 .datasets-info ion-icon {
@@ -577,7 +574,7 @@ watch(() => props.show, (newShow) => {
 
 /* Modal Content */
 .modal-content {
-  padding: 24px;
+  padding: 1.5rem;
   overflow-y: auto;
   flex: 1;
   background: rgba(255, 255, 255, 0.08);
@@ -585,30 +582,29 @@ watch(() => props.show, (newShow) => {
 
 /* Scrollbar */
 .modal-content::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 .modal-content::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
 }
 .modal-content::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.3);
-  border-radius: 4px;
+  background: rgba(139, 92, 246, 0.4);
+  border-radius: 3px;
 }
 .modal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.5);
+  background: rgba(139, 92, 246, 0.6);
 }
 
 /* Form Sections */
 .form-section {
-  margin-bottom: 32px;
-  padding: 24px;
-  background: rgba(255, 255, 255, 0.12);
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(139, 92, 246, 0.15);
-  border-radius: 20px;
+  border-radius: 1rem;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .form-section::before {
@@ -632,19 +628,18 @@ watch(() => props.show, (newShow) => {
 }
 
 .form-section h3 {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0 0 20px 0;
-  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 1.25rem 0;
+  font-size: 1.125rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .section-description {
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0 0 20px 0;
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 1.25rem 0;
+  font-size: 0.875rem;
   line-height: 1.6;
 }
 
@@ -652,19 +647,19 @@ watch(() => props.show, (newShow) => {
 .form-row {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 16px;
+  gap: 1rem;
 }
 
 /* Form Groups */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
-  color: white;
-  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -675,31 +670,30 @@ watch(() => props.show, (newShow) => {
 .form-select,
 .form-textarea {
   width: 100%;
-  padding: 12px;
+  padding: 0.75rem;
   border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 12px;
-  font-size: 0.95rem;
-  background: rgba(255, 255, 255, 0.12);
-  color: white;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  background: rgba(30, 41, 59, 0.6);
+  color: rgba(255, 255, 255, 0.95);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
 }
 
 .form-select {
-  height: 44px;
+  height: 2.75rem;
 }
 
 .form-input {
-  height: 44px;
+  height: 2.75rem;
 }
 
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.5);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.18);
 }
 
 .form-input:hover,
@@ -724,15 +718,15 @@ watch(() => props.show, (newShow) => {
 /* Textarea */
 .form-textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 5rem;
   line-height: 1.5;
 }
 
 .prompt-textarea {
   font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   line-height: 1.6;
-  min-height: 200px;
+  min-height: 12.5rem;
 }
 
 ::selection {
@@ -744,26 +738,26 @@ watch(() => props.show, (newShow) => {
 .character-count {
   text-align: right;
   color: rgba(255, 255, 255, 0.5);
-  font-size: 0.85rem;
-  margin-top: 8px;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
 }
 
 /* Settings Group */
 .setting-group {
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
 }
 
 .setting-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 0.75rem;
 }
 
 .setting-header label {
-  color: white;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -772,7 +766,7 @@ watch(() => props.show, (newShow) => {
 .setting-value {
   color: rgba(139, 92, 246, 1);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 
 /* Glass Slider */
@@ -783,7 +777,7 @@ watch(() => props.show, (newShow) => {
 
 .slider {
   width: 100%;
-  height: 32px;
+  height: 2rem;
   appearance: none;
   background: transparent;
   cursor: pointer;
@@ -793,14 +787,14 @@ watch(() => props.show, (newShow) => {
 
 /* Track */
 .slider::-webkit-slider-runnable-track {
-  height: 8px;
+  height: 0.5rem;
   background: rgba(30, 41, 59, 0.8);
   border-radius: 999px;
   border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .slider::-moz-range-track {
-  height: 8px;
+  height: 0.5rem;
   background: rgba(30, 41, 59, 0.8);
   border-radius: 999px;
   border: 1px solid rgba(139, 92, 246, 0.2);
@@ -809,25 +803,25 @@ watch(() => props.show, (newShow) => {
 /* Thumb */
 .slider::-webkit-slider-thumb {
   appearance: none;
-  width: 20px;
-  height: 20px;
-  margin-top: -6px;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: -0.375rem;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
   cursor: pointer;
   border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0.25rem 0.75rem rgba(139, 92, 246, 0.5);
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
   cursor: pointer;
   border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0.25rem 0.75rem rgba(139, 92, 246, 0.5);
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -842,7 +836,7 @@ watch(() => props.show, (newShow) => {
   top: 50%;
   left: 0;
   right: 0;
-  height: 8px;
+  height: 0.5rem;
   background: rgba(30, 41, 59, 0.8);
   border-radius: 999px;
   transform: translateY(-50%);
@@ -866,27 +860,26 @@ watch(() => props.show, (newShow) => {
 
 /* Stop Sequences */
 .stop-sequences {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .stop-sequence-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.75rem;
+  margin-top: 1rem;
 }
 
 .stop-sequence-tag {
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.8rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   border: 1px solid rgba(139, 92, 246, 0.5);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
 .remove-tag {
@@ -914,8 +907,8 @@ watch(() => props.show, (newShow) => {
 
 .template-card {
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 12px;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 1rem;
   padding: 1rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -923,16 +916,15 @@ watch(() => props.show, (newShow) => {
 }
 
 .template-card:hover {
-  border-color: rgba(139, 92, 246, 0.5);
+  border-color: rgba(139, 92, 246, 0.3);
   background: rgba(139, 92, 246, 0.1);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
 }
 
 .template-card.selected {
-  border-color: rgba(139, 92, 246, 0.8);
+  border-color: rgba(139, 92, 246, 0.5);
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.15) 100%);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
 }
 
 .template-icon {
@@ -955,17 +947,18 @@ watch(() => props.show, (newShow) => {
 /* Form Actions */
 .form-actions {
   display: flex;
-  gap: 12px;
+  gap: 0.75rem;
   justify-content: flex-end;
-  padding: 20px 24px;
+  padding: 1.25rem 1.5rem;
   border-top: 1px solid rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(20px);
 }
 
 .primary-button,
 .secondary-button {
-  padding: 10px 18px;
-  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -980,17 +973,15 @@ watch(() => props.show, (newShow) => {
 }
 
 .primary-button {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(124, 58, 237, 0.95) 100%);
   color: white;
-  border: 1px solid rgba(139, 92, 246, 0.5);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 .primary-button:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.6);
-  transform: translateY(-3px);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
 }
 
 .primary-button:disabled {
@@ -1000,17 +991,15 @@ watch(() => props.show, (newShow) => {
 }
 
 .secondary-button {
-  background: linear-gradient(135deg, rgba(107, 114, 128, 0.6) 0%, rgba(75, 85, 99, 0.7) 100%);
-  color: white;
-  border: 1px solid rgba(107, 114, 128, 0.5);
-  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.2);
+  background: rgba(107, 114, 128, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(107, 114, 128, 0.3);
 }
 
 .secondary-button:hover {
-  background: linear-gradient(135deg, rgba(107, 114, 128, 0.8) 0%, rgba(75, 85, 99, 0.9) 100%);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 12px 40px rgba(107, 114, 128, 0.6);
-  transform: translateY(-3px);
+  background: rgba(107, 114, 128, 0.3);
+  border-color: rgba(107, 114, 128, 0.5);
+  transform: translateY(-2px);
 }
 
 /* Responsive Design */
@@ -1020,11 +1009,11 @@ watch(() => props.show, (newShow) => {
   }
   
   .modal-content {
-    padding: 20px;
+    padding: 1.25rem;
   }
   
   .form-section {
-    padding: 20px;
+    padding: 1.25rem;
   }
   
   .template-grid {
@@ -1044,23 +1033,23 @@ watch(() => props.show, (newShow) => {
   }
   
   .modal-header {
-    padding: 20px;
+    padding: 1.25rem;
   }
   
   .modal-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
   
   .modal-content {
-    padding: 16px;
+    padding: 1rem;
   }
   
   .form-section {
-    padding: 16px;
+    padding: 1rem;
   }
   
   .tabs-nav {
-    padding: 16px 20px;
+    padding: 1rem 1.25rem;
   }
   
   .template-grid {
@@ -1073,35 +1062,35 @@ watch(() => props.show, (newShow) => {
 
 @media (max-width: 480px) {
   .modal-header {
-    padding: 12px;
+    padding: 1rem;
   }
   
   .modal-header h2 {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
   
   .close-button {
     font-size: 1.5rem;
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
   }
   
   .modal-content {
-    padding: 12px;
+    padding: 0.75rem;
   }
   
   .form-section {
-    padding: 16px;
-    margin-bottom: 24px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
   }
   
   .tabs-nav {
-    padding: 12px 16px;
-    gap: 8px;
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
   }
   
   .tab-button {
-    padding: 8px 12px;
+    padding: 0.5rem 0.75rem;
     font-size: 0.8rem;
   }
 }
