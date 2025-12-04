@@ -20,7 +20,7 @@
 
         <button class="menu-item" @click="goToKalitoHub">
           <span class="menu-icon">🏥</span>
-          Kalito Hub
+          Profile
         </button>
 
         <button class="menu-item" @click="goToJournal">

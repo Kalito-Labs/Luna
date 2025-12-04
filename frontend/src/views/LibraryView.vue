@@ -1,140 +1,101 @@
 <template>
   <div class="library-view">
-    <!-- Hamburger Menu -->
-    <div class="hamburger-wrapper">
-      <HamburgerMenu />
-    </div>
-
-    <!-- Header -->
-    <div class="library-header">
+    <!-- Compact Header -->
+    <header class="library-header">
       <div class="header-content">
+        <HamburgerMenu />
         <div class="header-text">
           <h1>📚 The Library</h1>
-          <p>Upload and manage your documents, worksheets, and reference materials</p>
-        </div>
-        <button class="btn-upload-primary" @click="showUploadModal = true">
-          <ion-icon name="cloud-upload-outline"></ion-icon>
-          Upload Document
-        </button>
-      </div>
-
-      <!-- Stats Overview -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <ion-icon name="documents-outline" class="stat-icon"></ion-icon>
-          <div class="stat-content">
-            <span class="stat-value">{{ datasets.length }}</span>
-            <span class="stat-label">Total Documents</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <ion-icon name="filing-outline" class="stat-icon"></ion-icon>
-          <div class="stat-content">
-            <span class="stat-value">{{ totalChunks }}</span>
-            <span class="stat-label">Total Chunks</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <ion-icon name="save-outline" class="stat-icon"></ion-icon>
-          <div class="stat-content">
-            <span class="stat-value">{{ formatTotalSize(totalSize) }}</span>
-            <span class="stat-label">Storage Used</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <ion-icon name="link-outline" class="stat-icon"></ion-icon>
-          <div class="stat-content">
-            <span class="stat-value">{{ linkedCount }}</span>
-            <span class="stat-label">Linked to Personas</span>
-          </div>
+          <p>Upload and manage your RAG knowledge base</p>
         </div>
       </div>
-    </div>
-
-    <!-- Search & Filter Bar -->
-    <div class="toolbar">
-      <div class="search-box">
-        <ion-icon name="search-outline"></ion-icon>
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search documents..."
-          class="search-input"
-        />
-      </div>
-
-      <div class="filters">
-        <select v-model="filterCategory" class="filter-select">
-          <option value="">All Categories</option>
-          <option value="cbt">CBT</option>
-          <option value="dbt">DBT</option>
-          <option value="mindfulness">Mindfulness</option>
-          <option value="trauma">Trauma Care</option>
-          <option value="anxiety">Anxiety</option>
-          <option value="depression">Depression</option>
-          <option value="crisis">Crisis</option>
-        </select>
-
-        <select v-model="filterType" class="filter-select">
-          <option value="">All Types</option>
-          <option value="pdf">PDF</option>
-          <option value="docx">DOCX</option>
-          <option value="txt">TXT</option>
-          <option value="md">Markdown</option>
-        </select>
-
-        <select v-model="sortBy" class="filter-select">
-          <option value="newest">Newest First</option>
-          <option value="oldest">Oldest First</option>
-          <option value="name">Name A-Z</option>
-          <option value="size">Size</option>
-        </select>
-      </div>
-
-      <div class="view-toggle">
-        <button
-          class="toggle-btn"
-          :class="{ active: viewMode === 'grid' }"
-          @click="viewMode = 'grid'"
-          title="Grid View"
-        >
-          <ion-icon name="grid-outline"></ion-icon>
-        </button>
-        <button
-          class="toggle-btn"
-          :class="{ active: viewMode === 'list' }"
-          @click="viewMode = 'list'"
-          title="List View"
-        >
-          <ion-icon name="list-outline"></ion-icon>
-        </button>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    <div v-if="loading" class="loading-state">
-      <ion-icon name="hourglass-outline" class="spinning"></ion-icon>
-      <p>Loading library...</p>
-    </div>
-
-    <!-- Empty State -->
-    <div v-else-if="filteredDatasets.length === 0 && !loading" class="empty-state">
-      <ion-icon name="folder-open-outline" class="empty-icon"></ion-icon>
-      <h2>{{ searchQuery || filterCategory || filterType ? 'No documents found' : 'Your library is empty' }}</h2>
-      <p v-if="searchQuery || filterCategory || filterType">
-        Try adjusting your search or filters
-      </p>
-      <p v-else>
-        Upload your first therapeutic document to get started. PDFs, Word docs, text files - anything that can help your personas provide better support.
-      </p>
-      <button v-if="!searchQuery && !filterCategory && !filterType" class="btn-primary-large" @click="showUploadModal = true">
+      <button class="btn-upload-primary" @click="showUploadModal = true">
         <ion-icon name="cloud-upload-outline"></ion-icon>
-        Upload Your First Document
+        <span>Upload Document</span>
       </button>
-    </div>
+    </header>
 
-    <!-- Documents Grid/List -->
-    <div v-else class="documents-container" :class="viewMode">
+    <!-- Two-Column Content Container -->
+    <div class="content-wrapper">
+      <!-- Main Content Column -->
+      <div class="main-content">
+        <!-- Search & Filter Bar -->
+        <div class="toolbar">
+          <div class="search-box">
+            <ion-icon name="search-outline"></ion-icon>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search documents..."
+              class="search-input"
+            />
+          </div>
+
+          <div class="filters">
+            <select v-model="filterCategory" class="filter-select">
+              <option value="">All Categories</option>
+              <option value="cbt">CBT</option>
+              <option value="dbt">DBT</option>
+              <option value="mindfulness">Mindfulness</option>
+              <option value="trauma">Trauma Care</option>
+              <option value="anxiety">Anxiety</option>
+              <option value="depression">Depression</option>
+              <option value="crisis">Crisis</option>
+            </select>
+
+            <select v-model="filterType" class="filter-select">
+              <option value="">All Types</option>
+              <option value="pdf">PDF</option>
+              <option value="docx">DOCX</option>
+              <option value="txt">TXT</option>
+              <option value="md">Markdown</option>
+            </select>
+
+            <select v-model="sortBy" class="filter-select">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="name">Name A-Z</option>
+              <option value="size">Size</option>
+            </select>
+          </div>
+
+          <div class="view-toggle">
+            <button
+              class="toggle-btn"
+              :class="{ active: viewMode === 'grid' }"
+              @click="viewMode = 'grid'"
+              title="Grid View"
+            >
+              <ion-icon name="grid-outline"></ion-icon>
+            </button>
+            <button
+              class="toggle-btn"
+              :class="{ active: viewMode === 'list' }"
+              @click="viewMode = 'list'"
+              title="List View"
+            >
+              <ion-icon name="list-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Documents Grid/List -->
+        <div v-if="loading" class="loading-state">
+          <ion-icon name="hourglass-outline" class="spinning"></ion-icon>
+          <p>Loading your library...</p>
+        </div>
+
+        <div v-else-if="filteredDatasets.length === 0" class="empty-state">
+          <div class="empty-icon">📚</div>
+          <h2>No documents yet</h2>
+          <p>Upload your first document to start building your knowledge base</p>
+          <button class="btn-primary-large" @click="showUploadModal = true">
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+            Upload Document
+          </button>
+        </div>
+
+        <div v-else class="documents-container" :class="viewMode">
       <div
         v-for="dataset in filteredDatasets"
         :key="dataset.id"
@@ -156,7 +117,14 @@
 
         <!-- Document Info -->
         <div class="document-info">
-          <h3 class="document-name">{{ dataset.name }}</h3>
+          <div class="document-header-row">
+            <h3 class="document-name">{{ dataset.name }}</h3>
+            <div class="processing-mode-badge" :class="dataset.processing_mode">
+              <ion-icon :name="dataset.processing_mode === 'local' ? 'shield-checkmark-outline' : 'cloud-outline'"></ion-icon>
+              <span>{{ dataset.processing_mode === 'local' ? 'Private' : 'Cloud' }}</span>
+            </div>
+          </div>
+          
           <p v-if="dataset.description" class="document-description">
             {{ dataset.description }}
           </p>
@@ -166,7 +134,7 @@
               <ion-icon name="document-text-outline"></ion-icon>
               {{ dataset.file_name }}
             </span>
-            <span class="meta-item">
+            <span class="meta-item with-tooltip" :title="`${dataset.chunk_count} text segments for AI context`">
               <ion-icon name="filing-outline"></ion-icon>
               {{ dataset.chunk_count }} chunks
             </span>
@@ -180,35 +148,93 @@
             </span>
           </div>
 
-          <div v-if="dataset.therapeutic_category" class="document-tags">
-            <span class="tag" :class="dataset.therapeutic_category">
+          <div class="document-badges">
+            <span v-if="dataset.therapeutic_category" class="tag category" :class="dataset.therapeutic_category">
               {{ dataset.therapeutic_category.toUpperCase() }}
+            </span>
+            <span v-if="dataset.processing_status === 'completed'" class="tag success">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              Ready
             </span>
           </div>
 
           <!-- Linked Personas Info -->
-          <div v-if="getLinkedPersonas(dataset.id).length > 0" class="linked-personas">
-            <ion-icon name="people-outline"></ion-icon>
-            <span>Linked to {{ getLinkedPersonas(dataset.id).length }} persona(s)</span>
+          <div v-if="getLinkedPersonas(dataset.id).length > 0" class="linked-personas-list">
+            <div class="linked-label">
+              <ion-icon name="people-outline"></ion-icon>
+              <span>Linked to:</span>
+            </div>
+            <div class="persona-badges">
+              <span 
+                v-for="link in getLinkedPersonas(dataset.id).slice(0, 3)" 
+                :key="link.persona_id"
+                class="persona-badge"
+                :class="{ disabled: !link.enabled }"
+                :title="link.enabled ? `Active - ${link.persona_name}` : `Disabled - ${link.persona_name}`"
+              >
+                {{ link.persona_name }}
+              </span>
+              <span v-if="getLinkedPersonas(dataset.id).length > 3" class="persona-badge more">
+                +{{ getLinkedPersonas(dataset.id).length - 3 }}
+              </span>
+            </div>
+          </div>
+          <div v-else class="no-personas-hint">
+            <ion-icon name="link-outline"></ion-icon>
+            <span>Not linked to any personas</span>
           </div>
         </div>
 
         <!-- Actions -->
         <div class="document-actions">
-          <button class="action-btn preview" @click="previewDataset(dataset.id)" title="Preview">
+          <button class="action-btn preview" @click="previewDataset(dataset.id)" title="View chunks and content">
             <ion-icon name="eye-outline"></ion-icon>
             <span>Preview</span>
           </button>
-          <button class="action-btn link" @click="manageLinks(dataset)" title="Link to Personas">
+          <button class="action-btn link" @click="openLinkManager(dataset)" title="Link to personas and configure access">
             <ion-icon name="link-outline"></ion-icon>
-            <span>Link</span>
+            <span>{{ getLinkedPersonas(dataset.id).length > 0 ? 'Manage' : 'Link' }}</span>
           </button>
-          <button class="action-btn delete" @click="confirmDelete(dataset)" title="Delete">
+          <button class="action-btn delete" @click="confirmDelete(dataset)" title="Permanently delete document">
             <ion-icon name="trash-outline"></ion-icon>
             <span>Delete</span>
           </button>
         </div>
       </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar: Stats Overview -->
+      <aside class="stats-grid">
+        <div class="stat-card" title="Total number of documents in your knowledge base">
+          <ion-icon name="documents-outline" class="stat-icon"></ion-icon>
+          <div class="stat-content">
+            <span class="stat-label">Total Documents</span>
+            <span class="stat-value">{{ datasets.length }}</span>
+          </div>
+        </div>
+        <div class="stat-card" title="Text segments used for AI context retrieval. More chunks = more detailed information.">
+          <ion-icon name="filing-outline" class="stat-icon"></ion-icon>
+          <div class="stat-content">
+            <span class="stat-label">Total Chunks</span>
+            <span class="stat-value">{{ totalChunks }}</span>
+          </div>
+        </div>
+        <div class="stat-card" title="Total storage space used by uploaded documents">
+          <ion-icon name="save-outline" class="stat-icon"></ion-icon>
+          <div class="stat-content">
+            <span class="stat-label">Storage Used</span>
+            <span class="stat-value">{{ formatTotalSize(totalSize) }}</span>
+          </div>
+        </div>
+        <div class="stat-card" title="Documents connected to AI personas for enhanced conversations">
+          <ion-icon name="link-outline" class="stat-icon"></ion-icon>
+          <div class="stat-content">
+            <span class="stat-label">Linked to Personas</span>
+            <span class="stat-value">{{ linkedCount }}</span>
+          </div>
+        </div>
+      </aside>
     </div>
 
     <!-- Upload Modal -->
@@ -223,6 +249,16 @@
       v-if="showPreviewModal && selectedDatasetId"
       :dataset-id="selectedDatasetId"
       @close="showPreviewModal = false"
+    />
+
+    <!-- Persona Link Manager Modal -->
+    <PersonaLinkManager
+      v-if="showLinkModal && selectedDataset"
+      :dataset="selectedDataset"
+      :personas="allPersonas"
+      :existing-links="getLinkedPersonas(selectedDataset.id)"
+      @close="showLinkModal = false"
+      @updated="handleLinksUpdated"
     />
 
     <!-- Confirm Dialog -->
@@ -243,12 +279,14 @@ import { ref, computed, onMounted, reactive } from 'vue'
 import HamburgerMenu from '../components/HamburgerMenu.vue'
 import DocumentUpload from '../components/datasets/DocumentUpload.vue'
 import DatasetPreview from '../components/datasets/DatasetPreview.vue'
+import PersonaLinkManager from '../components/datasets/PersonaLinkManager.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 
 // State
 const loading = ref(false)
 const datasets = ref<any[]>([])
 const personaLinks = ref<any[]>([])
+const allPersonas = ref<any[]>([])
 const searchQuery = ref('')
 const filterCategory = ref('')
 const filterType = ref('')
@@ -256,7 +294,9 @@ const sortBy = ref('newest')
 const viewMode = ref<'grid' | 'list'>('grid')
 const showUploadModal = ref(false)
 const showPreviewModal = ref(false)
+const showLinkModal = ref(false)
 const selectedDatasetId = ref<string | null>(null)
+const selectedDataset = ref<any | null>(null)
 const confirmDialog = reactive({
   show: false,
   title: '',
@@ -329,12 +369,25 @@ async function loadLibrary() {
     const result = await response.json()
     datasets.value = result.data
     
-    // Load all persona links to show which datasets are linked
-    await loadPersonaLinks()
+    // Load all personas and their dataset links
+    await Promise.all([
+      loadPersonaLinks(),
+      loadAllPersonas()
+    ])
   } catch (error) {
     console.error('Failed to load library:', error)
   } finally {
     loading.value = false
+  }
+}
+
+async function loadAllPersonas() {
+  try {
+    const response = await fetch('http://localhost:3000/api/personas')
+    const result = await response.json()
+    allPersonas.value = result.data
+  } catch (error) {
+    console.error('Failed to load personas:', error)
   }
 }
 
@@ -380,9 +433,14 @@ function previewDataset(datasetId: string) {
   showPreviewModal.value = true
 }
 
-function manageLinks(dataset: any) {
-  // Navigate to personas page - user can link documents from Persona Edit modal
-  alert(`To link "${dataset.name}" to a persona:\n\n1. Go to Personas page\n2. Edit a persona\n3. Go to Datasets tab\n4. Toggle on this document\n\nOr use the Datasets tab when editing any persona!`)
+function openLinkManager(dataset: any) {
+  selectedDataset.value = dataset
+  showLinkModal.value = true
+}
+
+function handleLinksUpdated() {
+  showLinkModal.value = false
+  loadPersonaLinks()
 }
 
 function confirmDelete(dataset: any) {
@@ -455,153 +513,182 @@ onMounted(() => {
 
 .library-view {
   min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(135deg, 
     rgba(15, 23, 42, 0.98) 0%, 
     rgba(30, 41, 59, 0.95) 50%,
     rgba(67, 56, 202, 0.1) 100%);
-  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
   color: rgba(255, 255, 255, 0.92);
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
-/* Hamburger Menu */
-.hamburger-wrapper {
-  position: fixed;
-  top: 1.5rem;
-  left: 1.5rem;
-  z-index: 1000;
-}
+/* ================================================================ */
+/* COMPACT HEADER - Matching JournalView Pattern                   */
+/* ================================================================ */
 
-.hamburger-wrapper :deep(.hamburger-menu) {
-  flex-shrink: 0;
-}
-
-/* Header */
 .library-header {
-  margin-bottom: 0.5rem;
-  padding: 1.25rem 1.5rem 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 100;
 }
 
 .header-content {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-  gap: 2rem;
-  animation: fadeInUp 0.6s ease-out;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
 }
 
 .header-text h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.5rem;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1;
 }
 
 .header-text p {
-  font-size: 1.125rem;
-  color: rgba(196, 181, 253, 0.8);
-  margin: 0;
-  line-height: 1.5;
+  display: block;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.25rem;
+  font-weight: 400;
 }
 
 .btn-upload-primary {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, 
+    rgba(139, 92, 246, 0.9) 0%, 
+    rgba(124, 58, 237, 0.95) 100%);
   color: white;
-  border: 1px solid rgba(139, 92, 246, 0.5);
-  border-radius: 12px;
-  font-size: 1.125rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
   flex-shrink: 0;
 }
 
 .btn-upload-primary:hover {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
 }
 
 .btn-upload-primary ion-icon {
-  font-size: 1.5rem;
+  font-size: 1.125rem;
 }
 
-/* Stats Grid */
+/* ================================================================ */
+/* TWO-COLUMN LAYOUT - Content Container                            */
+/* ================================================================ */
+
+.content-wrapper {
+  display: flex;
+  gap: 1.5rem;
+  flex: 1;
+  padding: 1.5rem;
+  overflow: hidden;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Stats Grid - Sidebar Style */
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  width: 320px;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
-  padding: 0 1.5rem;
-  margin-bottom: 0.5rem;
+  flex-shrink: 0;
 }
 
 .stat-card {
-  flex: 1;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.08);
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 16px;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 1rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  cursor: help;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .stat-card:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(139, 92, 246, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.3);
+  transform: translateX(4px);
 }
 
 .stat-icon {
-  font-size: 1.5rem;
-  filter: grayscale(20%);
+  font-size: 1.125rem;
+  color: rgba(139, 92, 246, 0.7);
+  margin-right: 0.75rem;
 }
 
 .stat-content {
   display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-}
-
-.stat-number {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: rgba(196, 181, 253, 0.95);
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
 }
 
 .stat-label {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 500;
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(196, 181, 253, 0.95);
+}
+
+/* ================================================================ */
+/* MAIN CONTENT COLUMN                                              */
+/* ================================================================ */
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  position: relative;
+  z-index: auto;
 }
 
 /* Toolbar */
 .toolbar {
   display: flex;
   gap: 1rem;
-  margin-bottom: 0;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.02);
   flex-wrap: wrap;
   align-items: center;
-  padding: 0 1.5rem;
+  flex-shrink: 0;
 }
 
 .search-box {
@@ -721,17 +808,13 @@ onMounted(() => {
   justify-content: center;
   padding: 3rem 1.5rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.7);
   flex: 1;
-  margin: 0 1.5rem;
 }
 
-.loading-state ion-icon,
-.empty-icon {
-  font-size: 4rem;
-  opacity: 0.5;
+.loading-state ion-icon {
+  font-size: 3rem;
+  color: rgba(139, 92, 246, 0.8);
   margin-bottom: 1.5rem;
-  color: rgba(139, 92, 246, 1);
 }
 
 .spinning {
@@ -743,52 +826,77 @@ onMounted(() => {
   to { transform: rotate(360deg); }
 }
 
+.loading-state p {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
 .empty-state h2 {
-  font-size: 1.75rem;
-  margin-bottom: 0.75rem;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .empty-state p {
-  font-size: 1.125rem;
-  color: rgba(196, 181, 253, 0.8);
-  max-width: 600px;
-  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 1.5rem 0;
   line-height: 1.6;
 }
 
 .btn-primary-large {
+  padding: 0.75rem 1.5rem;
+  background: rgba(139, 92, 246, 0.2);
+  color: rgba(196, 181, 253, 0.95);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
-  color: white;
-  border: 1px solid rgba(139, 92, 246, 0.5);
-  border-radius: 12px;
-  font-size: 1.125rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  gap: 0.5rem;
 }
 
 .btn-primary-large:hover {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
+  background: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.6);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
+  color: white;
 }
 
 /* Documents Container */
 .documents-container {
   display: grid;
-  gap: 1.5rem;
-  padding: 0 1.5rem 1.5rem 1.5rem;
+  gap: 1rem;
+  padding: 1rem;
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
+}
+
+.documents-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.documents-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.documents-container::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.4);
+  border-radius: 10px;
+}
+
+.documents-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
 }
 
 .documents-container.grid {
@@ -917,6 +1025,13 @@ onMounted(() => {
   overflow: hidden;
 }
 
+.document-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
 .document-name {
   font-size: 1rem;
   font-weight: 600;
@@ -926,6 +1041,34 @@ onMounted(() => {
   background-clip: text;
   margin: 0;
   line-height: 1.3;
+  flex: 1;
+}
+
+.processing-mode-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.processing-mode-badge.local {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.processing-mode-badge.cloud {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.processing-mode-badge ion-icon {
+  font-size: 0.875rem;
 }
 
 .document-description {
@@ -954,15 +1097,21 @@ onMounted(() => {
   gap: 0.375rem;
 }
 
+.meta-item.with-tooltip {
+  cursor: help;
+  position: relative;
+}
+
 .meta-item ion-icon {
   font-size: 1rem;
   color: rgba(139, 92, 246, 0.8);
 }
 
-.document-tags {
+.document-badges {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .tag {
@@ -973,6 +1122,19 @@ onMounted(() => {
   background: rgba(139, 92, 246, 0.2);
   color: rgba(196, 181, 253, 1);
   border: 1px solid rgba(139, 92, 246, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tag.success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.tag.success ion-icon {
+  font-size: 0.875rem;
 }
 
 .tag.cbt { 
@@ -1017,22 +1179,84 @@ onMounted(() => {
   border-color: rgba(239, 68, 68, 0.4);
 }
 
-.linked-personas {
+.linked-personas-list {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: rgba(16, 185, 129, 0.15);
-  color: #6ee7b7;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  width: fit-content;
+  padding: 0.625rem;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 10px;
 }
 
-.linked-personas ion-icon {
-  font-size: 1rem;
+.linked-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: rgba(196, 181, 253, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.linked-label ion-icon {
+  font-size: 0.875rem;
+}
+
+.persona-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.persona-badge {
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(139, 92, 246, 0.2);
+  color: rgba(196, 181, 253, 1);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  transition: all 0.2s ease;
+  cursor: help;
+}
+
+.persona-badge:hover {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.persona-badge.disabled {
+  background: rgba(100, 100, 100, 0.15);
+  color: rgba(150, 150, 150, 0.7);
+  border-color: rgba(100, 100, 100, 0.25);
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.persona-badge.more {
+  background: rgba(196, 181, 253, 0.15);
+  color: rgba(196, 181, 253, 0.9);
+  border-color: rgba(196, 181, 253, 0.3);
+}
+
+.no-personas-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.625rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: rgba(196, 181, 253, 0.6);
+  font-style: italic;
+}
+
+.no-personas-hint ion-icon {
+  font-size: 0.875rem;
+  opacity: 0.6;
 }
 
 .document-actions {
@@ -1124,102 +1348,93 @@ onMounted(() => {
   }
 }
 
-@media (max-width: 768px) {
-  .library-view {
-    padding: 0;
-  }
-  
-  .library-header {
-    padding-top: 5rem;
-  }
-  
-  .hamburger-wrapper {
-    top: 1rem;
-    left: 1rem;
-  }
+/* ================================================================ */
+/* RESPONSIVE DESIGN                                                */
+/* ================================================================ */
 
-  .header-content {
+@media (max-width: 1024px) {
+  .content-wrapper {
     flex-direction: column;
-    gap: 1rem;
   }
+  
+  .stats-grid {
+    width: 100%;
+    order: -1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .documents-container.grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
 
+@media (max-width: 640px) {
+  .library-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+  
+  .header-content {
+    justify-content: space-between;
+  }
+  
   .btn-upload-primary {
     width: 100%;
     justify-content: center;
   }
-
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+  
+  .content-wrapper {
+    padding: 1rem;
+    gap: 1rem;
   }
-
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
   .toolbar {
     flex-direction: column;
-    gap: 0.75rem;
+    align-items: stretch;
   }
-
-  .search-box,
-  .filters,
-  .view-toggle {
-    width: 100%;
+  
+  .search-box {
+    min-width: 100%;
   }
   
   .filters {
+    width: 100%;
     flex-direction: column;
   }
   
   .filter-select {
-    width: 100%;
+    flex: 1;
   }
-
+  
+  .view-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+  
   .documents-container.grid {
     grid-template-columns: 1fr;
   }
-
+  
   .document-card.list {
     flex-direction: column;
   }
-}
-
-@media (max-width: 480px) {
-  .library-header {
-    padding-top: 4.5rem;
-  }
-  
-  .header-text h1 {
-    font-size: 2rem;
-  }
-  
-  .header-text p {
-    font-size: 1rem;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .stat-card {
-    padding: 1rem;
-  }
-  
-  .stat-icon {
-    font-size: 2rem;
-  }
-  
-  .stat-value {
-    font-size: 1.5rem;
-  }
   
   .document-actions {
-    flex-direction: column;
+    flex-direction: row;
+  }
+  
+  .action-btn {
+    font-size: 0.8rem;
   }
   
   .action-btn span {
     display: none;
-  }
-  
-  .action-btn {
-    padding: 0.75rem;
   }
 }
 
@@ -1234,6 +1449,11 @@ onMounted(() => {
   }
   
   .action-btn:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .action-link:hover {
     transform: none;
   }
 }

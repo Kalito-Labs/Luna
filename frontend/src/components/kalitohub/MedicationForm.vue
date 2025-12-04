@@ -186,16 +186,15 @@ async function submitForm() {
 
 <style scoped>
 .medication-form {
-  background: rgba(255, 255, 255, 0.06);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
   border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 24px;
-  max-width: 1000px;
+  border-radius: 1.25rem;
+  max-width: 62.5rem;
   width: 90vw;
   max-height: 90vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(139, 92, 246, 0.2);
   backdrop-filter: blur(30px);
 }
 
@@ -203,26 +202,23 @@ async function submitForm() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
+  padding: 1.5rem;
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(20px);
 }
 
 .modal-header h2 {
   margin: 0;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 1.75rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.5rem;
   font-weight: 600;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 2rem;
+  font-size: 1.75rem;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.6);
   padding: 0;
@@ -231,8 +227,8 @@ async function submitForm() {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
 }
 
 .close-btn:hover {
@@ -242,25 +238,40 @@ async function submitForm() {
 }
 
 .form-container {
-  padding: 24px;
+  padding: 1.5rem;
   overflow-y: auto;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  background: rgba(0, 0, 0, 0.05);
+  gap: 1.5rem;
+}
+
+.form-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.form-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.form-container::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.4);
+  border-radius: 3px;
+}
+
+.form-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
 }
 
 .form-section {
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(30px);
   border: 1px solid rgba(139, 92, 246, 0.15);
-  border-radius: 20px;
-  padding: 24px;
+  border-radius: 1rem;
+  padding: 1.5rem;
   margin-bottom: 0;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 .form-section::before {
@@ -276,31 +287,29 @@ async function submitForm() {
 
 .form-section:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.25);
+  border-color: rgba(139, 92, 246, 0.3);
 }
 
 .form-section h3 {
-  margin: 0 0 20px 0;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(196, 181, 253, 1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin: 0 0 1.25rem 0;
+  color: rgba(255, 255, 255, 0.95);
   border-bottom: 1px solid rgba(139, 92, 246, 0.15);
-  padding-bottom: 12px;
-  font-size: 1.25rem;
+  padding-bottom: 0.75rem;
+  font-size: 1.125rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .form-group:last-child {
@@ -309,21 +318,24 @@ async function submitForm() {
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid rgba(139, 92, 246, 0.15);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 0.75rem;
+  background: rgba(30, 41, 59, 0.6);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.875rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -331,27 +343,29 @@ async function submitForm() {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: rgba(139, 92, 246, 0.4);
+  border-color: rgba(139, 92, 246, 0.5);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-  background: rgba(255, 255, 255, 0.06);
 }
 
 .form-actions {
   display: flex;
-  gap: 16px;
+  gap: 0.75rem;
   justify-content: flex-end;
-  padding-top: 20px;
+  padding: 1.25rem 1.5rem;
   border-top: 1px solid rgba(139, 92, 246, 0.15);
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(20px);
+  margin: 0 -1.5rem -1.5rem -1.5rem;
 }
 
 .btn {
-  padding: 12px 24px;
-  border-radius: 16px;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   border: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   backdrop-filter: blur(20px);
 }
 
@@ -361,32 +375,27 @@ async function submitForm() {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(124, 58, 237, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(124, 58, 237, 0.95) 100%);
   color: white;
-  border: 1px solid rgba(139, 92, 246, 0.5);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(124, 58, 237, 1) 100%);
-  border-color: rgba(139, 92, 246, 0.8);
-  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.5);
-  transform: translateY(-3px);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(129, 140, 248, 1);
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  box-shadow: 0 2px 8px rgba(129, 140, 248, 0.1);
+  background: rgba(107, 114, 128, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(107, 114, 128, 0.3);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(129, 140, 248, 0.4);
-  color: rgba(255, 255, 255, 1);
-  box-shadow: 0 8px 32px rgba(129, 140, 248, 0.3);
-  transform: translateY(-3px);
+  background: rgba(107, 114, 128, 0.3);
+  border-color: rgba(107, 114, 128, 0.5);
+  transform: translateY(-2px);
 }
 
 /* Responsive Design */
@@ -396,11 +405,11 @@ async function submitForm() {
   }
   
   .form-container {
-    padding: 20px;
+    padding: 1.25rem;
   }
   
   .form-section {
-    padding: 20px;
+    padding: 1.25rem;
   }
 }
 
@@ -413,24 +422,24 @@ async function submitForm() {
   }
   
   .modal-header {
-    padding: 20px;
+    padding: 1.25rem;
   }
   
   .modal-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
   
   .form-container {
-    padding: 16px;
+    padding: 1rem;
   }
   
   .form-section {
-    padding: 16px;
+    padding: 1rem;
   }
   
   .form-row {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 1rem;
   }
   
   .form-actions {
@@ -440,23 +449,23 @@ async function submitForm() {
 
 @media (max-width: 480px) {
   .modal-header {
-    padding: 16px;
+    padding: 1rem;
   }
   
   .modal-header h2 {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
   
   .form-container {
-    padding: 12px;
+    padding: 0.75rem;
   }
   
   .form-section {
-    padding: 16px;
+    padding: 1rem;
   }
   
   .form-section h3 {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 }
 
@@ -464,10 +473,14 @@ async function submitForm() {
 @media (hover: none) and (pointer: coarse) {
   .form-section:hover {
     transform: none;
-    box-shadow: none;
+    border-color: rgba(139, 92, 246, 0.15);
   }
   
   .btn:hover {
+    transform: none !important;
+  }
+  
+  .close-btn:hover {
     transform: none !important;
   }
 }
