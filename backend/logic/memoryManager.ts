@@ -226,27 +226,6 @@ export class MemoryManager {
   }
 
   /**
-   * Clean up expired cache entries
-   */
-  private cleanupCache(): void {
-    const now = Date.now()
-
-    // Clean message count cache
-    for (const [key, value] of this.messageCountCache.entries()) {
-      if (now - value.timestamp >= this.CACHE_TTL) {
-        this.messageCountCache.delete(key)
-      }
-    }
-
-    // Clean recent messages cache
-    for (const [key, value] of this.recentMessagesCache.entries()) {
-      if (now - value.timestamp >= this.CACHE_TTL) {
-        this.recentMessagesCache.delete(key)
-      }
-    }
-  }
-
-  /**
    * Score message importance based on content and context
    * Tailored for Luna mental health practice
    */
@@ -513,7 +492,7 @@ EXAMPLE: "User discussed feeling overwhelmed with caregiving responsibilities fo
 DO NOT: Create new content. Only summarize what was already discussed.`
         : `You are a conversation summarizer for Luna mental health practice. Create a concise summary that preserves:
 1. Key mental health topics discussed (mood, anxiety, depression, etc.)
-2. Treatment-related information (medications, therapy, appointments)
+2. Treatment-related information (medications, therapy)
 3. Family and caregiving concerns
 4. Important therapeutic insights or breakthroughs
 5. Current emotional state and coping strategies
@@ -680,8 +659,7 @@ Focus on therapeutic relevance and maintain patient confidentiality. Keep under 
       if (text.includes('dad') || text.includes('father') || text.includes('basilio')) topics.add('father care')
       if (text.includes('family') || text.includes('caregiver') || text.includes('caring for')) topics.add('family caregiving')
       
-      // Health and appointments
-      if (text.includes('appointment') || text.includes('doctor') || text.includes('visit')) topics.add('healthcare appointments')
+      // Health tracking
       if (text.includes('symptom') || text.includes('side effect') || text.includes('reaction')) topics.add('symptom tracking')
       
       // Coping and wellness

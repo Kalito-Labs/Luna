@@ -40,11 +40,6 @@ Object.entries(medsByPatient).forEach(([patient, count]) => {
   console.log(`   - ${patient}: ${count} medications`)
 })
 
-console.log(`\n✅ Appointments: ${fullContext.recentAppointments.length}`)
-fullContext.recentAppointments.forEach(apt => {
-  console.log(`   - ${apt.appointmentDate} (${apt.status})`)
-})
-
 console.log('\n' + '='.repeat(80))
 console.log('GENERATED AI CONTEXT SUMMARY')
 console.log('='.repeat(80))
@@ -64,7 +59,6 @@ if (aurora) {
     console.log(`   - ${med.name} ${med.dosage} ${med.frequency}`)
     if (med.notes) console.log(`     Notes: ${med.notes}`)
   })
-  console.log(`\n✅ Appointments for this patient: ${auroraContext.recentAppointments.length}`)
 } else {
   console.log('❌ Aurora Sanchez not found in database')
 }

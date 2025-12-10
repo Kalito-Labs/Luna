@@ -2,7 +2,7 @@
  * LunaContextService
  * 
  * Provides AI context integration for Luna mental health practice.
- * Enables AI models to reference patient data, medications, appointments, and journal entries.
+ * Enables AI models to reference patient data, medications, and journal entries.
  * 
  * Uses structured services for consistent data validation and error handling.
  * Security: Read-only operations only. AI cannot modify patient data.
@@ -12,7 +12,6 @@
 import { db } from '../db/db'
 import type { LLMAdapter } from './modelRegistry'
 import { StructuredMedicationService } from './structuredMedicationService'
-import { StructuredAppointmentService } from './structuredAppointmentService'
 
 export interface PatientContext {
   id: string
@@ -43,19 +42,6 @@ export interface MedicationContext {
   rxNumber?: string
   sideEffects?: string
   notes?: string
-}
-
-export interface AppointmentContext {
-  id: string
-  appointmentDate: string
-  appointmentTime?: string
-  appointmentType?: string
-  location?: string
-  status: string
-  preparationNotes?: string
-  notes?: string
-  outcomeSummary?: string
-  followUpRequired?: boolean
 }
 
 export interface JournalContext {
@@ -120,7 +106,6 @@ export interface DatasetChunk {
 export type LunaContext = {
   patients: PatientContext[];
   medications: MedicationContext[];
-  recentAppointments: AppointmentContext[];
   journalEntries: JournalContext[];
   therapyRecords: TherapyRecordContext[];
   cbtThoughtRecords: CBTThoughtRecordContext[];
@@ -131,11 +116,9 @@ export type LunaContext = {
 export class LunaContextService {
   private readonly MAX_RECENT_DAYS = 30
   private structuredMedicationService: StructuredMedicationService
-  private structuredAppointmentService: StructuredAppointmentService
   
   constructor() {
     this.structuredMedicationService = new StructuredMedicationService()
-    this.structuredAppointmentService = new StructuredAppointmentService()
   }
 
   /**
@@ -260,37 +243,6 @@ export class LunaContextService {
       })
     } catch (error) {
       console.error('Error fetching medications for context:', error)
-      return []
-    }
-  }
-
-  /**
-   * Get recent appointments (upcoming and recent past)
-   * Uses StructuredAppointmentService for consistency with medications
-   */
-  private getRecentAppointments(patientId?: string): AppointmentContext[] {
-    try {
-      // Use structured appointment service
-      const lunaAppointments = this.structuredAppointmentService.getRecentAppointmentsForContext(
-        patientId, 
-        this.MAX_RECENT_DAYS
-      )
-
-      // Convert LunaAppointment format to AppointmentContext format
-      return lunaAppointments.map(luna => ({
-        id: luna.id,
-        appointmentDate: luna.appointment_date,
-        appointmentTime: luna.appointment_time,
-        appointmentType: luna.appointment_type,
-        location: luna.location,
-        status: luna.status,
-        preparationNotes: luna.preparation_notes,
-        notes: luna.notes,
-        outcomeSummary: luna.outcome_summary,
-        followUpRequired: luna.follow_up_required || false,
-      }))
-    } catch (error) {
-      console.error('Error fetching appointments for context:', error)
       return []
     }
   }
@@ -663,28 +615,6 @@ export class LunaContextService {
         summary += '\n';
       });
     }
-    // Upcoming appointments
-    const upcomingAppointments = context.recentAppointments.filter((apt: AppointmentContext) =>
-      new Date(apt.appointmentDate) >= new Date()
-    );
-    if (upcomingAppointments.length > 0) {
-      summary += `### Upcoming Appointments (${upcomingAppointments.length})\n`;
-      upcomingAppointments.slice(0, 5).forEach((apt: AppointmentContext) => {
-        summary += `- ${apt.appointmentDate}`;
-        if (apt.appointmentTime) summary += ` at ${apt.appointmentTime}`;
-        if (apt.appointmentType) summary += ` (${apt.appointmentType})`;
-        if (apt.location) summary += `\n  Location: ${apt.location}`;
-        summary += '\n';
-      });
-      summary += '\n';
-    } else {
-      // Explicitly state when no appointments exist to prevent AI hallucination
-      summary += `### Upcoming Appointments\n`;
-      summary += `**NO UPCOMING APPOINTMENTS SCHEDULED**\n`;
-      summary += `- There are currently no appointments in the system\n`;
-      summary += `- Do not fabricate or suggest appointment dates\n`;
-      summary += `- If asked about appointments, clearly state that none are scheduled\n\n`;
-    }
 
     // Recent journal entries - provides emotional context and mental health insights
     if (context.journalEntries.length > 0) {
@@ -901,7 +831,6 @@ export class LunaContextService {
   public getLunaContext(adapter: LLMAdapter, patientId?: string, personaId?: string): LunaContext {
     const patients = this.getPatients()
     const medications = this.getMedications(patientId)
-    const recentAppointments = this.getRecentAppointments(patientId)
     const journalEntries = this.getRecentJournalEntries(patientId)
     const therapyRecords = this.getRecentTherapyRecords(patientId)
     const cbtThoughtRecords = this.getRecentCBTThoughtRecords(patientId)
@@ -910,7 +839,6 @@ export class LunaContextService {
     const context: LunaContext = {
       patients,
       medications,
-      recentAppointments,
       journalEntries,
       therapyRecords,
       cbtThoughtRecords,

@@ -430,19 +430,19 @@ if (!columnExists('journal_entries', 'sleep_hours')) {
 }
 
 // ---------------------------------------------------------------------
-// Check Eldercare Tables
+// Verify Core Tables
 // ---------------------------------------------------------------------
 
-// Check if eldercare tables exist (they should already be there)
-const eldercareTablesExist = db.prepare(`
+// Verify that core patient table exists
+const coreTablesExist = db.prepare(`
   SELECT name FROM sqlite_master 
   WHERE type='table' AND name='patients'
 `).get()
 
-if (eldercareTablesExist) {
-  console.log('✅ Eldercare tables found - database is ready!')
+if (coreTablesExist) {
+  console.log('✅ Core mental health tables verified - database ready!')
 } else {
-  console.log('⚠️  Eldercare tables not found - they may need to be created manually')
+  console.log('⚠️  Core tables not found - database may need initialization')
 }
 
 console.log('✅ Database initialization completed!')

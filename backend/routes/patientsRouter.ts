@@ -223,14 +223,6 @@ router.get('/:id/summary', async (req, res) => {
       LIMIT 5
     `).all(id)
 
-    // Get recent appointments
-    const appointments = db.prepare(`
-      SELECT * FROM appointments 
-      WHERE patient_id = ? 
-      ORDER BY appointment_date DESC 
-      LIMIT 5
-    `).all(id)
-
     // Get recent vitals
     const vitals = db.prepare(`
       SELECT * FROM vitals 
@@ -242,7 +234,6 @@ router.get('/:id/summary', async (req, res) => {
     const summary = {
       patient,
       medications,
-      appointments,
       vitals,
     }
 
