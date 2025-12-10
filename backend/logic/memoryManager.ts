@@ -119,7 +119,7 @@ export class MemoryManager {
    * Get recent messages with importance scores (cached for performance)
    * Industry standard: Return ALL recent messages - filtering happens at application level
    */
-  private getRecentMessages(sessionId: string, limit: number): MessageWithImportance[] {
+  public getRecentMessages(sessionId: string, limit: number): MessageWithImportance[] {
     // Check cache first
     const cacheKey = `${sessionId}:${limit}`
     const cached = this.recentMessagesCache.get(cacheKey)
@@ -197,18 +197,10 @@ export class MemoryManager {
   }
 
   /**
-   * Invalidate cache when new messages are added (public method)
+   * Invalidate cache when new messages are added
    */
   public invalidateSessionCache(sessionId: string): void {
     console.log(`[Debug] Invalidating cache for session: ${sessionId}`)
-    this.invalidateCache(sessionId)
-  }
-
-  /**
-   * Invalidate cache when new messages are added
-   */
-  private invalidateCache(sessionId: string): void {
-    console.log(`[Debug] Clearing caches for session: ${sessionId}`)
     
     // Clear message count cache for this session
     this.messageCountCache.delete(sessionId)

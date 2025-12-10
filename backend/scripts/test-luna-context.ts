@@ -3,20 +3,11 @@
  */
 
 import { LunaContextService } from '../logic/lunaContextService'
-import { getModelAdapter } from '../logic/modelRegistry'
 
 async function testLunaContext() {
   console.log('🧪 Testing LunaContextService thought record access...\n')
   
   const contextService = new LunaContextService()
-  
-  // Get a default adapter (doesn't matter which for this test)
-  const adapter = getModelAdapter('gpt-4.1-nano')
-  
-  if (!adapter) {
-    console.error('❌ Could not get adapter')
-    return
-  }
   
   // Patient ID for Kaleb
   const kalebPatientId = '1762885449885-vyuzo96qop9'
@@ -24,12 +15,11 @@ async function testLunaContext() {
   console.log(`📋 Fetching context for patient: ${kalebPatientId}\n`)
   
   // Get context
-  const context = contextService.getLunaContext(adapter, kalebPatientId)
+  const context = contextService.getLunaContext(kalebPatientId)
   
   console.log('📊 Context Results:')
   console.log(`   Patients: ${context.patients.length}`)
   console.log(`   Medications: ${context.medications.length}`)
-  console.log(`   Appointments: ${context.recentAppointments.length}`)
   console.log(`   Journal Entries: ${context.journalEntries.length}`)
   console.log(`   Therapy Records (all types): ${context.therapyRecords.length}`)
   console.log(`   CBT Thought Records: ${context.cbtThoughtRecords.length}\n`)
@@ -63,7 +53,7 @@ async function testLunaContext() {
   // Test contextual prompt generation
   console.log('🤖 Testing contextual prompt generation...\n')
   const testQuery = "How is Kaleb doing with his CBT exercises?"
-  const contextPrompt = contextService.generateContextualPrompt(adapter, testQuery)
+  const contextPrompt = contextService.generateContextualPrompt(testQuery)
   
   console.log(`Query: "${testQuery}"`)
   console.log(`Generated prompt length: ${contextPrompt.length} characters`)
