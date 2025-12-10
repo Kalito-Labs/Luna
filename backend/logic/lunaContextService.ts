@@ -10,8 +10,6 @@
  */
 
 import { db } from '../db/db'
-import type { LLMAdapter } from './modelRegistry'
-import { StructuredMedicationService } from './structuredMedicationService'
 
 export interface PatientContext {
   id: string
@@ -24,7 +22,6 @@ export interface PatientContext {
   occupation?: string
   occupation_description?: string
   languages?: string
-  primary_doctor_id?: string
   notes?: string
 }
 
@@ -53,6 +50,8 @@ export interface JournalContext {
   entryDate: string
   entryTime?: string
   mood?: string
+  moodScale?: number
+  sleepHours?: number
   emotions?: string[]
   journalType?: string
   wordCount: number
@@ -115,10 +114,9 @@ export type LunaContext = {
 
 export class LunaContextService {
   private readonly MAX_RECENT_DAYS = 30
-  private structuredMedicationService: StructuredMedicationService
   
   constructor() {
-    this.structuredMedicationService = new StructuredMedicationService()
+    // No services needed - using direct database queries
   }
 
   /**
@@ -151,7 +149,7 @@ export class LunaContextService {
       const query = `
         SELECT id, name, date_of_birth, gender, 
                phone, city, state, occupation, occupation_description,
-               languages, primary_doctor_id, notes
+               languages, notes
         FROM patients 
         WHERE active = 1 
         ORDER BY name ASC
@@ -167,7 +165,6 @@ export class LunaContextService {
         occupation: string | null
         occupation_description: string | null
         languages: string | null
-        primary_doctor_id: string | null
         notes: string | null
       }>
 
@@ -183,7 +180,6 @@ export class LunaContextService {
           occupation: row.occupation || undefined,
           occupation_description: row.occupation_description || undefined,
           languages: row.languages || undefined,
-          primary_doctor_id: row.primary_doctor_id || undefined,
           notes: row.notes || undefined,
         }
 
@@ -197,50 +193,70 @@ export class LunaContextService {
 
   /**
    * Get active medications for all patients or specific patient
-   * Uses StructuredMedicationService for validated data with complete information
+   * Uses direct database query for efficiency with all medication fields
    */
   private getMedications(patientId?: string): MedicationContext[] {
     try {
-      // If no specific patient, get all patients and fetch their medications
-      if (!patientId) {
-        const patients = this.getPatients()
-        const allMedications: MedicationContext[] = []
-        
-        for (const patient of patients) {
-          const patientMeds = this.getMedications(patient.id)
-          allMedications.push(...patientMeds)
-        }
-        
-        return allMedications
+      let query = `
+        SELECT 
+          m.id,
+          m.patient_id,
+          m.name,
+          m.generic_name,
+          m.dosage,
+          m.frequency,
+          m.route,
+          m.prescribing_doctor,
+          m.pharmacy,
+          m.rx_number,
+          m.side_effects,
+          m.notes,
+          p.name as patient_name
+        FROM medications m
+        LEFT JOIN patients p ON m.patient_id = p.id
+        WHERE m.active = 1
+      `
+      
+      const params: string[] = []
+      
+      if (patientId) {
+        query += ' AND m.patient_id = ?'
+        params.push(patientId)
       }
       
-      // Use structured validation service for specific patient
-      const structuredData = this.structuredMedicationService.getMedicationsStructured(patientId)
+      query += ' ORDER BY p.name ASC, m.name ASC'
       
-      if (!structuredData) {
-        return []
-      }
+      const rows = db.prepare(query).all(...params) as Array<{
+        id: string
+        patient_id: string
+        name: string
+        generic_name: string | null
+        dosage: string
+        frequency: string
+        route: string | null
+        prescribing_doctor: string | null
+        pharmacy: string | null
+        rx_number: string | null
+        side_effects: string | null
+        notes: string | null
+        patient_name: string | null
+      }>
       
-      // Convert structured format to MedicationContext format
-      return structuredData.medications.map((med, index) => {
-        const context: MedicationContext = {
-          id: `${patientId}-med-${index}`, // Generate ID from index
-          patientId: patientId,
-          patientName: structuredData.patient_name,
-          name: med.name,
-          genericName: med.generic_name || undefined,
-          dosage: med.dosage,
-          frequency: med.frequency,
-          route: undefined, // Not in structured format
-          prescribingDoctor: med.prescribing_doctor,
-          pharmacy: med.pharmacy,
-          rxNumber: med.rx_number,
-          sideEffects: undefined, // Not in structured format
-          notes: med.notes || undefined,
-        }
-        
-        return context
-      })
+      return rows.map(row => ({
+        id: row.id,
+        patientId: row.patient_id,
+        patientName: row.patient_name || undefined,
+        name: row.name,
+        genericName: row.generic_name || undefined,
+        dosage: row.dosage,
+        frequency: row.frequency,
+        route: row.route || undefined,
+        prescribingDoctor: row.prescribing_doctor || undefined,
+        pharmacy: row.pharmacy || undefined,
+        rxNumber: row.rx_number || undefined,
+        sideEffects: row.side_effects || undefined,
+        notes: row.notes || undefined,
+      }))
     } catch (error) {
       console.error('Error fetching medications for context:', error)
       return []
@@ -260,7 +276,7 @@ export class LunaContextService {
       let query = `
         SELECT 
           j.id, j.patient_id, j.title, j.content, j.entry_date, j.entry_time,
-          j.mood, j.emotions, j.journal_type,
+          j.mood, j.mood_scale, j.sleep_hours, j.emotions, j.journal_type,
           p.name as patient_name
         FROM journal_entries j
         LEFT JOIN patients p ON j.patient_id = p.id
@@ -286,6 +302,8 @@ export class LunaContextService {
         entry_date: string
         entry_time: string | null
         mood: string | null
+        mood_scale: number | null
+        sleep_hours: number | null
         emotions: string | null
         journal_type: string | null
       }>
@@ -312,6 +330,8 @@ export class LunaContextService {
           entryDate: row.entry_date,
           entryTime: row.entry_time || undefined,
           mood: row.mood || undefined,
+          moodScale: row.mood_scale !== null ? row.mood_scale : undefined,
+          sleepHours: row.sleep_hours !== null ? row.sleep_hours : undefined,
           emotions: emotionsArray,
           journalType: row.journal_type || undefined,
           wordCount,
@@ -578,7 +598,6 @@ export class LunaContextService {
           if (patient.occupation_description) summary += `\n  Details: ${patient.occupation_description}`;
         }
         if (patient.languages) summary += `\n  Languages: ${patient.languages}`;
-        if (patient.primary_doctor_id) summary += `\n  Primary Doctor ID: ${patient.primary_doctor_id}`;
         summary += '\n';
       });
       summary += '\n';
@@ -664,84 +683,6 @@ export class LunaContextService {
       summary += `- No journal entries found in the last 30 days\n\n`;
     }
 
-    // CBT Thought Records - provides therapeutic progress and cognitive pattern insights
-    if (context.cbtThoughtRecords.length > 0) {
-      summary += `### CBT Thought Records (Last 30 Days: ${context.cbtThoughtRecords.length} records)\n\n`;
-      
-      // Calculate overall progress metrics
-      const recordsWithImprovement = context.cbtThoughtRecords.filter(record => 
-        record.improvementScore !== undefined && record.improvementScore > 0
-      );
-      const averageImprovement = recordsWithImprovement.length > 0 
-        ? recordsWithImprovement.reduce((sum, record) => sum + (record.improvementScore || 0), 0) / recordsWithImprovement.length
-        : 0;
-      
-      summary += `**THERAPEUTIC PROGRESS OVERVIEW**\n`;
-      summary += `- ${recordsWithImprovement.length}/${context.cbtThoughtRecords.length} records show emotional improvement\n`;
-      if (averageImprovement > 0) {
-        summary += `- Average emotional intensity reduction: ${averageImprovement.toFixed(1)} points\n`;
-      }
-      summary += `\n`;
-      
-      // Group CBT records by patient
-      const cbtByPatient = new Map<string, CBTThoughtRecordContext[]>();
-      context.cbtThoughtRecords.forEach((record: CBTThoughtRecordContext) => {
-        const patientName = record.patientName || 'Unknown Patient';
-        if (!cbtByPatient.has(patientName)) {
-          cbtByPatient.set(patientName, []);
-        }
-        cbtByPatient.get(patientName)!.push(record);
-      });
-      
-      // Display CBT records grouped by patient
-      cbtByPatient.forEach((records, patientName) => {
-        summary += `**${patientName} (${records.length} thought record${records.length !== 1 ? 's' : ''})**\n`;
-        
-        records.slice(0, 5).forEach((record: CBTThoughtRecordContext) => {
-          summary += `- ${record.createdAt.split('T')[0]}`;
-          if (record.sessionId) summary += ` (Session: ${record.sessionId})`;
-          summary += `\n`;
-          
-          // Show the cognitive pattern and emotional journey
-          summary += `  Situation: ${record.recordData.situation}\n`;
-          summary += `  Initial thought: "${record.recordData.automaticThought}"\n`;
-          summary += `  Emotion: ${record.recordData.emotion} (intensity: ${record.recordData.emotionIntensity}/100)\n`;
-          
-          // Show therapeutic work done
-          if (record.recordData.evidenceFor && record.recordData.evidenceAgainst) {
-            summary += `  Evidence work: Examined thoughts objectively\n`;
-          }
-          
-          // Show progress/outcome
-          if (record.recordData.alternativeThought) {
-            summary += `  Alternative thought: "${record.recordData.alternativeThought}"\n`;
-          }
-          if (record.recordData.newEmotion && record.recordData.newEmotionIntensity !== undefined) {
-            summary += `  Result: ${record.recordData.newEmotion} (intensity: ${record.recordData.newEmotionIntensity}/100)`;
-            if (record.improvementScore !== undefined) {
-              const change = record.improvementScore > 0 ? 'improved' : 
-                           record.improvementScore < 0 ? 'increased' : 'unchanged';
-              summary += ` - ${change} by ${Math.abs(record.improvementScore)} points`;
-            }
-            summary += `\n`;
-          }
-          summary += `\n`;
-        });
-        
-        // Show summary if more than 5 records
-        if (records.length > 5) {
-          summary += `  ... and ${records.length - 5} more records\n\n`;
-        } else {
-          summary += `\n`;
-        }
-      });
-    } else {
-      summary += `### CBT Thought Records\n`;
-      summary += `**NO RECENT CBT THOUGHT RECORDS**\n`;
-      summary += `- No thought records found in the last 30 days\n`;
-      summary += `- Consider encouraging the use of CBT tools for emotional regulation\n\n`;
-    }
-
     // All Therapy Records (CBT, ACT, DBT) - Comprehensive therapeutic work overview
     if (context.therapyRecords.length > 0) {
       summary += `### All Therapy Records (Last 30 Days: ${context.therapyRecords.length} total)\n\n`;
@@ -823,12 +764,11 @@ export class LunaContextService {
   /**
    * Get comprehensive mental health context for AI integration
    * 
-   * @param adapter - The AI model adapter (used to determine privacy level)
    * @param patientId - Optional: focus on specific patient
    * @param personaId - Optional: fetch datasets linked to specific persona
    * @returns Complete mental health context for AI
    */
-  public getLunaContext(adapter: LLMAdapter, patientId?: string, personaId?: string): LunaContext {
+  public getLunaContext(patientId?: string, personaId?: string): LunaContext {
     const patients = this.getPatients()
     const medications = this.getMedications(patientId)
     const journalEntries = this.getRecentJournalEntries(patientId)
@@ -901,7 +841,7 @@ export class LunaContextService {
    * Generate contextual prompt addition for AI based on user query and session
    * This provides relevant mental health context with session-based patient focus
    */
-  public generateContextualPrompt(adapter: LLMAdapter, userQuery: string, sessionId?: string): string {
+  public generateContextualPrompt(userQuery: string, sessionId?: string): string {
     let foundPatient: PatientContext | null = null
     let personaId: string | undefined
     
@@ -983,7 +923,7 @@ export class LunaContextService {
 
     // Get context (focused on found patient if any, with persona datasets)
     console.log(`[LunaContext] Fetching context - PersonaId: ${personaId}, PatientId: ${foundPatient?.id}`)
-    const context = this.getLunaContext(adapter, foundPatient?.id, personaId)
+    const context = this.getLunaContext(foundPatient?.id, personaId)
     
     console.log(`[LunaContext] Context retrieved - Patients: ${context.patients.length}, Datasets: ${context.datasets.length}`)
     if (context.datasets.length > 0) {

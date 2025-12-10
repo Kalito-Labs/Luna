@@ -305,8 +305,8 @@ function buildSystemPrompt(
   const documentContext = getDocumentContext(fileIds)
   const customPrompt = customSystemPrompt?.trim() || ''
   
-  // Get eldercare context based on user query and model capabilities
-  const lunaContext = lunaContextService.generateContextualPrompt(adapter, userInput, sessionId)
+  // Get mental health context based on user query and session
+  const lunaContext = lunaContextService.generateContextualPrompt(userInput, sessionId)
   
   // DEBUG: Log RAG context
   if (lunaContext.includes('Knowledge Base')) {

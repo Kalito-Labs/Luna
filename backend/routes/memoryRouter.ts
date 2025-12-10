@@ -99,7 +99,7 @@ router.post('/:sessionId/score-messages', async (req, res) => {
   try {
     
     // Get all messages for this session
-    const messages = memoryManager['getRecentMessages'](sessionId, 1000) // Get up to 1000 messages
+    const messages = memoryManager.getRecentMessages(sessionId, 1000) // Get up to 1000 messages
     
     let updatedCount = 0
     for (const message of messages) {

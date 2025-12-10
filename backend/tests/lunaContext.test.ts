@@ -24,7 +24,7 @@ console.log()
 // Test 1: Get full context (no specific patient)
 console.log('📊 TEST 1: Full Context (All Patients)')
 console.log('-'.repeat(80))
-const fullContext = service.getLunaContext(mockAdapter)
+const fullContext = service.getLunaContext()
 console.log(`\n✅ Patients: ${fullContext.patients.length}`)
 fullContext.patients.forEach(p => {
   console.log(`   - ${p.name} (age ${p.age || 'unknown'}, ${p.gender || 'unknown gender'})`)
@@ -52,7 +52,7 @@ console.log('-'.repeat(80))
 // Find Aurora's patient ID
 const aurora = fullContext.patients.find(p => p.name.includes('Aurora'))
 if (aurora) {
-  const auroraContext = service.getLunaContext(mockAdapter, aurora.id)
+  const auroraContext = service.getLunaContext(aurora.id)
   console.log(`\n✅ Focused on: ${aurora.name}`)
   console.log(`✅ Medications for this patient: ${auroraContext.medications.length}`)
   auroraContext.medications.forEach(med => {
